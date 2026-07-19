@@ -1,0 +1,505 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BASE="/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3"
+PREFLIGHT="${BASE}/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768"
+PREFLIGHT_PACKAGE="${BASE}/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768.tar.gz"
+FREEZE="${BASE}/sub00f_mode_a_execution_freeze_v1"
+
+MODEL="${PREFLIGHT}/build/sub_t1_pragma_scoped_mlkem768.goto"
+FROZEN_HARNESS="${FREEZE}/harnesses/sub_t1_semantic_harness.c"
+
+RESULT="${BASE}/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1"
+PACKAGE="${BASE}/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1.tar.gz"
+PACKAGE_HASH="${PACKAGE}.sha256"
+
+EXPECTED_PREFLIGHT_PACKAGE_SHA256="210106eb8337b7cee98ec275d4398bf879c41b434789d441d83c01249a1abfbf"
+EXPECTED_PREFLIGHT_MANIFEST_SHA256="8c98bada06ec9981b6302bdc3263b86e7921abaa38a63119dbd46e0a60f8a45a"
+EXPECTED_PREFLIGHT_STATUS_SHA256="d1e47a25fc1ec1984b4a0c15eb052f97919b802760aeab3a42df4174cbadb4f9"
+EXPECTED_MODEL_SHA256="e9bef62631fbad4711d3eebf1ff8c48d5c2ea29d4dc4b4e9ef588ff6805260bb"
+EXPECTED_HARNESS_SHA256="42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682"
+EXPECTED_PROPERTY_INVENTORY_SHA256="65ade572ba3849b25c568846b1132400e118b2bc147854470cebf3f9b59b6ae7"
+
+UNWINDSET="main.0:257,main.1:257,main.2:257,main.3:257,mlk_barrett_reduce.0:2,mlk_sub00g_r2_poly_sub.0:257,mlk_poly_reduce_c.0:257,mlk_poly_reduce_c.1:257,mlk_scalar_signed_to_unsigned_q.0:2,mlk_scalar_signed_to_unsigned_q.1:2"
+
+RESULT_JSON="${RESULT}/cbmc_result.json"
+RESULT_STDERR="${RESULT}/cbmc_stderr.txt"
+RESULT_COMMAND="${RESULT}/cbmc_command.txt"
+RESULT_EXIT="${RESULT}/cbmc_exit_code.txt"
+RESULT_RESOURCE="${RESULT}/resource_usage.txt"
+RESULT_SUMMARY="${RESULT}/cbmc_result_summary.txt"
+RESULT_CLASSIFICATION="${RESULT}/THEOREM_CLASSIFICATION.txt"
+RESULT_MANIFEST="${RESULT}/RESULT_ARTIFACT_MANIFEST.sha256"
+
+SCRIPT_PATH="$(readlink -f "$0")"
+STEP="initialization"
+THEOREM_STARTED="NO"
+PACKAGED=0
+
+fail()
+{
+  echo "ERROR: $*" >&2
+  return 1
+}
+
+hash_of()
+{
+  sha256sum "$1" | awk '{print $1}'
+}
+
+verify_hash()
+{
+  local expected="$1"
+  local file="$2"
+  local actual
+
+  test -f "${file}" || {
+    echo "Missing required file: ${file}" >&2
+    return 1
+  }
+
+  actual="$(hash_of "${file}")"
+
+  if test "${actual}" != "${expected}"
+  then
+    echo "Integrity mismatch" >&2
+    echo "Expected: ${expected}" >&2
+    echo "Actual:   ${actual}" >&2
+    echo "File:     ${file}" >&2
+    return 1
+  fi
+}
+
+write_command()
+{
+  local file="$1"
+  shift
+
+  {
+    printf 'COMMAND:'
+    printf ' %q' "$@"
+    printf '\n'
+  } >"${file}"
+}
+
+package_result()
+{
+  local final_rc="$1"
+
+  if test "${PACKAGED}" -eq 1
+  then
+    return
+  fi
+  PACKAGED=1
+
+  if test -d "${RESULT}"
+  then
+    {
+      echo "FINAL_WRAPPER_EXIT_CODE=${final_rc}"
+      echo "LAST_STEP=${STEP}"
+      echo "THEOREM_STARTED=${THEOREM_STARTED}"
+    } >"${RESULT}/wrapper_status.txt"
+
+    (
+      cd "${RESULT}"
+
+      find . -type f \
+        ! -name "$(basename "${RESULT_MANIFEST}")" \
+        -print0 |
+        LC_ALL=C sort -z |
+        xargs -0 -r sha256sum
+    ) >"${RESULT_MANIFEST}"
+
+    rm -f "${PACKAGE}" "${PACKAGE_HASH}"
+
+    tar \
+      --sort=name \
+      --mtime='UTC 1970-01-01' \
+      --owner=0 \
+      --group=0 \
+      --numeric-owner \
+      -C "${BASE}" \
+      -cf - \
+      "$(basename "${RESULT}")" |
+      gzip -n >"${PACKAGE}"
+
+    sha256sum "${PACKAGE}" >"${PACKAGE_HASH}"
+
+    echo
+    echo "============================================================"
+    echo "SUB-00H EVIDENCE PACKAGED"
+    echo "============================================================"
+    echo "Last step: ${STEP}"
+    echo "Theorem started: ${THEOREM_STARTED}"
+    echo
+    if test -f "${RESULT_SUMMARY}"
+    then
+      cat "${RESULT_SUMMARY}"
+      echo
+    fi
+    if test -f "${RESULT_CLASSIFICATION}"
+    then
+      cat "${RESULT_CLASSIFICATION}"
+      echo
+    fi
+    echo "Upload:"
+    echo "1. ${PACKAGE}"
+    echo "2. ${PACKAGE_HASH}"
+    cat "${PACKAGE_HASH}"
+  fi
+}
+
+on_exit()
+{
+  local rc="$?"
+  trap - EXIT
+  package_result "${rc}"
+  exit "${rc}"
+}
+trap on_exit EXIT
+
+for tool in sha256sum goto-instrument cbmc timeout tar gzip python3 readlink
+do
+  command -v "${tool}" >/dev/null 2>&1 ||
+    fail "required tool unavailable: ${tool}"
+done
+
+test -x /usr/bin/time || fail "/usr/bin/time is unavailable"
+test -f "${SCRIPT_PATH}" || fail "unable to resolve executing runner"
+
+test -d "${BASE}" || fail "campaign directory missing: ${BASE}"
+test -d "${PREFLIGHT}" || fail "accepted preflight directory missing: ${PREFLIGHT}"
+test -d "${FREEZE}" || fail "SUB-00F freeze directory missing: ${FREEZE}"
+
+test ! -e "${RESULT}" || fail "result directory already exists: ${RESULT}"
+test ! -e "${PACKAGE}" || fail "result package already exists: ${PACKAGE}"
+test ! -e "${PACKAGE_HASH}" || fail "result package sidecar already exists"
+
+mkdir -p "${RESULT}/frozen_inputs"
+
+STEP="verify accepted preflight package"
+verify_hash \
+  "${EXPECTED_PREFLIGHT_PACKAGE_SHA256}" \
+  "${PREFLIGHT_PACKAGE}"
+
+STEP="verify accepted preflight manifest identity"
+verify_hash \
+  "${EXPECTED_PREFLIGHT_MANIFEST_SHA256}" \
+  "${PREFLIGHT}/PREFLIGHT_ARTIFACT_MANIFEST.sha256"
+
+verify_hash \
+  "${EXPECTED_PREFLIGHT_STATUS_SHA256}" \
+  "${PREFLIGHT}/PREFLIGHT_STATUS.txt"
+
+(
+  cd "${PREFLIGHT}"
+  sha256sum --check PREFLIGHT_ARTIFACT_MANIFEST.sha256
+) >"${RESULT}/preflight_manifest_check.txt" 2>&1
+
+STEP="verify accepted preflight verdict"
+grep -Fxq "PREFLIGHT_FINAL_EXIT_CODE=0" \
+  "${PREFLIGHT}/PREFLIGHT_STATUS.txt" ||
+  fail "preflight did not record zero exit"
+
+grep -Fxq "PREFLIGHT_VERDICT=PASS" \
+  "${PREFLIGHT}/PREFLIGHT_STATUS.txt" ||
+  fail "preflight verdict is not PASS"
+
+grep -Fxq "THEOREM_EXECUTED=NO" \
+  "${PREFLIGHT}/PREFLIGHT_STATUS.txt" ||
+  fail "preflight unexpectedly records a theorem execution"
+
+for exit_file in \
+  preprocess_output.txt.exit_code \
+  goto_build_output.txt.exit_code \
+  validate_original_model.txt.exit_code \
+  show_symbol_table.txt.exit_code \
+  show_goto_functions.txt.exit_code \
+  reachable_call_graph.txt.exit_code \
+  undefined_functions.txt.exit_code \
+  drop_unused_functions.txt.exit_code \
+  validate_reachable_model.txt.exit_code \
+  reachable_loops.txt.exit_code \
+  show_cbmc_properties.txt.exit_code
+do
+  grep -Fxq "0" "${PREFLIGHT}/build/${exit_file}" ||
+    fail "preflight command did not exit zero: ${exit_file}"
+done
+
+STEP="verify frozen model and harness"
+verify_hash "${EXPECTED_MODEL_SHA256}" "${MODEL}"
+verify_hash "${EXPECTED_HARNESS_SHA256}" "${FROZEN_HARNESS}"
+verify_hash \
+  "${EXPECTED_PROPERTY_INVENTORY_SHA256}" \
+  "${PREFLIGHT}/build/show_cbmc_properties.txt"
+
+test ! -s "${PREFLIGHT}/build/contract_symbols.txt" ||
+  fail "contract symbols are present in accepted preflight"
+
+test ! -s "${PREFLIGHT}/build/loop_set_diff.txt" ||
+  fail "accepted loop-set comparison is non-empty"
+
+grep -Fq '#pragma CPROVER check disable "conversion"' \
+  "${PREFLIGHT}/build/conversion_disable_pragma_match.txt" ||
+  fail "scoped conversion pragma evidence is absent"
+
+grep -Fq '#pragma CPROVER check pop' \
+  "${PREFLIGHT}/build/conversion_pop_pragma_match.txt" ||
+  fail "scoped conversion pragma pop evidence is absent"
+
+for required in \
+  "SUB_T1_SEMANTIC: output must be non-negative" \
+  "SUB_T1_SEMANTIC: output must be below FIPS_Q" \
+  "SUB_T1_SEMANTIC: output must equal independent canonical oracle" \
+  "SUB_T1_FRAME: subtraction must not modify LB" \
+  "SUB_T1_FRAME: reduction must not modify LB"
+do
+  grep -Fq "${required}" "${PREFLIGHT}/build/show_cbmc_properties.txt" ||
+    fail "required frozen property missing: ${required}"
+done
+
+if grep -Fq "mlk_cast_uint16_to_int16.overflow.1" \
+    "${PREFLIGHT}/build/show_cbmc_properties.txt"
+then
+  fail "intentional implementation-defined conversion property is active"
+fi
+
+if grep -Eq 'contract::|shake256x4' \
+    "${PREFLIGHT}/build/show_cbmc_properties.txt"
+then
+  fail "unrelated contract material leaked into property inventory"
+fi
+
+STEP="copy immutable execution inputs"
+cp -a "${MODEL}" \
+  "${RESULT}/frozen_inputs/sub_t1_pragma_scoped_mlkem768.goto"
+cp -a "${FROZEN_HARNESS}" \
+  "${RESULT}/frozen_inputs/sub_t1_semantic_harness.c"
+cp -a "${PREFLIGHT}/build/sub00g_r2_verify_pragma_scope.h" \
+  "${RESULT}/frozen_inputs/sub00g_r2_verify_pragma_scope.h"
+cp -a "${PREFLIGHT}/build/sub00g_r2_optblocker_zero.c" \
+  "${RESULT}/frozen_inputs/sub00g_r2_optblocker_zero.c"
+cp -a "${PREFLIGHT}/PREFLIGHT_STATUS.txt" \
+  "${RESULT}/frozen_inputs/PREFLIGHT_STATUS.txt"
+cp -a "${PREFLIGHT}/SUB00G_R2_PREFLIGHT_MANIFEST.md" \
+  "${RESULT}/frozen_inputs/SUB00G_R2_PREFLIGHT_MANIFEST.md"
+cp -a "${PREFLIGHT}/PREFLIGHT_ARTIFACT_MANIFEST.sha256" \
+  "${RESULT}/frozen_inputs/PREFLIGHT_ARTIFACT_MANIFEST.sha256"
+cp -a "${PREFLIGHT}/build/show_cbmc_properties.txt" \
+  "${RESULT}/frozen_inputs/show_cbmc_properties.txt"
+cp -a "${SCRIPT_PATH}" \
+  "${RESULT}/executed_runner.sh"
+
+{
+  echo "Accepted preflight package SHA-256:"
+  sha256sum "${PREFLIGHT_PACKAGE}"
+  echo
+  echo "Accepted model SHA-256:"
+  sha256sum "${MODEL}"
+  echo
+  echo "Frozen harness SHA-256:"
+  sha256sum "${FROZEN_HARNESS}"
+  echo
+  echo "Executing runner SHA-256:"
+  sha256sum "${SCRIPT_PATH}"
+} >"${RESULT}/parent_and_runner_hashes.txt"
+
+{
+  date -u
+  uname -a
+  echo
+  cbmc --version
+  goto-instrument --version
+} >"${RESULT}/environment.txt" 2>&1
+
+STEP="final validator gate"
+set +e
+goto-instrument \
+  --validate-goto-binary \
+  "${MODEL}" \
+  >"${RESULT}/final_validation.txt" \
+  2>&1
+VALIDATE_RC="$?"
+set -e
+
+printf '%s\n' "${VALIDATE_RC}" \
+  >"${RESULT}/final_validation_exit_code.txt"
+
+test "${VALIDATE_RC}" -eq 0 ||
+  fail "final GOTO validation failed; theorem was not started"
+
+STEP="write exact CBMC command"
+CBMC_COMMAND=(
+  cbmc
+  "${MODEL}"
+  --function main
+  --object-bits 8
+  --bounds-check
+  --pointer-check
+  --pointer-overflow-check
+  --pointer-primitive-check
+  --signed-overflow-check
+  --unsigned-overflow-check
+  --conversion-check
+  --undefined-shift-check
+  --div-by-zero-check
+  --unwinding-assertions
+  --unwindset "${UNWINDSET}"
+  --slice-formula
+  --sat-solver minisat2
+  --trace
+  --json-ui
+)
+
+write_command "${RESULT_COMMAND}" "${CBMC_COMMAND[@]}"
+
+cat >"${RESULT}/EXECUTION_BOUNDARY.md" <<'EOF'
+# SUB-00H execution boundary
+
+This run executes the unchanged SUB-T1 theorem from the accepted SUB-00G-R2
+pragma-scoped GOTO model.
+
+The run does not:
+
+- rebuild the GOTO model;
+- edit the frozen theorem harness;
+- edit production poly.c;
+- use the target function contract as an abstraction;
+- apply source loop contracts;
+- establish novelty by itself.
+
+A zero CBMC exit code remains subject to independent result review.
+EOF
+
+STEP="execute corrected SUB-T1 theorem"
+THEOREM_STARTED="YES"
+
+set +e
+/usr/bin/time -v \
+  -o "${RESULT_RESOURCE}" \
+  timeout \
+  --signal=TERM \
+  --kill-after=60s \
+  21600s \
+  "${CBMC_COMMAND[@]}" \
+  >"${RESULT_JSON}" \
+  2>"${RESULT_STDERR}"
+CBMC_RC="$?"
+set -e
+
+printf '%s\n' "${CBMC_RC}" >"${RESULT_EXIT}"
+
+STEP="summarize raw CBMC result"
+python3 - "${RESULT_JSON}" "${RESULT_SUMMARY}" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+json_path = Path(sys.argv[1])
+summary_path = Path(sys.argv[2])
+
+results = []
+statuses = []
+parse_error = ""
+
+try:
+    with json_path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    if not isinstance(data, list):
+        raise TypeError("top-level JSON value is not a list")
+
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+
+        if "result" in item and isinstance(item["result"], list):
+            results.extend(item["result"])
+
+        if "cProverStatus" in item:
+            statuses.append(str(item["cProverStatus"]))
+except Exception as exc:
+    parse_error = f"{type(exc).__name__}: {exc}"
+
+successes = [r for r in results if r.get("status") == "SUCCESS"]
+failures = [r for r in results if r.get("status") == "FAILURE"]
+other = [
+    r for r in results
+    if r.get("status") not in {"SUCCESS", "FAILURE"}
+]
+
+lines = [
+    f"JSON_PARSE_ERROR={parse_error or 'NONE'}",
+    f"CPROVER_STATUSES={','.join(statuses) if statuses else 'NONE'}",
+    f"TOTAL_PROPERTIES={len(results)}",
+    f"SUCCESS_PROPERTIES={len(successes)}",
+    f"FAILURE_PROPERTIES={len(failures)}",
+    f"OTHER_PROPERTIES={len(other)}",
+    "",
+    "FAILING_PROPERTIES:",
+]
+
+if failures:
+    for result in failures:
+        lines.append(
+            f"{result.get('property', '<unknown>')} | "
+            f"{result.get('status', '<unknown>')} | "
+            f"{result.get('description', '')}"
+        )
+else:
+    lines.append("NONE")
+
+summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
+
+STEP="classify wrapper-level outcome"
+python3 - \
+  "${RESULT_EXIT}" \
+  "${RESULT_SUMMARY}" \
+  "${RESULT_CLASSIFICATION}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+exit_code = int(Path(sys.argv[1]).read_text().strip())
+summary = Path(sys.argv[2]).read_text()
+out = Path(sys.argv[3])
+
+def value(name: str) -> str:
+    match = re.search(rf"^{re.escape(name)}=(.*)$", summary, re.M)
+    return match.group(1).strip() if match else ""
+
+parse_error = value("JSON_PARSE_ERROR")
+statuses = value("CPROVER_STATUSES")
+failures = value("FAILURE_PROPERTIES")
+total = value("TOTAL_PROPERTIES")
+
+eligible = (
+    exit_code == 0
+    and parse_error == "NONE"
+    and failures == "0"
+    and total == "361"
+    and "SUCCESS" in statuses.upper()
+)
+
+if eligible:
+    classification = "CANDIDATE_PASS_PENDING_INDEPENDENT_REVIEW"
+else:
+    classification = "NOT_PASSED_OR_NOT_YET_CLASSIFIABLE"
+
+out.write_text(
+    "\n".join(
+        [
+            f"WRAPPER_CLASSIFICATION={classification}",
+            f"RAW_CBMC_EXIT_CODE={exit_code}",
+            "THIS_FILE_DOES_NOT_ESTABLISH_NOVELTY=YES",
+            "INDEPENDENT_RESULT_REVIEW_REQUIRED=YES",
+        ]
+    )
+    + "\n",
+    encoding="utf-8",
+)
+PY
+
+STEP="SUB-00H execution complete"
+exit "${CBMC_RC}"

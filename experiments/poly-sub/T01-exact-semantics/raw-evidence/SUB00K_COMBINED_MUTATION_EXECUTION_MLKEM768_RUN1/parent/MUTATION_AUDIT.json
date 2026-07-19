@@ -1,0 +1,65 @@
+{
+  "M1_ADD_INSTEAD_OF_SUB": {
+    "mutated_file": "poly.c",
+    "old": "r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);",
+    "new": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+    "old_occurrences_in_target_function": 1,
+    "new_occurrences_in_mutant_function": 1,
+    "harness_changed": false,
+    "diff": [
+      "--- before",
+      "+++ after",
+      "@@ -256,7 +256,7 @@",
+      "     decreases(MLKEM_N - i))",
+      "   {",
+      "     /* The preconditions imply that the subtraction stays within int16_t. */",
+      "-    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);",
+      "+    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+      "   }",
+      " }",
+      " "
+    ]
+  },
+  "M2_SKIP_COEFFICIENT_255": {
+    "mutated_file": "poly.c",
+    "old": "for (i = 0; i < MLKEM_N; i++)",
+    "new": "for (i = 0; i + 1u < MLKEM_N; i++)",
+    "old_occurrences_in_target_function": 1,
+    "new_occurrences_in_mutant_function": 1,
+    "harness_changed": false,
+    "diff": [
+      "--- before",
+      "+++ after",
+      "@@ -248,7 +248,7 @@",
+      " void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)",
+      " {",
+      "   unsigned i;",
+      "-  for (i = 0; i < MLKEM_N; i++)",
+      "+  for (i = 0; i + 1u < MLKEM_N; i++)",
+      "   __loop__(",
+      "     invariant(i <= MLKEM_N)",
+      "     invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+    ]
+  },
+  "M3_ORACLE_PLUS_ONE": {
+    "mutated_file": "sub_t1_semantic_harness.c",
+    "old": "expected = shifted % (uint32_t)FIPS_Q;",
+    "new": "expected = (shifted + 1u) % (uint32_t)FIPS_Q;",
+    "old_occurrences_in_frozen_harness": 1,
+    "new_occurrences_in_mutant_harness": 1,
+    "production_source_changed": false,
+    "diff": [
+      "--- before",
+      "+++ after",
+      "@@ -99,7 +99,7 @@",
+      "     d = (int32_t)saved_A0.coeffs[i] -",
+      "         (int32_t)saved_B0.coeffs[i];",
+      "     shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));",
+      "-    expected = shifted % (uint32_t)FIPS_Q;",
+      "+    expected = (shifted + 1u) % (uint32_t)FIPS_Q;",
+      " ",
+      "     __CPROVER_assert(L.coeffs[i] >= 0,",
+      "                      \"SUB_T1_SEMANTIC: output must be non-negative\");"
+    ]
+  }
+}

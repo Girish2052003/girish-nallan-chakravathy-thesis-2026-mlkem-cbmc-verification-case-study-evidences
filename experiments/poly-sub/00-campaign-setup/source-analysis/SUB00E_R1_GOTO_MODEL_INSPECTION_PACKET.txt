@@ -1,0 +1,2251 @@
+============================================================
+SUB-00E-R1 GOTO-MODEL REMEDIATION AND STRUCTURAL INSPECTION
+============================================================
+
+Frozen commit:
+d9613cf60de3132d32475c102d8c2781d84feb34
+
+SUB-00C architecture SHA-256:
+a1d11264cf27038fed35ccddced2c6f79c5e28f42382e5000ce7fe7a44689d84
+
+SUB-00D build-context SHA-256:
+9714f50795c722290060868e6b786b30ad7b1b13b267ee82f6c2dd1e3dd109c2
+
+Original failed SUB-00E packet SHA-256:
+c76bb21871335f1ddb0bfe33c4ba8b309062346d8d5c50bd27f817d4628dbf22
+
+Collection time UTC:
+2026-07-17T03:49:39Z
+
+STATUS:
+Remediated GOTO-model construction and structural inspection only.
+No CBMC theorem proof command was executed.
+No --cover command was executed.
+No loop contract was applied.
+No target function contract was used as an abstraction.
+No production source file was modified.
+No theorem harness was modified.
+The existing repository poly_sub harness remained unopened.
+
+Successful models: 6
+Failed models:     0
+
+============================================================
+FAILURE CLASSIFICATION
+============================================================
+
+The original SUB-00E failure was a preprocessing integration failure:
+
+    MLK_CONFIG_NO_ASM disabled the inline-assembly zeroizer.
+    verify.h then required MLK_CONFIG_CUSTOM_ZEROIZE.
+
+It was not a SUB-T1 counterexample.
+It was not a SUB-T2 counterexample.
+It was not a harness semantic failure.
+It was not a production poly_sub/poly_reduce failure.
+
+============================================================
+BUILD CONFIGURATION
+============================================================
+Parameter set: 768
+Namespace prefix: mlk_sub00e_r1
+Portable-C selection: -DMLK_CONFIG_NO_ASM=1
+Custom-zeroize integration: -DMLK_CONFIG_CUSTOM_ZEROIZE=1
+Forced adapter header: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h
+Multilevel macros: none
+Production source: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c
+Include path 1: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem
+Include path 2: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src
+
+============================================================
+FAIL-CLOSED ADAPTER NOTE
+============================================================
+# SUB-00E-R1 Fail-Closed Zeroization Build Adapter
+
+## Reason
+
+The original SUB-00E direct builds selected `MLK_CONFIG_NO_ASM`.
+Under that configuration, `verify.h` requires the embedding
+application to supply `MLK_CONFIG_CUSTOM_ZEROIZE`.
+
+The target `mlk_poly_sub` and `mlk_poly_reduce` paths do not require
+zeroization, but the complete production translation unit still
+includes declarations and other functions that refer to the hook.
+
+## Adapter design
+
+The rerun defines:
+
+    MLK_CONFIG_CUSTOM_ZEROIZE=1
+
+and force-includes:
+
+    sub00e_r1_fail_closed_zeroize.h
+
+The adapter provides a translation-unit-local `mlk_zeroize` body
+containing a deliberately false CBMC assertion.
+
+Consequences:
+
+- no production source file is modified;
+- no independently authored theorem harness is modified;
+- the adapter cannot be used to claim zeroization correctness;
+- an unexpected reachable call to `mlk_zeroize` fails closed;
+- successful target proofs therefore require the adapter call to
+  remain unreachable from the selected harness entry point.
+
+## Scope
+
+This adapter exists only to construct and inspect the GOTO models and,
+after final manifest freeze, to support the selected poly_sub/poly_reduce
+verification campaign. It is not a production zeroization implementation.
+
+Adapter SHA-256 manifest:
+45d33b9ee3fe3613f23906de520bf9d5ce245a18b537c32787201912dec4e926  build_adapters_v2/sub00e_r1_fail_closed_zeroize.h
+0c5d40fc70fe3f51ad35bf35b37983c3ec763c59493e451efd389f9524822b23  build_adapters_v2/SUB00E_R1_BUILD_ADAPTER_NOTE.md
+
+============================================================
+TOOL VERSIONS
+============================================================
+CBMC:
+6.9.0 (cbmc-6.9.0)
+
+GOTO-CC:
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+
+GOTO-INSTRUMENT:
+6.9.0 (cbmc-6.9.0)
+
+HOST CC:
+cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+UNAME:
+Linux girish-VirtualBox 6.17.0-40-generic #40~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jun 23 16:48:12 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+============================================================
+SELECTED EFFECTIVE PREPROCESSOR MACROS
+============================================================
+#define MLKEM_K 3
+#define MLKEM_N 256
+#define MLKEM_POLYVECBYTES (MLKEM_K * MLKEM_POLYBYTES)
+#define MLKEM_POLYVECCOMPRESSEDBYTES_DU (MLKEM_K * MLKEM_POLYCOMPRESSEDBYTES_DU)
+#define MLKEM_Q 3329
+#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2)
+#define MLK_ASM_NAMESPACE(sym) MLK_NAMESPACE(sym)
+#define MLK_CONFIG_CUSTOM_ZEROIZE 1
+#define MLK_CONFIG_NAMESPACE_PREFIX mlk_sub00e_r1
+#define MLK_CONFIG_NO_ASM 1
+#define MLK_CONFIG_PARAMETER_SET 768
+#define MLK_DEFAULT_NAMESPACE_PREFIX PQCP_MLKEM_NATIVE_MLKEM768
+#define MLK_EMPTY_CU(s) extern int MLK_NAMESPACE_K(empty_cu_ ##s);
+#define MLK_NAMESPACE(s) MLK_CONCAT(MLK_NAMESPACE_PREFIX, s)
+#define MLK_NAMESPACE_K(s) MLK_CONCAT(MLK_NAMESPACE_PREFIX_K, s)
+#define MLK_NAMESPACE_PREFIX MLK_CONCAT(MLK_CONFIG_NAMESPACE_PREFIX, _)
+#define MLK_NAMESPACE_PREFIX_K MLK_CONCAT(MLK_ADD_PARAM_SET(MLK_CONFIG_NAMESPACE_PREFIX), _)
+
+============================================================
+HARNESS: sub_t1_semantic_harness.c
+============================================================
+
+Harness SHA-256:
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+6a33187f74b4aa7a5286bfe7333ab657d83efa95896ac0ef476787140c9dcde6  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+  Size: 56751     	Blocks: 112        IO Block: 4096   regular file
+Device: 8,2	Inode: 393873      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:38.051805934 +0300
+Modify: 2026-07-17 06:49:38.047805941 +0300
+Change: 2026-07-17 06:49:38.047805941 +0300
+ Birth: 2026-07-17 06:49:38.041805951 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 36 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 37 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 38 function main
+48:        DECL main::1::saved_A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 39 function main
+50:        DECL main::1::saved_B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 40 function main
+52:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 41 function main
+54:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 42 function main
+56:        DECL main::1::LB_before_sub : struct tag-#anon#ST[ARR256{S16}'coeffs']
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 43 function main
+58:        DECL main::1::LB_before_reduce : struct tag-#anon#ST[ARR256{S16}'coeffs']
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 44 function main
+60:        DECL main::1::i : unsignedbv[32]
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 46 function main
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 48 function main
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 50 function main
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+68:        ASSIGN main::1::i := 0
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+70:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 55 function main
+72:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 55 function main
+74:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 55 function main
+76:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 55 function main
+78:        DEAD main::$tmp::return_value_nondet_int16_t
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 56 function main
+80:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 56 function main
+82:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 56 function main
+84:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 56 function main
+86:        DEAD main::$tmp::return_value_nondet_int16_t$0
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+88:        ASSIGN main::1::i := main::1::i + 1
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 59 function main
+94:        ASSIGN main::1::saved_A0 := main::1::A0
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 60 function main
+96:        ASSIGN main::1::saved_B0 := main::1::B0
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+98:        ASSIGN main::1::i := 0
+99:        // 42 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+100:     3: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 4
+101:        // 43 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 64 function main
+102:        DECL main::1::2::1::d : signedbv[32]
+103:        // 44 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 66 function main
+104:        ASSIGN main::1::2::1::d := cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) - cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32])
+105:        // 45 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 69 function main
+106:        ASSUME main::1::2::1::d ≥ cast(-32767 - 1, signedbv[32])
+107:        // 46 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 70 function main
+108:        ASSUME main::1::2::1::d ≤ cast(32767, signedbv[32])
+109:        // 47 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 71 function main
+110:        DEAD main::1::2::1::d
+111:        // 48 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+112:        ASSIGN main::1::i := main::1::i + 1
+113:        // 49 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+115:        // 50 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+117:        // 51 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 73 function main
+118:        ASSIGN main::1::L := main::1::A0
+119:        // 52 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 74 function main
+120:        ASSIGN main::1::LB := main::1::B0
+121:        // 53 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 75 function main
+122:        ASSIGN main::1::LB_before_sub := main::1::LB
+123:        // 54 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 77 function main
+124:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+125:        // 55 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+126:        ASSIGN main::1::i := 0
+127:        // 56 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+128:     5: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 6
+129:        // 57 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 81 function main
+130:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::LB_before_sub.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: subtraction must not modify LB
+131:        // 58 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 83 function main
+132:        ASSERT main::1::A0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: subtraction must not modify A0
+133:        // 59 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 85 function main
+134:        ASSERT main::1::B0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: subtraction must not modify B0
+135:        // 60 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+136:        ASSIGN main::1::i := main::1::i + 1
+137:        // 61 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+139:        // 62 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+141:        // 63 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 89 function main
+142:        ASSIGN main::1::LB_before_reduce := main::1::LB
+143:        // 64 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 91 function main
+144:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::L))
+145:        // 65 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+146:        ASSIGN main::1::i := 0
+147:        // 66 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+148:     7: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 8
+149:        // 67 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 95 function main
+150:        DECL main::1::4::1::d : signedbv[32]
+151:        // 68 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 96 function main
+152:        DECL main::1::4::1::shifted : unsignedbv[32]
+153:        // 69 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 97 function main
+154:        DECL main::1::4::1::expected : unsignedbv[32]
+155:        // 70 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 99 function main
+156:        ASSIGN main::1::4::1::d := cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) - cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32])
+157:        // 71 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 101 function main
+158:        ASSIGN main::1::4::1::shifted := cast(main::1::4::1::d + cast(10 * 3329, signedbv[32]), unsignedbv[32])
+159:        // 72 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 102 function main
+160:        ASSIGN main::1::4::1::expected := mod(main::1::4::1::shifted, cast(3329, unsignedbv[32]))
+161:        // 73 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 104 function main
+162:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) ≥ 0 // SUB_T1_SEMANTIC: output must be non-negative
+163:        // 74 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 106 function main
+164:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) < 3329 // SUB_T1_SEMANTIC: output must be below FIPS_Q
+165:        // 75 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 108 function main
+166:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], unsignedbv[32]) = main::1::4::1::expected // SUB_T1_SEMANTIC: output must equal independent canonical oracle
+167:        // 76 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 111 function main
+168:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::LB_before_reduce.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: reduction must not modify LB
+169:        // 77 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 113 function main
+170:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: final LB must equal saved B0
+171:        // 78 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 115 function main
+172:        ASSERT main::1::A0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: final A0 must equal saved A0
+173:        // 79 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 117 function main
+174:        ASSERT main::1::B0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T1_FRAME: final B0 must equal saved B0
+175:        // 80 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 119 function main
+176:        DEAD main::1::4::1::expected
+177:        // 81 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 119 function main
+178:        DEAD main::1::4::1::shifted
+179:        // 82 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 119 function main
+180:        DEAD main::1::4::1::d
+181:        // 83 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+182:        ASSIGN main::1::i := main::1::i + 1
+183:        // 84 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+185:        // 85 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+187:        // 86 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+189:        // 87 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+190:        DEAD main::1::i
+191:        // 88 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+192:        DEAD main::1::LB_before_reduce
+193:        // 89 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+194:        DEAD main::1::LB_before_sub
+195:        // 90 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+196:        DEAD main::1::LB
+197:        // 91 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+198:        DEAD main::1::L
+199:        // 92 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+200:        DEAD main::1::saved_B0
+201:        // 93 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+202:        DEAD main::1::saved_A0
+203:        // 94 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+204:        DEAD main::1::B0
+205:        // 95 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+206:        DEAD main::1::A0
+207:        // 96 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 121 function main
+209:        // 97 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 122 function main
+1004:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+1005:        // 445 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+1006:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+1007:        // 446 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+1012:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+1013:        // 447 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+1014:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+1015:        // 448 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1016:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+1017:        // 449 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1018:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+1019:        // 450 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1020:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+1021:        // 451 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1022:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+1023:        // 452 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1025:        // 453 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1027:        // 454 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+1028:        DEAD mlk_sub00e_r1_poly_sub::1::i
+1029:        // 455 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+25:main /* main */
+75:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+77:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+83:nondet_int16_t /* nondet_int16_t, body not available */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_t1_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+8:main -> mlk_sub00e_r1_poly_reduce
+103:# mlk_sub00e_r1_poly_sub
+107:__CPROVER__start -> main
+116:# mlk_sub00e_r1_poly_reduce
+117:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 53 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 62 function main
+
+Loop main.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 79 function main
+
+Loop main.3:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c line 93 function main
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+
+Relevant property identifiers:
+9:  SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q
+54:  SUB_T1_FRAME: subtraction must not modify LB
+69:  SUB_T1_FRAME: subtraction must not modify A0
+84:  SUB_T1_FRAME: subtraction must not modify B0
+114:  SUB_T1_SEMANTIC: output must be non-negative
+119:  SUB_T1_SEMANTIC: output must be below FIPS_Q
+124:  SUB_T1_SEMANTIC: output must equal independent canonical oracle
+139:  SUB_T1_FRAME: reduction must not modify LB
+144:  SUB_T1_FRAME: final LB must equal saved B0
+154:  SUB_T1_FRAME: final A0 must equal saved A0
+164:  SUB_T1_FRAME: final B0 must equal saved B0
+992:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+993:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+997:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+998:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1002:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+1003:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1007:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+1008:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1012:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+1013:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1017:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+1018:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1022:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+1023:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1027:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+1028:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1032:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+1033:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1037:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+1038:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1042:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+1043:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1047:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+1048:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1052:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+1053:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1057:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+1058:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1062:Property mlk_sub00e_r1_poly_sub.overflow.1:
+1063:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1069:  SUB_T1_MODEL: CHAR_BIT must be 8
+1074:  SUB_T1_MODEL: short width must be 16
+1079:  SUB_T1_MODEL: int width must be 32
+1084:  SUB_T1_MODEL: int16_t width must be 16
+1089:  SUB_T1_MODEL: int32_t width must be 32
+1094:  SUB_T1_MODEL: pointer width must be 64
+1099:  SUB_T1_MODEL: negative signed right shift must be arithmetic
+1104:  SUB_T1_MODEL: negative odd right shift must preserve sign
+
+Unresolved/no-body audit markers:
+72:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+74:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+76:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+78:        DEAD main::$tmp::return_value_nondet_int16_t
+80:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+82:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+84:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+86:        DEAD main::$tmp::return_value_nondet_int16_t$0
+
+============================================================
+HARNESS: sub_t2_relational_harness.c
+============================================================
+
+Harness SHA-256:
+ca54ad2d875f104cf6daca915bcfb71e491c3f899b3d877b70439868d80d1037  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+936a257116991062d6d1790ac295b89213176038ecc0c4a232118136040bd8cb  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+  Size: 63083     	Blocks: 128        IO Block: 4096   regular file
+Device: 8,2	Inode: 393919      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:38.328805467 +0300
+Modify: 2026-07-17 06:49:38.323805475 +0300
+Change: 2026-07-17 06:49:38.323805475 +0300
+ Birth: 2026-07-17 06:49:38.312805494 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 36 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 37 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 38 function main
+48:        DECL main::1::saved_A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 39 function main
+50:        DECL main::1::saved_B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 40 function main
+52:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 41 function main
+54:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 42 function main
+56:        DECL main::1::RA : struct tag-#anon#ST[ARR256{S16}'coeffs']
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 43 function main
+58:        DECL main::1::RB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 44 function main
+60:        DECL main::1::RA_before_left : struct tag-#anon#ST[ARR256{S16}'coeffs']
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 45 function main
+62:        DECL main::1::RB_before_left : struct tag-#anon#ST[ARR256{S16}'coeffs']
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 46 function main
+64:        DECL main::1::completed_L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 47 function main
+66:        DECL main::1::completed_LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 48 function main
+68:        DECL main::1::RB_before_RA_reduce_first : struct tag-#anon#ST[ARR256{S16}'coeffs']
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 49 function main
+70:        DECL main::1::RA_before_RB_reduce : struct tag-#anon#ST[ARR256{S16}'coeffs']
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 50 function main
+72:        DECL main::1::RB_before_sub : struct tag-#anon#ST[ARR256{S16}'coeffs']
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 51 function main
+74:        DECL main::1::RB_before_RA_reduce_final : struct tag-#anon#ST[ARR256{S16}'coeffs']
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 52 function main
+76:        DECL main::1::i : unsignedbv[32]
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 54 function main
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 56 function main
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 58 function main
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+84:        ASSIGN main::1::i := 0
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+86:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 63 function main
+88:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 63 function main
+90:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 63 function main
+92:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 63 function main
+94:        DEAD main::$tmp::return_value_nondet_int16_t
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 64 function main
+96:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 64 function main
+98:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+99:        // 42 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 64 function main
+100:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+101:        // 43 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 64 function main
+102:        DEAD main::$tmp::return_value_nondet_int16_t$0
+103:        // 44 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+104:        ASSIGN main::1::i := main::1::i + 1
+105:        // 45 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+107:        // 46 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+109:        // 47 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 67 function main
+110:        ASSIGN main::1::saved_A0 := main::1::A0
+111:        // 48 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 68 function main
+112:        ASSIGN main::1::saved_B0 := main::1::B0
+113:        // 49 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+114:        ASSIGN main::1::i := 0
+115:        // 50 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+116:     3: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 4
+117:        // 51 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 72 function main
+118:        DECL main::1::2::1::d : signedbv[32]
+119:        // 52 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 74 function main
+120:        ASSIGN main::1::2::1::d := cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) - cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32])
+121:        // 53 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 77 function main
+122:        ASSUME main::1::2::1::d ≥ cast(-32767 - 1, signedbv[32])
+123:        // 54 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 78 function main
+124:        ASSUME main::1::2::1::d ≤ cast(32767, signedbv[32])
+125:        // 55 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 79 function main
+126:        DEAD main::1::2::1::d
+127:        // 56 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+128:        ASSIGN main::1::i := main::1::i + 1
+129:        // 57 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+131:        // 58 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+133:        // 59 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 81 function main
+134:        ASSIGN main::1::L := main::1::A0
+135:        // 60 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 82 function main
+136:        ASSIGN main::1::LB := main::1::B0
+137:        // 61 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 83 function main
+138:        ASSIGN main::1::RA := main::1::A0
+139:        // 62 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 84 function main
+140:        ASSIGN main::1::RB := main::1::B0
+141:        // 63 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 86 function main
+142:        ASSIGN main::1::RA_before_left := main::1::RA
+143:        // 64 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 87 function main
+144:        ASSIGN main::1::RB_before_left := main::1::RB
+145:        // 65 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 89 function main
+146:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+147:        // 66 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+148:        ASSIGN main::1::i := 0
+149:        // 67 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+150:     5: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 6
+151:        // 68 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 93 function main
+152:        ASSERT main::1::RA.coeffs[cast(main::1::i, signedbv[64])] = main::1::RA_before_left.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left subtraction must not modify RA
+153:        // 69 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 95 function main
+154:        ASSERT main::1::RB.coeffs[cast(main::1::i, signedbv[64])] = main::1::RB_before_left.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left subtraction must not modify RB
+155:        // 70 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 97 function main
+156:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left subtraction must not modify LB
+157:        // 71 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+158:        ASSIGN main::1::i := main::1::i + 1
+159:        // 72 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+161:        // 73 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+163:        // 74 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 101 function main
+164:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::L))
+165:        // 75 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+166:        ASSIGN main::1::i := 0
+167:        // 76 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+168:     7: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 8
+169:        // 77 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 105 function main
+170:        ASSERT main::1::RA.coeffs[cast(main::1::i, signedbv[64])] = main::1::RA_before_left.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left reduction must not modify RA
+171:        // 78 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 107 function main
+172:        ASSERT main::1::RB.coeffs[cast(main::1::i, signedbv[64])] = main::1::RB_before_left.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left reduction must not modify RB
+173:        // 79 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 109 function main
+174:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: left reduction must not modify LB
+175:        // 80 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+176:        ASSIGN main::1::i := main::1::i + 1
+177:        // 81 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+179:        // 82 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+181:        // 83 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 113 function main
+182:        ASSIGN main::1::completed_L := main::1::L
+183:        // 84 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 114 function main
+184:        ASSIGN main::1::completed_LB := main::1::LB
+185:        // 85 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 116 function main
+186:        ASSIGN main::1::RB_before_RA_reduce_first := main::1::RB
+187:        // 86 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 117 function main
+188:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::RA))
+189:        // 87 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+190:        ASSIGN main::1::i := 0
+191:        // 88 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+192:     9: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 10
+193:        // 89 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 121 function main
+194:        ASSERT main::1::RB.coeffs[cast(main::1::i, signedbv[64])] = main::1::RB_before_RA_reduce_first.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RA must not modify RB
+195:        // 90 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 124 function main
+196:        ASSERT main::1::L.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_L.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RA must not modify completed L
+197:        // 91 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 126 function main
+198:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_LB.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RA must not modify completed LB
+199:        // 92 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+200:        ASSIGN main::1::i := main::1::i + 1
+201:        // 93 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+203:        // 94 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+205:        // 95 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 130 function main
+206:        ASSIGN main::1::RA_before_RB_reduce := main::1::RA
+207:        // 96 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 131 function main
+208:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::RB))
+209:        // 97 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+210:        ASSIGN main::1::i := 0
+211:        // 98 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+212:    11: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 12
+213:        // 99 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 135 function main
+214:        ASSERT main::1::RA.coeffs[cast(main::1::i, signedbv[64])] = main::1::RA_before_RB_reduce.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RB must not modify RA
+215:        // 100 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 137 function main
+216:        ASSERT main::1::L.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_L.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RB must not modify completed L
+217:        // 101 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 139 function main
+218:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_LB.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: reducing RB must not modify completed LB
+219:        // 102 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+220:        ASSIGN main::1::i := main::1::i + 1
+221:        // 103 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+223:        // 104 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+225:        // 105 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 143 function main
+226:        ASSIGN main::1::RB_before_sub := main::1::RB
+227:        // 106 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 144 function main
+228:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::RA), address_of(main::1::RB))
+229:        // 107 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+230:        ASSIGN main::1::i := 0
+231:        // 108 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+232:    13: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 14
+233:        // 109 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 148 function main
+234:        ASSERT main::1::RB.coeffs[cast(main::1::i, signedbv[64])] = main::1::RB_before_sub.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: right subtraction must not modify RB
+235:        // 110 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 150 function main
+236:        ASSERT main::1::L.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_L.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: right subtraction must not modify completed L
+237:        // 111 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 152 function main
+238:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_LB.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: right subtraction must not modify completed LB
+239:        // 112 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+240:        ASSIGN main::1::i := main::1::i + 1
+241:        // 113 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+243:        // 114 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+245:        // 115 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 156 function main
+246:        ASSIGN main::1::RB_before_RA_reduce_final := main::1::RB
+247:        // 116 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 157 function main
+248:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::RA))
+249:        // 117 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+250:        ASSIGN main::1::i := 0
+251:        // 118 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+252:    15: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 16
+253:        // 119 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 161 function main
+254:        ASSERT main::1::RB.coeffs[cast(main::1::i, signedbv[64])] = main::1::RB_before_RA_reduce_final.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final RA reduction must not modify RB
+255:        // 120 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 164 function main
+256:        ASSERT main::1::L.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_L.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final RA reduction must not modify completed L
+257:        // 121 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 166 function main
+258:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::completed_LB.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final RA reduction must not modify completed LB
+259:        // 122 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 169 function main
+260:        ASSERT main::1::A0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final A0 must equal saved A0
+261:        // 123 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 171 function main
+262:        ASSERT main::1::B0.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final B0 must equal saved B0
+263:        // 124 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 173 function main
+264:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_FRAME: final LB must equal saved B0
+265:        // 125 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 176 function main
+266:        ASSERT main::1::L.coeffs[cast(main::1::i, signedbv[64])] = main::1::RA.coeffs[cast(main::1::i, signedbv[64])] // SUB_T2_RELATIONAL: left and right canonical results must agree
+267:        // 126 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 178 function main
+268:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) ≥ 0 // SUB_T2_RELATIONAL: left result must be non-negative
+269:        // 127 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 180 function main
+270:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) < 3329 // SUB_T2_RELATIONAL: left result must be below FIPS_Q
+271:        // 128 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 182 function main
+272:        ASSERT cast(main::1::RA.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) ≥ 0 // SUB_T2_RELATIONAL: right result must be non-negative
+273:        // 129 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 184 function main
+274:        ASSERT cast(main::1::RA.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) < 3329 // SUB_T2_RELATIONAL: right result must be below FIPS_Q
+275:        // 130 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+276:        ASSIGN main::1::i := main::1::i + 1
+277:        // 131 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+279:        // 132 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+281:        // 133 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+283:        // 134 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+284:        DEAD main::1::i
+285:        // 135 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+286:        DEAD main::1::RB_before_RA_reduce_final
+287:        // 136 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+288:        DEAD main::1::RB_before_sub
+289:        // 137 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+290:        DEAD main::1::RA_before_RB_reduce
+291:        // 138 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+292:        DEAD main::1::RB_before_RA_reduce_first
+293:        // 139 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+294:        DEAD main::1::completed_LB
+295:        // 140 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+296:        DEAD main::1::completed_L
+297:        // 141 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+298:        DEAD main::1::RB_before_left
+299:        // 142 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+300:        DEAD main::1::RA_before_left
+301:        // 143 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+302:        DEAD main::1::RB
+303:        // 144 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+304:        DEAD main::1::RA
+305:        // 145 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+306:        DEAD main::1::LB
+307:        // 146 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+308:        DEAD main::1::L
+309:        // 147 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+310:        DEAD main::1::saved_B0
+311:        // 148 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+312:        DEAD main::1::saved_A0
+313:        // 149 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+314:        DEAD main::1::B0
+315:        // 150 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+316:        DEAD main::1::A0
+317:        // 151 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 188 function main
+319:        // 152 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 189 function main
+1114:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+1115:        // 500 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+1116:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+1117:        // 501 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+1122:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+1123:        // 502 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+1124:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+1125:        // 503 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1126:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+1127:        // 504 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1128:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+1129:        // 505 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1130:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+1131:        // 506 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1132:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+1133:        // 507 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1135:        // 508 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1137:        // 509 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+1138:        DEAD mlk_sub00e_r1_poly_sub::1::i
+1139:        // 510 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+25:main /* main */
+75:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+77:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+83:nondet_int16_t /* nondet_int16_t, body not available */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_t2_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+8:main -> mlk_sub00e_r1_poly_reduce
+9:main -> mlk_sub00e_r1_poly_reduce
+10:main -> mlk_sub00e_r1_poly_reduce
+11:main -> mlk_sub00e_r1_poly_sub
+12:main -> mlk_sub00e_r1_poly_reduce
+16:__CPROVER__start -> main
+77:# mlk_sub00e_r1_poly_sub
+98:# mlk_sub00e_r1_poly_reduce
+99:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 61 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 70 function main
+
+Loop main.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 91 function main
+
+Loop main.3:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 103 function main
+
+Loop main.4:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 119 function main
+
+Loop main.5:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 133 function main
+
+Loop main.6:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 146 function main
+
+Loop main.7:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c line 159 function main
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+
+Relevant property identifiers:
+9:  SUB_T2_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_T2_PARAMETER: MLKEM_Q must equal FIPS_Q
+54:  SUB_T2_FRAME: left subtraction must not modify RA
+69:  SUB_T2_FRAME: left subtraction must not modify RB
+84:  SUB_T2_FRAME: left subtraction must not modify LB
+99:  SUB_T2_FRAME: left reduction must not modify RA
+114:  SUB_T2_FRAME: left reduction must not modify RB
+129:  SUB_T2_FRAME: left reduction must not modify LB
+144:  SUB_T2_FRAME: reducing RA must not modify RB
+159:  SUB_T2_FRAME: reducing RA must not modify completed L
+174:  SUB_T2_FRAME: reducing RA must not modify completed LB
+189:  SUB_T2_FRAME: reducing RB must not modify RA
+204:  SUB_T2_FRAME: reducing RB must not modify completed L
+219:  SUB_T2_FRAME: reducing RB must not modify completed LB
+234:  SUB_T2_FRAME: right subtraction must not modify RB
+249:  SUB_T2_FRAME: right subtraction must not modify completed L
+264:  SUB_T2_FRAME: right subtraction must not modify completed LB
+279:  SUB_T2_FRAME: final RA reduction must not modify RB
+294:  SUB_T2_FRAME: final RA reduction must not modify completed L
+309:  SUB_T2_FRAME: final RA reduction must not modify completed LB
+324:  SUB_T2_FRAME: final A0 must equal saved A0
+339:  SUB_T2_FRAME: final B0 must equal saved B0
+344:  SUB_T2_FRAME: final LB must equal saved B0
+354:  SUB_T2_RELATIONAL: left and right canonical results must agree
+359:  SUB_T2_RELATIONAL: left result must be non-negative
+364:  SUB_T2_RELATIONAL: left result must be below FIPS_Q
+369:  SUB_T2_RELATIONAL: right result must be non-negative
+374:  SUB_T2_RELATIONAL: right result must be below FIPS_Q
+1202:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+1203:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1207:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+1208:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1212:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+1213:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1217:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+1218:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1222:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+1223:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1227:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+1228:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1232:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+1233:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1237:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+1238:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1242:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+1243:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1247:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+1248:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1252:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+1253:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1257:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+1258:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1262:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+1263:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1267:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+1268:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1272:Property mlk_sub00e_r1_poly_sub.overflow.1:
+1273:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1279:  SUB_T2_MODEL: CHAR_BIT must be 8
+1284:  SUB_T2_MODEL: short width must be 16
+1289:  SUB_T2_MODEL: int width must be 32
+1294:  SUB_T2_MODEL: int16_t width must be 16
+1299:  SUB_T2_MODEL: int32_t width must be 32
+1304:  SUB_T2_MODEL: pointer width must be 64
+1309:  SUB_T2_MODEL: negative signed right shift must be arithmetic
+1314:  SUB_T2_MODEL: negative odd right shift must preserve sign
+
+Unresolved/no-body audit markers:
+88:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+90:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+92:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+94:        DEAD main::$tmp::return_value_nondet_int16_t
+96:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+98:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+100:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+102:        DEAD main::$tmp::return_value_nondet_int16_t$0
+
+============================================================
+HARNESS: sub_cov_reachability_harness.c
+============================================================
+
+Harness SHA-256:
+132c34161c8230eb14e86acc0cae3af52fbf6eb429a8e55233080337dc4415d7  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+b86afb6d526a1709b6523ce2fd8d7d3b05403e2e09f554082ab7c8dc0e527a59  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+  Size: 56709     	Blocks: 112        IO Block: 4096   regular file
+Device: 8,2	Inode: 393948      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:38.594805018 +0300
+Modify: 2026-07-17 06:49:38.591805024 +0300
+Change: 2026-07-17 06:49:38.591805024 +0300
+ Birth: 2026-07-17 06:49:38.585805034 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 36 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 37 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 38 function main
+48:        DECL main::1::saved_A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 39 function main
+50:        DECL main::1::saved_B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 40 function main
+52:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 41 function main
+54:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 42 function main
+56:        DECL main::1::i : unsignedbv[32]
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 43 function main
+58:        DECL main::1::has_positive_difference : signedbv[32]
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 44 function main
+60:        DECL main::1::has_negative_difference : signedbv[32]
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 45 function main
+62:        DECL main::1::has_zero_difference : signedbv[32]
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 46 function main
+64:        DECL main::1::has_noncanonical_positive_input : signedbv[32]
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 47 function main
+66:        DECL main::1::has_noncanonical_negative_input : signedbv[32]
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 48 function main
+68:        DECL main::1::has_int16_min_difference : signedbv[32]
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 49 function main
+70:        DECL main::1::has_int16_max_difference : signedbv[32]
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 51 function main
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 53 function main
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 55 function main
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 58 function main
+78:        ASSIGN main::1::has_positive_difference := 0
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 59 function main
+80:        ASSIGN main::1::has_negative_difference := 0
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 60 function main
+82:        ASSIGN main::1::has_zero_difference := 0
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 61 function main
+84:        ASSIGN main::1::has_noncanonical_positive_input := 0
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 62 function main
+86:        ASSIGN main::1::has_noncanonical_negative_input := 0
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 63 function main
+88:        ASSIGN main::1::has_int16_min_difference := 0
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 64 function main
+90:        ASSIGN main::1::has_int16_max_difference := 0
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+92:        ASSIGN main::1::i := 0
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+94:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 68 function main
+96:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 68 function main
+98:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+99:        // 42 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 68 function main
+100:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+101:        // 43 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 68 function main
+102:        DEAD main::$tmp::return_value_nondet_int16_t
+103:        // 44 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 69 function main
+104:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+105:        // 45 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 69 function main
+106:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+107:        // 46 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 69 function main
+108:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+109:        // 47 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 69 function main
+110:        DEAD main::$tmp::return_value_nondet_int16_t$0
+111:        // 48 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+112:        ASSIGN main::1::i := main::1::i + 1
+113:        // 49 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+115:        // 50 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+117:        // 51 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 72 function main
+118:        ASSIGN main::1::saved_A0 := main::1::A0
+119:        // 52 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 73 function main
+120:        ASSIGN main::1::saved_B0 := main::1::B0
+121:        // 53 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+122:        ASSIGN main::1::i := 0
+123:        // 54 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+124:     3: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 11
+125:        // 55 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 77 function main
+126:        DECL main::1::2::1::d : signedbv[32]
+127:        // 56 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 79 function main
+128:        ASSIGN main::1::2::1::d := cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) - cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32])
+129:        // 57 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 82 function main
+130:        ASSUME main::1::2::1::d ≥ cast(-32767 - 1, signedbv[32])
+131:        // 58 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 83 function main
+132:        ASSUME main::1::2::1::d ≤ cast(32767, signedbv[32])
+133:        // 59 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 85 function main
+134:        IF ¬(main::1::2::1::d > 0) THEN GOTO 4
+135:        // 60 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 87 function main
+136:        ASSIGN main::1::has_positive_difference := 1
+137:        // 61 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 88 function main
+139:        // 62 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 89 function main
+140:        IF ¬(main::1::2::1::d < 0) THEN GOTO 5
+141:        // 63 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 91 function main
+142:        ASSIGN main::1::has_negative_difference := 1
+143:        // 64 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 92 function main
+145:        // 65 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 93 function main
+146:        IF ¬(main::1::2::1::d = 0) THEN GOTO 6
+147:        // 66 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 95 function main
+148:        ASSIGN main::1::has_zero_difference := 1
+149:        // 67 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 96 function main
+151:        // 68 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 97 function main
+152:        IF ¬(cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) ≥ 3329 ∨ cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) ≥ 3329) THEN GOTO 7
+153:        // 69 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 100 function main
+154:        ASSIGN main::1::has_noncanonical_positive_input := 1
+155:        // 70 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 101 function main
+157:        // 71 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 102 function main
+158:        IF ¬(cast(main::1::saved_A0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) < 0 ∨ cast(main::1::saved_B0.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) < 0) THEN GOTO 8
+159:        // 72 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 105 function main
+160:        ASSIGN main::1::has_noncanonical_negative_input := 1
+161:        // 73 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 106 function main
+163:        // 74 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 107 function main
+164:        IF ¬(main::1::2::1::d = cast(-32767 - 1, signedbv[32])) THEN GOTO 9
+165:        // 75 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 109 function main
+166:        ASSIGN main::1::has_int16_min_difference := 1
+167:        // 76 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 110 function main
+169:        // 77 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 111 function main
+170:        IF ¬(main::1::2::1::d = cast(32767, signedbv[32])) THEN GOTO 10
+171:        // 78 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 113 function main
+172:        ASSIGN main::1::has_int16_max_difference := 1
+173:        // 79 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 114 function main
+175:        // 80 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 115 function main
+176:        DEAD main::1::2::1::d
+177:        // 81 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+178:        ASSIGN main::1::i := main::1::i + 1
+179:        // 82 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+181:        // 83 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+183:        // 84 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 117 function main
+184:        ASSIGN main::1::L := main::1::A0
+185:        // 85 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 118 function main
+186:        ASSIGN main::1::LB := main::1::B0
+187:        // 86 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 120 function main
+188:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+189:        // 87 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 121 function main
+190:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::L))
+191:        // 88 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 123 function main
+192:        CALL __CPROVER_cover(main::1::has_positive_difference ≠ 0)
+193:        // 89 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 124 function main
+194:        CALL __CPROVER_cover(main::1::has_negative_difference ≠ 0)
+195:        // 90 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 125 function main
+196:        CALL __CPROVER_cover(main::1::has_zero_difference ≠ 0)
+197:        // 91 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 126 function main
+198:        CALL __CPROVER_cover(main::1::has_noncanonical_positive_input ≠ 0)
+199:        // 92 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 127 function main
+200:        CALL __CPROVER_cover(main::1::has_noncanonical_negative_input ≠ 0)
+201:        // 93 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 128 function main
+202:        CALL __CPROVER_cover(main::1::has_int16_min_difference ≠ 0)
+203:        // 94 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 129 function main
+204:        CALL __CPROVER_cover(main::1::has_int16_max_difference ≠ 0)
+205:        // 95 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 130 function main
+207:        // 96 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+209:        // 97 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+210:        DEAD main::1::has_int16_max_difference
+211:        // 98 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+212:        DEAD main::1::has_int16_min_difference
+213:        // 99 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+214:        DEAD main::1::has_noncanonical_negative_input
+215:        // 100 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+216:        DEAD main::1::has_noncanonical_positive_input
+217:        // 101 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+218:        DEAD main::1::has_zero_difference
+219:        // 102 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+220:        DEAD main::1::has_negative_difference
+221:        // 103 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+222:        DEAD main::1::has_positive_difference
+223:        // 104 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+224:        DEAD main::1::i
+225:        // 105 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+226:        DEAD main::1::LB
+227:        // 106 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+228:        DEAD main::1::L
+229:        // 107 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+230:        DEAD main::1::saved_B0
+231:        // 108 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+232:        DEAD main::1::saved_A0
+233:        // 109 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+234:        DEAD main::1::B0
+235:        // 110 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+236:        DEAD main::1::A0
+237:        // 111 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 132 function main
+239:        // 112 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 133 function main
+1034:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+1035:        // 460 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+1036:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+1037:        // 461 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+1042:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+1043:        // 462 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+1044:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+1045:        // 463 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1046:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+1047:        // 464 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1048:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+1049:        // 465 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+1050:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+1051:        // 466 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1052:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+1053:        // 467 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1055:        // 468 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+1057:        // 469 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+1058:        DEAD mlk_sub00e_r1_poly_sub::1::i
+1059:        // 470 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+27:main /* main */
+77:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+79:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+85:nondet_int16_t /* nondet_int16_t, body not available */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_cov_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+8:main -> mlk_sub00e_r1_poly_reduce
+9:main -> __CPROVER_cover
+10:main -> __CPROVER_cover
+11:main -> __CPROVER_cover
+12:main -> __CPROVER_cover
+13:main -> __CPROVER_cover
+14:main -> __CPROVER_cover
+15:main -> __CPROVER_cover
+16:main -> __CPROVER_cover
+20:__CPROVER__start -> main
+101:# mlk_sub00e_r1_poly_sub
+128:# mlk_sub00e_r1_poly_reduce
+129:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 66 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c line 75 function main
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+
+Relevant property identifiers:
+9:  SUB_COV_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_COV_PARAMETER: MLKEM_Q must equal FIPS_Q
+887:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+888:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+892:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+893:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+897:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+898:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+902:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+903:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+907:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+908:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+912:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+913:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+917:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+918:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+922:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+923:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+927:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+928:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+932:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+933:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+937:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+938:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+942:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+943:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+947:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+948:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+952:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+953:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+957:Property mlk_sub00e_r1_poly_sub.overflow.1:
+958:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+964:  SUB_COV_MODEL: CHAR_BIT must be 8
+969:  SUB_COV_MODEL: short width must be 16
+974:  SUB_COV_MODEL: int width must be 32
+979:  SUB_COV_MODEL: int16_t width must be 16
+984:  SUB_COV_MODEL: int32_t width must be 32
+989:  SUB_COV_MODEL: pointer width must be 64
+994:  SUB_COV_MODEL: negative signed right shift must be arithmetic
+999:  SUB_COV_MODEL: negative odd right shift must preserve sign
+
+Unresolved/no-body audit markers:
+96:        DECL main::$tmp::return_value_nondet_int16_t : signedbv[16]
+98:        ASSIGN main::$tmp::return_value_nondet_int16_t := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+100:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t
+102:        DEAD main::$tmp::return_value_nondet_int16_t
+104:        DECL main::$tmp::return_value_nondet_int16_t$0 : signedbv[16]
+106:        ASSIGN main::$tmp::return_value_nondet_int16_t$0 := side_effect statement="nondet" #identifier="nondet_int16_t" is_nondet_nullable="1"
+108:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := main::$tmp::return_value_nondet_int16_t$0
+110:        DEAD main::$tmp::return_value_nondet_int16_t$0
+
+============================================================
+HARNESS: sub_boundary_valid_extremes_harness.c
+============================================================
+
+Harness SHA-256:
+8f8d3a87cca7bfe5938f0db5ce0d8fe1829c03c3366d40a3aa17a084e7b48d6b  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+178b8e1753d2a5c609bb400f08c2d6cf3691cb82917e73054a8c7f86bdd86bcc  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+  Size: 52746     	Blocks: 104        IO Block: 4096   regular file
+Device: 8,2	Inode: 393977      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:38.854804580 +0300
+Modify: 2026-07-17 06:49:38.851804585 +0300
+Change: 2026-07-17 06:49:38.851804585 +0300
+ Birth: 2026-07-17 06:49:38.846804594 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 34 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 35 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 36 function main
+48:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 37 function main
+50:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 38 function main
+52:        DECL main::1::i : unsignedbv[32]
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 40 function main
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 42 function main
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 44 function main
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+60:        ASSIGN main::1::i := 0
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+62:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 49 function main
+64:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 50 function main
+66:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+68:        ASSIGN main::1::i := main::1::i + 1
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 53 function main
+74:        ASSIGN main::1::A0.coeffs[cast(0, signedbv[64])] := cast(-32767 - 1, signedbv[16])
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 54 function main
+76:        ASSIGN main::1::B0.coeffs[cast(0, signedbv[64])] := cast(0, signedbv[16])
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 56 function main
+78:        ASSIGN main::1::A0.coeffs[cast(cast(256, unsignedbv[32]) - 1, signedbv[64])] := cast(32767, signedbv[16])
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 57 function main
+80:        ASSIGN main::1::B0.coeffs[cast(cast(256, unsignedbv[32]) - 1, signedbv[64])] := cast(0, signedbv[16])
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 59 function main
+82:        ASSIGN main::1::L := main::1::A0
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 60 function main
+84:        ASSIGN main::1::LB := main::1::B0
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 62 function main
+86:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 63 function main
+88:        CALL mlk_sub00e_r1_poly_reduce(address_of(main::1::L))
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 65 function main
+90:        ASSERT cast(main::1::L.coeffs[cast(0, signedbv[64])], signedbv[32]) = 522 // SUB_BOUNDARY_VALID: INT16_MIN canonical result must be 522
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 67 function main
+92:        ASSERT cast(main::1::L.coeffs[cast(cast(256, unsignedbv[32]) - 1, signedbv[64])], signedbv[32]) = 2806 // SUB_BOUNDARY_VALID: INT16_MAX canonical result must be 2806
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+94:        ASSIGN main::1::i := 1
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+96:     3: IF ¬(main::1::i + 1 < cast(256, unsignedbv[32])) THEN GOTO 4
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 72 function main
+98:        ASSERT cast(main::1::L.coeffs[cast(main::1::i, signedbv[64])], signedbv[32]) = 0 // SUB_BOUNDARY_VALID: untouched zero coefficients must remain zero
+99:        // 42 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+100:        ASSIGN main::1::i := main::1::i + 1
+101:        // 43 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+103:        // 44 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+105:        // 45 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+106:        ASSIGN main::1::i := 0
+107:        // 46 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+108:     5: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 6
+109:        // 47 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 78 function main
+110:        ASSERT main::1::LB.coeffs[cast(main::1::i, signedbv[64])] = main::1::B0.coeffs[cast(main::1::i, signedbv[64])] // SUB_BOUNDARY_FRAME: B working copy must remain unchanged
+111:        // 48 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+112:        ASSIGN main::1::i := main::1::i + 1
+113:        // 49 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+115:        // 50 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+117:        // 51 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+119:        // 52 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+120:        DEAD main::1::i
+121:        // 53 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+122:        DEAD main::1::LB
+123:        // 54 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+124:        DEAD main::1::L
+125:        // 55 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+126:        DEAD main::1::B0
+127:        // 56 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+128:        DEAD main::1::A0
+129:        // 57 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 82 function main
+131:        // 58 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 83 function main
+926:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+927:        // 406 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+928:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+929:        // 407 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+934:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+935:        // 408 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+936:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+937:        // 409 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+938:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+939:        // 410 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+940:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+941:        // 411 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+942:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+943:        // 412 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+944:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+945:        // 413 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+947:        // 414 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+949:        // 415 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+950:        DEAD mlk_sub00e_r1_poly_sub::1::i
+951:        // 416 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+23:main /* main */
+73:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+75:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_boundary_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+8:main -> mlk_sub00e_r1_poly_reduce
+52:# mlk_sub00e_r1_poly_sub
+80:# mlk_sub00e_r1_poly_reduce
+81:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+105:__CPROVER__start -> main
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 47 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 70 function main
+
+Loop main.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c line 76 function main
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+
+Relevant property identifiers:
+9:  SUB_BOUNDARY_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_BOUNDARY_PARAMETER: MLKEM_Q must equal FIPS_Q
+29:  SUB_BOUNDARY_VALID: INT16_MIN canonical result must be 522
+34:  SUB_BOUNDARY_VALID: INT16_MAX canonical result must be 2806
+44:  SUB_BOUNDARY_VALID: untouched zero coefficients must remain zero
+59:  SUB_BOUNDARY_FRAME: B working copy must remain unchanged
+887:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+888:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+892:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+893:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+897:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+898:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+902:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+903:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+907:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+908:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+912:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+913:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+917:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+918:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+922:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+923:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+927:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+928:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+932:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+933:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+937:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+938:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+942:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+943:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+947:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+948:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+952:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+953:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+957:Property mlk_sub00e_r1_poly_sub.overflow.1:
+958:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+964:  SUB_BOUNDARY_MODEL: CHAR_BIT must be 8
+969:  SUB_BOUNDARY_MODEL: short width must be 16
+974:  SUB_BOUNDARY_MODEL: int width must be 32
+979:  SUB_BOUNDARY_MODEL: int16_t width must be 16
+984:  SUB_BOUNDARY_MODEL: int32_t width must be 32
+989:  SUB_BOUNDARY_MODEL: pointer width must be 64
+994:  SUB_BOUNDARY_MODEL: negative signed right shift must be arithmetic
+999:  SUB_BOUNDARY_MODEL: negative odd right shift must preserve sign
+
+Unresolved/no-body audit markers:
+
+============================================================
+HARNESS: sub_boundary_invalid_lower_harness.c
+============================================================
+
+Harness SHA-256:
+8469f8c5a40a1da2fdd95b05eb6c5c5e8783128196989f19bf437886e4ed6a9d  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+6b73cf29b12ba355c3ec1917a8232c4624cb7311b29a44bc410ea924d8bfdd72  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+  Size: 50056     	Blocks: 104        IO Block: 4096   regular file
+Device: 8,2	Inode: 394006      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:39.114804146 +0300
+Modify: 2026-07-17 06:49:39.109804154 +0300
+Change: 2026-07-17 06:49:39.109804154 +0300
+ Birth: 2026-07-17 06:49:39.104804163 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 30 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 31 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 32 function main
+48:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 33 function main
+50:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 34 function main
+52:        DECL main::1::i : unsignedbv[32]
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 36 function main
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 38 function main
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 40 function main
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+60:        ASSIGN main::1::i := 0
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+62:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 45 function main
+64:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 46 function main
+66:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+68:        ASSIGN main::1::i := main::1::i + 1
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 49 function main
+74:        ASSIGN main::1::A0.coeffs[cast(0, signedbv[64])] := cast(-32767 - 1, signedbv[16])
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 50 function main
+76:        ASSIGN main::1::B0.coeffs[cast(0, signedbv[64])] := cast(1, signedbv[16])
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 52 function main
+78:        ASSIGN main::1::L := main::1::A0
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 53 function main
+80:        ASSIGN main::1::LB := main::1::B0
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 59 function main
+82:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+86:        DEAD main::1::i
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+88:        DEAD main::1::LB
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+90:        DEAD main::1::L
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+92:        DEAD main::1::B0
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+94:        DEAD main::1::A0
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 61 function main
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 62 function main
+892:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+893:        // 389 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+894:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+895:        // 390 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+900:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+901:        // 391 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+902:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+903:        // 392 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+904:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+905:        // 393 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+906:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+907:        // 394 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+908:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+909:        // 395 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+910:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+911:        // 396 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+913:        // 397 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+915:        // 398 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+916:        DEAD mlk_sub00e_r1_poly_sub::1::i
+917:        // 399 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+23:main /* main */
+73:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+75:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_invalid_lower_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+53:__CPROVER__start -> main
+59:# mlk_sub00e_r1_poly_sub
+108:# mlk_sub00e_r1_poly_reduce
+109:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c line 43 function main
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+
+Relevant property identifiers:
+9:  SUB_INVALID_LOWER_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_INVALID_LOWER_PARAMETER: MLKEM_Q must equal FIPS_Q
+852:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+853:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+857:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+858:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+862:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+863:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+867:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+868:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+872:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+873:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+877:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+878:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+882:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+883:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+887:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+888:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+892:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+893:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+897:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+898:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+902:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+903:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+907:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+908:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+912:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+913:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+917:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+918:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+922:Property mlk_sub00e_r1_poly_sub.overflow.1:
+923:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+929:  SUB_INVALID_LOWER_MODEL: CHAR_BIT must be 8
+934:  SUB_INVALID_LOWER_MODEL: short width must be 16
+939:  SUB_INVALID_LOWER_MODEL: int width must be 32
+944:  SUB_INVALID_LOWER_MODEL: int16_t width must be 16
+949:  SUB_INVALID_LOWER_MODEL: int32_t width must be 32
+954:  SUB_INVALID_LOWER_MODEL: pointer width must be 64
+
+Unresolved/no-body audit markers:
+
+============================================================
+HARNESS: sub_boundary_invalid_upper_harness.c
+============================================================
+
+Harness SHA-256:
+4db500d2d8c7a1d79dda38ec466aa79ed2b48f9cec46fa932ad4be7012a7e623  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c
+
+Build command:
+COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+
+Build exit code:
+0
+
+Build log, first 400 lines:
+
+MODEL STATUS: CONSTRUCTED
+
+Model SHA-256:
+fbb21d3cfbd94baeff1bdf9b3484659e5cf6062d4f935c7d895527118caadc8b  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+
+Model stat:
+  File: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+  Size: 50024     	Blocks: 104        IO Block: 4096   regular file
+Device: 8,2	Inode: 394035      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  girish)   Gid: ( 1000/  girish)
+Access: 2026-07-17 06:49:39.368803722 +0300
+Modify: 2026-07-17 06:49:39.363803730 +0300
+Change: 2026-07-17 06:49:39.363803730 +0300
+ Birth: 2026-07-17 06:49:39.359803737 +0300
+
+Inspection command exit codes:
+build.log.exit_code: 0
+list_goto_functions.txt.exit_code: 0
+selected_build.exit_code: 0
+show_call_sequences.txt.exit_code: 0
+show_goto_functions.txt.exit_code: 0
+show_loops.txt.exit_code: 0
+show_properties.txt.exit_code: 0
+show_symbol_table.txt.exit_code: 0
+validate_goto_model.txt.exit_code: 1
+
+Relevant function/body markers:
+11:        CALL return' := main()
+42:main /* main */
+43:        // 14 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 30 function main
+44:        DECL main::1::A0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+45:        // 15 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 31 function main
+46:        DECL main::1::B0 : struct tag-#anon#ST[ARR256{S16}'coeffs']
+47:        // 16 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 32 function main
+48:        DECL main::1::L : struct tag-#anon#ST[ARR256{S16}'coeffs']
+49:        // 17 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 33 function main
+50:        DECL main::1::LB : struct tag-#anon#ST[ARR256{S16}'coeffs']
+51:        // 18 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 34 function main
+52:        DECL main::1::i : unsignedbv[32]
+53:        // 19 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 36 function main
+55:        // 20 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 38 function main
+57:        // 21 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 40 function main
+59:        // 22 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+60:        ASSIGN main::1::i := 0
+61:        // 23 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+62:     1: IF ¬(main::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+63:        // 24 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 45 function main
+64:        ASSIGN main::1::A0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+65:        // 25 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 46 function main
+66:        ASSIGN main::1::B0.coeffs[cast(main::1::i, signedbv[64])] := cast(0, signedbv[16])
+67:        // 26 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+68:        ASSIGN main::1::i := main::1::i + 1
+69:        // 27 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+71:        // 28 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+73:        // 29 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 49 function main
+74:        ASSIGN main::1::A0.coeffs[cast(0, signedbv[64])] := cast(32767, signedbv[16])
+75:        // 30 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 50 function main
+76:        ASSIGN main::1::B0.coeffs[cast(0, signedbv[64])] := cast(-1, signedbv[16])
+77:        // 31 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 52 function main
+78:        ASSIGN main::1::L := main::1::A0
+79:        // 32 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 53 function main
+80:        ASSIGN main::1::LB := main::1::B0
+81:        // 33 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 59 function main
+82:        CALL mlk_sub00e_r1_poly_sub(address_of(main::1::L), address_of(main::1::LB))
+83:        // 34 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+85:        // 35 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+86:        DEAD main::1::i
+87:        // 36 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+88:        DEAD main::1::LB
+89:        // 37 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+90:        DEAD main::1::L
+91:        // 38 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+92:        DEAD main::1::B0
+93:        // 39 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+94:        DEAD main::1::A0
+95:        // 40 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 61 function main
+97:        // 41 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 62 function main
+892:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+893:        // 389 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 222 function mlk_sub00e_r1_poly_reduce
+894:        CALL mlk_poly_reduce_c(mlk_sub00e_r1_poly_reduce::r)
+895:        // 390 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 223 function mlk_sub00e_r1_poly_reduce
+900:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+901:        // 391 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 250 function mlk_sub00e_r1_poly_sub
+902:        DECL mlk_sub00e_r1_poly_sub::1::i : unsignedbv[32]
+903:        // 392 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+904:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := cast(0, unsignedbv[32])
+905:        // 393 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+906:     1: IF ¬(mlk_sub00e_r1_poly_sub::1::i < cast(256, unsignedbv[32])) THEN GOTO 2
+907:        // 394 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+908:        ASSIGN *mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])] := cast(cast(*mlk_sub00e_r1_poly_sub::r.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]) - cast(*mlk_sub00e_r1_poly_sub::b.coeffs[cast(mlk_sub00e_r1_poly_sub::1::i, signedbv[64])], signedbv[32]), signedbv[16])
+909:        // 395 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+910:        ASSIGN mlk_sub00e_r1_poly_sub::1::i := mlk_sub00e_r1_poly_sub::1::i + 1
+911:        // 396 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+913:        // 397 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+915:        // 398 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+916:        DEAD mlk_sub00e_r1_poly_sub::1::i
+917:        // 399 file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 261 function mlk_sub00e_r1_poly_sub
+
+Relevant listed functions:
+23:main /* main */
+73:mlk_sub00e_r1_poly_reduce /* mlk_sub00e_r1_poly_reduce */
+75:mlk_sub00e_r1_poly_sub /* mlk_sub00e_r1_poly_sub */
+
+Relevant call-sequence markers:
+5:# main
+6:main -> sub_invalid_upper_check_machine_model
+7:main -> mlk_sub00e_r1_poly_sub
+53:__CPROVER__start -> main
+59:# mlk_sub00e_r1_poly_sub
+108:# mlk_sub00e_r1_poly_reduce
+109:mlk_sub00e_r1_poly_reduce -> mlk_poly_reduce_c
+
+All discovered loop identifiers:
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c line 43 function main
+
+Loop mlk_poly_reduce_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 194 function mlk_poly_reduce_c
+
+Loop mlk_poly_reduce_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 206 function mlk_poly_reduce_c
+
+Loop mlk_scalar_signed_to_unsigned_q.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 166 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_scalar_signed_to_unsigned_q.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 174 function mlk_scalar_signed_to_unsigned_q
+
+Loop mlk_montgomery_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+
+Loop mlk_poly_invntt_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 534 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 544 function mlk_poly_invntt_tomont_c
+
+Loop mlk_poly_invntt_tomont_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 553 function mlk_poly_invntt_tomont_c
+
+Loop mlk_invntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 497 function mlk_invntt_layer
+
+Loop mlk_invntt_layer.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 487 function mlk_invntt_layer
+
+Loop mlk_poly_ntt_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 438 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 442 function mlk_poly_ntt_c
+
+Loop mlk_poly_ntt_c.2:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 452 function mlk_poly_ntt_c
+
+Loop mlk_ntt_layer.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 402 function mlk_ntt_layer
+
+Loop mlk_ntt_butterfly_block.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 361 function mlk_ntt_butterfly_block
+
+Loop mlk_sub00e_r1_poly_sub.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 251 function mlk_sub00e_r1_poly_sub
+
+Loop mlk_sub00e_r1_poly_add.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 232 function mlk_sub00e_r1_poly_add
+
+Loop mlk_fqmul.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 50 function mlk_fqmul
+
+Loop mlk_fqmul.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 60 function mlk_fqmul
+
+Loop mlk_poly_mulcache_compute_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 278 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_mulcache_compute_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 297 function mlk_poly_mulcache_compute_c
+
+Loop mlk_poly_tomont_c.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 118 function mlk_poly_tomont_c
+
+Loop mlk_poly_tomont_c.1:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 127 function mlk_poly_tomont_c
+
+Loop mlk_barrett_reduce.0:
+  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+
+
+Relevant property identifiers:
+9:  SUB_INVALID_UPPER_PARAMETER: MLKEM_N must equal FIPS_N
+14:  SUB_INVALID_UPPER_PARAMETER: MLKEM_Q must equal FIPS_Q
+852:Property mlk_sub00e_r1_poly_sub.pointer_dereference.1:
+853:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+857:Property mlk_sub00e_r1_poly_sub.pointer_dereference.2:
+858:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+862:Property mlk_sub00e_r1_poly_sub.pointer_dereference.3:
+863:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+867:Property mlk_sub00e_r1_poly_sub.pointer_dereference.4:
+868:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+872:Property mlk_sub00e_r1_poly_sub.pointer_dereference.5:
+873:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+877:Property mlk_sub00e_r1_poly_sub.pointer_dereference.6:
+878:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+882:Property mlk_sub00e_r1_poly_sub.array_bounds.1:
+883:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+887:Property mlk_sub00e_r1_poly_sub.pointer_dereference.7:
+888:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+892:Property mlk_sub00e_r1_poly_sub.pointer_dereference.8:
+893:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+897:Property mlk_sub00e_r1_poly_sub.pointer_dereference.9:
+898:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+902:Property mlk_sub00e_r1_poly_sub.pointer_dereference.10:
+903:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+907:Property mlk_sub00e_r1_poly_sub.pointer_dereference.11:
+908:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+912:Property mlk_sub00e_r1_poly_sub.pointer_dereference.12:
+913:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+917:Property mlk_sub00e_r1_poly_sub.array_bounds.2:
+918:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+922:Property mlk_sub00e_r1_poly_sub.overflow.1:
+923:  file /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c line 259 function mlk_sub00e_r1_poly_sub
+929:  SUB_INVALID_UPPER_MODEL: CHAR_BIT must be 8
+934:  SUB_INVALID_UPPER_MODEL: short width must be 16
+939:  SUB_INVALID_UPPER_MODEL: int width must be 32
+944:  SUB_INVALID_UPPER_MODEL: int16_t width must be 16
+949:  SUB_INVALID_UPPER_MODEL: int32_t width must be 32
+954:  SUB_INVALID_UPPER_MODEL: pointer width must be 64
+
+Unresolved/no-body audit markers:
+
+============================================================
+DISCOVERY VERDICT BOUNDARY
+============================================================
+
+A constructed GOTO model is not a theorem proof.
+The fail-closed zeroize adapter is not zeroization evidence.
+Do not report SUB-T1 or SUB-T2 as proved from this stage.
+Do not open proofs/cbmc/poly_sub/poly_sub_harness.c.

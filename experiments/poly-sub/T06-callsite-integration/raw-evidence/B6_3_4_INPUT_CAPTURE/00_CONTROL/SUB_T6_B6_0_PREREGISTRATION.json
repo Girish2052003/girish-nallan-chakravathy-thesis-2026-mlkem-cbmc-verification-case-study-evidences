@@ -1,0 +1,198 @@
+{
+  "allowed_assumptions": [
+    "0 <= v_before[i] < 3329 for every coefficient",
+    "abs(sb_before[i]) < 26632 for every coefficient",
+    "successful allocation path",
+    "v and sb are valid complete distinct non-overlapping mlk_poly objects",
+    "each polynomial has exactly 256 coefficients",
+    "upstream coefficient bounds are compositional interfaces",
+    "exact source configuration contracts and tool model are frozen later"
+  ],
+  "batch": "SUB-T6 / Batch 6",
+  "boundary": [
+    "mlk_poly_invntt_tomont(sb)",
+    "mlk_poly_sub(v, sb)",
+    "mlk_poly_reduce(v)",
+    "mlk_poly_tomsg(m, v)"
+  ],
+  "campaign": "mlk_poly_sub clean-room verification",
+  "executed_slice": [
+    "mlk_poly_sub(v, sb)",
+    "mlk_poly_reduce(v)",
+    "mlk_poly_tomsg(m, v)"
+  ],
+  "execution_state": {
+    "batch5_modified": false,
+    "cbmc_executed": false,
+    "goto_constructed": false,
+    "harness_constructed": false,
+    "production_modified": false,
+    "results_observed": false
+  },
+  "expected_failures": {
+    "EF-T6-1": "False overflow-existence claim",
+    "EF-T6-2": "False canonicalisation-failure claim",
+    "EF-T6-3": "False downstream-incompatibility claim"
+  },
+  "forbidden_assumptions": [
+    "assume(false)",
+    "unreachable target calls",
+    "assume subtraction fits int16_t",
+    "assume derived range [-26631,29959]",
+    "assume exact mlk_poly_sub output",
+    "assume canonical mlk_poly_reduce output",
+    "assume mlk_poly_tomsg precondition",
+    "exclude coefficient indices 0 or 255",
+    "replace target functions with conclusion-establishing stubs",
+    "modify frozen production implementation for positive proof",
+    "silently disable safety checks or unwinding assertions"
+  ],
+  "gate": "B6.0",
+  "gate_order": [
+    "B6.0 preregistration",
+    "B6.1 call-site and contract binding",
+    "B6.2 arithmetic and assumption audit",
+    "B6.3 harness construction and freeze",
+    "B6.4 structural and GOTO preflight",
+    "B6.5 positive execution",
+    "B6.6 reachability",
+    "B6.7 expected failures",
+    "B6.8 mutations",
+    "B6.9 final evidence"
+  ],
+  "mandatory_mutants": {
+    "M6.1": {
+      "detector": [
+        "T6.3"
+      ],
+      "mutation": "replace subtraction with addition"
+    },
+    "M6.2": {
+      "detector": [
+        "T6.6"
+      ],
+      "mutation": "remove mlk_poly_reduce"
+    },
+    "M6.3": {
+      "detector": [
+        "T6.4"
+      ],
+      "mutation": "modify source operand sb"
+    },
+    "M6.4": {
+      "detector": [
+        "T6.3",
+        "T6.5"
+      ],
+      "mutation": "skip coefficient 255"
+    }
+  },
+  "nonclaims": [
+    "complete K-PKE.Decrypt correctness",
+    "correct plaintext for every ciphertext",
+    "NTT or inverse-NTT correctness",
+    "base multiplication correctness",
+    "ciphertext decompression correctness",
+    "secret-key unpacking correctness",
+    "every allocator implementation",
+    "out-of-memory paths unless separately modelled",
+    "constant-time execution or side-channel freedom",
+    "whole-library whole-program or end-to-end ML-KEM correctness",
+    "unbounded correctness or unregistered configurations"
+  ],
+  "parameters": {
+    "MLKEM_N": 256,
+    "MLKEM_Q": 3329,
+    "MLK_INVNTT_BOUND": 26632,
+    "derived_sub_range": [
+      -26631,
+      29959
+    ],
+    "int16_range": [
+      -32768,
+      32767
+    ],
+    "sb_range": [
+      -26631,
+      26631
+    ],
+    "v_range": [
+      0,
+      3328
+    ]
+  },
+  "positive_harnesses": [
+    "sub_t6_callsite_precondition_harness.c",
+    "sub_t6_callsite_exactness_harness.c",
+    "sub_t6_callsite_frame_harness.c",
+    "sub_t6_sub_reduce_handoff_harness.c",
+    "sub_t6_tomsg_precondition_harness.c"
+  ],
+  "properties": {
+    "T6.1": "Production call-site object validity and separation",
+    "T6.2": "Derived subtraction representability",
+    "T6.3": "Exact call-site subtraction result",
+    "T6.4": "Source and named caller-frame preservation",
+    "T6.5": "Subtraction-to-reduction handoff correctness",
+    "T6.6": "Downstream mlk_poly_tomsg precondition satisfaction",
+    "T6.7": "Safety of the complete bounded integration slice"
+  },
+  "reachability": {
+    "indices": [
+      0,
+      127,
+      255
+    ],
+    "lower": {
+      "result": -26631,
+      "sb": 26631,
+      "v": 0
+    },
+    "neutral": {
+      "result": 0,
+      "sb": 0,
+      "v": 0
+    },
+    "reduction_classes": [
+      "negative",
+      "zero",
+      "canonical",
+      "at_least_q"
+    ],
+    "source_signs": [
+      "positive",
+      "negative"
+    ],
+    "upper": {
+      "result": 29959,
+      "sb": -26631,
+      "v": 3328
+    }
+  },
+  "required_checks": [
+    "array-bounds",
+    "pointer",
+    "pointer-primitive",
+    "pointer-overflow",
+    "signed-overflow",
+    "unsigned-overflow",
+    "conversion",
+    "undefined-shift",
+    "division-by-zero",
+    "unwinding-assertions"
+  ],
+  "schema": "sub-t6-b6.0-preregistration-v1",
+  "status": "FROZEN",
+  "stretch_mutant": {
+    "M6.5": {
+      "detector": [
+        "T6.6"
+      ],
+      "mutation": "call mlk_poly_tomsg before reduction"
+    }
+  },
+  "theorem": {
+    "id": "SUB-T6",
+    "title": "Production Call-Site Contract Satisfaction and Subtract\u2013Reduce Handoff Correctness of mlk_poly_sub in mlk_indcpa_dec"
+  }
+}

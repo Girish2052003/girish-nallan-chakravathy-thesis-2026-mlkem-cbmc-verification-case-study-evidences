@@ -1,0 +1,139 @@
+===== CLEAN-ROOM MLK_POLY_ADD — PRODUCTION CONTEXT =====
+
+Source file: mlkem/src/poly.c
+
+----- MATCH 1 -----
+Matched source line: 229
+Extracted lines: 189-318
+
+   189    ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   190  )
+   191  {
+   192    unsigned i;
+   193  
+   194    for (i = 0; i < MLKEM_N; i++)
+   195    __loop__(
+   196      invariant(i <= MLKEM_N)
+   197      invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+   198      decreases(MLKEM_N - i))
+   199    {
+   200      /* Barrett reduction, giving signed canonical representative */
+   201      int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+   202      /* Conditional addition to get unsigned canonical representative */
+   203      r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+   204    }
+   205  
+   206    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   207  }
+   208  
+   209  MLK_INTERNAL_API
+   210  void mlk_poly_reduce(mlk_poly *r)
+   211  {
+   212  #if defined(MLK_USE_NATIVE_POLY_REDUCE)
+   213    int ret;
+   214    ret = mlk_poly_reduce_native(r->coeffs);
+   215    if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   216    {
+   217      mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   218      return;
+   219    }
+   220  #endif /* MLK_USE_NATIVE_POLY_REDUCE */
+   221  
+   222    mlk_poly_reduce_c(r);
+   223  }
+   224  
+   225  /* Reference: `poly_add()` in the reference implementation @[REF].
+   226   *            - We use destructive version (output=first input) to avoid
+   227   *              reasoning about aliasing in the CBMC specification */
+   228  MLK_INTERNAL_API
+   229  void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   230  {
+   231    unsigned i;
+   232    for (i = 0; i < MLKEM_N; i++)
+   233    __loop__(
+   234      invariant(i <= MLKEM_N)
+   235      invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+   236      invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+   237      decreases(MLKEM_N - i))
+   238    {
+   239      /* The preconditions imply that the addition stays within int16_t. */
+   240      r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);
+   241    }
+   242  }
+   243  
+   244  /* Reference: `poly_sub()` in the reference implementation @[REF].
+   245   *            - We use destructive version (output=first input) to avoid
+   246   *              reasoning about aliasing in the CBMC specification */
+   247  MLK_INTERNAL_API
+   248  void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+   249  {
+   250    unsigned i;
+   251    for (i = 0; i < MLKEM_N; i++)
+   252    __loop__(
+   253      invariant(i <= MLKEM_N)
+   254      invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+   255      invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))
+   256      decreases(MLKEM_N - i))
+   257    {
+   258      /* The preconditions imply that the subtraction stays within int16_t. */
+   259      r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
+   260    }
+   261  }
+   262  
+   263  #include "zetas.inc"
+   264  
+   265  /* Reference: Does not exist in the reference implementation @[REF].
+   266   *            - The reference implementation does not use a
+   267   *              multiplication cache ('mulcache'). This idea originates
+   268   *              from @[NeonNTT] and is used at the C level here. */
+   269  MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x,
+   270                                                       const mlk_poly *a)
+   271  __contract__(
+   272    requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+   273    requires(memory_no_alias(a, sizeof(mlk_poly)))
+   274    assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+   275  )
+   276  {
+   277    unsigned i;
+   278    for (i = 0; i < MLKEM_N / 4; i++)
+   279    __loop__(
+   280      invariant(i <= MLKEM_N / 4)
+   281      invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+   282      decreases(MLKEM_N / 4 - i))
+   283    {
+   284      x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);
+   285      /* The values in zeta table are <= MLKEM_Q in absolute value,
+   286       * so the negation in int16_t is safe. */
+   287      x->coeffs[2 * i + 1] =
+   288          mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));
+   289    }
+   290  
+   291    /*
+   292     * This bound is true for the C implementation, but not needed
+   293     * in the higher level bounds reasoning. It is thus omitted
+   294     * from the spec to not unnecessarily constrain native
+   295     * implementations, but checked here nonetheless.
+   296     */
+   297    mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);
+   298  }
+   299  
+   300  MLK_INTERNAL_API
+   301  void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+   302  {
+   303  #if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)
+   304    int ret;
+   305    ret = mlk_poly_mulcache_compute_native(x->coeffs, a->coeffs);
+   306    if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   307    {
+   308      return;
+   309    }
+   310  #endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */
+   311  
+   312    mlk_poly_mulcache_compute_c(x, a);
+   313  }
+   314  
+   315  /*
+   316   * Computes a block CT butterflies with a fixed twiddle factor,
+   317   * using Montgomery multiplication.
+   318   * Parameters:
+

@@ -1,0 +1,505 @@
+SUB-T5 / B5.2 HARNESS-INPUT DISCOVERY
+
+CAPTURED_UTC=2026-07-17T14:15:32Z
+FROZEN_HEAD=d9613cf60de3132d32475c102d8c2781d84feb34
+
+=== EXACT MLK_POLY_SUB IMPLEMENTATION CONTEXT ===
+/* Reference: `poly_add()` in the reference implementation @[REF].
+ *            - We use destructive version (output=first input) to avoid
+ *              reasoning about aliasing in the CBMC specification */
+MLK_INTERNAL_API
+void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+{
+  unsigned i;
+  for (i = 0; i < MLKEM_N; i++)
+  __loop__(
+    invariant(i <= MLKEM_N)
+    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+    decreases(MLKEM_N - i))
+  {
+    /* The preconditions imply that the addition stays within int16_t. */
+    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);
+  }
+}
+
+/* Reference: `poly_sub()` in the reference implementation @[REF].
+ *            - We use destructive version (output=first input) to avoid
+ *              reasoning about aliasing in the CBMC specification */
+MLK_INTERNAL_API
+void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+{
+  unsigned i;
+  for (i = 0; i < MLKEM_N; i++)
+  __loop__(
+    invariant(i <= MLKEM_N)
+    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))
+    decreases(MLKEM_N - i))
+  {
+    /* The preconditions imply that the subtraction stays within int16_t. */
+    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
+  }
+}
+
+#include "zetas.inc"
+
+/* Reference: Does not exist in the reference implementation @[REF].
+ *            - The reference implementation does not use a
+ *              multiplication cache ('mulcache'). This idea originates
+ *              from @[NeonNTT] and is used at the C level here. */
+MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x,
+                                                     const mlk_poly *a)
+
+=== MLK_POLY TYPE AND DECLARATION CONTEXT ===
+20-#include "common.h"
+21-#include "debug.h"
+22-#include "verify.h"
+23-
+24-/* Absolute exclusive upper bound for the output of the inverse NTT */
+25-#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+26-
+27-/* Absolute exclusive upper bound for the output of the forward NTT */
+28-#define MLK_NTT_BOUND (8 * MLKEM_Q)
+29-
+30-/**
+31- * Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial
+32: * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1].
+33- */
+34:typedef struct
+35-{
+36:  int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */
+37-} MLK_ALIGN mlk_poly;
+38-
+39-/**
+40- * INTERNAL representation of precomputed data speeding up
+41- * the base multiplication of two polynomials in NTT domain.
+42- */
+43:typedef struct
+44-{
+45:  int16_t coeffs[MLKEM_N >> 1]; /**< Cached coefficients. */
+46-} MLK_ALIGN mlk_poly_mulcache;
+47-
+48-/**
+49- * Generic Montgomery reduction; given a 32-bit integer a, computes a 16-bit
+50- * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+51- *
+52- * @param a Input integer to be reduced, of absolute value smaller or equal
+53- *          to INT32_MAX - 2^15 * MLKEM_Q.
+54- *
+55- * @return Integer congruent to a * R^-1 modulo MLKEM_Q, with absolute value
+56- *         <= ceil(|a| / 2^16) + (MLKEM_Q + 1)/2.
+57- */
+58-static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a)
+59-__contract__(
+60-    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+61-             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)))
+62-    /* We don't attempt to express an input-dependent output bound
+63-     * as the post-condition here. There are two call-sites for this
+64-     * function:
+65-     * - The base multiplication: Here, we need no output bound.
+66-     * - mlk_fqmul: Here, we inline this function and prove another spec
+67-     *          for mlk_fqmul which does have a post-condition bound. */
+68-)
+69-{
+--
+192- * @param[in]     b Input polynomial that should be added to @p r. Must be
+193- *                  disjoint from @p r.
+194- */
+195-/*
+196- * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+197- * We specialize to the accumulator form to avoid reasoning about aliasing.
+198- */
+199-MLK_INTERNAL_API
+200-void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+201-__contract__(
+202-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+203-  requires(memory_no_alias(b, sizeof(mlk_poly)))
+204:  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+205:  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+206:  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+207-  assigns(memory_slice(r, sizeof(mlk_poly)))
+208-);
+209-
+210-#define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+211-/**
+212- * Subtract two polynomials; no modular reduction is performed.
+213- *
+214- * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+215- * Representations]. Used in @[FIPS203, Algorithm 15, K-PKE.Decrypt, L6].}
+216- *
+217- * @param[in,out] r Input-output polynomial to be subtracted from.
+218- * @param[in]     b Second input polynomial.
+219- */
+220-/*
+221- * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+222- * We specialize to the accumulator form to avoid reasoning about aliasing.
+223- */
+224-MLK_INTERNAL_API
+225:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+226-__contract__(
+227-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+228-  requires(memory_no_alias(b, sizeof(mlk_poly)))
+229:  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))
+230:  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN))
+231:  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]))
+232-  assigns(memory_slice(r, sizeof(mlk_poly)))
+233-);
+234-
+235-#define mlk_poly_ntt MLK_NAMESPACE(poly_ntt)
+236-/**
+237- * Compute the negacyclic number-theoretic transform (NTT) of a polynomial
+238- * in place.
+239- *
+240- * The input is assumed to be in normal order and coefficient-wise bound by
+241- * MLKEM_Q in absolute value.
+242- *
+243- * The output polynomial is in bitreversed order, or of a custom order if
+244- * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set, and coefficient-wise bound
+245- * by MLK_NTT_BOUND in absolute value.
+246- *
+247- * (NOTE: Sometimes the input to the NTT is actually smaller, which gives
+248- * better bounds.)
+249- *
+250- * @spec{Implements @[FIPS203, Algorithm 9, NTT].}
+251- *
+252- * @param[in,out] r Input/output polynomial.
+253- */
+254-MLK_INTERNAL_API
+255-void mlk_poly_ntt(mlk_poly *r)
+
+=== RELEVANT CONSTANT DEFINITIONS ===
+mlkem/src/params.h:22:#define MLKEM_N 256
+mlkem/src/params.h:23:#define MLKEM_Q 3329
+mlkem/src/params.h:24:#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */
+
+=== BATCH-4 SUCCESSFUL BUILD COMMANDS ===
+33:=== B4.3-D: SUCCESSFUL RESULT BINDING ===
+34:SUCCESS_RESULT_PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/cbmc_result.json
+56:AUTHORITATIVE_SUCCESS_RESULT=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/cbmc_result.json
+98:- CBMC/goto-cc/goto-instrument:
+287:=== B4.3-I: AUTHORITATIVE T1 HARNESS CONTENT ===
+292:#include <limits.h>
+293:#include <stdint.h>
+294:#include "poly.h"
+420:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r2 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto
+423:PREFLIGHT_COMMAND_FILE=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/show_cbmc_properties_command.txt
+427:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --show-properties
+434:12:gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+435:15:CBMC version: 6.9.0 (cbmc-6.9.0)
+436:20:6.9.0 (cbmc-6.9.0)
+437:22:6.9.0 (cbmc-6.9.0)
+443:RUN_COMMAND_FILE=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/cbmc_command.txt
+447:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+456:25:RESULT_JSON="${RESULT}/cbmc_result.json"
+457:26:RESULT_STDERR="${RESULT}/cbmc_stderr.txt"
+458:27:RESULT_COMMAND="${RESULT}/cbmc_command.txt"
+459:28:RESULT_EXIT="${RESULT}/cbmc_exit_code.txt"
+461:30:RESULT_SUMMARY="${RESULT}/cbmc_result_summary.txt"
+481:161:for tool in sha256sum goto-instrument cbmc timeout tar gzip python3 readlink
+500:223:  show_cbmc_properties.txt.exit_code
+510:289:  "${RESULT}/frozen_inputs/show_cbmc_properties.txt"
+513:311:  cbmc --version
+514:312:  goto-instrument --version
+516:317:goto-instrument \
+522:333:  cbmc
+567:1:	Command being timed: "timeout --signal=TERM --kill-after=60s 21600s cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,main.1:257,main.2:257,main.3:257,mlk_barrett_reduce.0:2,mlk_sub00g_r2_poly_sub.0:257,mlk_poly_reduce_c.0:257,mlk_poly_reduce_c.1:257,mlk_scalar_signed_to_unsigned_q.0:2,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui"
+571:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/environment.txt:12:gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+572:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/show_cbmc_properties_command.txt:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --show-properties
+573:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r2 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto
+574:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/resource_usage.txt:1:	Command being timed: "timeout --signal=TERM --kill-after=60s 21600s cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,main.1:257,main.2:257,main.3:257,mlk_barrett_reduce.0:2,mlk_sub00g_r2_poly_sub.0:257,mlk_poly_reduce_c.0:257,mlk_poly_reduce_c.1:257,mlk_scalar_signed_to_unsigned_q.0:2,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui"
+575:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/executed_runner.sh:161:for tool in sha256sum goto-instrument cbmc timeout tar gzip python3 readlink
+576:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/executed_runner.sh:311:  cbmc --version
+577:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/executed_runner.sh:333:  cbmc
+580:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/cbmc_command.txt:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+
+=== BATCH-4 BUILD PLAN COMMANDS ===
+5:`goto-cc 6.9.0`
+11:-DMLK_CONFIG_PARAMETER_SET=768
+12:-DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00n_b4
+13:-DMLK_CONFIG_NO_ASM=1
+14:-DMLK_CONFIG_CUSTOM_ZEROIZE=1
+15:-include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/.frozen_harness_family_v1.tmp.12179/support/sub00n_b4_fail_closed_zeroize.h
+16:-include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/.frozen_harness_family_v1.tmp.12179/support/sub00n_b4_verify_pragma_scope.h
+17:-I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem
+18:-I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src
+
+=== CANONICAL HARNESS STRUCTURE ===
+/*
+ * SUB-T4 positive theorem:
+ *
+ * Canonical ML-KEM coefficients imply that production subtraction:
+ *
+ *   - is automatically representable in int16_t;
+ *   - equals the mathematical coefficient-wise difference; and
+ *   - lies in the exact interval [-3328, 3328].
+ *
+ * No direct subtraction-representability assumption is permitted.
+ */
+
+#include <limits.h>
+#include <stdint.h>
+#include "poly.h"
+
+#define FIPS_N 256u
+#define FIPS_Q 3329
+
+extern int16_t nondet_int16_t(void);
+
+static void sub_t4_check_machine_model(void)
+{
+  __CPROVER_assert(CHAR_BIT == 8,
+                   "SUB_T4_MODEL: CHAR_BIT must be 8");
+  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+                   "SUB_T4_MODEL: short width must be 16");
+  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+                   "SUB_T4_MODEL: int width must be 32");
+  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+                   "SUB_T4_MODEL: int16_t width must be 16");
+  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+                   "SUB_T4_MODEL: int32_t width must be 32");
+  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+                   "SUB_T4_MODEL: pointer width must be 64");
+  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+                   "SUB_T4_MODEL: signed right shift must be arithmetic");
+  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+                   "SUB_T4_MODEL: negative odd shift must preserve sign");
+}
+
+int main(void)
+{
+  mlk_poly A0;
+  mlk_poly B0;
+  mlk_poly saved_A0;
+  mlk_poly saved_B0;
+  mlk_poly R;
+  mlk_poly RB;
+  mlk_poly RB_before_sub;
+  unsigned i;
+
+  sub_t4_check_machine_model();
+
+  __CPROVER_assert(MLKEM_N == FIPS_N,
+                   "SUB_T4_PARAMETER: MLKEM_N must equal FIPS_N");
+  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+                   "SUB_T4_PARAMETER: MLKEM_Q must equal FIPS_Q");
+
+  for (i = 0u; i < MLKEM_N; i++)
+  {
+    A0.coeffs[i] = nondet_int16_t();
+    B0.coeffs[i] = nondet_int16_t();
+  }
+
+  saved_A0 = A0;
+  saved_B0 = B0;
+
+  /*
+   * These are the only mathematical-domain assumptions.
+   *
+   * There is intentionally no assumption that A-B is int16_t
+   * representable. SUB-T4 must prove that consequence.
+   */
+  for (i = 0u; i < MLKEM_N; i++)
+  {
+    __CPROVER_assume(saved_A0.coeffs[i] >= 0);
+    __CPROVER_assume(saved_A0.coeffs[i] < FIPS_Q);
+    __CPROVER_assume(saved_B0.coeffs[i] >= 0);
+    __CPROVER_assume(saved_B0.coeffs[i] < FIPS_Q);
+  }
+
+  R = A0;
+  RB = B0;
+  RB_before_sub = RB;
+
+  mlk_poly_sub(&R, &RB);
+
+  for (i = 0u; i < MLKEM_N; i++)
+  {
+    int32_t mathematical_difference;
+
+    mathematical_difference =
+        (int32_t)saved_A0.coeffs[i] -
+        (int32_t)saved_B0.coeffs[i];
+
+    __CPROVER_assert(
+        mathematical_difference >= (int32_t)INT16_MIN,
+        "SUB_T4_REPRESENTABILITY: canonical difference must be above INT16_MIN");
+
+    __CPROVER_assert(
+        mathematical_difference <= (int32_t)INT16_MAX,
+        "SUB_T4_REPRESENTABILITY: canonical difference must be below INT16_MAX");
+
+    __CPROVER_assert(
+        mathematical_difference >= -(int32_t)(FIPS_Q - 1),
+        "SUB_T4_RANGE: mathematical difference must be at least -3328");
+
+    __CPROVER_assert(
+        mathematical_difference <= (int32_t)(FIPS_Q - 1),
+        "SUB_T4_RANGE: mathematical difference must be at most 3328");
+
+    __CPROVER_assert(
+        (int32_t)R.coeffs[i] == mathematical_difference,
+        "SUB_T4_EXACTNESS: production output must equal mathematical difference");
+
+    __CPROVER_assert(
+        R.coeffs[i] >= -(FIPS_Q - 1),
+        "SUB_T4_PRODUCTION_RANGE: output must be at least -3328");
+
+    __CPROVER_assert(
+        R.coeffs[i] <= FIPS_Q - 1,
+        "SUB_T4_PRODUCTION_RANGE: output must be at most 3328");
+
+    __CPROVER_assert(
+        RB.coeffs[i] == RB_before_sub.coeffs[i],
+        "SUB_T4_FRAME: production subtraction must not modify RB");
+
+    __CPROVER_assert(
+        RB.coeffs[i] == saved_B0.coeffs[i],
+        "SUB_T4_FRAME: final RB must equal saved B0");
+
+    __CPROVER_assert(
+        A0.coeffs[i] == saved_A0.coeffs[i],
+        "SUB_T4_FRAME: original A0 must remain unchanged");
+
+    __CPROVER_assert(
+        B0.coeffs[i] == saved_B0.coeffs[i],
+        "SUB_T4_FRAME: original B0 must remain unchanged");
+  }
+
+  return 0;
+}
+
+=== REACHABILITY HARNESS STRUCTURE ===
+/*
+ * SUB-T4 canonical-domain reachability harness.
+ *
+ * These are satisfiability controls, not additional theorem claims.
+ */
+
+#include <limits.h>
+#include <stdint.h>
+#include "poly.h"
+
+#define FIPS_N 256u
+#define FIPS_Q 3329
+
+extern int16_t nondet_int16_t(void);
+
+static void sub_t4_cov_check_machine_model(void)
+{
+  __CPROVER_assert(CHAR_BIT == 8,
+                   "SUB_T4_COV_MODEL: CHAR_BIT must be 8");
+  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+                   "SUB_T4_COV_MODEL: int16_t width must be 16");
+  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+                   "SUB_T4_COV_MODEL: int32_t width must be 32");
+  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+                   "SUB_T4_COV_MODEL: pointer width must be 64");
+}
+
+int main(void)
+{
+  mlk_poly A0;
+  mlk_poly B0;
+  mlk_poly saved_A0;
+  mlk_poly saved_B0;
+  mlk_poly R;
+  mlk_poly RB;
+  unsigned i;
+  int has_maximum_positive;
+  int has_maximum_negative;
+  int has_zero;
+  int has_interior_positive;
+  int has_interior_negative;
+
+  sub_t4_cov_check_machine_model();
+
+  __CPROVER_assert(MLKEM_N == FIPS_N,
+                   "SUB_T4_COV_PARAMETER: MLKEM_N must equal FIPS_N");
+  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+                   "SUB_T4_COV_PARAMETER: MLKEM_Q must equal FIPS_Q");
+
+  for (i = 0u; i < MLKEM_N; i++)
+  {
+    A0.coeffs[i] = nondet_int16_t();
+    B0.coeffs[i] = nondet_int16_t();
+
+    __CPROVER_assume(A0.coeffs[i] >= 0);
+    __CPROVER_assume(A0.coeffs[i] < FIPS_Q);
+    __CPROVER_assume(B0.coeffs[i] >= 0);
+    __CPROVER_assume(B0.coeffs[i] < FIPS_Q);
+  }
+
+  saved_A0 = A0;
+  saved_B0 = B0;
+  R = A0;
+  RB = B0;
+
+  mlk_poly_sub(&R, &RB);
+
+  has_maximum_positive = 0;
+  has_maximum_negative = 0;
+  has_zero = 0;
+  has_interior_positive = 0;
+  has_interior_negative = 0;
+
+  for (i = 0u; i < MLKEM_N; i++)
+  {
+    int32_t d;
+
+    d = (int32_t)saved_A0.coeffs[i] -
+        (int32_t)saved_B0.coeffs[i];
+
+    if (d == (int32_t)(FIPS_Q - 1))
+    {
+      has_maximum_positive = 1;
+    }
+
+    if (d == -(int32_t)(FIPS_Q - 1))
+    {
+      has_maximum_negative = 1;
+    }
+
+    if (d == 0)
+    {
+      has_zero = 1;
+    }
+
+    if (d > 0 && d < (int32_t)(FIPS_Q - 1))
+    {
+      has_interior_positive = 1;
+    }
+
+    if (d < 0 && d > -(int32_t)(FIPS_Q - 1))
+    {
+      has_interior_negative = 1;
+    }
+
+    __CPROVER_assert(
+        (int32_t)R.coeffs[i] == d,
+        "SUB_T4_COV_EXACTNESS: production output must equal mathematical difference");
+
+    __CPROVER_assert(
+        RB.coeffs[i] == saved_B0.coeffs[i],
+        "SUB_T4_COV_FRAME: RB must remain unchanged");
+  }
+
+  __CPROVER_cover(has_maximum_positive);
+  __CPROVER_cover(has_maximum_negative);
+  __CPROVER_cover(has_zero);
+  __CPROVER_cover(has_interior_positive);
+  __CPROVER_cover(has_interior_negative);
+
+  return 0;
+}
+
+=== SUPPORT FILE INVENTORY ===
+sub00n_b4_fail_closed_zeroize.h
+sub00n_b4_optblocker_zero.c
+sub00n_b4_verify_pragma_scope.h
+
+=== DISCOVERY OPERATION BOUNDARY ===
+CBMC_EXECUTION=NO
+GOTO_MODEL_CREATION=NO
+PRODUCTION_SOURCE_MODIFICATION=NO
+BATCH4_MODIFICATION=NO

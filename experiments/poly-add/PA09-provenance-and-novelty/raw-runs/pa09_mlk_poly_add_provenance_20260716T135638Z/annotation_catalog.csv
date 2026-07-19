@@ -1,0 +1,701 @@
+origin,path,line,text
+repository,REFERENCE.md,10,"- CBMC and debug annotations, and minor code restructurings or signature changes to facilitate the CBMC proofs. For example, `poly_add(x,a)` only comes in a destructive variant to avoid specifying aliasing constraints; `poly_rej_uniform` has an additional `offset` parameter indicating the position in the sampling buffer, to avoid passing shifted pointers)."
+repository,SOUNDNESS.md,314,"  `requires(array_abs_bound(p, 0, MLKEM_N, 8192))`"
+repository,SOUNDNESS.md,315,"  and `ensures(array_abs_bound(p, 0, MLKEM_N, 23595))`, omitting the description of the"
+repository,SOUNDNESS.md,319,  assumes `requires(twiddles12345 == mlk_aarch64_ntt_zetas_layer12345)` and `requires(twiddles56 ==
+repository,mlkem/mlkem_native.c,327,#undef mlk_poly_add
+repository,mlkem/mlkem_native.c,399,#undef __contract__
+repository,mlkem/mlkem_native.c,400,#undef __loop__
+repository,mlkem/src/indcpa.c,161,__contract__(
+repository,mlkem/src/indcpa.c,164,"  requires(memory_no_alias(v, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,165,"  requires(forall(x, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,167,"  assigns(memory_slice(v, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,168,"  ensures(forall(x, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,174,  __loop__(
+repository,mlkem/src/indcpa.c,175,"     assigns(i, memory_slice(v, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,176,     invariant(i <= MLKEM_K)
+repository,mlkem/src/indcpa.c,177,"     invariant(forall(x, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,179,     decreases(MLKEM_K - i))
+repository,mlkem/src/indcpa.c,190,__contract__(
+repository,mlkem/src/indcpa.c,193,"  requires(memory_no_alias(a, sizeof(mlk_polymat)))"
+repository,mlkem/src/indcpa.c,194,"  requires(forall(x, 0, MLKEM_K, forall(y, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,196,"  assigns(memory_slice(a, sizeof(mlk_polymat)))"
+repository,mlkem/src/indcpa.c,197,"  ensures(forall(x, 0, MLKEM_K, forall(y, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,202,  __loop__(
+repository,mlkem/src/indcpa.c,203,"     assigns(i, memory_slice(a, sizeof(mlk_polymat)))"
+repository,mlkem/src/indcpa.c,204,     invariant(i <= MLKEM_K)
+repository,mlkem/src/indcpa.c,205,"     invariant(forall(x, 0, MLKEM_K, forall(y, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,207,     decreases(MLKEM_K - i))
+repository,mlkem/src/indcpa.c,316,__contract__(
+repository,mlkem/src/indcpa.c,317,"  requires(memory_no_alias(out, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,318,"  requires(memory_no_alias(a, sizeof(mlk_polymat)))"
+repository,mlkem/src/indcpa.c,319,"  requires(memory_no_alias(v, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,320,"  requires(memory_no_alias(vc, sizeof(mlk_polyvec_mulcache)))"
+repository,mlkem/src/indcpa.c,321,"  requires(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/indcpa.c,324,"  assigns(memory_slice(out, sizeof(mlk_polyvec))))"
+repository,mlkem/src/indcpa.c,328,  __loop__(
+repository,mlkem/src/indcpa.c,329,"    assigns(i, memory_slice(out, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,330,    invariant(i <= MLKEM_K)
+repository,mlkem/src/indcpa.c,331,    decreases(MLKEM_K - i))
+repository,mlkem/src/indcpa.c,350,__contract__(
+repository,mlkem/src/indcpa.c,351,"  requires(memory_no_alias(pv, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,352,"  requires(memory_no_alias(e, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,353,"  requires(memory_no_alias(seed, MLKEM_SYMBYTES))"
+repository,mlkem/src/indcpa.c,354,"  assigns(memory_slice(pv, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,355,"  assigns(memory_slice(e, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,356,"  ensures(forall(k0, 0, MLKEM_K, array_abs_bound(pv->vec[k0].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))"
+repository,mlkem/src/indcpa.c,357,"  ensures(forall(k1, 0, MLKEM_K, array_abs_bound(e->vec[k1].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))"
+repository,mlkem/src/indcpa.c,397,__contract__(
+repository,mlkem/src/indcpa.c,398,"  requires(memory_no_alias(sp, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,399,"  requires(memory_no_alias(ep, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,400,"  requires(memory_no_alias(epp, sizeof(mlk_poly)))"
+repository,mlkem/src/indcpa.c,401,"  requires(memory_no_alias(coins, MLKEM_SYMBYTES))"
+repository,mlkem/src/indcpa.c,402,"  assigns(memory_slice(sp, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,403,"  assigns(memory_slice(ep, sizeof(mlk_polyvec)))"
+repository,mlkem/src/indcpa.c,404,"  assigns(memory_slice(epp, sizeof(mlk_poly)))"
+repository,mlkem/src/indcpa.c,405,"  ensures(forall(k0, 0, MLKEM_K, array_abs_bound(sp->vec[k0].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))"
+repository,mlkem/src/indcpa.c,406,"  ensures(forall(k1, 0, MLKEM_K, array_abs_bound(ep->vec[k1].coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1)))"
+repository,mlkem/src/indcpa.c,407,"  ensures(array_abs_bound(epp->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1))"
+repository,mlkem/src/indcpa.c,571,"  mlk_poly_add(v, epp);"
+repository,mlkem/src/indcpa.c,572,"  mlk_poly_add(v, k);"
+repository,mlkem/src/poly.c,44,__contract__(
+repository,mlkem/src/poly.c,45,  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+repository,mlkem/src/poly.c,46,  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+repository,mlkem/src/poly.c,76,__contract__(
+repository,mlkem/src/poly.c,77,  ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)
+repository,mlkem/src/poly.c,110,__contract__(
+repository,mlkem/src/poly.c,111,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,112,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,113,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,119,  __loop__(
+repository,mlkem/src/poly.c,120,    invariant(i <= MLKEM_N)
+repository,mlkem/src/poly.c,121,"    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))"
+repository,mlkem/src/poly.c,122,    decreases(MLKEM_N - i))
+repository,mlkem/src/poly.c,161,__contract__(
+repository,mlkem/src/poly.c,162,  requires(c > -MLKEM_Q && c < MLKEM_Q)
+repository,mlkem/src/poly.c,163,  ensures(return_value >= 0 && return_value < MLKEM_Q)
+repository,mlkem/src/poly.c,164,  ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q)))
+repository,mlkem/src/poly.c,186,__contract__(
+repository,mlkem/src/poly.c,187,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,188,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,189,"  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))"
+repository,mlkem/src/poly.c,195,  __loop__(
+repository,mlkem/src/poly.c,196,    invariant(i <= MLKEM_N)
+repository,mlkem/src/poly.c,197,"    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))"
+repository,mlkem/src/poly.c,198,    decreases(MLKEM_N - i))
+repository,mlkem/src/poly.c,225,/* Reference: `poly_add()` in the reference implementation @[REF].
+repository,mlkem/src/poly.c,229,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+repository,mlkem/src/poly.c,233,  __loop__(
+repository,mlkem/src/poly.c,234,    invariant(i <= MLKEM_N)
+repository,mlkem/src/poly.c,235,"    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+repository,mlkem/src/poly.c,236,"    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+repository,mlkem/src/poly.c,237,    decreases(MLKEM_N - i))
+repository,mlkem/src/poly.c,252,  __loop__(
+repository,mlkem/src/poly.c,253,    invariant(i <= MLKEM_N)
+repository,mlkem/src/poly.c,254,"    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+repository,mlkem/src/poly.c,255,"    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))"
+repository,mlkem/src/poly.c,256,    decreases(MLKEM_N - i))
+repository,mlkem/src/poly.c,271,__contract__(
+repository,mlkem/src/poly.c,272,"  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))"
+repository,mlkem/src/poly.c,273,"  requires(memory_no_alias(a, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,274,"  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))"
+repository,mlkem/src/poly.c,279,  __loop__(
+repository,mlkem/src/poly.c,280,    invariant(i <= MLKEM_N / 4)
+repository,mlkem/src/poly.c,281,"    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))"
+repository,mlkem/src/poly.c,282,    decreases(MLKEM_N / 4 - i))
+repository,mlkem/src/poly.c,346,__contract__(
+repository,mlkem/src/poly.c,347,  requires(start < MLKEM_N)
+repository,mlkem/src/poly.c,348,  requires(1 <= len && len <= MLKEM_N / 2 && start + 2 * len <= MLKEM_N)
+repository,mlkem/src/poly.c,349,  requires(0 <= bound && bound < INT16_MAX - MLKEM_Q)
+repository,mlkem/src/poly.c,350,  requires(-MLKEM_Q_HALF < zeta && zeta < MLKEM_Q_HALF)
+repository,mlkem/src/poly.c,351,"  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,352,"  requires(array_abs_bound(r, 0, start, bound + MLKEM_Q))"
+repository,mlkem/src/poly.c,353,"  requires(array_abs_bound(r, start, MLKEM_N, bound))"
+repository,mlkem/src/poly.c,354,"  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,355,"  ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q))"
+repository,mlkem/src/poly.c,356,"  ensures(array_abs_bound(r, start + 2 * len, MLKEM_N, bound)))"
+repository,mlkem/src/poly.c,362,  __loop__(
+repository,mlkem/src/poly.c,363,    invariant(start <= j && j <= start + len)
+repository,mlkem/src/poly.c,368,"    invariant(array_abs_bound(r, 0,           j,           bound + MLKEM_Q))"
+repository,mlkem/src/poly.c,369,"    invariant(array_abs_bound(r, j,           start + len, bound))"
+repository,mlkem/src/poly.c,370,"    invariant(array_abs_bound(r, start + len, j + len,     bound + MLKEM_Q))"
+repository,mlkem/src/poly.c,371,"    invariant(array_abs_bound(r, j + len,     MLKEM_N,     bound))"
+repository,mlkem/src/poly.c,372,    decreases(start + len - j))
+repository,mlkem/src/poly.c,391,__contract__(
+repository,mlkem/src/poly.c,392,"  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,393,  requires(1 <= layer && layer <= 7)
+repository,mlkem/src/poly.c,394,"  requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))"
+repository,mlkem/src/poly.c,395,"  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,396,"  ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q)))"
+repository,mlkem/src/poly.c,403,  __loop__(
+repository,mlkem/src/poly.c,404,    invariant(start < MLKEM_N + 2 * len)
+repository,mlkem/src/poly.c,405,    invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N)
+repository,mlkem/src/poly.c,406,"    invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q))"
+repository,mlkem/src/poly.c,407,"    invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q))"
+repository,mlkem/src/poly.c,408,    decreases(MLKEM_N - start))
+repository,mlkem/src/poly.c,428,__contract__(
+repository,mlkem/src/poly.c,429,"  requires(memory_no_alias(p, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,430,"  requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,431,"  assigns(memory_slice(p, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,432,"  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))"
+repository,mlkem/src/poly.c,443,  __loop__(
+repository,mlkem/src/poly.c,444,    invariant(1 <= layer && layer <= 8)
+repository,mlkem/src/poly.c,445,"    invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))"
+repository,mlkem/src/poly.c,446,    decreases(8 - layer))
+repository,mlkem/src/poly.c,477,__contract__(
+repository,mlkem/src/poly.c,478,"  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,479,  requires(1 <= layer && layer <= 7)
+repository,mlkem/src/poly.c,480,"  requires(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,481,"  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))"
+repository,mlkem/src/poly.c,482,"  ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)))"
+repository,mlkem/src/poly.c,488,  __loop__(
+repository,mlkem/src/poly.c,489,"    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,490,    invariant(start <= MLKEM_N && k <= 127)
+repository,mlkem/src/poly.c,492,    invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len)
+repository,mlkem/src/poly.c,493,    decreases(MLKEM_N - start))
+repository,mlkem/src/poly.c,498,    __loop__(
+repository,mlkem/src/poly.c,499,      invariant(start <= j && j <= start + len)
+repository,mlkem/src/poly.c,500,      invariant(start <= MLKEM_N && k <= 127)
+repository,mlkem/src/poly.c,501,"      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,502,      decreases(start + len - j))
+repository,mlkem/src/poly.c,519,__contract__(
+repository,mlkem/src/poly.c,520,"  requires(memory_no_alias(p, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,521,"  assigns(memory_slice(p, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.c,522,"  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))"
+repository,mlkem/src/poly.c,535,  __loop__(
+repository,mlkem/src/poly.c,536,    invariant(j <= MLKEM_N)
+repository,mlkem/src/poly.c,537,"    invariant(array_abs_bound(r, 0, j, MLKEM_Q))"
+repository,mlkem/src/poly.c,538,    decreases(MLKEM_N - j))
+repository,mlkem/src/poly.c,545,  __loop__(
+repository,mlkem/src/poly.c,546,    invariant(0 <= layer && layer < 8)
+repository,mlkem/src/poly.c,547,"    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.c,548,    decreases(layer))
+repository,mlkem/src/poly.h,59,__contract__(
+repository,mlkem/src/poly.h,60,    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+repository,mlkem/src/poly.h,117,__contract__(
+repository,mlkem/src/poly.h,118,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,119,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,120,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.h,148,__contract__(
+repository,mlkem/src/poly.h,149,"  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))"
+repository,mlkem/src/poly.h,150,"  requires(memory_no_alias(a, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,151,"  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))"
+repository,mlkem/src/poly.h,175,__contract__(
+repository,mlkem/src/poly.h,176,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,177,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,178,"  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))"
+repository,mlkem/src/poly.h,181,#define mlk_poly_add MLK_NAMESPACE(poly_add)
+repository,mlkem/src/poly.h,196, * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+repository,mlkem/src/poly.h,200,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+repository,mlkem/src/poly.h,201,__contract__(
+repository,mlkem/src/poly.h,202,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,203,"  requires(memory_no_alias(b, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,204,"  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))"
+repository,mlkem/src/poly.h,205,"  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))"
+repository,mlkem/src/poly.h,206,"  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))"
+repository,mlkem/src/poly.h,207,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,226,__contract__(
+repository,mlkem/src/poly.h,227,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,228,"  requires(memory_no_alias(b, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,229,"  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))"
+repository,mlkem/src/poly.h,230,"  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN))"
+repository,mlkem/src/poly.h,231,"  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]))"
+repository,mlkem/src/poly.h,232,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,256,__contract__(
+repository,mlkem/src/poly.h,257,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,258,"  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))"
+repository,mlkem/src/poly.h,259,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,260,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))"
+repository,mlkem/src/poly.h,284,__contract__(
+repository,mlkem/src/poly.h,285,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,286,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly.h,287,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))"
+repository,mlkem/src/poly_k.c,86,  __loop__(
+repository,mlkem/src/poly_k.c,87,"    assigns(i, memory_slice(r, MLKEM_POLYVECBYTES))"
+repository,mlkem/src/poly_k.c,88,    invariant(i <= MLKEM_K)
+repository,mlkem/src/poly_k.c,89,    decreases(MLKEM_K - i)
+repository,mlkem/src/poly_k.c,153,__contract__(
+repository,mlkem/src/poly_k.c,154,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,155,"  requires(memory_no_alias(a, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.c,156,"  requires(memory_no_alias(b, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.c,157,"  requires(memory_no_alias(b_cache, sizeof(mlk_polyvec_mulcache)))"
+repository,mlkem/src/poly_k.c,158,"  requires(forall(k1, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.c,160,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,167,  __loop__(invariant(i <= MLKEM_N / 2)
+repository,mlkem/src/poly_k.c,168,           decreases(MLKEM_N / 2 - i))
+repository,mlkem/src/poly_k.c,173,    __loop__(
+repository,mlkem/src/poly_k.c,174,      invariant(k <= MLKEM_K &&
+repository,mlkem/src/poly_k.c,179,      decreases(MLKEM_K - k))
+repository,mlkem/src/poly_k.c,264,  __loop__(
+repository,mlkem/src/poly_k.c,265,"    assigns(i, memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.c,266,    invariant(i <= MLKEM_K)
+repository,mlkem/src/poly_k.c,267,"    invariant(forall(j0, i, MLKEM_K,"
+repository,mlkem/src/poly_k.c,271,"    invariant(forall(j2, 0, i,"
+repository,mlkem/src/poly_k.c,275,    decreases(MLKEM_K - i)
+repository,mlkem/src/poly_k.c,278,"    mlk_poly_add(&r->vec[i], &b->vec[i]);"
+repository,mlkem/src/poly_k.c,312,__contract__(
+repository,mlkem/src/poly_k.c,313,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,314,"  requires(memory_no_alias(buf, MLKEM_ETA1 * MLKEM_N / 4))"
+repository,mlkem/src/poly_k.c,315,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,316,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1))"
+repository,mlkem/src/poly_k.c,399,__contract__(
+repository,mlkem/src/poly_k.c,400,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,401,"  requires(memory_no_alias(buf, MLKEM_ETA2 * MLKEM_N / 4))"
+repository,mlkem/src/poly_k.c,402,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.c,403,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1)))"
+repository,mlkem/src/poly_k.h,64,__contract__(
+repository,mlkem/src/poly_k.h,65,"  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_DU))"
+repository,mlkem/src/poly_k.h,66,"  requires(memory_no_alias(a, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,67,"  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))"
+repository,mlkem/src/poly_k.h,68,"  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_DU)))"
+repository,mlkem/src/poly_k.h,97,__contract__(
+repository,mlkem/src/poly_k.h,98,"  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_DU))"
+repository,mlkem/src/poly_k.h,99,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,100,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,101,"  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))"
+repository,mlkem/src/poly_k.h,127,__contract__(
+repository,mlkem/src/poly_k.h,128,"  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_DV))"
+repository,mlkem/src/poly_k.h,129,"  requires(memory_no_alias(a, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,130,"  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))"
+repository,mlkem/src/poly_k.h,131,"  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_DV)))"
+repository,mlkem/src/poly_k.h,161,__contract__(
+repository,mlkem/src/poly_k.h,162,"  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_DV))"
+repository,mlkem/src/poly_k.h,163,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,164,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,165,"  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))"
+repository,mlkem/src/poly_k.h,192,__contract__(
+repository,mlkem/src/poly_k.h,193,"  requires(memory_no_alias(r, MLKEM_POLYVECCOMPRESSEDBYTES_DU))"
+repository,mlkem/src/poly_k.h,194,"  requires(memory_no_alias(a, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,195,"  requires(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,197,"  assigns(memory_slice(r, MLKEM_POLYVECCOMPRESSEDBYTES_DU))"
+repository,mlkem/src/poly_k.h,217,__contract__(
+repository,mlkem/src/poly_k.h,218,"  requires(memory_no_alias(a, MLKEM_POLYVECCOMPRESSEDBYTES_DU))"
+repository,mlkem/src/poly_k.h,219,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,220,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,221,"  ensures(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,239,__contract__(
+repository,mlkem/src/poly_k.h,240,"  requires(memory_no_alias(a, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,241,"  requires(memory_no_alias(r, MLKEM_POLYVECBYTES))"
+repository,mlkem/src/poly_k.h,242,"  requires(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,244,"  assigns(memory_slice(r, MLKEM_POLYVECBYTES))"
+repository,mlkem/src/poly_k.h,261,__contract__(
+repository,mlkem/src/poly_k.h,262,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,263,"  requires(memory_no_alias(a, MLKEM_POLYVECBYTES))"
+repository,mlkem/src/poly_k.h,264,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,265,"  ensures(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,286,__contract__(
+repository,mlkem/src/poly_k.h,287,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,288,"  requires(forall(j, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,290,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,291,"  ensures(forall(j, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,313,__contract__(
+repository,mlkem/src/poly_k.h,314,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,315,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,316,"  ensures(forall(j, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,343,__contract__(
+repository,mlkem/src/poly_k.h,344,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,345,"  requires(memory_no_alias(a, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,346,"  requires(memory_no_alias(b, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,347,"  requires(memory_no_alias(b_cache, sizeof(mlk_polyvec_mulcache)))"
+repository,mlkem/src/poly_k.h,348,"  requires(forall(k1, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,350,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,381,__contract__(
+repository,mlkem/src/poly_k.h,382,"  requires(memory_no_alias(x, sizeof(mlk_polyvec_mulcache)))"
+repository,mlkem/src/poly_k.h,383,"  requires(memory_no_alias(a, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,384,"  assigns(memory_slice(x, sizeof(mlk_polyvec_mulcache)))"
+repository,mlkem/src/poly_k.h,407,__contract__(
+repository,mlkem/src/poly_k.h,408,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,409,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,410,"  ensures(forall(k0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,433,__contract__(
+repository,mlkem/src/poly_k.h,434,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,435,"  requires(memory_no_alias(b, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,436,"  requires(forall(j0, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,439,"  requires(forall(j1, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,442,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,460,__contract__(
+repository,mlkem/src/poly_k.h,461,"  requires(memory_no_alias(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,462,"  assigns(memory_slice(r, sizeof(mlk_polyvec)))"
+repository,mlkem/src/poly_k.h,463,"  ensures(forall(j, 0, MLKEM_K,"
+repository,mlkem/src/poly_k.h,494,__contract__(
+repository,mlkem/src/poly_k.h,495,"  requires(memory_no_alias(seed, MLKEM_SYMBYTES))"
+repository,mlkem/src/poly_k.h,496,"  requires(memory_no_alias(r0, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,497,"  requires(memory_no_alias(r1, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,498,"  requires(memory_no_alias(r2, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,499,"  requires(r3 == NULL || memory_no_alias(r3, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,500,"  assigns(memory_slice(r0, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,501,"  assigns(memory_slice(r1, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,502,"  assigns(memory_slice(r2, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,503,"  assigns(r3 != NULL: memory_slice(r3, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,504,"  ensures(array_abs_bound(r0->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))"
+repository,mlkem/src/poly_k.h,505,"  ensures(array_abs_bound(r1->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))"
+repository,mlkem/src/poly_k.h,506,"  ensures(array_abs_bound(r2->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))"
+repository,mlkem/src/poly_k.h,507,"  ensures(r3 != NULL ==> array_abs_bound(r3->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))"
+repository,mlkem/src/poly_k.h,538,__contract__(
+repository,mlkem/src/poly_k.h,539,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,540,"  requires(memory_no_alias(seed, MLKEM_SYMBYTES))"
+repository,mlkem/src/poly_k.h,541,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,542,"  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1))"
+repository,mlkem/src/poly_k.h,576,__contract__(
+repository,mlkem/src/poly_k.h,577,"  requires(memory_no_alias(r0, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,578,"  requires(memory_no_alias(r1, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,579,"  requires(memory_no_alias(r2, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,580,"  requires(memory_no_alias(r3, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,581,"  requires(memory_no_alias(seed, MLKEM_SYMBYTES))"
+repository,mlkem/src/poly_k.h,582,"  assigns(memory_slice(r0, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,583,"  assigns(memory_slice(r1, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,584,"  assigns(memory_slice(r2, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,585,"  assigns(memory_slice(r3, sizeof(mlk_poly)))"
+repository,mlkem/src/poly_k.h,586,"  ensures(array_abs_bound(r0->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1)"
+repository,proofs/cbmc/README.md,15,"For example, these are the specification and proof of the `poly_add` function:"
+repository,proofs/cbmc/README.md,17,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+repository,proofs/cbmc/README.md,18,__contract__(
+repository,proofs/cbmc/README.md,19,"  requires(memory_no_alias(r, sizeof(mlk_poly)))"
+repository,proofs/cbmc/README.md,20,"  requires(memory_no_alias(b, sizeof(mlk_poly)))"
+repository,proofs/cbmc/README.md,21,"  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))"
+repository,proofs/cbmc/README.md,22,"  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))"
+repository,proofs/cbmc/README.md,23,"  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))"
+repository,proofs/cbmc/README.md,24,"  assigns(memory_slice(r, sizeof(mlk_poly)))"
+repository,proofs/cbmc/README.md,29,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+repository,proofs/cbmc/README.md,33,  __loop__(
+repository,proofs/cbmc/README.md,34,    invariant(i <= MLKEM_N)
+repository,proofs/cbmc/README.md,35,"    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+repository,proofs/cbmc/README.md,36,"    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])))"
+repository,proofs/cbmc/indcpa_enc/Makefile,33,USE_FUNCTION_CONTRACTS += mlk_poly_add
+repository,proofs/cbmc/poly_add/Makefile,11,PROOF_UID = mlk_poly_add
+repository,proofs/cbmc/poly_add/Makefile,22,CHECK_FUNCTION_CONTRACTS=mlk_poly_add
+repository,proofs/cbmc/poly_add/Makefile,31,FUNCTION_NAME = mlk_poly_add
+repository,proofs/cbmc/poly_add/poly_add_harness.c,10,"  mlk_poly_add(r, b);"
+repository,proofs/cbmc/polyvec_add/Makefile,22,USE_FUNCTION_CONTRACTS=mlk_poly_add
+repository,proofs/cbmc/proof_guide.md,43,  requires(...)
+repository,proofs/cbmc/proof_guide.md,45,  requires(...)
+repository,proofs/cbmc/proof_guide.md,46,  assigns(...)
+repository,proofs/cbmc/proof_guide.md,47,  ensures(...)
+repository,proofs/cbmc/proof_guide.md,49,  ensures(...)
+repository,proofs/cbmc/proof_guide.md,54,arbitrary number of `ensures(...)` clauses specifies the post-condition. One also needs an `assigns(...)` clause
+repository,proofs/cbmc/proof_guide.md,65,"reduce it as much as possible in mlkem-native. For example, rather than having `mlk_poly_add(dst, src0, src1)` where `dst`"
+repository,proofs/cbmc/proof_guide.md,66,"may overlap with `src0` or `src1`, we only have a destructive `mlk_poly_add(dst, src)` implementing `dst += src`, thereby"
+repository,proofs/cbmc/proof_guide.md,105,__contract__(
+repository,proofs/cbmc/proof_guide.md,106,  requires(len * sizeof(t) <= MLK_MAX_BUFFER_SIZE)
+repository,proofs/cbmc/proof_guide.md,107,"  requires(memory_no_alias(p, len * sizeof(t)))"
+repository,proofs/cbmc/proof_guide.md,113,"The most common way to specify memory footprint in `assigns(...)` clauses is via `memory_slice(ptr, len)`. This asserts"
+repository,proofs/cbmc/proof_guide.md,117,"with care: If a function precondition specifies `requires(memory_no_alias(ptr, 42))` and `assigns(object_whole(ptr))`"
+repository,proofs/cbmc/proof_guide.md,124,"If you need to specify a quantified condition for use in `ensures(...)` or `requires(...)`, you can use the"
+repository,proofs/cbmc/proof_guide.md,136,Loop invariants are specified using `__loop__(...)` as follows:
+repository,proofs/cbmc/proof_guide.md,140,__loop__(
+repository,proofs/cbmc/proof_guide.md,141,  assigns(...)
+repository,proofs/cbmc/proof_guide.md,142,  invariant(...)
+repository,proofs/cbmc/proof_guide.md,144,  invariant(...))
+repository,proofs/cbmc/proof_guide.md,150,"Here, one or more `invariant(...)` clauses describe the invariant maintained by the loop body. As for function"
+repository,proofs/cbmc/proof_guide.md,151,"contracts, `assigns(...)` captures the footprint of the loop body."
+repository,proofs/cbmc/proof_guide.md,172,__loop__(
+repository,proofs/cbmc/proof_guide.md,173,"  assigns(i, ...)   /* plus whatever else S does */"
+repository,proofs/cbmc/proof_guide.md,174,  invariant(i <= C) /* Counter invariant */
+repository,proofs/cbmc/proof_guide.md,175,  invariant(...)    /* Further invariants */
+repository,proofs/cbmc/proof_guide.md,176,  decreases(C - i))
+repository,proofs/cbmc/proof_guide.md,194,__contract__(
+repository,proofs/cbmc/proof_guide.md,195,"  requires(memory_no_alias(dst, len))"
+repository,proofs/cbmc/proof_guide.md,196,  assigns(object_whole(dst)));
+repository,proofs/cbmc/proof_guide.md,210,    __loop__(
+repository,proofs/cbmc/proof_guide.md,211,"      assigns(i, object_whole(dst))"
+repository,proofs/cbmc/proof_guide.md,212,      invariant(i <= len)
+repository,proofs/cbmc/proof_guide.md,213,      decreases(len - i))
+repository,proofs/cbmc/proof_guide.md,231,__contract__(
+repository,proofs/cbmc/proof_guide.md,232,"  requires(memory_no_alias(dst, len))"
+repository,proofs/cbmc/proof_guide.md,233,  assigns(object_whole(dst))
+repository,proofs/cbmc/proof_guide.md,234,"  ensures(forall(k, 0, len, dst[k] == 0)));"
+repository,proofs/cbmc/proof_guide.md,245,    __loop__(
+repository,proofs/cbmc/proof_guide.md,246,"      assigns(i, object_whole(dst))"
+repository,proofs/cbmc/proof_guide.md,247,      invariant(i <= len)
+repository,proofs/cbmc/proof_guide.md,248,"      invariant(forall(j, 0, i, dst[j] == 0))"
+repository,proofs/cbmc/proof_guide.md,249,      decreases(len - i))
+repository,proofs/cbmc/proof_guide.md,261,"Note that the invariant `invariant(forall(j, 0, i, dst[j] == 0))` is vacuous at loop entry, where `i == 0` and the"
+repository,proofs/cbmc/proof_guide.md,404,"requires(memory_no_alias(x, sizeof(s));"
+repository,proofs/cbmc/proof_guide.md,422,"`__contract__(...)` in the `.c` file at point of definition. As mentioned before, the pattern is as follows:"
+repository,proofs/cbmc/proof_guide.md,426,__contract__(
+repository,proofs/cbmc/proof_guide.md,427,  requires()
+repository,proofs/cbmc/proof_guide.md,428,  assigns()
+repository,proofs/cbmc/proof_guide.md,429,  ensures());
+repository,proofs/cbmc/proof_guide.md,436,__contract__(
+repository,proofs/cbmc/proof_guide.md,437,  requires()
+repository,proofs/cbmc/proof_guide.md,438,  assigns()
+repository,proofs/cbmc/proof_guide.md,439,  ensures())
+repository,proofs/cbmc/proof_guide.md,449,"If XXX contains no loop statements, then you might be able to just skip this step. Otherwise, add `__loop__(...)`"
+repository,proofs/cbmc/proof_guide.md,560,__contract__(
+repository,proofs/cbmc/proof_guide.md,561,"  requires(memory_no_alias(a, sizeof(mlk_poly)))"
+repository,proofs/cbmc/proof_guide.md,562,"  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))"
+repository,proofs/cbmc/proof_guide.md,563,  assigns(object_whole(r)));
+repository,proofs/cbmc/proof_guide.md,589,  __loop__(
+repository,proofs/cbmc/proof_guide.md,590,"    assigns(i, object_whole(r))"
+repository,proofs/cbmc/proof_guide.md,591,    invariant(i <= MLKEM_N / 2)
+repository,proofs/cbmc/proof_guide.md,592,    decreases(MLKEM_N / 2 - i))
+repository,test/bench/bench_components_mlkem.c,166,  /* mlk_poly_add */
+repository,test/bench/bench_components_mlkem.c,167,"  BENCH(""mlk_poly_add"", mlk_poly_add((mlk_poly *)data0, (mlk_poly *)data1))"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,2," * Clean-room, FIPS-domain, relational CBMC harness for mlk_poly_add"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,11, *   - does not require or invoke an existing mlk_poly_add harness;
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,68,"  __CPROVER_assert(MLKEM_N == 256,"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,70,"  __CPROVER_assert(MLKEM_Q == 3329,"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,86,    __CPROVER_assume(a.coeffs[i] >= 0);
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,87,    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,89,    __CPROVER_assume(b.coeffs[i] >= 0);
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,90,    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,114,"  mlk_poly_add(&sum_ab, &b);"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,115,"  mlk_poly_add(&sum_ba, &a);"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,116,"  mlk_poly_add(&identity_result, &zero);"
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,128,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,135,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,139,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,147,     * mlk_poly_add intentionally need not reduce its stored coefficient.
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,150,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,158,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,162,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,166,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,173,    __CPROVER_assert(
+authored,cleanroom_mlk_poly_add_fips_relational_harness_v2.c,180,    __CPROVER_assert(
+authored,run_cleanroom_mlk_poly_add_cbmc_v2.sh,3,# Build and verify the independently authored mlk_poly_add harness.
+authored,run_cleanroom_mlk_poly_add_cbmc_v2.sh,74,# This keeps the repository's embedded __contract__ and __loop__ annotations
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,3, *         for mlk_poly_add
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,11, *   Verify the portable C mlk_poly_add implementation for every pair of
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,96,"  __CPROVER_assert(MLKEM_N == 256,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,98,"  __CPROVER_assert(MLKEM_Q == 3329,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,100,"  __CPROVER_assert(INT16_MIN == -32768,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,102,"  __CPROVER_assert(INT16_MAX == 32767,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,124,    __CPROVER_assume(mathematical_sum >= (int32_t)INT16_MIN);
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,125,    __CPROVER_assume(mathematical_sum <= (int32_t)INT16_MAX);
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,141,"  __CPROVER_assert(&sum_ab != &b,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,143,"  __CPROVER_assert(&sum_ba != &a,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,145,"  __CPROVER_assert(&identity_result != &zero,"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,148,"  mlk_poly_add(&sum_ab, &b);"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,149,"  mlk_poly_add(&sum_ba, &a);"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,150,"  mlk_poly_add(&identity_result, &zero);"
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,169,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,177,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,185,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,192,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,196,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,200,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,207,    __CPROVER_assert(
+authored,pa02_mlk_poly_add_full_signed_contract_valid_harness.c,214,    __CPROVER_assert(
+authored,run_pa02_mlk_poly_add_full_signed_cbmc.sh,4,# Verify mlk_poly_add over the complete signed/non-canonical
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,3, *         for mlk_poly_add
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,54,  __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,58,  __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,62,  __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,66,  __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,95,  __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,102,"  mlk_poly_add(&result, &b);"
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,120,    __CPROVER_assert(
+authored,pa03_mlk_poly_add_unrestricted_negative_control_harness.c,129,    __CPROVER_assert(
+authored,run_pa03_mlk_poly_add_unrestricted_negative_control.sh,4,# Unrestricted signed-domain negative control for mlk_poly_add.
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,2, * PA-04A: Safe-domain aliasing diagnostic for mlk_poly_add
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,55,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,59,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,63,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,67,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,84,    __CPROVER_assume(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,87,    __CPROVER_assume(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,97,"   *   mlk_poly_add(&a, &a)"
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,108,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,112,"  mlk_poly_add(r_alias, b_alias);"
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,114,  __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,118,"  mlk_poly_add(&disjoint_accumulator, &disjoint_operand);"
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,136,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,140,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,144,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,148,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,152,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,157,    __CPROVER_assert(
+authored,pa04a_mlk_poly_add_alias_safe_doubling_harness.c,161,    __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,2, * PA-04B: Unrestricted aliasing negative control for mlk_poly_add
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,42,  __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,46,  __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,50,  __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,54,  __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,72,  __CPROVER_assert(
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,76,"  mlk_poly_add(r_alias, b_alias);"
+authored,pa04b_mlk_poly_add_alias_unrestricted_negative_control_harness.c,88,    __CPROVER_assert(
+authored,run_pa04_mlk_poly_add_aliasing_campaign.sh,3,# PA-04 combined aliasing campaign for mlk_poly_add.
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,2, * PA-05A: Production caller verification for the mlk_poly_add call inside
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,7, *   mlk_poly_add arithmetic and object-separation obligations for every
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,12, * which in turn directly calls the production mlk_poly_add implementation.
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,40,  __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,44,  __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,48,  __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,52,  __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,62,    __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,64,"        ""PA05A_COMPONENT_SEPARATION: each nested mlk_poly_add call uses distinct polynomials"");"
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,75,      __CPROVER_assume(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,78,      __CPROVER_assume(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,88,   * mlk_poly_add once for every vector component.
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,100,      __CPROVER_assert(
+authored,pa05a_mlk_poly_add_polyvec_production_callsite_harness.c,104,      __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,3," *         mlk_poly_add(v, epp) in mlkem/src/indcpa.c."
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,8, *   sum is representable in int16_t and that production mlk_poly_add is safe
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,59,  __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,63,  __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,67,  __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,71,  __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,75,  __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,87,    __CPROVER_assume(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,89,    __CPROVER_assume(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,95,    __CPROVER_assume(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,97,    __CPROVER_assume(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,107,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,111,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,122,"  mlk_poly_add(&v, &epp);"
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,130,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,134,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,138,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,143,    __CPROVER_assert(
+authored,pa05b_mlk_poly_add_indcpa_epp_callsite_harness.c,148,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,4," *         mlk_poly_add(v, epp);"
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,5," *         mlk_poly_add(v, k);"
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,78,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,82,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,86,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,90,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,94,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,98,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,102,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,106,  __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,120,    __CPROVER_assume(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,122,    __CPROVER_assume(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,125,    __CPROVER_assume(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,127,    __CPROVER_assume(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,144,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,157,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,161,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,172,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,176,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,188,"  mlk_poly_add(&v, &epp);"
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,196,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,201,"  mlk_poly_add(&v, &k);"
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,210,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,214,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,218,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,222,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,227,    __CPROVER_assert(
+authored,pa05c_mlk_poly_add_indcpa_k_sequential_callsite_harness.c,234,    __CPROVER_assert(
+authored,run_pa05_mlk_poly_add_production_callsites.sh,3,# PA-05 combined production call-site campaign for mlk_poly_add.
+authored,run_pa05_mlk_poly_add_production_callsites.sh,9,"#   First indcpa encryption call: mlk_poly_add(v, epp)."
+authored,run_pa05_mlk_poly_add_production_callsites.sh,13,"#       mlk_poly_add(v, epp);"
+authored,run_pa05_mlk_poly_add_production_callsites.sh,14,"#       mlk_poly_add(v, k);"
+authored,run_pa05_mlk_poly_add_production_callsites.sh,296,"  echo ""All three production mlk_poly_add call-site obligations were verified."""
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,3, *         mlk_poly_add calls inside mlk_polyvec_add.
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,11, * directly invokes production mlk_poly_add for each vector component.
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,38,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,42,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,47,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,51,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,55,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,62,  __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,72,    __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,85,      __CPROVER_assume(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,88,      __CPROVER_assume(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,109,      __CPROVER_assert(
+authored,pa06a_mlk_poly_add_polyvec_cross_parameter_harness.c,113,      __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,3," *         mlk_poly_add(v, epp) in mlk_indcpa_enc."
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,12, * The production mlk_poly_add body is executed directly.
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,51,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,55,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,59,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,63,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,68,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,72,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,76,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,83,  __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,92,    __CPROVER_assume(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,94,    __CPROVER_assume(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,97,    __CPROVER_assume(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,99,    __CPROVER_assume(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,106,    __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,110,    __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,118,"  mlk_poly_add(&v, &epp);"
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,126,    __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,130,    __CPROVER_assert(
+authored,pa06b_mlk_poly_add_indcpa_epp_cross_parameter_harness.c,134,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,4," *         mlk_poly_add(v, epp);"
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,5," *         mlk_poly_add(v, k);"
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,69,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,73,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,77,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,81,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,85,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,90,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,94,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,98,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,105,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,109,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,113,  __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,127,    __CPROVER_assume(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,129,    __CPROVER_assume(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,132,    __CPROVER_assume(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,134,    __CPROVER_assume(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,147,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,156,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,160,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,168,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,172,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,181,"  mlk_poly_add(&v, &epp);"
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,189,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,194,"  mlk_poly_add(&v, &k);"
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,203,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,207,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,211,    __CPROVER_assert(
+authored,pa06c_mlk_poly_add_indcpa_sequential_cross_parameter_harness.c,215,    __CPROVER_assert(
+authored,run_pa06_mlk_poly_add_cross_parameter_campaign.sh,3,# PA-06: Cross-parameter replication campaign for mlk_poly_add.
+authored,pa07_mlk_poly_add_mutant_implementation.c,2, * PA-07 controlled mutant implementations for mlk_poly_add.
+authored,pa07_mlk_poly_add_mutant_implementation.c,33,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+authored,run_pa07_mlk_poly_add_mutation_sensitivity.sh,3,# PA-07: Mutation-sensitivity campaign for the frozen mlk_poly_add harnesses.
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,3, *         the production mlk_poly_add implementation.
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,60,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,64,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,68,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,72,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,76,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,80,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,110,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,112,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,115,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,117,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,161,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,163,      __CPROVER_assume(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,175,"  mlk_poly_add(&canonical_r, &canonical_b);"
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,179,"  mlk_poly_add(&signed_r, &signed_b);"
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,182,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,186,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,196,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,200,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,204,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,210,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,214,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,225,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,229,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,233,    __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,239,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,243,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,247,  __CPROVER_assert(
+authored,pa08a_mlk_poly_add_boundary_hardening_harness.c,251,  __CPROVER_assert(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,2, * PA-08B: Expected-failure reachability sentinel for mlk_poly_add.
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,7, *   mlk_poly_add.
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,45,  __CPROVER_assert(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,49,  __CPROVER_assert(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,58,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,60,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,63,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,65,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,69,"  mlk_poly_add(&canonical_r, &canonical_b);"
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,75,  __CPROVER_assert(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,88,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,90,    __CPROVER_assume(
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,94,"  mlk_poly_add(&signed_r, &signed_b);"
+authored,pa08b_mlk_poly_add_reachability_sentinel_harness.c,100,  __CPROVER_assert(
+authored,pa08c_mlk_poly_add_upper_outside_boundary_harness.c,47,  __CPROVER_assert(
+authored,pa08c_mlk_poly_add_upper_outside_boundary_harness.c,51,"  mlk_poly_add(&r, &b);"
+authored,pa08c_mlk_poly_add_upper_outside_boundary_harness.c,57,  __CPROVER_assert(
+authored,pa08c_mlk_poly_add_upper_outside_boundary_harness.c,61,  __CPROVER_assert(
+authored,pa08d_mlk_poly_add_lower_outside_boundary_harness.c,47,  __CPROVER_assert(
+authored,pa08d_mlk_poly_add_lower_outside_boundary_harness.c,51,"  mlk_poly_add(&r, &b);"
+authored,pa08d_mlk_poly_add_lower_outside_boundary_harness.c,57,  __CPROVER_assert(
+authored,pa08d_mlk_poly_add_lower_outside_boundary_harness.c,61,  __CPROVER_assert(
+authored,run_pa08_mlk_poly_add_vacuity_boundary_campaign.sh,4,#        hardening campaign for mlk_poly_add.

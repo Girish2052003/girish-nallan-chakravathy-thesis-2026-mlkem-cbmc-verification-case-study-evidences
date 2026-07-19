@@ -1,0 +1,24 @@
+path,line,text
+REFERENCE.md,10,"- CBMC and debug annotations, and minor code restructurings or signature changes to facilitate the CBMC proofs. For example, `poly_add(x,a)` only comes in a destructive variant to avoid specifying aliasing constraints; `poly_rej_uniform` has an additional `offset` parameter indicating the position in the sampling buffer, to avoid passing shifted pointers)."
+mlkem/mlkem_native.c,327,#undef mlk_poly_add
+mlkem/src/indcpa.c,571,"  mlk_poly_add(v, epp);"
+mlkem/src/indcpa.c,572,"  mlk_poly_add(v, k);"
+mlkem/src/poly.c,225,/* Reference: `poly_add()` in the reference implementation @[REF].
+mlkem/src/poly.c,229,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+mlkem/src/poly.h,181,#define mlk_poly_add MLK_NAMESPACE(poly_add)
+mlkem/src/poly.h,196, * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+mlkem/src/poly.h,200,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+mlkem/src/poly_k.c,278,"    mlk_poly_add(&r->vec[i], &b->vec[i]);"
+proofs/cbmc/README.md,15,"For example, these are the specification and proof of the `poly_add` function:"
+proofs/cbmc/README.md,17,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+proofs/cbmc/README.md,29,"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)"
+proofs/cbmc/indcpa_enc/Makefile,33,USE_FUNCTION_CONTRACTS += mlk_poly_add
+proofs/cbmc/poly_add/Makefile,11,PROOF_UID = mlk_poly_add
+proofs/cbmc/poly_add/Makefile,22,CHECK_FUNCTION_CONTRACTS=mlk_poly_add
+proofs/cbmc/poly_add/Makefile,31,FUNCTION_NAME = mlk_poly_add
+proofs/cbmc/poly_add/poly_add_harness.c,10,"  mlk_poly_add(r, b);"
+proofs/cbmc/polyvec_add/Makefile,22,USE_FUNCTION_CONTRACTS=mlk_poly_add
+proofs/cbmc/proof_guide.md,65,"reduce it as much as possible in mlkem-native. For example, rather than having `mlk_poly_add(dst, src0, src1)` where `dst`"
+proofs/cbmc/proof_guide.md,66,"may overlap with `src0` or `src1`, we only have a destructive `mlk_poly_add(dst, src)` implementing `dst += src`, thereby"
+test/bench/bench_components_mlkem.c,166,  /* mlk_poly_add */
+test/bench/bench_components_mlkem.c,167,"  BENCH(""mlk_poly_add"", mlk_poly_add((mlk_poly *)data0, (mlk_poly *)data1))"

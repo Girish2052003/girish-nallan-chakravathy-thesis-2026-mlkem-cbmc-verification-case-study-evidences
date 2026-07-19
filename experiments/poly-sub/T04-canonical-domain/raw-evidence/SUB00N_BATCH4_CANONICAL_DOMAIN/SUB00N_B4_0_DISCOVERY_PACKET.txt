@@ -1,0 +1,702 @@
+============================================================
+SUB00N / BATCH 4 — READ-ONLY BUILD DISCOVERY
+============================================================
+DATE_UTC=2026-07-17T11:53:29Z
+ROOT=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3
+B4=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN
+
+=== B4.0-A: BATCH-3 ISOLATION DECLARATION ===
+BATCH3_TOUCHED=NO
+BATCH3_PROCESS_ACTION=NONE
+BATCH3_DIRECTORY_ACTION=NONE
+BATCH3_RESULT_ACTION=NONE
+
+=== B4.0-B: TOOL ENVIRONMENT ===
+CBMC_PATH=/usr/bin/cbmc
+CBMC_VERSION=6.9.0 (cbmc-6.9.0)
+GOTO_CC_PATH=/usr/bin/goto-cc
+CC_PATH=/usr/bin/cc
+HOST=Linux girish-VirtualBox 7.0.0-28-generic #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+=== B4.0-C: FROZEN COMMIT REFERENCES ===
+FILES_REFERENCING_FROZEN_COMMIT=34
+FROZEN_COMMIT_REFERENCE=PASS
+
+=== B4.0-D: PORTABLE POLY.C CANDIDATES ===
+POLY_C_FOUND=YES
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c
+
+=== B4.0-E: PRODUCTION FUNCTION LOCATIONS ===
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c
+242-}
+243-
+244-/* Reference: `poly_sub()` in the reference implementation @[REF].
+245- *            - We use destructive version (output=first input) to avoid
+246- *              reasoning about aliasing in the CBMC specification */
+247-MLK_INTERNAL_API
+248:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+249-{
+250-  unsigned i;
+251-  for (i = 0; i < MLKEM_N; i++)
+252-  __loop__(
+253-    invariant(i <= MLKEM_N)
+254-    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+255-    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))
+256-    decreases(MLKEM_N - i))
+257-  {
+258-    /* The preconditions imply that the subtraction stays within int16_t. */
+259-    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
+260-  }
+261-}
+262-
+263-#include "zetas.inc"
+264-
+265-/* Reference: Does not exist in the reference implementation @[REF].
+266- *            - The reference implementation does not use a
+
+=== B4.0-F: FROZEN HARNESS CANDIDATES ===
+REFERENCE_HARNESSES_FOUND=YES
+MODE=-rw-rw-r-- SIZE=3773 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c
+MODE=-rw-rw-r-- SIZE=6516 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c
+ca54ad2d875f104cf6daca915bcfb71e491c3f899b3d877b70439868d80d1037  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c
+MODE=-r--r--r-- SIZE=3773 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c
+MODE=-r--r--r-- SIZE=6516 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t2_relational_harness.c
+ca54ad2d875f104cf6daca915bcfb71e491c3f899b3d877b70439868d80d1037  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t2_relational_harness.c
+MODE=-r--r--r-- SIZE=3773 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/frozen_inputs/sub_t1_semantic_harness.c
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/frozen_inputs/sub_t1_semantic_harness.c
+MODE=-rw-rw-r-- SIZE=3773 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M1_ADD_INSTEAD_OF_SUB/sub_t1_semantic_harness.c
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M1_ADD_INSTEAD_OF_SUB/sub_t1_semantic_harness.c
+MODE=-rw-rw-r-- SIZE=3773 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M2_SKIP_COEFFICIENT_255/sub_t1_semantic_harness.c
+42c09c2f004d567d8b886058bd2304d960a219d36f0f6605b015966db3bc5682  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M2_SKIP_COEFFICIENT_255/sub_t1_semantic_harness.c
+MODE=-rw-rw-r-- SIZE=3780 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M3_ORACLE_PLUS_ONE/sub_t1_semantic_harness.c
+343e6355fd4187e2dfcd180fac0be07603756eaa1462de43ab7a04af6d12c3f2  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M3_ORACLE_PLUS_ONE/sub_t1_semantic_harness.c
+MODE=-r--r--r-- SIZE=6516 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/cases/T2_RELATIONAL/frozen_inputs/sub_t2_relational_harness.c
+ca54ad2d875f104cf6daca915bcfb71e491c3f899b3d877b70439868d80d1037  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/cases/T2_RELATIONAL/frozen_inputs/sub_t2_relational_harness.c
+
+=== B4.0-G: HARNESS STRUCTURE EXCERPTS ===
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = shifted % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+56:  __CPROVER_assert(MLKEM_N == FIPS_N,
+57:                   "SUB_T2_PARAMETER: MLKEM_N must equal FIPS_N");
+58:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+59:                   "SUB_T2_PARAMETER: MLKEM_Q must equal FIPS_Q");
+61:  for (i = 0u; i < MLKEM_N; i++)
+70:  for (i = 0u; i < MLKEM_N; i++)
+77:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+78:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+89:  mlk_poly_sub(&L, &LB);
+91:  for (i = 0u; i < MLKEM_N; i++)
+93:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+95:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+97:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+101:  mlk_poly_reduce(&L);
+103:  for (i = 0u; i < MLKEM_N; i++)
+105:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+107:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+109:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+117:  mlk_poly_reduce(&RA);
+119:  for (i = 0u; i < MLKEM_N; i++)
+121:    __CPROVER_assert(RB.coeffs[i] ==
+124:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+126:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+131:  mlk_poly_reduce(&RB);
+133:  for (i = 0u; i < MLKEM_N; i++)
+135:    __CPROVER_assert(RA.coeffs[i] == RA_before_RB_reduce.coeffs[i],
+137:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+139:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+144:  mlk_poly_sub(&RA, &RB);
+146:  for (i = 0u; i < MLKEM_N; i++)
+148:    __CPROVER_assert(RB.coeffs[i] == RB_before_sub.coeffs[i],
+150:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+152:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+157:  mlk_poly_reduce(&RA);
+159:  for (i = 0u; i < MLKEM_N; i++)
+161:    __CPROVER_assert(RB.coeffs[i] ==
+164:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+166:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+169:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+171:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+173:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+176:    __CPROVER_assert(L.coeffs[i] == RA.coeffs[i],
+178:    __CPROVER_assert(L.coeffs[i] >= 0,
+180:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+181:                     "SUB_T2_RELATIONAL: left result must be below FIPS_Q");
+182:    __CPROVER_assert(RA.coeffs[i] >= 0,
+184:    __CPROVER_assert(RA.coeffs[i] < FIPS_Q,
+185:                     "SUB_T2_RELATIONAL: right result must be below FIPS_Q");
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = shifted % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t2_relational_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+56:  __CPROVER_assert(MLKEM_N == FIPS_N,
+57:                   "SUB_T2_PARAMETER: MLKEM_N must equal FIPS_N");
+58:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+59:                   "SUB_T2_PARAMETER: MLKEM_Q must equal FIPS_Q");
+61:  for (i = 0u; i < MLKEM_N; i++)
+70:  for (i = 0u; i < MLKEM_N; i++)
+77:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+78:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+89:  mlk_poly_sub(&L, &LB);
+91:  for (i = 0u; i < MLKEM_N; i++)
+93:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+95:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+97:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+101:  mlk_poly_reduce(&L);
+103:  for (i = 0u; i < MLKEM_N; i++)
+105:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+107:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+109:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+117:  mlk_poly_reduce(&RA);
+119:  for (i = 0u; i < MLKEM_N; i++)
+121:    __CPROVER_assert(RB.coeffs[i] ==
+124:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+126:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+131:  mlk_poly_reduce(&RB);
+133:  for (i = 0u; i < MLKEM_N; i++)
+135:    __CPROVER_assert(RA.coeffs[i] == RA_before_RB_reduce.coeffs[i],
+137:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+139:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+144:  mlk_poly_sub(&RA, &RB);
+146:  for (i = 0u; i < MLKEM_N; i++)
+148:    __CPROVER_assert(RB.coeffs[i] == RB_before_sub.coeffs[i],
+150:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+152:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+157:  mlk_poly_reduce(&RA);
+159:  for (i = 0u; i < MLKEM_N; i++)
+161:    __CPROVER_assert(RB.coeffs[i] ==
+164:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+166:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+169:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+171:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+173:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+176:    __CPROVER_assert(L.coeffs[i] == RA.coeffs[i],
+178:    __CPROVER_assert(L.coeffs[i] >= 0,
+180:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+181:                     "SUB_T2_RELATIONAL: left result must be below FIPS_Q");
+182:    __CPROVER_assert(RA.coeffs[i] >= 0,
+184:    __CPROVER_assert(RA.coeffs[i] < FIPS_Q,
+185:                     "SUB_T2_RELATIONAL: right result must be below FIPS_Q");
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/frozen_inputs/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = shifted % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M1_ADD_INSTEAD_OF_SUB/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = shifted % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M2_SKIP_COEFFICIENT_255/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = shifted % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M3_ORACLE_PLUS_ONE/sub_t1_semantic_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+48:  __CPROVER_assert(MLKEM_N == FIPS_N,
+49:                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+50:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+51:                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+53:  for (i = 0u; i < MLKEM_N; i++)
+62:  for (i = 0u; i < MLKEM_N; i++)
+69:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+70:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+77:  mlk_poly_sub(&L, &LB);
+79:  for (i = 0u; i < MLKEM_N; i++)
+81:    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+83:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+85:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+91:  mlk_poly_reduce(&L);
+93:  for (i = 0u; i < MLKEM_N; i++)
+101:    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+102:    expected = (shifted + 1u) % (uint32_t)FIPS_Q;
+104:    __CPROVER_assert(L.coeffs[i] >= 0,
+106:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+107:                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+108:    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+111:    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+113:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+115:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+117:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+
+--- FILE: /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/cases/T2_RELATIONAL/frozen_inputs/sub_t2_relational_harness.c
+5:#include <limits.h>
+6:#include <stdint.h>
+7:#include "poly.h"
+9:#define FIPS_N 256u
+10:#define FIPS_Q 3329
+16:  __CPROVER_assert(CHAR_BIT == 8,
+18:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+34:int main(void)
+56:  __CPROVER_assert(MLKEM_N == FIPS_N,
+57:                   "SUB_T2_PARAMETER: MLKEM_N must equal FIPS_N");
+58:  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+59:                   "SUB_T2_PARAMETER: MLKEM_Q must equal FIPS_Q");
+61:  for (i = 0u; i < MLKEM_N; i++)
+70:  for (i = 0u; i < MLKEM_N; i++)
+77:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+78:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+89:  mlk_poly_sub(&L, &LB);
+91:  for (i = 0u; i < MLKEM_N; i++)
+93:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+95:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+97:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+101:  mlk_poly_reduce(&L);
+103:  for (i = 0u; i < MLKEM_N; i++)
+105:    __CPROVER_assert(RA.coeffs[i] == RA_before_left.coeffs[i],
+107:    __CPROVER_assert(RB.coeffs[i] == RB_before_left.coeffs[i],
+109:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+117:  mlk_poly_reduce(&RA);
+119:  for (i = 0u; i < MLKEM_N; i++)
+121:    __CPROVER_assert(RB.coeffs[i] ==
+124:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+126:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+131:  mlk_poly_reduce(&RB);
+133:  for (i = 0u; i < MLKEM_N; i++)
+135:    __CPROVER_assert(RA.coeffs[i] == RA_before_RB_reduce.coeffs[i],
+137:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+139:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+144:  mlk_poly_sub(&RA, &RB);
+146:  for (i = 0u; i < MLKEM_N; i++)
+148:    __CPROVER_assert(RB.coeffs[i] == RB_before_sub.coeffs[i],
+150:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+152:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+157:  mlk_poly_reduce(&RA);
+159:  for (i = 0u; i < MLKEM_N; i++)
+161:    __CPROVER_assert(RB.coeffs[i] ==
+164:    __CPROVER_assert(L.coeffs[i] == completed_L.coeffs[i],
+166:    __CPROVER_assert(LB.coeffs[i] == completed_LB.coeffs[i],
+169:    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+171:    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+173:    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+176:    __CPROVER_assert(L.coeffs[i] == RA.coeffs[i],
+178:    __CPROVER_assert(L.coeffs[i] >= 0,
+180:    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+181:                     "SUB_T2_RELATIONAL: left result must be below FIPS_Q");
+182:    __CPROVER_assert(RA.coeffs[i] >= 0,
+184:    __CPROVER_assert(RA.coeffs[i] < FIPS_Q,
+185:                     "SUB_T2_RELATIONAL: right result must be below FIPS_Q");
+
+=== B4.0-H: MODE-A MANIFEST CANDIDATES ===
+MODE_A_MANIFEST_FOUND=YES
+MODE=-r--r--r-- SIZE=7373 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md
+20f392542441c996ba58e9caddc950ca7d5dd9ed222dc9858077b1a187cb782a  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md
+MODE=-r--r--r-- SIZE=7373 PATH=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md
+20f392542441c996ba58e9caddc950ca7d5dd9ed222dc9858077b1a187cb782a  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md
+
+=== B4.0-I: PRIOR MODE-A COMMAND EXCERPTS ===
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_failed_attempt_20260717T025707Z/sub00e_draft_goto_model_inspection_v1/sub_t1_semantic_harness/build_direct.command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e -DMLK_CONFIG_NO_ASM -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_draft_goto_model_inspection_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_failed_attempt_20260717T025707Z/SUB00E_DRAFT_GOTO_MODEL_INSPECTION_PACKET.txt:123:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e -DMLK_CONFIG_NO_ASM -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_draft_goto_model_inspection_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:15:- CBMC/goto-cc/goto-instrument:
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:69:--function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:75:--signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:77:--conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:80:--unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:105:listed in the corresponding runner's `--unwindset`. Unwinding
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/T2_RELATIONAL/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_t2 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t2_relational_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/T2_RELATIONAL/T2_RELATIONAL.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/VALID_BOUNDARY/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_valid -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_valid_extremes_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/VALID_BOUNDARY/VALID_BOUNDARY.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_UPPER/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_high -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_invalid_upper_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_UPPER/INVALID_UPPER.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_LOWER/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_low -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_invalid_lower_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_LOWER/INVALID_LOWER.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:54:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:61:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:95:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:112:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:128:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DCBMC=1 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub00g_r1_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub_t1_corrected_environment_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/SUB00G_R1_VALIDATOR_CRASH_DIAGNOSTIC.txt:23:COMMAND: goto-cc -std=c90 -DCBMC=1 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub00g_r1_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub_t1_corrected_environment_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/goto_build_command.txt:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00i_cov -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub00i_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_cov_reachability_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub00i_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub_cov_pragma_scoped_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:15:- CBMC/goto-cc/goto-instrument:
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:69:--function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:75:--signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:77:--conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:80:--unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:105:listed in the corresponding runner's `--unwindset`. Unwinding
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00D_BUILD_CONTEXT_DISCOVERY.txt:29:gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:54:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:61:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:95:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:112:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:128:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:542:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:549:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:590:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:607:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t2_relational_harness/sub_t2_relational_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:623:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t2_relational_harness/sub_t2_relational_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1231:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1238:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1280:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1298:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_cov_reachability_harness/sub_cov_reachability_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1314:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_cov_reachability_harness/sub_cov_reachability_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1698:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1705:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1739:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1754:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:1770:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2075:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2082:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2098:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2113:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2129:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2263:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2270:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2286:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2301:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:2317:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:114:gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:164:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:548:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t2_relational_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t2_relational_harness/sub_t2_relational_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:1066:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_cov_reachability_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_cov_reachability_harness/sub_cov_reachability_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:1468:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_valid_extremes_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_valid_extremes_harness/sub_boundary_valid_extremes_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:1758:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_lower_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_lower_harness/sub_boundary_invalid_lower_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:2005:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_boundary_invalid_upper_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_boundary_invalid_upper_harness/sub_boundary_invalid_upper_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:123:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_05_sub_invalid_lower_mode_a_mlkem768.sh:126:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:123:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_02_sub_t2_mode_a_mlkem768.sh:126:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:123:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_06_sub_invalid_upper_mode_a_mlkem768.sh:126:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:124:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_04_sub_coverage_mode_a_mlkem768.sh:127:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:123:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_01_sub_t1_mode_a_mlkem768.sh:126:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:52:command -v cbmc >/dev/null 2>&1 || fail "cbmc is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:53:command -v goto-instrument >/dev/null 2>&1 || fail "goto-instrument is unavailable"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:68:goto-instrument --validate-goto-binary "${MODEL}" >/dev/null
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:73:  --function main
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:79:  --signed-overflow-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:81:  --conversion-check
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:84:  --unwinding-assertions
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:85:  --unwindset "${UNWINDSET}"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:93:  cbmc
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:123:  cbmc --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/execution/run_03_sub_boundary_valid_mode_a_mlkem768.sh:126:  goto-instrument --version
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/SUB00O_BUILD_RECIPE_DISCOVERY.txt:107:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_low -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_invalid_lower_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_LOWER/INVALID_LOWER.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/SUB00O_BUILD_RECIPE_DISCOVERY.txt:119:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_high -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_invalid_upper_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/INVALID_UPPER/INVALID_UPPER.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/SUB00O_BUILD_RECIPE_DISCOVERY.txt:131:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_t2 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t2_relational_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/T2_RELATIONAL/T2_RELATIONAL.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/SUB00O_BUILD_RECIPE_DISCOVERY.txt:143:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00l_valid -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_boundary_valid_extremes_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/adapters/sub00l_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/build/VALID_BOUNDARY/VALID_BOUNDARY.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:32:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e -DMLK_CONFIG_NO_ASM -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_draft_goto_model_inspection_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:68:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e -DMLK_CONFIG_NO_ASM -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_draft_goto_model_inspection_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:272:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00e_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/build_adapters_v2/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/harness_drafts_v1/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:278:1:COMMAND: goto-instrument --list-goto-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:284:1:COMMAND: goto-instrument --show-call-sequences /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:290:1:COMMAND: goto-instrument --show-goto-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:296:1:COMMAND: goto-instrument --show-loops /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:302:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto --show-properties
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:308:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto --show-symbol-table
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:314:1:COMMAND: goto-instrument --validate-goto-model /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:560:1:COMMAND: goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:566:1:COMMAND: goto-instrument --reachable-call-graph /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:572:1:COMMAND: goto-instrument --show-goto-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:578:1:COMMAND: goto-instrument --show-loops /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:584:1:COMMAND: goto-instrument --show-properties /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:590:1:COMMAND: goto-instrument --list-undefined-functions /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:596:1:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r1_goto_model_inspection_v2/sub_t1_semantic_harness/sub_t1_semantic_harness_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:602:1:COMMAND: goto-instrument --validate-goto-binary /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/sub_t1_semantic_harness_reachable_only.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:656:1:COMMAND: goto-cc -std=c90 -DCBMC=1 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r1 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub00g_r1_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/build/sub_t1_corrected_environment_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:662:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00g_r2 -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub00g_r2_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:674:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --show-properties
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:695:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/models/sub_t1_semantic_harness_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00e_r1_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:701:1:COMMAND: cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/build/sub_t1_pragma_scoped_mlkem768.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,main.2:257\,main.3:257\,mlk_barrett_reduce.0:2\,mlk_sub00g_r2_poly_sub.0:257\,mlk_poly_reduce_c.0:257\,mlk_poly_reduce_c.1:257\,mlk_scalar_signed_to_unsigned_q.0:2\,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:772:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00i_cov -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub00i_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/harnesses/sub_cov_reachability_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub00i_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/build/sub_cov_pragma_scoped_mlkem768.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:866:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00j_add -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/adapters/sub00j_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M1_ADD_INSTEAD_OF_SUB/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M1_ADD_INSTEAD_OF_SUB/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/adapters/sub00j_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/build/M1_ADD_INSTEAD_OF_SUB/M1_ADD_INSTEAD_OF_SUB.goto
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00O_BATCH3_T3_GOTO_PREFLIGHT_DISCOVERY/KNOWN_GOOD_RUNNER_INDEX.txt:890:1:COMMAND: goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00j_skip -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/adapter/sub00e_r1_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/adapters/sub00j_verify_pragma_scope.h -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem -I/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M2_SKIP_COEFFICIENT_255/sub_t1_semantic_harness.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/mutants/M2_SKIP_COEFFICIENT_255/poly.c /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/adapters/sub00j_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/build/M2_SKIP_COEFFICIENT_255/M2_SKIP_COEFFICIENT_255.goto
+
+=== B4.0-J: PREREGISTRATION INTEGRITY ===
+2e0c082f22fb0f6fd42b50bc3d2cf2dffb06a486f47f97537985b3da2b6143b0  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_0_THEOREM_PREREGISTRATION.md
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_0_THEOREM_PREREGISTRATION.md: OK
+PREREGISTRATION_HASH_CHECK=PASS
+
+=== B4.0-K: SCIENTIFIC ACTION RECORD ===
+CBMC_THEOREM_EXECUTED=NO
+GOTO_MODEL_CREATED=NO
+PRODUCTION_SOURCE_MODIFIED=NO
+EXISTING_HARNESS_MODIFIED=NO
+BATCH3_MODIFIED=NO
+SUB_T1_RESULT_MODIFIED=NO
+SUB_T2_RESULT_MODIFIED=NO
+
+SUB00N_B4_0_DISCOVERY_VERDICT=PASS

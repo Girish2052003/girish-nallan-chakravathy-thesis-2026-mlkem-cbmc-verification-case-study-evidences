@@ -1,0 +1,16 @@
+--- frozen_source/poly.c
++++ M2_WRITE_B/poly.c
+@@ -256,7 +256,12 @@
+     decreases(MLKEM_N - i))
+   {
+     /* The preconditions imply that the subtraction stays within int16_t. */
+-    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
++    {
++      int16_t original_b;
++      original_b = b->coeffs[i];
++      r->coeffs[i] = (int16_t)(r->coeffs[i] - original_b);
++      ((mlk_poly *)b)->coeffs[i] = r->coeffs[i];
++    }
+   }
+ }
+ 

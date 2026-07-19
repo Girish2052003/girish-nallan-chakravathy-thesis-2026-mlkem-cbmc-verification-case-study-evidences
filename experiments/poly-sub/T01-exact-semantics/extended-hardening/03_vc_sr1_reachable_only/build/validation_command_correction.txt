@@ -1,0 +1,16 @@
+VC-SR1 initial-model validation correction
+
+The first validation invocation supplied only the input GOTO file.
+goto-instrument 6.9.0 requires both input and output positional files,
+including when --validate-goto-model is selected.
+
+The resulting exit code 1 was therefore classified as:
+INVALID_VALIDATION_COMMAND
+
+It was not classified as:
+- invalid GOTO model;
+- compilation failure;
+- CBMC property failure;
+- theorem failure.
+
+The corrected invocation supplied separate input and output GOTO paths.

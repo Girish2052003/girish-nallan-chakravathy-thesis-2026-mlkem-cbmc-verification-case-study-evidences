@@ -1,0 +1,122 @@
+     1	/*
+     2	 * SUB-T1 draft: full signed-domain modular refinement.
+     3	 * Independently authored from the frozen SUB-00B/SUB-00C records.
+     4	 */
+     5	#include <limits.h>
+     6	#include <stdint.h>
+     7	#include "poly.h"
+     8	
+     9	#define FIPS_N 256u
+    10	#define FIPS_Q 3329
+    11	
+    12	extern int16_t nondet_int16_t(void);
+    13	
+    14	static void sub_t1_check_machine_model(void)
+    15	{
+    16	  __CPROVER_assert(CHAR_BIT == 8,
+    17	                   "SUB_T1_MODEL: CHAR_BIT must be 8");
+    18	  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+    19	                   "SUB_T1_MODEL: short width must be 16");
+    20	  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+    21	                   "SUB_T1_MODEL: int width must be 32");
+    22	  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+    23	                   "SUB_T1_MODEL: int16_t width must be 16");
+    24	  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+    25	                   "SUB_T1_MODEL: int32_t width must be 32");
+    26	  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+    27	                   "SUB_T1_MODEL: pointer width must be 64");
+    28	  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+    29	                   "SUB_T1_MODEL: negative signed right shift must be arithmetic");
+    30	  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+    31	                   "SUB_T1_MODEL: negative odd right shift must preserve sign");
+    32	}
+    33	
+    34	int main(void)
+    35	{
+    36	  mlk_poly A0;
+    37	  mlk_poly B0;
+    38	  mlk_poly saved_A0;
+    39	  mlk_poly saved_B0;
+    40	  mlk_poly L;
+    41	  mlk_poly LB;
+    42	  mlk_poly LB_before_sub;
+    43	  mlk_poly LB_before_reduce;
+    44	  unsigned i;
+    45	
+    46	  sub_t1_check_machine_model();
+    47	
+    48	  __CPROVER_assert(MLKEM_N == FIPS_N,
+    49	                   "SUB_T1_PARAMETER: MLKEM_N must equal FIPS_N");
+    50	  __CPROVER_assert(MLKEM_Q == FIPS_Q,
+    51	                   "SUB_T1_PARAMETER: MLKEM_Q must equal FIPS_Q");
+    52	
+    53	  for (i = 0u; i < MLKEM_N; i++)
+    54	  {
+    55	    A0.coeffs[i] = nondet_int16_t();
+    56	    B0.coeffs[i] = nondet_int16_t();
+    57	  }
+    58	
+    59	  saved_A0 = A0;
+    60	  saved_B0 = B0;
+    61	
+    62	  for (i = 0u; i < MLKEM_N; i++)
+    63	  {
+    64	    int32_t d;
+    65	
+    66	    d = (int32_t)saved_A0.coeffs[i] -
+    67	        (int32_t)saved_B0.coeffs[i];
+    68	
+    69	    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+    70	    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+    71	  }
+    72	
+    73	  L = A0;
+    74	  LB = B0;
+    75	  LB_before_sub = LB;
+    76	
+    77	  mlk_poly_sub(&L, &LB);
+    78	
+    79	  for (i = 0u; i < MLKEM_N; i++)
+    80	  {
+    81	    __CPROVER_assert(LB.coeffs[i] == LB_before_sub.coeffs[i],
+    82	                     "SUB_T1_FRAME: subtraction must not modify LB");
+    83	    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+    84	                     "SUB_T1_FRAME: subtraction must not modify A0");
+    85	    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+    86	                     "SUB_T1_FRAME: subtraction must not modify B0");
+    87	  }
+    88	
+    89	  LB_before_reduce = LB;
+    90	
+    91	  mlk_poly_reduce(&L);
+    92	
+    93	  for (i = 0u; i < MLKEM_N; i++)
+    94	  {
+    95	    int32_t d;
+    96	    uint32_t shifted;
+    97	    uint32_t expected;
+    98	
+    99	    d = (int32_t)saved_A0.coeffs[i] -
+   100	        (int32_t)saved_B0.coeffs[i];
+   101	    shifted = (uint32_t)(d + (int32_t)(10 * FIPS_Q));
+   102	    expected = shifted % (uint32_t)FIPS_Q;
+   103	
+   104	    __CPROVER_assert(L.coeffs[i] >= 0,
+   105	                     "SUB_T1_SEMANTIC: output must be non-negative");
+   106	    __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+   107	                     "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+   108	    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
+   109	                     "SUB_T1_SEMANTIC: output must equal independent canonical oracle");
+   110	
+   111	    __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+   112	                     "SUB_T1_FRAME: reduction must not modify LB");
+   113	    __CPROVER_assert(LB.coeffs[i] == saved_B0.coeffs[i],
+   114	                     "SUB_T1_FRAME: final LB must equal saved B0");
+   115	    __CPROVER_assert(A0.coeffs[i] == saved_A0.coeffs[i],
+   116	                     "SUB_T1_FRAME: final A0 must equal saved A0");
+   117	    __CPROVER_assert(B0.coeffs[i] == saved_B0.coeffs[i],
+   118	                     "SUB_T1_FRAME: final B0 must equal saved B0");
+   119	  }
+   120	
+   121	  return 0;
+   122	}

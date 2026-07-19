@@ -1,0 +1,13 @@
+--- vc_sr1_harness_frozen_baseline.c
++++ m5_false_oracle_assertion_harness.c
+@@ -104,9 +104,9 @@
+     __CPROVER_assert(L.coeffs[i] >= 0,
+                      "SUB_T1_SEMANTIC: output must be non-negative");
+     __CPROVER_assert(L.coeffs[i] < FIPS_Q,
+                      "SUB_T1_SEMANTIC: output must be below FIPS_Q");
+-    __CPROVER_assert((uint32_t)L.coeffs[i] == expected,
++    __CPROVER_assert(((uint32_t)L.coeffs[i]) == (((uint32_t)(expected) + 1U) % 3329U),
+                      "SUB_T1_SEMANTIC: output must equal independent canonical oracle");
+ 
+     __CPROVER_assert(LB.coeffs[i] == LB_before_reduce.coeffs[i],
+                      "SUB_T1_FRAME: reduction must not modify LB");

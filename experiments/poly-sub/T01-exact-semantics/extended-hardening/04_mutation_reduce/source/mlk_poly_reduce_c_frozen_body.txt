@@ -1,0 +1,23 @@
+0185: MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r)
+0186: __contract__(
+0187:   requires(memory_no_alias(r, sizeof(mlk_poly)))
+0188:   assigns(memory_slice(r, sizeof(mlk_poly)))
+0189:   ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+0190: )
+0191: {
+0192:   unsigned i;
+0193: 
+0194:   for (i = 0; i < MLKEM_N; i++)
+0195:   __loop__(
+0196:     invariant(i <= MLKEM_N)
+0197:     invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+0198:     decreases(MLKEM_N - i))
+0199:   {
+0200:     /* Barrett reduction, giving signed canonical representative */
+0201:     int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+0202:     /* Conditional addition to get unsigned canonical representative */
+0203:     r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+0204:   }
+0205: 
+0206:   mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+0207: }

@@ -1,0 +1,1645 @@
+VC-SR1 FROZEN REPOSITORY EVIDENCE
+=================================
+
+Frozen commit:
+d9613cf60de3132d32475c102d8c2781d84feb34
+
+=== DECRYPTION CALL SITE: mlk_poly_sub(v, sb) ===
+mlkem/src/indcpa.c-610-
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c-617-  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c-623-  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c:625:  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c-626-  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+mlkem/src/indcpa.c-630-cleanup:
+mlkem/src/indcpa.c-631-  /* Specification: Partially implements
+mlkem/src/indcpa.c-632-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-633-  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-634-  MLK_FREE(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-635-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-636-  MLK_FREE(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-637-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-638-  return ret;
+mlkem/src/indcpa.c-639-}
+mlkem/src/indcpa.c-640-
+
+=== ADJACENT REDUCTION: mlk_poly_reduce(v) ===
+mlkem/src/indcpa.c-560-
+mlkem/src/indcpa.c-561-  mlk_polyvec_ntt(sp);
+mlkem/src/indcpa.c-562-
+mlkem/src/indcpa.c-563-  mlk_polyvec_mulcache_compute(sp_cache, sp);
+mlkem/src/indcpa.c-564-  mlk_matvec_mul(b, at, sp, sp_cache);
+mlkem/src/indcpa.c-565-  mlk_polyvec_basemul_acc_montgomery_cached(v, pkpv, sp, sp_cache);
+mlkem/src/indcpa.c-566-
+mlkem/src/indcpa.c-567-  mlk_polyvec_invntt_tomont(b);
+mlkem/src/indcpa.c-568-  mlk_poly_invntt_tomont(v);
+mlkem/src/indcpa.c-569-
+mlkem/src/indcpa.c-570-  mlk_polyvec_add(b, ep);
+mlkem/src/indcpa.c-571-  mlk_poly_add(v, epp);
+mlkem/src/indcpa.c-572-  mlk_poly_add(v, k);
+mlkem/src/indcpa.c-573-
+mlkem/src/indcpa.c-574-  mlk_polyvec_reduce(b);
+mlkem/src/indcpa.c:575:  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-576-
+mlkem/src/indcpa.c-577-  mlk_pack_ciphertext(c, b, v);
+mlkem/src/indcpa.c-578-
+mlkem/src/indcpa.c-579-cleanup:
+mlkem/src/indcpa.c-580-  /* Specification: Partially implements
+mlkem/src/indcpa.c-581-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-582-  MLK_FREE(sp_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-583-  MLK_FREE(epp, mlk_poly, 1, context);
+mlkem/src/indcpa.c-584-  MLK_FREE(k, mlk_poly, 1, context);
+mlkem/src/indcpa.c-585-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-586-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-587-  MLK_FREE(ep, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-588-  MLK_FREE(pkpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-589-  MLK_FREE(sp, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-590-  MLK_FREE(at, mlk_polymat, 1, context);
+--
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c-617-  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c-623-  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c-625-  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c:626:  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+mlkem/src/indcpa.c-630-cleanup:
+mlkem/src/indcpa.c-631-  /* Specification: Partially implements
+mlkem/src/indcpa.c-632-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-633-  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-634-  MLK_FREE(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-635-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-636-  MLK_FREE(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-637-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-638-  return ret;
+mlkem/src/indcpa.c-639-}
+mlkem/src/indcpa.c-640-
+mlkem/src/indcpa.c-641-/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
+
+=== CIPHERTEXT UNPACKING REFERENCES ===
+mlkem/src/indcpa.c-25-#include "symmetric.h"
+mlkem/src/indcpa.c-26-#include "verify.h"
+mlkem/src/indcpa.c-27-
+mlkem/src/indcpa.c-28-/* Parameter set namespacing
+mlkem/src/indcpa.c-29- * This is to facilitate building multiple instances
+mlkem/src/indcpa.c-30- * of mlkem-native (e.g. with varying parameter sets)
+mlkem/src/indcpa.c-31- * within a single compilation unit. */
+mlkem/src/indcpa.c-32-#define mlk_pack_pk MLK_ADD_PARAM_SET(mlk_pack_pk)
+mlkem/src/indcpa.c-33-#define mlk_unpack_pk MLK_ADD_PARAM_SET(mlk_unpack_pk)
+mlkem/src/indcpa.c-34-#define mlk_pack_sk MLK_ADD_PARAM_SET(mlk_pack_sk)
+mlkem/src/indcpa.c-35-#define mlk_unpack_sk MLK_ADD_PARAM_SET(mlk_unpack_sk)
+mlkem/src/indcpa.c-36-#define mlk_pack_ciphertext MLK_ADD_PARAM_SET(mlk_pack_ciphertext)
+mlkem/src/indcpa.c:37:#define mlk_unpack_ciphertext MLK_ADD_PARAM_SET(mlk_unpack_ciphertext)
+mlkem/src/indcpa.c-38-#define mlk_matvec_mul MLK_ADD_PARAM_SET(mlk_matvec_mul)
+mlkem/src/indcpa.c-39-#define mlk_polyvec_permute_bitrev_to_custom \
+mlkem/src/indcpa.c-40-  MLK_ADD_PARAM_SET(mlk_polyvec_permute_bitrev_to_custom)
+mlkem/src/indcpa.c-41-#define mlk_polymat_permute_bitrev_to_custom \
+mlkem/src/indcpa.c-42-  MLK_ADD_PARAM_SET(mlk_polymat_permute_bitrev_to_custom)
+mlkem/src/indcpa.c-43-#define mlk_keypair_getnoise_eta1 MLK_ADD_PARAM_SET(mlk_keypair_getnoise_eta1)
+mlkem/src/indcpa.c-44-#define mlk_enc_getnoise_eta1_eta2 MLK_ADD_PARAM_SET(mlk_enc_getnoise_eta1_eta2)
+mlkem/src/indcpa.c-45-/* End of parameter set namespacing */
+mlkem/src/indcpa.c-46-
+mlkem/src/indcpa.c-47-/**
+mlkem/src/indcpa.c-48- * Serialize the public key as the concatenation of the serialized vector of
+mlkem/src/indcpa.c-49- * polynomials pk and the public seed used to generate the matrix A.
+--
+mlkem/src/indcpa.c-135-}
+mlkem/src/indcpa.c-136-
+mlkem/src/indcpa.c-137-/**
+mlkem/src/indcpa.c-138- * De-serialize and decompress ciphertext from a byte array; approximate
+mlkem/src/indcpa.c-139- * inverse of mlk_pack_ciphertext.
+mlkem/src/indcpa.c-140- *
+mlkem/src/indcpa.c-141- * @spec{Implements @[FIPS203, Algorithm 15 (K-PKE.Decrypt), L1-4].}
+mlkem/src/indcpa.c-142- *
+mlkem/src/indcpa.c-143- * @param[out] b Output vector of polynomials b.
+mlkem/src/indcpa.c-144- * @param[out] v Output polynomial v.
+mlkem/src/indcpa.c-145- * @param[in]  c Input serialized ciphertext.
+mlkem/src/indcpa.c-146- */
+mlkem/src/indcpa.c:147:static void mlk_unpack_ciphertext(mlk_polyvec *b, mlk_poly *v,
+mlkem/src/indcpa.c-148-                                  const uint8_t c[MLKEM_INDCPA_BYTES])
+mlkem/src/indcpa.c-149-{
+mlkem/src/indcpa.c-150-  mlk_polyvec_decompress_du(b, c);
+mlkem/src/indcpa.c-151-  mlk_poly_decompress_dv(v, c + MLKEM_POLYVECCOMPRESSEDBYTES_DU);
+mlkem/src/indcpa.c-152-}
+mlkem/src/indcpa.c-153-
+mlkem/src/indcpa.c-154-/* Helper function to ensure that the polynomial entries in the output
+mlkem/src/indcpa.c-155- * of gen_matrix use the standard (bitreversed) ordering of coefficients.
+mlkem/src/indcpa.c-156- * No-op unless a native backend with a custom ordering is used.
+mlkem/src/indcpa.c-157- *
+mlkem/src/indcpa.c-158- * We don't inline this into gen_matrix to avoid having to split the CBMC
+mlkem/src/indcpa.c-159- * proof for gen_matrix based on MLK_USE_NATIVE_NTT_CUSTOM_ORDER. */
+--
+mlkem/src/indcpa.c-605-  MLK_ALLOC(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-606-  MLK_ALLOC(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-607-  MLK_ALLOC(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-608-  MLK_ALLOC(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-609-  MLK_ALLOC(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-610-
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c:617:  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c-623-  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c-625-  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c-626-  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+--
+mlkem/src/indcpa.c-636-  MLK_FREE(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-637-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-638-  return ret;
+mlkem/src/indcpa.c-639-}
+mlkem/src/indcpa.c-640-
+mlkem/src/indcpa.c-641-/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
+mlkem/src/indcpa.c-642- * Don't modify by hand -- this is auto-generated by scripts/autogen. */
+mlkem/src/indcpa.c-643-#undef mlk_pack_pk
+mlkem/src/indcpa.c-644-#undef mlk_unpack_pk
+mlkem/src/indcpa.c-645-#undef mlk_pack_sk
+mlkem/src/indcpa.c-646-#undef mlk_unpack_sk
+mlkem/src/indcpa.c-647-#undef mlk_pack_ciphertext
+mlkem/src/indcpa.c:648:#undef mlk_unpack_ciphertext
+mlkem/src/indcpa.c-649-#undef mlk_matvec_mul
+mlkem/src/indcpa.c-650-#undef mlk_polyvec_permute_bitrev_to_custom
+mlkem/src/indcpa.c-651-#undef mlk_polymat_permute_bitrev_to_custom
+mlkem/src/indcpa.c-652-#undef mlk_keypair_getnoise_eta1
+mlkem/src/indcpa.c-653-#undef mlk_enc_getnoise_eta1_eta2
+
+=== INVERSE NTT REFERENCES ===
+mlkem/mlkem_native.c-316-#undef mlk_assert
+mlkem/mlkem_native.c-317-#undef mlk_assert_abs_bound
+mlkem/mlkem_native.c-318-#undef mlk_assert_abs_bound_2d
+mlkem/mlkem_native.c-319-#undef mlk_assert_bound
+mlkem/mlkem_native.c-320-#undef mlk_assert_bound_2d
+mlkem/mlkem_native.c-321-#undef mlk_debug_check_assert
+mlkem/mlkem_native.c-322-#undef mlk_debug_check_bounds
+mlkem/mlkem_native.c-323-/* mlkem/src/poly.h */
+mlkem/mlkem_native.c-324-#undef MLK_INVNTT_BOUND
+mlkem/mlkem_native.c-325-#undef MLK_NTT_BOUND
+mlkem/mlkem_native.c-326-#undef MLK_POLY_H
+mlkem/mlkem_native.c-327-#undef mlk_poly_add
+mlkem/mlkem_native.c:328:#undef mlk_poly_invntt_tomont
+mlkem/mlkem_native.c-329-#undef mlk_poly_mulcache_compute
+mlkem/mlkem_native.c-330-#undef mlk_poly_ntt
+mlkem/mlkem_native.c-331-#undef mlk_poly_reduce
+mlkem/mlkem_native.c-332-#undef mlk_poly_sub
+mlkem/mlkem_native.c-333-#undef mlk_poly_tomont
+mlkem/mlkem_native.c-334-/* mlkem/src/randombytes.h */
+mlkem/mlkem_native.c-335-#undef MLK_RANDOMBYTES_H
+mlkem/mlkem_native.c-336-/* mlkem/src/sampling.h */
+mlkem/mlkem_native.c-337-#undef MLK_SAMPLING_H
+mlkem/mlkem_native.c-338-#undef mlk_poly_cbd2
+mlkem/mlkem_native.c-339-#undef mlk_poly_cbd3
+mlkem/mlkem_native.c-340-#undef mlk_poly_rej_uniform
+--
+mlkem/mlkem_native_asm.S-340-#undef mlk_assert
+mlkem/mlkem_native_asm.S-341-#undef mlk_assert_abs_bound
+mlkem/mlkem_native_asm.S-342-#undef mlk_assert_abs_bound_2d
+mlkem/mlkem_native_asm.S-343-#undef mlk_assert_bound
+mlkem/mlkem_native_asm.S-344-#undef mlk_assert_bound_2d
+mlkem/mlkem_native_asm.S-345-#undef mlk_debug_check_assert
+mlkem/mlkem_native_asm.S-346-#undef mlk_debug_check_bounds
+mlkem/mlkem_native_asm.S-347-/* mlkem/src/poly.h */
+mlkem/mlkem_native_asm.S-348-#undef MLK_INVNTT_BOUND
+mlkem/mlkem_native_asm.S-349-#undef MLK_NTT_BOUND
+mlkem/mlkem_native_asm.S-350-#undef MLK_POLY_H
+mlkem/mlkem_native_asm.S-351-#undef mlk_poly_add
+mlkem/mlkem_native_asm.S:352:#undef mlk_poly_invntt_tomont
+mlkem/mlkem_native_asm.S-353-#undef mlk_poly_mulcache_compute
+mlkem/mlkem_native_asm.S-354-#undef mlk_poly_ntt
+mlkem/mlkem_native_asm.S-355-#undef mlk_poly_reduce
+mlkem/mlkem_native_asm.S-356-#undef mlk_poly_sub
+mlkem/mlkem_native_asm.S-357-#undef mlk_poly_tomont
+mlkem/mlkem_native_asm.S-358-/* mlkem/src/randombytes.h */
+mlkem/mlkem_native_asm.S-359-#undef MLK_RANDOMBYTES_H
+mlkem/mlkem_native_asm.S-360-/* mlkem/src/sampling.h */
+mlkem/mlkem_native_asm.S-361-#undef MLK_SAMPLING_H
+mlkem/mlkem_native_asm.S-362-#undef mlk_poly_cbd2
+mlkem/mlkem_native_asm.S-363-#undef mlk_poly_cbd3
+mlkem/mlkem_native_asm.S-364-#undef mlk_poly_rej_uniform
+--
+mlkem/src/indcpa.c-556-
+mlkem/src/indcpa.c-557-  mlk_gen_matrix(at, seed, 1 /* transpose */);
+mlkem/src/indcpa.c-558-
+mlkem/src/indcpa.c-559-  mlk_enc_getnoise_eta1_eta2(sp, ep, epp, coins);
+mlkem/src/indcpa.c-560-
+mlkem/src/indcpa.c-561-  mlk_polyvec_ntt(sp);
+mlkem/src/indcpa.c-562-
+mlkem/src/indcpa.c-563-  mlk_polyvec_mulcache_compute(sp_cache, sp);
+mlkem/src/indcpa.c-564-  mlk_matvec_mul(b, at, sp, sp_cache);
+mlkem/src/indcpa.c-565-  mlk_polyvec_basemul_acc_montgomery_cached(v, pkpv, sp, sp_cache);
+mlkem/src/indcpa.c-566-
+mlkem/src/indcpa.c-567-  mlk_polyvec_invntt_tomont(b);
+mlkem/src/indcpa.c:568:  mlk_poly_invntt_tomont(v);
+mlkem/src/indcpa.c-569-
+mlkem/src/indcpa.c-570-  mlk_polyvec_add(b, ep);
+mlkem/src/indcpa.c-571-  mlk_poly_add(v, epp);
+mlkem/src/indcpa.c-572-  mlk_poly_add(v, k);
+mlkem/src/indcpa.c-573-
+mlkem/src/indcpa.c-574-  mlk_polyvec_reduce(b);
+mlkem/src/indcpa.c-575-  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-576-
+mlkem/src/indcpa.c-577-  mlk_pack_ciphertext(c, b, v);
+mlkem/src/indcpa.c-578-
+mlkem/src/indcpa.c-579-cleanup:
+mlkem/src/indcpa.c-580-  /* Specification: Partially implements
+--
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c-617-  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c:623:  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c-625-  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c-626-  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+mlkem/src/indcpa.c-630-cleanup:
+mlkem/src/indcpa.c-631-  /* Specification: Partially implements
+mlkem/src/indcpa.c-632-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-633-  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-634-  MLK_FREE(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-635-  MLK_FREE(v, mlk_poly, 1, context);
+--
+mlkem/src/poly.c-506-      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));
+mlkem/src/poly.c-507-      r[j + len] = (int16_t)(r[j + len] - t);
+mlkem/src/poly.c-508-      r[j + len] = mlk_fqmul(r[j + len], zeta);
+mlkem/src/poly.c-509-    }
+mlkem/src/poly.c-510-  }
+mlkem/src/poly.c-511-}
+mlkem/src/poly.c-512-
+mlkem/src/poly.c-513-/* Reference: `invntt()` in the reference implementation @[REF]
+mlkem/src/poly.c-514- *            - We normalize at the beginning of the inverse NTT,
+mlkem/src/poly.c-515- *              while the reference implementation normalizes at
+mlkem/src/poly.c-516- *              the end. This allows us to drop a call to `poly_reduce()`
+mlkem/src/poly.c-517- *              from the base multiplication. */
+mlkem/src/poly.c:518:MLK_STATIC_TESTABLE void mlk_poly_invntt_tomont_c(mlk_poly *p)
+mlkem/src/poly.c-519-__contract__(
+mlkem/src/poly.c-520-  requires(memory_no_alias(p, sizeof(mlk_poly)))
+mlkem/src/poly.c-521-  assigns(memory_slice(p, sizeof(mlk_poly)))
+mlkem/src/poly.c-522-  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+mlkem/src/poly.c-523-)
+mlkem/src/poly.c-524-{
+mlkem/src/poly.c-525-  unsigned j, layer;
+mlkem/src/poly.c-526-  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */
+mlkem/src/poly.c-527-  int16_t *r = p->coeffs;
+mlkem/src/poly.c-528-
+mlkem/src/poly.c-529-  /*
+mlkem/src/poly.c-530-   * Scale input polynomial to account for Montgomery factor
+--
+mlkem/src/poly.c-545-  __loop__(
+mlkem/src/poly.c-546-    invariant(0 <= layer && layer < 8)
+mlkem/src/poly.c-547-    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c-548-    decreases(layer))
+mlkem/src/poly.c-549-  {
+mlkem/src/poly.c-550-    mlk_invntt_layer(r, layer);
+mlkem/src/poly.c-551-  }
+mlkem/src/poly.c-552-
+mlkem/src/poly.c-553-  mlk_assert_abs_bound(p, MLKEM_N, MLK_INVNTT_BOUND);
+mlkem/src/poly.c-554-}
+mlkem/src/poly.c-555-
+mlkem/src/poly.c-556-MLK_INTERNAL_API
+mlkem/src/poly.c:557:void mlk_poly_invntt_tomont(mlk_poly *r)
+mlkem/src/poly.c-558-{
+mlkem/src/poly.c-559-#if defined(MLK_USE_NATIVE_INTT)
+mlkem/src/poly.c-560-  int ret;
+mlkem/src/poly.c-561-  ret = mlk_intt_native(r->coeffs);
+mlkem/src/poly.c-562-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+mlkem/src/poly.c-563-  {
+mlkem/src/poly.c-564-    mlk_assert_abs_bound(r, MLKEM_N, MLK_INVNTT_BOUND);
+mlkem/src/poly.c-565-    return;
+mlkem/src/poly.c-566-  }
+mlkem/src/poly.c-567-#endif /* MLK_USE_NATIVE_INTT */
+mlkem/src/poly.c-568-
+mlkem/src/poly.c:569:  mlk_poly_invntt_tomont_c(r);
+mlkem/src/poly.c-570-}
+mlkem/src/poly.c-571-
+mlkem/src/poly.c-572-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+mlkem/src/poly.c-573-
+mlkem/src/poly.c-574-MLK_EMPTY_CU(mlk_poly)
+mlkem/src/poly.c-575-
+mlkem/src/poly.c-576-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+--
+mlkem/src/poly.h-251- *
+mlkem/src/poly.h-252- * @param[in,out] r Input/output polynomial.
+mlkem/src/poly.h-253- */
+mlkem/src/poly.h-254-MLK_INTERNAL_API
+mlkem/src/poly.h-255-void mlk_poly_ntt(mlk_poly *r)
+mlkem/src/poly.h-256-__contract__(
+mlkem/src/poly.h-257-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-258-  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.h-259-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-260-  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+mlkem/src/poly.h-261-);
+mlkem/src/poly.h-262-
+mlkem/src/poly.h:263:#define mlk_poly_invntt_tomont MLK_NAMESPACE(poly_invntt_tomont)
+mlkem/src/poly.h-264-/**
+mlkem/src/poly.h-265- * Compute the inverse negacyclic number-theoretic transform (NTT) of a
+mlkem/src/poly.h-266- * polynomial in place; input assumed to be in bitreversed order, output in
+mlkem/src/poly.h-267- * normal order.
+mlkem/src/poly.h-268- *
+mlkem/src/poly.h-269- * The input is assumed to be in bitreversed order, or of a custom order if
+mlkem/src/poly.h-270- * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set, and can have arbitrary
+mlkem/src/poly.h-271- * coefficients in int16_t.
+mlkem/src/poly.h-272- *
+mlkem/src/poly.h-273- * The output polynomial is in normal order, and coefficient-wise bound by
+mlkem/src/poly.h-274- * MLK_INVNTT_BOUND in absolute value.
+mlkem/src/poly.h-275- *
+mlkem/src/poly.h-276- * @spec{Implements composition of @[FIPS203, Algorithm 10, NTT^{-1}] and
+mlkem/src/poly.h-277- * elementwise modular multiplication with a suitable Montgomery factor
+mlkem/src/poly.h-278- * introduced during the base multiplication.}
+mlkem/src/poly.h-279- *
+mlkem/src/poly.h-280- * @param[in,out] r Input/output polynomial.
+mlkem/src/poly.h-281- */
+mlkem/src/poly.h-282-MLK_INTERNAL_API
+mlkem/src/poly.h:283:void mlk_poly_invntt_tomont(mlk_poly *r)
+mlkem/src/poly.h-284-__contract__(
+mlkem/src/poly.h-285-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-286-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-287-  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+mlkem/src/poly.h-288-);
+mlkem/src/poly.h-289-
+mlkem/src/poly.h-290-#endif /* !MLK_POLY_H */
+--
+mlkem/src/poly_k.c-121-
+mlkem/src/poly_k.c-122-/* Reference: `polyvec_invntt_tomont()` in the reference implementation @[REF].
+mlkem/src/poly_k.c-123- *            - We normalize at the beginning of the inverse NTT,
+mlkem/src/poly_k.c-124- *              while the reference implementation normalizes at
+mlkem/src/poly_k.c-125- *              the end. This allows us to drop a call to `poly_reduce()`
+mlkem/src/poly_k.c-126- *              from the base multiplication. */
+mlkem/src/poly_k.c-127-MLK_INTERNAL_API
+mlkem/src/poly_k.c-128-void mlk_polyvec_invntt_tomont(mlk_polyvec *r)
+mlkem/src/poly_k.c-129-{
+mlkem/src/poly_k.c-130-  unsigned i;
+mlkem/src/poly_k.c-131-  for (i = 0; i < MLKEM_K; i++)
+mlkem/src/poly_k.c-132-  {
+mlkem/src/poly_k.c:133:    mlk_poly_invntt_tomont(&r->vec[i]);
+mlkem/src/poly_k.c-134-  }
+mlkem/src/poly_k.c-135-
+mlkem/src/poly_k.c-136-  mlk_assert_abs_bound_2d(r->vec, MLKEM_K, MLKEM_N, MLK_INVNTT_BOUND);
+mlkem/src/poly_k.c-137-}
+mlkem/src/poly_k.c-138-
+mlkem/src/poly_k.c-139-/* Reference: `polyvec_basemul_acc_montgomery()` in the
+mlkem/src/poly_k.c-140- *            reference implementation @[REF].
+mlkem/src/poly_k.c-141- *            - We use a multiplication cache ('mulcache') here
+mlkem/src/poly_k.c-142- *              which is not present in the reference implementation @[REF].
+mlkem/src/poly_k.c-143- *              This idea originates from @[NeonNTT] and is used
+mlkem/src/poly_k.c-144- *              at the C level here.
+mlkem/src/poly_k.c-145- *            - We compute the coefficients of the scalar product in 32-bit
+--
+proofs/cbmc/indcpa_dec/Makefile-14-INCLUDES +=
+proofs/cbmc/indcpa_dec/Makefile-15-
+proofs/cbmc/indcpa_dec/Makefile-16-REMOVE_FUNCTION_BODY +=
+proofs/cbmc/indcpa_dec/Makefile-17-UNWINDSET +=
+proofs/cbmc/indcpa_dec/Makefile-18-
+proofs/cbmc/indcpa_dec/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/indcpa_dec/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/indcpa.c
+proofs/cbmc/indcpa_dec/Makefile-21-
+proofs/cbmc/indcpa_dec/Makefile-22-CHECK_FUNCTION_CONTRACTS=mlk_indcpa_dec
+proofs/cbmc/indcpa_dec/Makefile-23-USE_FUNCTION_CONTRACTS = mlk_polyvec_ntt
+proofs/cbmc/indcpa_dec/Makefile-24-USE_FUNCTION_CONTRACTS += mlk_polyvec_mulcache_compute
+proofs/cbmc/indcpa_dec/Makefile-25-USE_FUNCTION_CONTRACTS += mlk_polyvec_basemul_acc_montgomery_cached
+proofs/cbmc/indcpa_dec/Makefile:26:USE_FUNCTION_CONTRACTS += mlk_poly_invntt_tomont
+proofs/cbmc/indcpa_dec/Makefile-27-USE_FUNCTION_CONTRACTS += mlk_polyvec_decompress_du
+proofs/cbmc/indcpa_dec/Makefile-28-USE_FUNCTION_CONTRACTS += mlk_poly_decompress_dv
+proofs/cbmc/indcpa_dec/Makefile-29-USE_FUNCTION_CONTRACTS += mlk_polyvec_frombytes
+proofs/cbmc/indcpa_dec/Makefile-30-USE_FUNCTION_CONTRACTS += mlk_polyvec_reduce
+proofs/cbmc/indcpa_dec/Makefile-31-USE_FUNCTION_CONTRACTS += mlk_poly_sub
+proofs/cbmc/indcpa_dec/Makefile-32-USE_FUNCTION_CONTRACTS += mlk_poly_reduce
+proofs/cbmc/indcpa_dec/Makefile-33-USE_FUNCTION_CONTRACTS += mlk_poly_tomsg
+proofs/cbmc/indcpa_dec/Makefile-34-USE_FUNCTION_CONTRACTS += mlk_zeroize
+proofs/cbmc/indcpa_dec/Makefile-35-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/indcpa_dec/Makefile-36-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/indcpa_dec/Makefile-37-
+proofs/cbmc/indcpa_dec/Makefile-38-# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+--
+proofs/cbmc/indcpa_enc/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/indcpa_enc/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/indcpa.c
+proofs/cbmc/indcpa_enc/Makefile-21-
+proofs/cbmc/indcpa_enc/Makefile-22-CHECK_FUNCTION_CONTRACTS=mlk_indcpa_enc
+proofs/cbmc/indcpa_enc/Makefile-23-USE_FUNCTION_CONTRACTS = mlk_poly_frommsg
+proofs/cbmc/indcpa_enc/Makefile-24-USE_FUNCTION_CONTRACTS += mlk_gen_matrix
+proofs/cbmc/indcpa_enc/Makefile-25-USE_FUNCTION_CONTRACTS += mlk_enc_getnoise_eta1_eta2
+proofs/cbmc/indcpa_enc/Makefile-26-
+proofs/cbmc/indcpa_enc/Makefile-27-USE_FUNCTION_CONTRACTS += mlk_polyvec_ntt
+proofs/cbmc/indcpa_enc/Makefile-28-USE_FUNCTION_CONTRACTS += mlk_polyvec_mulcache_compute
+proofs/cbmc/indcpa_enc/Makefile-29-USE_FUNCTION_CONTRACTS += mlk_polyvec_basemul_acc_montgomery_cached
+proofs/cbmc/indcpa_enc/Makefile-30-USE_FUNCTION_CONTRACTS += mlk_polyvec_invntt_tomont
+proofs/cbmc/indcpa_enc/Makefile:31:USE_FUNCTION_CONTRACTS += mlk_poly_invntt_tomont
+proofs/cbmc/indcpa_enc/Makefile-32-USE_FUNCTION_CONTRACTS += mlk_polyvec_add
+proofs/cbmc/indcpa_enc/Makefile-33-USE_FUNCTION_CONTRACTS += mlk_poly_add
+proofs/cbmc/indcpa_enc/Makefile-34-USE_FUNCTION_CONTRACTS += mlk_polyvec_reduce
+proofs/cbmc/indcpa_enc/Makefile-35-USE_FUNCTION_CONTRACTS += mlk_poly_reduce
+proofs/cbmc/indcpa_enc/Makefile-36-USE_FUNCTION_CONTRACTS += mlk_polyvec_compress_du
+proofs/cbmc/indcpa_enc/Makefile-37-USE_FUNCTION_CONTRACTS += mlk_poly_compress_dv
+proofs/cbmc/indcpa_enc/Makefile-38-USE_FUNCTION_CONTRACTS += mlk_polyvec_frombytes
+proofs/cbmc/indcpa_enc/Makefile-39-USE_FUNCTION_CONTRACTS += mlk_matvec_mul
+proofs/cbmc/indcpa_enc/Makefile-40-USE_FUNCTION_CONTRACTS += mlk_zeroize
+proofs/cbmc/indcpa_enc/Makefile-41-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/indcpa_enc/Makefile-42-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/indcpa_enc/Makefile-43-
+--
+proofs/cbmc/poly_invntt_tomont/Makefile-1-# Copyright (c) The mlkem-native project authors
+proofs/cbmc/poly_invntt_tomont/Makefile-2-# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+proofs/cbmc/poly_invntt_tomont/Makefile-3-
+proofs/cbmc/poly_invntt_tomont/Makefile-4-include ../Makefile_params.common
+proofs/cbmc/poly_invntt_tomont/Makefile-5-
+proofs/cbmc/poly_invntt_tomont/Makefile-6-HARNESS_ENTRY = harness
+proofs/cbmc/poly_invntt_tomont/Makefile-7-HARNESS_FILE = poly_invntt_tomont_harness
+proofs/cbmc/poly_invntt_tomont/Makefile-8-
+proofs/cbmc/poly_invntt_tomont/Makefile-9-# This should be a unique identifier for this proof, and will appear on the
+proofs/cbmc/poly_invntt_tomont/Makefile-10-# Litani dashboard. It can be human-readable and contain spaces if you wish.
+proofs/cbmc/poly_invntt_tomont/Makefile:11:PROOF_UID = mlk_poly_invntt_tomont
+proofs/cbmc/poly_invntt_tomont/Makefile-12-
+proofs/cbmc/poly_invntt_tomont/Makefile-13-DEFINES +=
+proofs/cbmc/poly_invntt_tomont/Makefile-14-INCLUDES +=
+proofs/cbmc/poly_invntt_tomont/Makefile-15-
+proofs/cbmc/poly_invntt_tomont/Makefile-16-REMOVE_FUNCTION_BODY +=
+proofs/cbmc/poly_invntt_tomont/Makefile-17-UNWINDSET +=
+proofs/cbmc/poly_invntt_tomont/Makefile-18-
+proofs/cbmc/poly_invntt_tomont/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/poly_invntt_tomont/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+proofs/cbmc/poly_invntt_tomont/Makefile-21-
+proofs/cbmc/poly_invntt_tomont/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_invntt_tomont
+proofs/cbmc/poly_invntt_tomont/Makefile:23:USE_FUNCTION_CONTRACTS=mlk_poly_invntt_tomont_c
+proofs/cbmc/poly_invntt_tomont/Makefile-24-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/poly_invntt_tomont/Makefile-25-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/poly_invntt_tomont/Makefile-26-
+proofs/cbmc/poly_invntt_tomont/Makefile-27-# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+proofs/cbmc/poly_invntt_tomont/Makefile-28-EXTERNAL_SAT_SOLVER=
+proofs/cbmc/poly_invntt_tomont/Makefile-29-CBMCFLAGS=--smt2
+proofs/cbmc/poly_invntt_tomont/Makefile-30-
+proofs/cbmc/poly_invntt_tomont/Makefile:31:FUNCTION_NAME = mlk_poly_invntt_tomont
+proofs/cbmc/poly_invntt_tomont/Makefile-32-
+proofs/cbmc/poly_invntt_tomont/Makefile-33-# If this proof is found to consume huge amounts of RAM, you can set the
+proofs/cbmc/poly_invntt_tomont/Makefile-34-# EXPENSIVE variable. With new enough versions of the proof tools, this will
+proofs/cbmc/poly_invntt_tomont/Makefile-35-# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_invntt_tomont/Makefile-36-# documentation in Makefile.common under the "Job Pools" heading for details.
+proofs/cbmc/poly_invntt_tomont/Makefile-37-# EXPENSIVE = true
+proofs/cbmc/poly_invntt_tomont/Makefile-38-
+proofs/cbmc/poly_invntt_tomont/Makefile-39-# This function is large enough to need...
+proofs/cbmc/poly_invntt_tomont/Makefile-40-CBMC_OBJECT_BITS = 12
+proofs/cbmc/poly_invntt_tomont/Makefile-41-
+proofs/cbmc/poly_invntt_tomont/Makefile-42-# If you require access to a file-local ("static") function or object to conduct
+proofs/cbmc/poly_invntt_tomont/Makefile-43-# your proof, set the following (and do not include the original source file
+--
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-1-// Copyright (c) The mlkem-native project authors
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-2-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-3-// SPDX-License-Identifier: MIT-0 AND Apache-2.0
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-4-
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-5-#include "poly.h"
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-6-
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-7-void harness(void)
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-8-{
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-9-  mlk_poly *p;
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c:10:  mlk_poly_invntt_tomont(p);
+proofs/cbmc/poly_invntt_tomont/poly_invntt_tomont_harness.c-11-}
+--
+proofs/cbmc/poly_invntt_tomont_c/Makefile-1-# Copyright (c) The mlkem-native project authors
+proofs/cbmc/poly_invntt_tomont_c/Makefile-2-# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+proofs/cbmc/poly_invntt_tomont_c/Makefile-3-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-4-include ../Makefile_params.common
+proofs/cbmc/poly_invntt_tomont_c/Makefile-5-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-6-HARNESS_ENTRY = harness
+proofs/cbmc/poly_invntt_tomont_c/Makefile-7-HARNESS_FILE = poly_invntt_tomont_c_harness
+proofs/cbmc/poly_invntt_tomont_c/Makefile-8-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-9-# This should be a unique identifier for this proof, and will appear on the
+proofs/cbmc/poly_invntt_tomont_c/Makefile-10-# Litani dashboard. It can be human-readable and contain spaces if you wish.
+proofs/cbmc/poly_invntt_tomont_c/Makefile:11:PROOF_UID = mlk_poly_invntt_tomont_c
+proofs/cbmc/poly_invntt_tomont_c/Makefile-12-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-13-DEFINES +=
+proofs/cbmc/poly_invntt_tomont_c/Makefile-14-INCLUDES +=
+proofs/cbmc/poly_invntt_tomont_c/Makefile-15-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-16-REMOVE_FUNCTION_BODY +=
+proofs/cbmc/poly_invntt_tomont_c/Makefile-17-UNWINDSET +=
+proofs/cbmc/poly_invntt_tomont_c/Makefile-18-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/poly_invntt_tomont_c/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+proofs/cbmc/poly_invntt_tomont_c/Makefile-21-
+proofs/cbmc/poly_invntt_tomont_c/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_invntt_tomont_c
+proofs/cbmc/poly_invntt_tomont_c/Makefile-23-USE_FUNCTION_CONTRACTS = mlk_fqmul
+proofs/cbmc/poly_invntt_tomont_c/Makefile-24-USE_FUNCTION_CONTRACTS += mlk_invntt_layer
+proofs/cbmc/poly_invntt_tomont_c/Makefile-25-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/poly_invntt_tomont_c/Makefile-26-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/poly_invntt_tomont_c/Makefile-27-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-28-# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+proofs/cbmc/poly_invntt_tomont_c/Makefile-29-EXTERNAL_SAT_SOLVER=
+proofs/cbmc/poly_invntt_tomont_c/Makefile-30-CBMCFLAGS=--smt2
+proofs/cbmc/poly_invntt_tomont_c/Makefile-31-
+proofs/cbmc/poly_invntt_tomont_c/Makefile:32:FUNCTION_NAME = mlk_poly_invntt_tomont_c
+proofs/cbmc/poly_invntt_tomont_c/Makefile-33-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-34-# If this proof is found to consume huge amounts of RAM, you can set the
+proofs/cbmc/poly_invntt_tomont_c/Makefile-35-# EXPENSIVE variable. With new enough versions of the proof tools, this will
+proofs/cbmc/poly_invntt_tomont_c/Makefile-36-# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_invntt_tomont_c/Makefile-37-# documentation in Makefile.common under the "Job Pools" heading for details.
+proofs/cbmc/poly_invntt_tomont_c/Makefile-38-# EXPENSIVE = true
+proofs/cbmc/poly_invntt_tomont_c/Makefile-39-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-40-# This function is large enough to need...
+proofs/cbmc/poly_invntt_tomont_c/Makefile-41-CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_invntt_tomont_c/Makefile-42-
+proofs/cbmc/poly_invntt_tomont_c/Makefile-43-include ../Makefile.common
+--
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-1-// Copyright (c) The mlkem-native project authors
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-2-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-3-// SPDX-License-Identifier: MIT-0 AND Apache-2.0
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-4-
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-5-#include "poly.h"
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-6-
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c:7:void mlk_poly_invntt_tomont_c(mlk_poly *p);
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-8-
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-9-void harness(void)
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-10-{
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-11-  mlk_poly *p;
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c:12:  mlk_poly_invntt_tomont_c(p);
+proofs/cbmc/poly_invntt_tomont_c/poly_invntt_tomont_c_harness.c-13-}
+--
+proofs/cbmc/poly_invntt_tomont_native/Makefile-10-# Litani dashboard. It can be human-readable and contain spaces if you wish.
+proofs/cbmc/poly_invntt_tomont_native/Makefile-11-PROOF_UID = poly_invntt_tomont_native
+proofs/cbmc/poly_invntt_tomont_native/Makefile-12-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-13-DEFINES += -DMLK_CONFIG_USE_NATIVE_BACKEND_ARITH -DMLK_CONFIG_ARITH_BACKEND_FILE="\"dummy_backend.h\""
+proofs/cbmc/poly_invntt_tomont_native/Makefile-14-INCLUDES +=
+proofs/cbmc/poly_invntt_tomont_native/Makefile-15-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-16-REMOVE_FUNCTION_BODY +=
+proofs/cbmc/poly_invntt_tomont_native/Makefile-17-UNWINDSET +=
+proofs/cbmc/poly_invntt_tomont_native/Makefile-18-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/poly_invntt_tomont_native/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+proofs/cbmc/poly_invntt_tomont_native/Makefile-21-
+proofs/cbmc/poly_invntt_tomont_native/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_invntt_tomont
+proofs/cbmc/poly_invntt_tomont_native/Makefile-23-USE_FUNCTION_CONTRACTS = mlk_intt_native
+proofs/cbmc/poly_invntt_tomont_native/Makefile:24:USE_FUNCTION_CONTRACTS += mlk_poly_invntt_tomont_c
+proofs/cbmc/poly_invntt_tomont_native/Makefile-25-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/poly_invntt_tomont_native/Makefile-26-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/poly_invntt_tomont_native/Makefile-27-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-28-# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+proofs/cbmc/poly_invntt_tomont_native/Makefile-29-EXTERNAL_SAT_SOLVER=
+proofs/cbmc/poly_invntt_tomont_native/Makefile-30-CBMCFLAGS=--smt2
+proofs/cbmc/poly_invntt_tomont_native/Makefile-31-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-32-FUNCTION_NAME = poly_invntt_tomont_native
+proofs/cbmc/poly_invntt_tomont_native/Makefile-33-
+proofs/cbmc/poly_invntt_tomont_native/Makefile-34-# If this proof is found to consume huge amounts of RAM, you can set the
+proofs/cbmc/poly_invntt_tomont_native/Makefile-35-# EXPENSIVE variable. With new enough versions of the proof tools, this will
+proofs/cbmc/poly_invntt_tomont_native/Makefile-36-# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+--
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-1-// Copyright (c) The mlkem-native project authors
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-2-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-3-// SPDX-License-Identifier: MIT-0 AND Apache-2.0
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-4-
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-5-#include "poly.h"
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-6-
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-7-void harness(void)
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-8-{
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-9-  mlk_poly *p;
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c:10:  mlk_poly_invntt_tomont(p);
+proofs/cbmc/poly_invntt_tomont_native/poly_invntt_tomont_native_harness.c-11-}
+--
+proofs/cbmc/polyvec_invntt_tomont/Makefile-11-PROOF_UID = mlk_polyvec_invntt_tomont
+proofs/cbmc/polyvec_invntt_tomont/Makefile-12-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-13-DEFINES +=
+proofs/cbmc/polyvec_invntt_tomont/Makefile-14-INCLUDES +=
+proofs/cbmc/polyvec_invntt_tomont/Makefile-15-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-16-REMOVE_FUNCTION_BODY +=
+proofs/cbmc/polyvec_invntt_tomont/Makefile-17-UNWINDSET += mlk_polyvec_invntt_tomont.0:4 # Largest value of MLKEM_K
+proofs/cbmc/polyvec_invntt_tomont/Makefile-18-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-19-PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+proofs/cbmc/polyvec_invntt_tomont/Makefile-20-PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly_k.c
+proofs/cbmc/polyvec_invntt_tomont/Makefile-21-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-22-CHECK_FUNCTION_CONTRACTS=mlk_polyvec_invntt_tomont
+proofs/cbmc/polyvec_invntt_tomont/Makefile:23:USE_FUNCTION_CONTRACTS=mlk_poly_invntt_tomont
+proofs/cbmc/polyvec_invntt_tomont/Makefile-24-APPLY_LOOP_CONTRACTS=on
+proofs/cbmc/polyvec_invntt_tomont/Makefile-25-USE_DYNAMIC_FRAMES=1
+proofs/cbmc/polyvec_invntt_tomont/Makefile-26-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-27-# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+proofs/cbmc/polyvec_invntt_tomont/Makefile-28-EXTERNAL_SAT_SOLVER=
+proofs/cbmc/polyvec_invntt_tomont/Makefile-29-CBMCFLAGS=--smt2
+proofs/cbmc/polyvec_invntt_tomont/Makefile-30-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-31-FUNCTION_NAME = mlk_polyvec_invntt_tomont
+proofs/cbmc/polyvec_invntt_tomont/Makefile-32-
+proofs/cbmc/polyvec_invntt_tomont/Makefile-33-# If this proof is found to consume huge amounts of RAM, you can set the
+proofs/cbmc/polyvec_invntt_tomont/Makefile-34-# EXPENSIVE variable. With new enough versions of the proof tools, this will
+proofs/cbmc/polyvec_invntt_tomont/Makefile-35-# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+--
+proofs/cbmc/proof_guide.md-8-
+proofs/cbmc/proof_guide.md-9-## Installation
+proofs/cbmc/proof_guide.md-10-
+proofs/cbmc/proof_guide.md-11-Before you start, follow the installation instructions [here](README.md) to ensure you have all the
+proofs/cbmc/proof_guide.md-12-required tools installed at the right version.
+proofs/cbmc/proof_guide.md-13-It is not uncommon for proofs to fail or have significantly worse performance when switching to different tool versions.
+proofs/cbmc/proof_guide.md-14-
+proofs/cbmc/proof_guide.md-15-## Scope
+proofs/cbmc/proof_guide.md-16-
+proofs/cbmc/proof_guide.md-17-Our CBMC proofs confirm the absence of certain classes of undefined behaviour, such as integer overflow or out of bounds
+proofs/cbmc/proof_guide.md-18-memory accesses -- for the precise list of conditions checked, see the CBMC configuration in
+proofs/cbmc/proof_guide.md-19-[Makefile.common](Makefile.common). For many arithmetic functions, we additionally specify how they affect coefficient
+proofs/cbmc/proof_guide.md:20:bounds: For example, we show that the result of `mlk_poly_invntt_tomont()` has coefficients bound by
+proofs/cbmc/proof_guide.md-21-`MLK_INVNTT_BOUND`. Finally, some simple functions have their full functional behaviour specified: For example, the
+proofs/cbmc/proof_guide.md-22-specification of the constant-time `mlk_ct_memcmp()` shows that, functionally, it is just an ordinary `memcmp()`.
+proofs/cbmc/proof_guide.md-23-
+proofs/cbmc/proof_guide.md-24-## CBMC annotations
+proofs/cbmc/proof_guide.md-25-
+proofs/cbmc/proof_guide.md-26-CBMC proofs are largely automatic; there are no proof scripts as in interactive theorem proving. Instead, CBMC consumes
+proofs/cbmc/proof_guide.md-27-_annotated_ C code and checks that it does not exhibit the configured classes of undefined behaviour within the
+proofs/cbmc/proof_guide.md-28-context described by the annotations; if the annotations add further constraints, those are checked, too. For example, a
+proofs/cbmc/proof_guide.md-29-function contract annotation provides contextual assumptions about a function as _preconditions_ to CBMC, and adds
+proofs/cbmc/proof_guide.md-30-further _constraints_ for the program state at function return.
+proofs/cbmc/proof_guide.md-31-
+proofs/cbmc/proof_guide.md-32-In mlkem-native, we use abbreviated forms of the CBMC annotations defined by macros in the [cbmc.h](../../mlkem/src/cbmc.h). We
+--
+test/src/test_unit.c-26-#ifdef MLKEM_DEBUG
+test/src/test_unit.c-27-#define NUM_RANDOM_TESTS_REJ_UNIFORM 100
+test/src/test_unit.c-28-#else
+test/src/test_unit.c-29-#define NUM_RANDOM_TESTS_REJ_UNIFORM 1000
+test/src/test_unit.c-30-#endif
+test/src/test_unit.c-31-#endif /* !NUM_RANDOM_TESTS_REJ_UNIFORM */
+test/src/test_unit.c-32-
+test/src/test_unit.c-33-/* Declarations for _c functions exposed by MLK_STATIC_TESTABLE= */
+test/src/test_unit.c-34-
+test/src/test_unit.c-35-void mlk_poly_reduce_c(mlk_poly *r);
+test/src/test_unit.c-36-void mlk_poly_tomont_c(mlk_poly *r);
+test/src/test_unit.c-37-void mlk_poly_ntt_c(mlk_poly *r);
+test/src/test_unit.c:38:void mlk_poly_invntt_tomont_c(mlk_poly *r);
+test/src/test_unit.c-39-void mlk_poly_tobytes_c(uint8_t r[MLKEM_POLYBYTES], const mlk_poly *a);
+test/src/test_unit.c-40-void mlk_poly_frombytes_c(mlk_poly *r, const uint8_t a[MLKEM_POLYBYTES]);
+test/src/test_unit.c-41-void mlk_polyvec_basemul_acc_montgomery_cached_c(
+test/src/test_unit.c-42-    mlk_poly *r, const mlk_polyvec *a, const mlk_polyvec *b,
+test/src/test_unit.c-43-    const mlk_polyvec_mulcache *b_cache);
+test/src/test_unit.c-44-void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x, const mlk_poly *a);
+test/src/test_unit.c-45-void mlk_keccakf1600_permute_c(uint64_t *state);
+test/src/test_unit.c-46-unsigned mlk_rej_uniform_c(int16_t *r, unsigned target, unsigned offset,
+test/src/test_unit.c-47-                           const uint8_t *buf, unsigned buflen);
+test/src/test_unit.c-48-void mlk_poly_compress_d4_c(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D4],
+test/src/test_unit.c-49-                            const mlk_poly *a);
+test/src/test_unit.c-50-void mlk_poly_decompress_d4_c(mlk_poly *r,
+--
+test/src/test_unit.c-487-  if (test_poly == NULL || ref_poly == NULL)
+test/src/test_unit.c-488-  {
+test/src/test_unit.c-489-    goto cleanup;
+test/src/test_unit.c-490-  }
+test/src/test_unit.c-491-
+test/src/test_unit.c-492-  memcpy(test_poly->coeffs, input, MLKEM_N * sizeof(int16_t));
+test/src/test_unit.c-493-  memcpy(ref_poly->coeffs, input, MLKEM_N * sizeof(int16_t));
+test/src/test_unit.c-494-
+test/src/test_unit.c-495-#ifdef MLK_USE_NATIVE_NTT_CUSTOM_ORDER
+test/src/test_unit.c-496-  mlk_poly_permute_bitrev_to_custom(test_poly->coeffs);
+test/src/test_unit.c-497-#endif
+test/src/test_unit.c-498-
+test/src/test_unit.c:499:  mlk_poly_invntt_tomont(test_poly);
+test/src/test_unit.c:500:  mlk_poly_invntt_tomont_c(ref_poly);
+test/src/test_unit.c-501-
+test/src/test_unit.c-502-  /* Normalize */
+test/src/test_unit.c-503-  mlk_poly_reduce_c(ref_poly);
+test/src/test_unit.c-504-  mlk_poly_reduce_c(test_poly);
+test/src/test_unit.c-505-
+test/src/test_unit.c-506-  CHECK(compare_i16_arrays(test_poly->coeffs, ref_poly->coeffs, MLKEM_N,
+test/src/test_unit.c-507-                           test_name, input));
+test/src/test_unit.c-508-  ret = 0;
+test/src/test_unit.c-509-
+test/src/test_unit.c-510-cleanup:
+test/src/test_unit.c-511-  MLK_FREE(ref_poly, mlk_poly, 1, NULL);
+test/src/test_unit.c-512-  MLK_FREE(test_poly, mlk_poly, 1, NULL);
+
+=== POLYNOMIAL SUBTRACTION CONTRACT AND BODY ===
+mlkem/mlkem_native.c-316-#undef mlk_assert
+mlkem/mlkem_native.c-317-#undef mlk_assert_abs_bound
+mlkem/mlkem_native.c-318-#undef mlk_assert_abs_bound_2d
+mlkem/mlkem_native.c-319-#undef mlk_assert_bound
+mlkem/mlkem_native.c-320-#undef mlk_assert_bound_2d
+mlkem/mlkem_native.c-321-#undef mlk_debug_check_assert
+mlkem/mlkem_native.c-322-#undef mlk_debug_check_bounds
+mlkem/mlkem_native.c-323-/* mlkem/src/poly.h */
+mlkem/mlkem_native.c-324-#undef MLK_INVNTT_BOUND
+mlkem/mlkem_native.c-325-#undef MLK_NTT_BOUND
+mlkem/mlkem_native.c-326-#undef MLK_POLY_H
+mlkem/mlkem_native.c-327-#undef mlk_poly_add
+mlkem/mlkem_native.c-328-#undef mlk_poly_invntt_tomont
+mlkem/mlkem_native.c-329-#undef mlk_poly_mulcache_compute
+mlkem/mlkem_native.c-330-#undef mlk_poly_ntt
+mlkem/mlkem_native.c-331-#undef mlk_poly_reduce
+mlkem/mlkem_native.c:332:#undef mlk_poly_sub
+mlkem/mlkem_native.c-333-#undef mlk_poly_tomont
+mlkem/mlkem_native.c-334-/* mlkem/src/randombytes.h */
+mlkem/mlkem_native.c-335-#undef MLK_RANDOMBYTES_H
+mlkem/mlkem_native.c-336-/* mlkem/src/sampling.h */
+mlkem/mlkem_native.c-337-#undef MLK_SAMPLING_H
+mlkem/mlkem_native.c-338-#undef mlk_poly_cbd2
+mlkem/mlkem_native.c-339-#undef mlk_poly_cbd3
+mlkem/mlkem_native.c-340-#undef mlk_poly_rej_uniform
+mlkem/mlkem_native.c-341-#undef mlk_poly_rej_uniform_x4
+mlkem/mlkem_native.c-342-/* mlkem/src/symmetric.h */
+mlkem/mlkem_native.c-343-#undef MLK_SYMMETRIC_H
+mlkem/mlkem_native.c-344-#undef MLK_XOF_RATE
+mlkem/mlkem_native.c-345-#undef mlk_hash_g
+mlkem/mlkem_native.c-346-#undef mlk_hash_h
+mlkem/mlkem_native.c-347-#undef mlk_hash_j
+mlkem/mlkem_native.c-348-#undef mlk_prf_eta
+--
+mlkem/src/indcpa.c-609-  MLK_ALLOC(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-610-
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c-617-  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c-623-  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c:625:  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c-626-  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+mlkem/src/indcpa.c-630-cleanup:
+mlkem/src/indcpa.c-631-  /* Specification: Partially implements
+mlkem/src/indcpa.c-632-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-633-  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-634-  MLK_FREE(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-635-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-636-  MLK_FREE(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-637-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-638-  return ret;
+mlkem/src/indcpa.c-639-}
+mlkem/src/indcpa.c-640-
+mlkem/src/indcpa.c-641-/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
+--
+mlkem/src/poly.c-232-  for (i = 0; i < MLKEM_N; i++)
+mlkem/src/poly.c-233-  __loop__(
+mlkem/src/poly.c-234-    invariant(i <= MLKEM_N)
+mlkem/src/poly.c-235-    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+mlkem/src/poly.c-236-    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+mlkem/src/poly.c-237-    decreases(MLKEM_N - i))
+mlkem/src/poly.c-238-  {
+mlkem/src/poly.c-239-    /* The preconditions imply that the addition stays within int16_t. */
+mlkem/src/poly.c-240-    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);
+mlkem/src/poly.c-241-  }
+mlkem/src/poly.c-242-}
+mlkem/src/poly.c-243-
+mlkem/src/poly.c-244-/* Reference: `poly_sub()` in the reference implementation @[REF].
+mlkem/src/poly.c-245- *            - We use destructive version (output=first input) to avoid
+mlkem/src/poly.c-246- *              reasoning about aliasing in the CBMC specification */
+mlkem/src/poly.c-247-MLK_INTERNAL_API
+mlkem/src/poly.c:248:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+mlkem/src/poly.c-249-{
+mlkem/src/poly.c-250-  unsigned i;
+mlkem/src/poly.c-251-  for (i = 0; i < MLKEM_N; i++)
+mlkem/src/poly.c-252-  __loop__(
+mlkem/src/poly.c-253-    invariant(i <= MLKEM_N)
+mlkem/src/poly.c-254-    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+mlkem/src/poly.c-255-    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))
+mlkem/src/poly.c-256-    decreases(MLKEM_N - i))
+mlkem/src/poly.c-257-  {
+mlkem/src/poly.c-258-    /* The preconditions imply that the subtraction stays within int16_t. */
+mlkem/src/poly.c-259-    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
+mlkem/src/poly.c-260-  }
+mlkem/src/poly.c-261-}
+mlkem/src/poly.c-262-
+mlkem/src/poly.c-263-#include "zetas.inc"
+mlkem/src/poly.c-264-
+--
+mlkem/src/poly.h-194- */
+mlkem/src/poly.h-195-/*
+mlkem/src/poly.h-196- * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+mlkem/src/poly.h-197- * We specialize to the accumulator form to avoid reasoning about aliasing.
+mlkem/src/poly.h-198- */
+mlkem/src/poly.h-199-MLK_INTERNAL_API
+mlkem/src/poly.h-200-void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+mlkem/src/poly.h-201-__contract__(
+mlkem/src/poly.h-202-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-203-  requires(memory_no_alias(b, sizeof(mlk_poly)))
+mlkem/src/poly.h-204-  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+mlkem/src/poly.h-205-  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+mlkem/src/poly.h-206-  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+mlkem/src/poly.h-207-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-208-);
+mlkem/src/poly.h-209-
+mlkem/src/poly.h:210:#define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+mlkem/src/poly.h-211-/**
+mlkem/src/poly.h-212- * Subtract two polynomials; no modular reduction is performed.
+mlkem/src/poly.h-213- *
+mlkem/src/poly.h-214- * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+mlkem/src/poly.h-215- * Representations]. Used in @[FIPS203, Algorithm 15, K-PKE.Decrypt, L6].}
+mlkem/src/poly.h-216- *
+mlkem/src/poly.h-217- * @param[in,out] r Input-output polynomial to be subtracted from.
+mlkem/src/poly.h-218- * @param[in]     b Second input polynomial.
+mlkem/src/poly.h-219- */
+mlkem/src/poly.h-220-/*
+mlkem/src/poly.h:221: * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+mlkem/src/poly.h-222- * We specialize to the accumulator form to avoid reasoning about aliasing.
+mlkem/src/poly.h-223- */
+mlkem/src/poly.h-224-MLK_INTERNAL_API
+mlkem/src/poly.h:225:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+mlkem/src/poly.h-226-__contract__(
+mlkem/src/poly.h-227-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-228-  requires(memory_no_alias(b, sizeof(mlk_poly)))
+mlkem/src/poly.h-229-  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))
+mlkem/src/poly.h-230-  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN))
+mlkem/src/poly.h-231-  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]))
+mlkem/src/poly.h-232-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-233-);
+mlkem/src/poly.h-234-
+mlkem/src/poly.h-235-#define mlk_poly_ntt MLK_NAMESPACE(poly_ntt)
+mlkem/src/poly.h-236-/**
+mlkem/src/poly.h-237- * Compute the negacyclic number-theoretic transform (NTT) of a polynomial
+mlkem/src/poly.h-238- * in place.
+mlkem/src/poly.h-239- *
+mlkem/src/poly.h-240- * The input is assumed to be in normal order and coefficient-wise bound by
+mlkem/src/poly.h-241- * MLKEM_Q in absolute value.
+
+=== POLYNOMIAL REDUCTION CONTRACT AND BODY ===
+mlkem/mlkem_native.c-315-#undef MLK_DEBUG_H
+mlkem/mlkem_native.c-316-#undef mlk_assert
+mlkem/mlkem_native.c-317-#undef mlk_assert_abs_bound
+mlkem/mlkem_native.c-318-#undef mlk_assert_abs_bound_2d
+mlkem/mlkem_native.c-319-#undef mlk_assert_bound
+mlkem/mlkem_native.c-320-#undef mlk_assert_bound_2d
+mlkem/mlkem_native.c-321-#undef mlk_debug_check_assert
+mlkem/mlkem_native.c-322-#undef mlk_debug_check_bounds
+mlkem/mlkem_native.c-323-/* mlkem/src/poly.h */
+mlkem/mlkem_native.c-324-#undef MLK_INVNTT_BOUND
+mlkem/mlkem_native.c-325-#undef MLK_NTT_BOUND
+mlkem/mlkem_native.c-326-#undef MLK_POLY_H
+mlkem/mlkem_native.c-327-#undef mlk_poly_add
+mlkem/mlkem_native.c-328-#undef mlk_poly_invntt_tomont
+mlkem/mlkem_native.c-329-#undef mlk_poly_mulcache_compute
+mlkem/mlkem_native.c-330-#undef mlk_poly_ntt
+mlkem/mlkem_native.c:331:#undef mlk_poly_reduce
+mlkem/mlkem_native.c-332-#undef mlk_poly_sub
+mlkem/mlkem_native.c-333-#undef mlk_poly_tomont
+mlkem/mlkem_native.c-334-/* mlkem/src/randombytes.h */
+mlkem/mlkem_native.c-335-#undef MLK_RANDOMBYTES_H
+mlkem/mlkem_native.c-336-/* mlkem/src/sampling.h */
+mlkem/mlkem_native.c-337-#undef MLK_SAMPLING_H
+mlkem/mlkem_native.c-338-#undef mlk_poly_cbd2
+mlkem/mlkem_native.c-339-#undef mlk_poly_cbd3
+mlkem/mlkem_native.c-340-#undef mlk_poly_rej_uniform
+mlkem/mlkem_native.c-341-#undef mlk_poly_rej_uniform_x4
+mlkem/mlkem_native.c-342-/* mlkem/src/symmetric.h */
+mlkem/mlkem_native.c-343-#undef MLK_SYMMETRIC_H
+mlkem/mlkem_native.c-344-#undef MLK_XOF_RATE
+mlkem/mlkem_native.c-345-#undef mlk_hash_g
+mlkem/mlkem_native.c-346-#undef mlk_hash_h
+mlkem/mlkem_native.c-347-#undef mlk_hash_j
+--
+mlkem/mlkem_native.c-540-#undef MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE
+mlkem/mlkem_native.c-541-#undef MLK_USE_NATIVE_POLY_REDUCE
+mlkem/mlkem_native.c-542-#undef MLK_USE_NATIVE_POLY_TOBYTES
+mlkem/mlkem_native.c-543-#undef MLK_USE_NATIVE_POLY_TOMONT
+mlkem/mlkem_native.c-544-#undef MLK_USE_NATIVE_REJ_UNIFORM
+mlkem/mlkem_native.c-545-/* mlkem/src/native/aarch64/src/arith_native_aarch64.h */
+mlkem/mlkem_native.c-546-#undef MLK_NATIVE_AARCH64_SRC_ARITH_NATIVE_AARCH64_H
+mlkem/mlkem_native.c-547-#undef mlk_aarch64_invntt_zetas_layer12345
+mlkem/mlkem_native.c-548-#undef mlk_aarch64_invntt_zetas_layer67
+mlkem/mlkem_native.c-549-#undef mlk_aarch64_ntt_zetas_layer12345
+mlkem/mlkem_native.c-550-#undef mlk_aarch64_ntt_zetas_layer67
+mlkem/mlkem_native.c-551-#undef mlk_aarch64_zetas_mulcache_native
+mlkem/mlkem_native.c-552-#undef mlk_aarch64_zetas_mulcache_twisted_native
+mlkem/mlkem_native.c-553-#undef mlk_intt_aarch64_asm
+mlkem/mlkem_native.c-554-#undef mlk_ntt_aarch64_asm
+mlkem/mlkem_native.c-555-#undef mlk_poly_mulcache_compute_aarch64_asm
+mlkem/mlkem_native.c:556:#undef mlk_poly_reduce_aarch64_asm
+mlkem/mlkem_native.c-557-#undef mlk_poly_tobytes_aarch64_asm
+mlkem/mlkem_native.c-558-#undef mlk_poly_tomont_aarch64_asm
+mlkem/mlkem_native.c-559-#undef mlk_polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm
+mlkem/mlkem_native.c-560-#undef mlk_polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm
+mlkem/mlkem_native.c-561-#undef mlk_polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm
+mlkem/mlkem_native.c-562-#undef mlk_rej_uniform_aarch64_asm
+mlkem/mlkem_native.c-563-#undef mlk_rej_uniform_table
+mlkem/mlkem_native.c-564-#endif /* MLK_SYS_AARCH64 */
+mlkem/mlkem_native.c-565-#if defined(MLK_SYS_X86_64)
+mlkem/mlkem_native.c-566-/*
+mlkem/mlkem_native.c-567- * Undefine macros from native code (Arith, X86_64)
+mlkem/mlkem_native.c-568- */
+mlkem/mlkem_native.c-569-/* mlkem/src/native/x86_64/meta.h */
+mlkem/mlkem_native.c-570-#undef MLK_ARITH_BACKEND_X86_64_DEFAULT
+mlkem/mlkem_native.c-571-#undef MLK_NATIVE_X86_64_META_H
+mlkem/mlkem_native.c-572-#undef MLK_USE_NATIVE_INTT
+--
+mlkem/src/indcpa.c-559-  mlk_enc_getnoise_eta1_eta2(sp, ep, epp, coins);
+mlkem/src/indcpa.c-560-
+mlkem/src/indcpa.c-561-  mlk_polyvec_ntt(sp);
+mlkem/src/indcpa.c-562-
+mlkem/src/indcpa.c-563-  mlk_polyvec_mulcache_compute(sp_cache, sp);
+mlkem/src/indcpa.c-564-  mlk_matvec_mul(b, at, sp, sp_cache);
+mlkem/src/indcpa.c-565-  mlk_polyvec_basemul_acc_montgomery_cached(v, pkpv, sp, sp_cache);
+mlkem/src/indcpa.c-566-
+mlkem/src/indcpa.c-567-  mlk_polyvec_invntt_tomont(b);
+mlkem/src/indcpa.c-568-  mlk_poly_invntt_tomont(v);
+mlkem/src/indcpa.c-569-
+mlkem/src/indcpa.c-570-  mlk_polyvec_add(b, ep);
+mlkem/src/indcpa.c-571-  mlk_poly_add(v, epp);
+mlkem/src/indcpa.c-572-  mlk_poly_add(v, k);
+mlkem/src/indcpa.c-573-
+mlkem/src/indcpa.c-574-  mlk_polyvec_reduce(b);
+mlkem/src/indcpa.c:575:  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-576-
+mlkem/src/indcpa.c-577-  mlk_pack_ciphertext(c, b, v);
+mlkem/src/indcpa.c-578-
+mlkem/src/indcpa.c-579-cleanup:
+mlkem/src/indcpa.c-580-  /* Specification: Partially implements
+mlkem/src/indcpa.c-581-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-582-  MLK_FREE(sp_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-583-  MLK_FREE(epp, mlk_poly, 1, context);
+mlkem/src/indcpa.c-584-  MLK_FREE(k, mlk_poly, 1, context);
+mlkem/src/indcpa.c-585-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-586-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-587-  MLK_FREE(ep, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-588-  MLK_FREE(pkpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-589-  MLK_FREE(sp, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-590-  MLK_FREE(at, mlk_polymat, 1, context);
+mlkem/src/indcpa.c-591-  MLK_FREE(seed, uint8_t, MLKEM_SYMBYTES, context);
+--
+mlkem/src/indcpa.c-610-
+mlkem/src/indcpa.c-611-  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+mlkem/src/indcpa.c-612-  {
+mlkem/src/indcpa.c-613-    ret = MLK_ERR_OUT_OF_MEMORY;
+mlkem/src/indcpa.c-614-    goto cleanup;
+mlkem/src/indcpa.c-615-  }
+mlkem/src/indcpa.c-616-
+mlkem/src/indcpa.c-617-  mlk_unpack_ciphertext(b, v, c);
+mlkem/src/indcpa.c-618-  mlk_unpack_sk(skpv, sk);
+mlkem/src/indcpa.c-619-
+mlkem/src/indcpa.c-620-  mlk_polyvec_ntt(b);
+mlkem/src/indcpa.c-621-  mlk_polyvec_mulcache_compute(b_cache, b);
+mlkem/src/indcpa.c-622-  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.c-623-  mlk_poly_invntt_tomont(sb);
+mlkem/src/indcpa.c-624-
+mlkem/src/indcpa.c-625-  mlk_poly_sub(v, sb);
+mlkem/src/indcpa.c:626:  mlk_poly_reduce(v);
+mlkem/src/indcpa.c-627-
+mlkem/src/indcpa.c-628-  mlk_poly_tomsg(m, v);
+mlkem/src/indcpa.c-629-
+mlkem/src/indcpa.c-630-cleanup:
+mlkem/src/indcpa.c-631-  /* Specification: Partially implements
+mlkem/src/indcpa.c-632-   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+mlkem/src/indcpa.c-633-  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+mlkem/src/indcpa.c-634-  MLK_FREE(sb, mlk_poly, 1, context);
+mlkem/src/indcpa.c-635-  MLK_FREE(v, mlk_poly, 1, context);
+mlkem/src/indcpa.c-636-  MLK_FREE(skpv, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-637-  MLK_FREE(b, mlk_polyvec, 1, context);
+mlkem/src/indcpa.c-638-  return ret;
+mlkem/src/indcpa.c-639-}
+mlkem/src/indcpa.c-640-
+mlkem/src/indcpa.c-641-/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
+mlkem/src/indcpa.c-642- * Don't modify by hand -- this is auto-generated by scripts/autogen. */
+--
+mlkem/src/native/aarch64/meta.h-29-static MLK_INLINE int mlk_ntt_native(int16_t data[MLKEM_N])
+mlkem/src/native/aarch64/meta.h-30-{
+mlkem/src/native/aarch64/meta.h-31-  mlk_ntt_aarch64_asm(data, mlk_aarch64_ntt_zetas_layer12345,
+mlkem/src/native/aarch64/meta.h-32-                      mlk_aarch64_ntt_zetas_layer67);
+mlkem/src/native/aarch64/meta.h-33-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/aarch64/meta.h-34-}
+mlkem/src/native/aarch64/meta.h-35-
+mlkem/src/native/aarch64/meta.h-36-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/aarch64/meta.h-37-static MLK_INLINE int mlk_intt_native(int16_t data[MLKEM_N])
+mlkem/src/native/aarch64/meta.h-38-{
+mlkem/src/native/aarch64/meta.h-39-  mlk_intt_aarch64_asm(data, mlk_aarch64_invntt_zetas_layer12345,
+mlkem/src/native/aarch64/meta.h-40-                       mlk_aarch64_invntt_zetas_layer67);
+mlkem/src/native/aarch64/meta.h-41-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/aarch64/meta.h-42-}
+mlkem/src/native/aarch64/meta.h-43-
+mlkem/src/native/aarch64/meta.h-44-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/aarch64/meta.h:45:static MLK_INLINE int mlk_poly_reduce_native(int16_t data[MLKEM_N])
+mlkem/src/native/aarch64/meta.h-46-{
+mlkem/src/native/aarch64/meta.h:47:  mlk_poly_reduce_aarch64_asm(data);
+mlkem/src/native/aarch64/meta.h-48-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/aarch64/meta.h-49-}
+mlkem/src/native/aarch64/meta.h-50-
+mlkem/src/native/aarch64/meta.h-51-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/aarch64/meta.h-52-static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+mlkem/src/native/aarch64/meta.h-53-{
+mlkem/src/native/aarch64/meta.h-54-  mlk_poly_tomont_aarch64_asm(data);
+mlkem/src/native/aarch64/meta.h-55-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/aarch64/meta.h-56-}
+mlkem/src/native/aarch64/meta.h-57-
+mlkem/src/native/aarch64/meta.h-58-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/aarch64/meta.h-59-static MLK_INLINE int mlk_poly_mulcache_compute_native(int16_t x[MLKEM_N / 2],
+mlkem/src/native/aarch64/meta.h-60-                                                       const int16_t y[MLKEM_N])
+mlkem/src/native/aarch64/meta.h-61-{
+mlkem/src/native/aarch64/meta.h-62-  mlk_poly_mulcache_compute_aarch64_asm(
+mlkem/src/native/aarch64/meta.h-63-      x, y, mlk_aarch64_zetas_mulcache_native,
+--
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-52-
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-53-#define mlk_intt_aarch64_asm MLK_NAMESPACE(intt_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-54-void mlk_intt_aarch64_asm(int16_t p[256], const int16_t twiddles12345[80],
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-55-                          const int16_t twiddles56[384])
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-56-/* This must be kept in sync with the HOL-Light specification
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-57- * in proofs/hol_light/aarch64/proofs/intt_aarch64_asm.ml */
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-58-__contract__(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-59-  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-60-  requires(twiddles12345 == mlk_aarch64_invntt_zetas_layer12345)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-61-  requires(twiddles56 == mlk_aarch64_invntt_zetas_layer67)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-62-  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-63-  /* check-magic: off */
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-64-  ensures(array_abs_bound(p, 0, MLKEM_N, 26625))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-65-  /* check-magic: on */
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-66-);
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-67-
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:68:#define mlk_poly_reduce_aarch64_asm MLK_NAMESPACE(poly_reduce_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:69:void mlk_poly_reduce_aarch64_asm(int16_t p[256])
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-70-/* This must be kept in sync with the HOL-Light specification
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-71- * in proofs/hol_light/aarch64/proofs/poly_reduce_aarch64_asm.ml */
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-72-__contract__(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-73-  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-74-  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-75-  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-76-);
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-77-
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-78-#define mlk_poly_tomont_aarch64_asm MLK_NAMESPACE(poly_tomont_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-79-void mlk_poly_tomont_aarch64_asm(int16_t p[256])
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-80-/* This must be kept in sync with the HOL-Light specification
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-81- * in proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml */
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-82-__contract__(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-83-  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-84-  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h-85-  ensures(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+--
+mlkem/src/native/api.h-168-  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLK_INVNTT_BOUND))
+mlkem/src/native/api.h-169-  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+mlkem/src/native/api.h-170-);
+mlkem/src/native/api.h-171-#endif /* MLK_USE_NATIVE_INTT */
+mlkem/src/native/api.h-172-
+mlkem/src/native/api.h-173-#if defined(MLK_USE_NATIVE_POLY_REDUCE)
+mlkem/src/native/api.h-174-/**
+mlkem/src/native/api.h-175- * Apply modular reduction to all coefficients of a polynomial, mapping them
+mlkem/src/native/api.h-176- * to unsigned canonical representatives in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h-177- *
+mlkem/src/native/api.h-178- * @param[in,out] p Input/output polynomial.
+mlkem/src/native/api.h-179- *
+mlkem/src/native/api.h-180- * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+mlkem/src/native/api.h-181- * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+mlkem/src/native/api.h-182- */
+mlkem/src/native/api.h-183-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/api.h:184:static MLK_INLINE int mlk_poly_reduce_native(int16_t p[MLKEM_N])
+mlkem/src/native/api.h-185-__contract__(
+mlkem/src/native/api.h-186-  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/api.h-187-  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+mlkem/src/native/api.h-188-  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+mlkem/src/native/api.h-189-  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h-190-  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+mlkem/src/native/api.h-191-);
+mlkem/src/native/api.h-192-#endif /* MLK_USE_NATIVE_POLY_REDUCE */
+mlkem/src/native/api.h-193-
+mlkem/src/native/api.h-194-#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+mlkem/src/native/api.h-195-/**
+mlkem/src/native/api.h-196- * In-place conversion of all coefficients of a polynomial from the normal
+mlkem/src/native/api.h-197- * domain to the Montgomery domain.
+mlkem/src/native/api.h-198- *
+mlkem/src/native/api.h-199- * @param[in,out] p Input/output polynomial.
+mlkem/src/native/api.h-200- *
+--
+mlkem/src/native/ppc64le/meta.h-37-#endif
+mlkem/src/native/ppc64le/meta.h-38-}
+mlkem/src/native/ppc64le/meta.h-39-
+mlkem/src/native/ppc64le/meta.h-40-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/ppc64le/meta.h-41-static MLK_INLINE int mlk_intt_native(int16_t data[MLKEM_N])
+mlkem/src/native/ppc64le/meta.h-42-{
+mlkem/src/native/ppc64le/meta.h-43-#if defined(__POWER8_VECTOR__)
+mlkem/src/native/ppc64le/meta.h-44-  mlk_intt_ppc_asm(data, mlk_ppc_qdata);
+mlkem/src/native/ppc64le/meta.h-45-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/ppc64le/meta.h-46-#else
+mlkem/src/native/ppc64le/meta.h-47-  (void)data;
+mlkem/src/native/ppc64le/meta.h-48-  return MLK_NATIVE_FUNC_FALLBACK;
+mlkem/src/native/ppc64le/meta.h-49-#endif
+mlkem/src/native/ppc64le/meta.h-50-}
+mlkem/src/native/ppc64le/meta.h-51-
+mlkem/src/native/ppc64le/meta.h-52-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/ppc64le/meta.h:53:static MLK_INLINE int mlk_poly_reduce_native(int16_t data[MLKEM_N])
+mlkem/src/native/ppc64le/meta.h-54-{
+mlkem/src/native/ppc64le/meta.h-55-#if defined(__POWER8_VECTOR__)
+mlkem/src/native/ppc64le/meta.h-56-  mlk_reduce_ppc_asm(data, mlk_ppc_qdata);
+mlkem/src/native/ppc64le/meta.h-57-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/ppc64le/meta.h-58-#else
+mlkem/src/native/ppc64le/meta.h-59-  (void)data;
+mlkem/src/native/ppc64le/meta.h-60-  return MLK_NATIVE_FUNC_FALLBACK;
+mlkem/src/native/ppc64le/meta.h-61-#endif
+mlkem/src/native/ppc64le/meta.h-62-}
+mlkem/src/native/ppc64le/meta.h-63-
+mlkem/src/native/ppc64le/meta.h-64-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/ppc64le/meta.h-65-static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+mlkem/src/native/ppc64le/meta.h-66-{
+mlkem/src/native/ppc64le/meta.h-67-#if defined(__POWER8_VECTOR__)
+mlkem/src/native/ppc64le/meta.h-68-  mlk_poly_tomont_ppc_asm(data, mlk_ppc_qdata);
+mlkem/src/native/ppc64le/meta.h-69-  return MLK_NATIVE_FUNC_SUCCESS;
+--
+mlkem/src/native/riscv64/meta.h-64-static MLK_INLINE int mlk_rej_uniform_native(int16_t *r, unsigned len,
+mlkem/src/native/riscv64/meta.h-65-                                             const uint8_t *buf,
+mlkem/src/native/riscv64/meta.h-66-                                             unsigned buflen)
+mlkem/src/native/riscv64/meta.h-67-{
+mlkem/src/native/riscv64/meta.h-68-  /* mlk_rv64v_rej_uniform requires buflen to be a multiple of 12 */
+mlkem/src/native/riscv64/meta.h-69-  if (buflen % 12 != 0)
+mlkem/src/native/riscv64/meta.h-70-  {
+mlkem/src/native/riscv64/meta.h-71-    return MLK_NATIVE_FUNC_FALLBACK;
+mlkem/src/native/riscv64/meta.h-72-  }
+mlkem/src/native/riscv64/meta.h-73-  /* The cast from unsigned to signed integer is safe
+mlkem/src/native/riscv64/meta.h-74-   * because the return value is <= len, which we asssume
+mlkem/src/native/riscv64/meta.h-75-   * to be bound by 4096 and hence <= INT_MAX. */
+mlkem/src/native/riscv64/meta.h-76-  return (int)mlk_rv64v_rej_uniform(r, len, buf, buflen);
+mlkem/src/native/riscv64/meta.h-77-}
+mlkem/src/native/riscv64/meta.h-78-
+mlkem/src/native/riscv64/meta.h-79-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/riscv64/meta.h:80:static MLK_INLINE int mlk_poly_reduce_native(int16_t data[MLKEM_N])
+mlkem/src/native/riscv64/meta.h-81-{
+mlkem/src/native/riscv64/meta.h-82-  mlk_rv64v_poly_reduce(data);
+mlkem/src/native/riscv64/meta.h-83-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/riscv64/meta.h-84-}
+mlkem/src/native/riscv64/meta.h-85-
+mlkem/src/native/riscv64/meta.h-86-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/riscv64/meta.h-87-static MLK_INLINE int mlk_poly_mulcache_compute_native(int16_t x[MLKEM_N / 2],
+mlkem/src/native/riscv64/meta.h-88-                                                       const int16_t y[MLKEM_N])
+mlkem/src/native/riscv64/meta.h-89-{
+mlkem/src/native/riscv64/meta.h-90-  (void)x; /* not using the cache at the moment */
+mlkem/src/native/riscv64/meta.h-91-  (void)y;
+mlkem/src/native/riscv64/meta.h-92-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/riscv64/meta.h-93-}
+mlkem/src/native/riscv64/meta.h-94-
+mlkem/src/native/riscv64/meta.h-95-#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || MLKEM_K == 2
+mlkem/src/native/riscv64/meta.h-96-MLK_MUST_CHECK_RETURN_VALUE
+--
+mlkem/src/native/x86_64/meta.h-68-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/x86_64/meta.h-69-}
+mlkem/src/native/x86_64/meta.h-70-
+mlkem/src/native/x86_64/meta.h-71-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/x86_64/meta.h-72-static MLK_INLINE int mlk_intt_native(int16_t data[MLKEM_N])
+mlkem/src/native/x86_64/meta.h-73-{
+mlkem/src/native/x86_64/meta.h-74-  if (!mlk_sys_check_capability(MLK_SYS_CAP_AVX2))
+mlkem/src/native/x86_64/meta.h-75-  {
+mlkem/src/native/x86_64/meta.h-76-    return MLK_NATIVE_FUNC_FALLBACK;
+mlkem/src/native/x86_64/meta.h-77-  }
+mlkem/src/native/x86_64/meta.h-78-
+mlkem/src/native/x86_64/meta.h-79-  mlk_invntt_avx2_asm(data, mlk_qdata);
+mlkem/src/native/x86_64/meta.h-80-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/x86_64/meta.h-81-}
+mlkem/src/native/x86_64/meta.h-82-
+mlkem/src/native/x86_64/meta.h-83-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/x86_64/meta.h:84:static MLK_INLINE int mlk_poly_reduce_native(int16_t data[MLKEM_N])
+mlkem/src/native/x86_64/meta.h-85-{
+mlkem/src/native/x86_64/meta.h-86-  if (!mlk_sys_check_capability(MLK_SYS_CAP_AVX2))
+mlkem/src/native/x86_64/meta.h-87-  {
+mlkem/src/native/x86_64/meta.h-88-    return MLK_NATIVE_FUNC_FALLBACK;
+mlkem/src/native/x86_64/meta.h-89-  }
+mlkem/src/native/x86_64/meta.h-90-
+mlkem/src/native/x86_64/meta.h-91-  mlk_reduce_avx2_asm(data);
+mlkem/src/native/x86_64/meta.h-92-  return MLK_NATIVE_FUNC_SUCCESS;
+mlkem/src/native/x86_64/meta.h-93-}
+mlkem/src/native/x86_64/meta.h-94-
+mlkem/src/native/x86_64/meta.h-95-MLK_MUST_CHECK_RETURN_VALUE
+mlkem/src/native/x86_64/meta.h-96-static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+mlkem/src/native/x86_64/meta.h-97-{
+mlkem/src/native/x86_64/meta.h-98-  if (!mlk_sys_check_capability(MLK_SYS_CAP_AVX2))
+mlkem/src/native/x86_64/meta.h-99-  {
+mlkem/src/native/x86_64/meta.h-100-    return MLK_NATIVE_FUNC_FALLBACK;
+--
+mlkem/src/poly.c-169-   *
+mlkem/src/poly.c-170-   * Note that c + MLKEM_Q does not overflow in int16_t,
+mlkem/src/poly.c-171-   * so the cast to uint16_t is safe. */
+mlkem/src/poly.c-172-  c = mlk_ct_sel_int16((int16_t)(c + MLKEM_Q), c, mlk_ct_cmask_neg_i16(c));
+mlkem/src/poly.c-173-
+mlkem/src/poly.c-174-  mlk_assert_bound(&c, 1, 0, MLKEM_Q);
+mlkem/src/poly.c-175-  return c;
+mlkem/src/poly.c-176-}
+mlkem/src/poly.c-177-
+mlkem/src/poly.c-178-/* Reference: `poly_reduce()` in the reference implementation @[REF]
+mlkem/src/poly.c-179- *            - We use _unsigned_ canonical outputs, while the reference
+mlkem/src/poly.c-180- *              implementation uses _signed_ canonical outputs.
+mlkem/src/poly.c-181- *              Accordingly, we need a conditional addition of MLKEM_Q
+mlkem/src/poly.c-182- *              here to go from signed to unsigned representatives.
+mlkem/src/poly.c-183- *              This conditional addition is then dropped from all
+mlkem/src/poly.c-184- *              polynomial compression functions instead (see `compress.c`). */
+mlkem/src/poly.c:185:MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r)
+mlkem/src/poly.c-186-__contract__(
+mlkem/src/poly.c-187-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.c-188-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.c-189-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.c-190-)
+mlkem/src/poly.c-191-{
+mlkem/src/poly.c-192-  unsigned i;
+mlkem/src/poly.c-193-
+mlkem/src/poly.c-194-  for (i = 0; i < MLKEM_N; i++)
+mlkem/src/poly.c-195-  __loop__(
+mlkem/src/poly.c-196-    invariant(i <= MLKEM_N)
+mlkem/src/poly.c-197-    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+mlkem/src/poly.c-198-    decreases(MLKEM_N - i))
+mlkem/src/poly.c-199-  {
+mlkem/src/poly.c-200-    /* Barrett reduction, giving signed canonical representative */
+mlkem/src/poly.c-201-    int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+mlkem/src/poly.c-202-    /* Conditional addition to get unsigned canonical representative */
+mlkem/src/poly.c-203-    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+mlkem/src/poly.c-204-  }
+mlkem/src/poly.c-205-
+mlkem/src/poly.c-206-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly.c-207-}
+mlkem/src/poly.c-208-
+mlkem/src/poly.c-209-MLK_INTERNAL_API
+mlkem/src/poly.c:210:void mlk_poly_reduce(mlk_poly *r)
+mlkem/src/poly.c-211-{
+mlkem/src/poly.c-212-#if defined(MLK_USE_NATIVE_POLY_REDUCE)
+mlkem/src/poly.c-213-  int ret;
+mlkem/src/poly.c:214:  ret = mlk_poly_reduce_native(r->coeffs);
+mlkem/src/poly.c-215-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+mlkem/src/poly.c-216-  {
+mlkem/src/poly.c-217-    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly.c-218-    return;
+mlkem/src/poly.c-219-  }
+mlkem/src/poly.c-220-#endif /* MLK_USE_NATIVE_POLY_REDUCE */
+mlkem/src/poly.c-221-
+mlkem/src/poly.c:222:  mlk_poly_reduce_c(r);
+mlkem/src/poly.c-223-}
+mlkem/src/poly.c-224-
+mlkem/src/poly.c-225-/* Reference: `poly_add()` in the reference implementation @[REF].
+mlkem/src/poly.c-226- *            - We use destructive version (output=first input) to avoid
+mlkem/src/poly.c-227- *              reasoning about aliasing in the CBMC specification */
+mlkem/src/poly.c-228-MLK_INTERNAL_API
+mlkem/src/poly.c-229-void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+mlkem/src/poly.c-230-{
+mlkem/src/poly.c-231-  unsigned i;
+mlkem/src/poly.c-232-  for (i = 0; i < MLKEM_N; i++)
+mlkem/src/poly.c-233-  __loop__(
+mlkem/src/poly.c-234-    invariant(i <= MLKEM_N)
+mlkem/src/poly.c-235-    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+mlkem/src/poly.c-236-    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+mlkem/src/poly.c-237-    decreases(MLKEM_N - i))
+mlkem/src/poly.c-238-  {
+--
+mlkem/src/poly.h-138- * @param[out] x Mulcache to be populated.
+mlkem/src/poly.h-139- * @param[in]  a Input polynomial.
+mlkem/src/poly.h-140- */
+mlkem/src/poly.h-141-/*
+mlkem/src/poly.h-142- * NOTE: The default C implementation of this function populates
+mlkem/src/poly.h-143- * the mulcache with values in (-q,q), but this is not needed for the
+mlkem/src/poly.h-144- * higher level safety proofs, and thus not part of the spec.
+mlkem/src/poly.h-145- */
+mlkem/src/poly.h-146-MLK_INTERNAL_API
+mlkem/src/poly.h-147-void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+mlkem/src/poly.h-148-__contract__(
+mlkem/src/poly.h-149-  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+mlkem/src/poly.h-150-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+mlkem/src/poly.h-151-  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+mlkem/src/poly.h-152-);
+mlkem/src/poly.h-153-
+mlkem/src/poly.h:154:#define mlk_poly_reduce MLK_NAMESPACE(poly_reduce)
+mlkem/src/poly.h-155-/**
+mlkem/src/poly.h-156- * Convert a polynomial to unsigned canonical representatives.
+mlkem/src/poly.h-157- *
+mlkem/src/poly.h-158- * The input coefficients can be arbitrary integers in int16_t. The output
+mlkem/src/poly.h-159- * coefficients are in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly.h-160- *
+mlkem/src/poly.h-161- * @spec{Normalizes on unsigned canonical representatives ahead of calling
+mlkem/src/poly.h-162- * @[FIPS203, Compress_d, Eq (4.7)]. This is not made explicit in FIPS 203.}
+mlkem/src/poly.h-163- *
+mlkem/src/poly.h-164- * @param[in,out] r Input/output polynomial.
+mlkem/src/poly.h-165- */
+mlkem/src/poly.h-166-/*
+mlkem/src/poly.h:167: * NOTE: The semantics of mlk_poly_reduce() is different in
+mlkem/src/poly.h-168- * the reference implementation, which requires
+mlkem/src/poly.h-169- * signed canonical output data. Unsigned canonical
+mlkem/src/poly.h-170- * outputs are better suited to the only remaining
+mlkem/src/poly.h:171: * use of mlk_poly_reduce() in the context of (de)serialization.
+mlkem/src/poly.h-172- */
+mlkem/src/poly.h-173-MLK_INTERNAL_API
+mlkem/src/poly.h:174:void mlk_poly_reduce(mlk_poly *r)
+mlkem/src/poly.h-175-__contract__(
+mlkem/src/poly.h-176-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-177-  assigns(memory_slice(r, sizeof(mlk_poly)))
+mlkem/src/poly.h-178-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.h-179-);
+mlkem/src/poly.h-180-
+mlkem/src/poly.h-181-#define mlk_poly_add MLK_NAMESPACE(poly_add)
+mlkem/src/poly.h-182-/**
+mlkem/src/poly.h-183- * Add two polynomials in place.
+mlkem/src/poly.h-184- *
+mlkem/src/poly.h-185- * The coefficients of @p r and @p b must be such that the addition does not
+mlkem/src/poly.h-186- * overflow. Otherwise, the behaviour of this function is undefined.
+mlkem/src/poly.h-187- *
+mlkem/src/poly.h-188- * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+mlkem/src/poly.h-189- * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L21].}
+mlkem/src/poly.h-190- *
+--
+mlkem/src/poly_k.c-234-  }
+mlkem/src/poly_k.c-235-}
+mlkem/src/poly_k.c-236-
+mlkem/src/poly_k.c-237-/* Reference: `polyvec_reduce()` in the reference implementation @[REF].
+mlkem/src/poly_k.c-238- *            - We use _unsigned_ canonical outputs, while the reference
+mlkem/src/poly_k.c-239- *              implementation uses _signed_ canonical outputs.
+mlkem/src/poly_k.c-240- *              Accordingly, we need a conditional addition of MLKEM_Q
+mlkem/src/poly_k.c-241- *              here to go from signed to unsigned representatives.
+mlkem/src/poly_k.c-242- *              This conditional addition is then dropped from all
+mlkem/src/poly_k.c-243- *              polynomial compression functions instead (see `compress.c`). */
+mlkem/src/poly_k.c-244-MLK_INTERNAL_API
+mlkem/src/poly_k.c-245-void mlk_polyvec_reduce(mlk_polyvec *r)
+mlkem/src/poly_k.c-246-{
+mlkem/src/poly_k.c-247-  unsigned i;
+mlkem/src/poly_k.c-248-  for (i = 0; i < MLKEM_K; i++)
+mlkem/src/poly_k.c-249-  {
+mlkem/src/poly_k.c:250:    mlk_poly_reduce(&r->vec[i]);
+mlkem/src/poly_k.c-251-  }
+mlkem/src/poly_k.c-252-
+mlkem/src/poly_k.c-253-  mlk_assert_bound_2d(r->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly_k.c-254-}
+mlkem/src/poly_k.c-255-
+mlkem/src/poly_k.c-256-/* Reference: `polyvec_add()` in the reference implementation @[REF].
+mlkem/src/poly_k.c-257- *            - We use destructive version (output=first input) to avoid
+mlkem/src/poly_k.c-258- *              reasoning about aliasing in the CBMC specification */
+mlkem/src/poly_k.c-259-MLK_INTERNAL_API
+mlkem/src/poly_k.c-260-void mlk_polyvec_add(mlk_polyvec *r, const mlk_polyvec *b)
+mlkem/src/poly_k.c-261-{
+mlkem/src/poly_k.c-262-  unsigned i;
+mlkem/src/poly_k.c-263-  for (i = 0; i < MLKEM_K; i++)
+mlkem/src/poly_k.c-264-  __loop__(
+mlkem/src/poly_k.c-265-    assigns(i, memory_slice(r, sizeof(mlk_polyvec)))
+mlkem/src/poly_k.c-266-    invariant(i <= MLKEM_K)
+--
+mlkem/src/poly_k.h-387-#define mlk_polyvec_reduce MLK_NAMESPACE_K(polyvec_reduce)
+mlkem/src/poly_k.h-388-/**
+mlkem/src/poly_k.h-389- * Apply Barrett reduction to each coefficient of each element of a vector
+mlkem/src/poly_k.h-390- * of polynomials. For details of the Barrett reduction see comments in
+mlkem/src/poly_k.h-391- * poly.c.
+mlkem/src/poly_k.h-392- *
+mlkem/src/poly_k.h-393- * @spec{Normalizes on unsigned canonical representatives ahead of calling
+mlkem/src/poly_k.h-394- * @[FIPS203, Compress_d, Eq (4.7)]. This is not made explicit in FIPS 203.}
+mlkem/src/poly_k.h-395- *
+mlkem/src/poly_k.h-396- * @param[in,out] r Input/output polynomial vector.
+mlkem/src/poly_k.h-397- */
+mlkem/src/poly_k.h-398-/*
+mlkem/src/poly_k.h-399- * NOTE: The semantics of mlk_polyvec_reduce() is different in
+mlkem/src/poly_k.h-400- *       the reference implementation, which requires
+mlkem/src/poly_k.h-401- *       signed canonical output data. Unsigned canonical
+mlkem/src/poly_k.h-402- *       outputs are better suited to the only remaining
+mlkem/src/poly_k.h:403: *       use of mlk_poly_reduce() in the context of (de)serialization.
+mlkem/src/poly_k.h-404- */
+mlkem/src/poly_k.h-405-MLK_INTERNAL_API
+mlkem/src/poly_k.h-406-void mlk_polyvec_reduce(mlk_polyvec *r)
+mlkem/src/poly_k.h-407-__contract__(
+mlkem/src/poly_k.h-408-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+mlkem/src/poly_k.h-409-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+mlkem/src/poly_k.h-410-  ensures(forall(k0, 0, MLKEM_K,
+mlkem/src/poly_k.h-411-    array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h-412-);
+mlkem/src/poly_k.h-413-
+mlkem/src/poly_k.h-414-#define mlk_polyvec_add MLK_NAMESPACE_K(polyvec_add)
+mlkem/src/poly_k.h-415-/**
+mlkem/src/poly_k.h-416- * Add vectors of polynomials.
+mlkem/src/poly_k.h-417- *
+mlkem/src/poly_k.h-418- * The coefficients of @p r and @p b must be such that the addition does
+mlkem/src/poly_k.h-419- * not overflow. Otherwise, the behaviour of this function is undefined.
+--
+mlkem/src/verify.h-179- *
+mlkem/src/verify.h-180- * @param x Input value.
+mlkem/src/verify.h-181- *
+mlkem/src/verify.h-182- * @return For int16_t x, the unique y in uint16_t so that x == y mod 2^16.
+mlkem/src/verify.h-183- */
+mlkem/src/verify.h-184-static MLK_ALWAYS_INLINE uint16_t mlk_cast_int16_to_uint16(int32_t x)
+mlkem/src/verify.h-185-{
+mlkem/src/verify.h-186-  return mlk_cast_int32_to_uint16(x);
+mlkem/src/verify.h-187-}
+mlkem/src/verify.h-188-
+mlkem/src/verify.h-189-/**
+mlkem/src/verify.h-190- * Return 0 if input is non-negative, and -1 otherwise.
+mlkem/src/verify.h-191- *
+mlkem/src/verify.h-192- * @reference{Embedded in the polynomial compression function in the
+mlkem/src/verify.h-193- * reference implementation @[REF]. Used as part of signed->unsigned
+mlkem/src/verify.h-194- * conversion for modular representatives to detect whether the input is
+mlkem/src/verify.h:195: * negative. This happens in `mlk_poly_reduce()` here, and as part of
+mlkem/src/verify.h-196- * polynomial compression functions in the reference implementation. See
+mlkem/src/verify.h:197: * `mlk_poly_reduce()`. We use value barriers to reduce the risk of
+mlkem/src/verify.h-198- * compiler-introduced branches.}
+mlkem/src/verify.h-199- *
+mlkem/src/verify.h-200- * @param x Value to be converted into a mask.
+mlkem/src/verify.h-201- *
+mlkem/src/verify.h-202- * @return Mask value (0 or 0xFFFF).
+mlkem/src/verify.h-203- */
+mlkem/src/verify.h-204-static MLK_INLINE uint16_t mlk_ct_cmask_neg_i16(int16_t x)
+mlkem/src/verify.h-205-__contract__(ensures(return_value == ((x < 0) ? 0xFFFF : 0)))
+mlkem/src/verify.h-206-{
+mlkem/src/verify.h-207-  int32_t tmp = mlk_value_barrier_i32((int32_t)x);
+mlkem/src/verify.h-208-  /*
+mlkem/src/verify.h-209-   * PORTABILITY: Right-shift on a signed integer is
+mlkem/src/verify.h-210-   * implementation-defined for negative left argument.
+mlkem/src/verify.h-211-   * Here, we assume it's sign-preserving "arithmetic" shift right.
+mlkem/src/verify.h-212-   * See (C99 6.5.7 (5))
+mlkem/src/verify.h-213-   */
+--
+mlkem/src/verify.h-260-}
+mlkem/src/verify.h-261-
+mlkem/src/verify.h-262-/**
+mlkem/src/verify.h-263- * Functionally equivalent to cond ? a : b, but implemented with guards
+mlkem/src/verify.h-264- * against compiler-introduced branches.
+mlkem/src/verify.h-265- *
+mlkem/src/verify.h-266- * @spec{With `a = MLKEM_Q_HALF` and `b=0`, this essentially implements
+mlkem/src/verify.h-267- * `Decompress_1` @[FIPS203, Eq (4.8)] in `mlk_poly_frommsg()`. With
+mlkem/src/verify.h-268- * `a = x + MLKEM_Q`, `b = x`, and `cond` indicating whether `x` is negative,
+mlkem/src/verify.h-269- * implements signed->unsigned conversion of modular representatives.
+mlkem/src/verify.h-270- * Questions of representation are not considered in the specification
+mlkem/src/verify.h-271- * @[FIPS203, Section 2.4.1, "The pseudocode is agnostic regarding how an
+mlkem/src/verify.h-272- * integer modulo 𝑚 is represented in actual implementations"].}
+mlkem/src/verify.h-273- *
+mlkem/src/verify.h-274- * @reference{Embedded in the polynomial compression function in the
+mlkem/src/verify.h-275- * reference implementation @[REF]. Used as part of signed->unsigned
+mlkem/src/verify.h:276: * conversion for modular representatives. This happens in `mlk_poly_reduce()`
+mlkem/src/verify.h-277- * here, and as part of polynomial compression functions in @[REF]. See
+mlkem/src/verify.h:278: * `mlk_poly_reduce()`. Barrier to reduce the risk of compiler-introduced
+mlkem/src/verify.h-279- * branches. For `a = MLKEM_Q_HALF` and `b=0`, also embedded in
+mlkem/src/verify.h-280- * `poly_frommsg()` from the reference implementation, which uses
+mlkem/src/verify.h-281- * `cmov_int16()` instead.}
+mlkem/src/verify.h-282- *
+mlkem/src/verify.h-283- * @param a    First alternative.
+mlkem/src/verify.h-284- * @param b    Second alternative.
+mlkem/src/verify.h-285- * @param cond Condition variable.
+mlkem/src/verify.h-286- *
+mlkem/src/verify.h-287- * @return @p a if @p cond != 0, else @p b.
+mlkem/src/verify.h-288- */
+mlkem/src/verify.h-289-static MLK_INLINE int16_t mlk_ct_sel_int16(int16_t a, int16_t b, uint16_t cond)
+mlkem/src/verify.h-290-__contract__(ensures(return_value == (cond ? a : b)))
+mlkem/src/verify.h-291-{
+mlkem/src/verify.h-292-  uint16_t au = mlk_cast_int16_to_uint16(a);
+mlkem/src/verify.h-293-  uint16_t bu = mlk_cast_int16_to_uint16(b);
+mlkem/src/verify.h-294-  uint16_t res = bu ^ (mlk_ct_cmask_nonzero_u16(cond) & (au ^ bu));
+
+=== MODULUS AND DEGREE DEFINITIONS ===
+mlkem/src/params.h:22:#define MLKEM_N 256
+mlkem/src/params.h:23:#define MLKEM_Q 3329
+mlkem/src/params.h:24:#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */
+
+=== 8Q-RELATED CONTRACT EXPRESSIONS ===
+mlkem/src/native/api.h:45:#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/api.h:51:#define MLK_NTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/riscv64/src/rv64v_poly.c:407:  mlk_assert_abs_bound_int16m1(t0, vl, 8 * MLKEM_Q);
+mlkem/src/poly.h:25:#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+mlkem/src/poly.h:28:#define MLK_NTT_BOUND (8 * MLKEM_Q)
+
+=== ABSOLUTE-BOUND EXPRESSIONS ===
+mlkem/src/cbmc.h:135: *  array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q)
+mlkem/src/cbmc.h:187: * The absolute value bound `k` is exclusive.
+mlkem/src/compress.c:41:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:77:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:105:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:144:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:169:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:176:    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:193:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:217:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:224:    invariant(array_bound(r->coeffs, 0, 4 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:239:      invariant(array_bound(r->coeffs, 0, 4 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:256:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:285:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:321:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:349:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:395:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:420:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:427:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:456:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:473:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:497:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:504:    invariant(array_bound(r->coeffs, 0, 8 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:524:      invariant(array_bound(r->coeffs, 0, 8 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:541:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:569:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:631:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+mlkem/src/compress.c:638:    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_UINT12_LIMIT))
+mlkem/src/compress.c:689:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:696:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.h:529:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:551:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+mlkem/src/compress.h:574:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:595:  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/debug.h:56:/* Check absolute bounds in array of int16_t's
+mlkem/src/debug.h:59: * value_abs_bd: Exclusive absolute upper bound */
+mlkem/src/indcpa.c:166:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:169:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:178:       array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:195:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:198:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))))
+mlkem/src/indcpa.c:206:       array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:323:      array_bound(a->vec[k0].vec[k1].coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT))))
+mlkem/src/indcpa.c:356:  ensures(forall(k0, 0, MLKEM_K, array_abs_bound(pv->vec[k0].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))
+mlkem/src/indcpa.c:357:  ensures(forall(k1, 0, MLKEM_K, array_abs_bound(e->vec[k1].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))
+mlkem/src/indcpa.c:405:  ensures(forall(k0, 0, MLKEM_K, array_abs_bound(sp->vec[k0].coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1)))
+mlkem/src/indcpa.c:406:  ensures(forall(k1, 0, MLKEM_K, array_abs_bound(ep->vec[k1].coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1)))
+mlkem/src/indcpa.c:407:  ensures(array_abs_bound(epp->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1))
+mlkem/src/indcpa.h:45:  array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/native/riscv64/src/rv64v_debug.h:67:/* Check absolute bounds in vint16m1_t vector
+mlkem/src/native/riscv64/src/rv64v_debug.h:70: * value_abs_bd: Exclusive absolute upper bound */
+mlkem/src/native/riscv64/src/rv64v_debug.h:83:/* Check absolute bounds in vint16m2_t vector
+mlkem/src/native/riscv64/src/rv64v_debug.h:86: * value_abs_bd: Exclusive absolute upper bound */
+mlkem/src/native/riscv64/src/rv64v_poly.c:375:  /* absolute bounds: < t0 < q, t1 < q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:382:  /* absolute bounds: < t0 < 2*q, t1 < q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:394:  /* absolute bounds: t0 < 4*q, t1 < q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:406:  /* absolute bounds: < 8*q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:412:  /* absolute bounds: < q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:508:  /* absolute bounds < q (see mlk_rv64v_intt2) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:522:  /* absolute bounds:
+mlkem/src/native/riscv64/src/rv64v_poly.c:539:  /* absolute bounds:
+mlkem/src/native/riscv64/src/rv64v_poly.c:557:  /* absolute bounds:
+mlkem/src/native/riscv64/src/rv64v_poly.c:571:  /* absolute bounds: < 4*q */
+mlkem/src/native/riscv64/src/rv64v_poly.c:585:  /* absolute bounds: < 8*q */
+mlkem/src/poly.c:113:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:121:    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))
+mlkem/src/poly.c:189:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.c:197:    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+mlkem/src/poly.c:281:    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+mlkem/src/poly.c:324: * - bound: Ghost variable describing coefficient bound: Prior to `start`,
+mlkem/src/poly.c:325: *          coefficients must be bound by `bound + MLKEM_Q`. Post `start`,
+mlkem/src/poly.c:418: * bound on the output coefficients (5*q) than the contractual one (8*q),
+mlkem/src/poly.c:430:  requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:432:  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+mlkem/src/poly.c:522:  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+mlkem/src/poly.h:120:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.h:178:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.h:240: * The input is assumed to be in normal order and coefficient-wise bound by
+mlkem/src/poly.h:244: * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set, and coefficient-wise bound
+mlkem/src/poly.h:258:  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.h:260:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+mlkem/src/poly.h:273: * The output polynomial is in normal order, and coefficient-wise bound by
+mlkem/src/poly.h:287:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+mlkem/src/poly_k.c:159:     array_bound(a->vec[k1].coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT)))
+mlkem/src/poly_k.c:316:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA1 + 1))
+mlkem/src/poly_k.c:403:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1)))
+mlkem/src/poly_k.h:67:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly_k.h:101:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:130:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly_k.h:165:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:196:         array_bound(a->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:222:         array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:243:         array_bound(a->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:266:        array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT)))
+mlkem/src/poly_k.h:273: * The input is assumed to be in normal order and coefficient-wise bound by
+mlkem/src/poly_k.h:276: * The output polynomial is in bitreversed order, and coefficient-wise bound
+mlkem/src/poly_k.h:289:  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLKEM_Q)))
+mlkem/src/poly_k.h:292:  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLK_NTT_BOUND)))
+mlkem/src/poly_k.h:303: * The output polynomial is in normal order, and coefficient-wise bound by
+mlkem/src/poly_k.h:317:  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND)))
+mlkem/src/poly_k.h:327: * bounds guarantees for the coefficients in the result.
+mlkem/src/poly_k.h:349:     array_bound(a->vec[k1].coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT)))
+mlkem/src/poly_k.h:411:    array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:464:    array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLKEM_Q)))
+mlkem/src/poly_k.h:504:  ensures(array_abs_bound(r0->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))
+mlkem/src/poly_k.h:505:  ensures(array_abs_bound(r1->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))
+mlkem/src/poly_k.h:506:  ensures(array_abs_bound(r2->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))
+mlkem/src/poly_k.h:507:  ensures(r3 != NULL ==> array_abs_bound(r3->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1))
+mlkem/src/poly_k.h:542:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_ETA2 + 1))
+mlkem/src/poly_k.h:586:  ensures(array_abs_bound(r0->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1)
+mlkem/src/poly_k.h:587:       && array_abs_bound(r1->coeffs,0, MLKEM_N, MLKEM_ETA1 + 1)
+mlkem/src/poly_k.h:588:       && array_abs_bound(r2->coeffs,0, MLKEM_N, MLKEM_ETA2 + 1)
+mlkem/src/poly_k.h:589:       && array_abs_bound(r3->coeffs,0, MLKEM_N, MLKEM_ETA2 + 1))
+mlkem/src/sampling.c:198:    invariant(array_bound(vec0->coeffs, 0, ctr[0], 0, MLKEM_Q))
+mlkem/src/sampling.c:199:    invariant(array_bound(vec1->coeffs, 0, ctr[1], 0, MLKEM_Q))
+mlkem/src/sampling.c:200:    invariant(array_bound(vec2->coeffs, 0, ctr[2], 0, MLKEM_Q))
+mlkem/src/sampling.c:201:    invariant(array_bound(vec3->coeffs, 0, ctr[3], 0, MLKEM_Q)))
+mlkem/src/sampling.c:241:    invariant(array_bound(entry->coeffs, 0, ctr, 0, MLKEM_Q)))
+mlkem/src/sampling.c:281:    invariant(array_abs_bound(r->coeffs, 0, 8 * i, 3))
+mlkem/src/sampling.c:292:      invariant(array_abs_bound(r->coeffs, 0, 8 * i + j, 3))
+mlkem/src/sampling.c:334:    invariant(array_abs_bound(r->coeffs, 0, 4 * i, 4))
+mlkem/src/sampling.c:346:      invariant(array_abs_bound(r->coeffs, 0, 4 * i + j, 4))
+mlkem/src/sampling.h:83:  ensures(array_bound(vec0->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:84:  ensures(array_bound(vec1->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:85:  ensures(array_bound(vec2->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:86:  ensures(array_bound(vec3->coeffs, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/sampling.h:105:  ensures(array_bound(entry->coeffs, 0, MLKEM_N, 0, MLKEM_Q)));

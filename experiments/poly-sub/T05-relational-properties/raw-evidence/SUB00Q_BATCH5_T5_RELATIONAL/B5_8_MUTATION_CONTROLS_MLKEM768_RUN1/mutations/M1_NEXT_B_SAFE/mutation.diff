@@ -1,0 +1,16 @@
+--- frozen_source/poly.c
++++ M1_NEXT_B_SAFE/poly.c
+@@ -256,7 +256,12 @@
+     decreases(MLKEM_N - i))
+   {
+     /* The preconditions imply that the subtraction stays within int16_t. */
+-    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
++    {
++      int16_t selected_b;
++      selected_b =
++          b->coeffs[(i + 1u < MLKEM_N) ? (i + 1u) : i];
++      r->coeffs[i] = (int16_t)(r->coeffs[i] - selected_b);
++    }
+   }
+ }
+ 

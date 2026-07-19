@@ -1,0 +1,2988 @@
+================================================================
+SUB-00A BLIND PRODUCTION INPUT PACKET
+================================================================
+
+Repository: /home/girish/THESIS-2026/mlkem-native
+Frozen commit: d9613cf60de3132d32475c102d8c2781d84feb34
+Branch at collection: main
+Collection time UTC: 2026-07-17T00:29:30Z
+CBMC: 6.9.0 (cbmc-6.9.0)
+goto-cc: gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+Compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Architecture: x86_64
+
+CLEAN-ROOM RESTRICTION:
+No repository proof harness, proof report, proof Makefile,
+proof JSON output or dedicated poly_sub proof source was
+included in this source-only export.
+
+INITIAL-DISCOVERY DISCLOSURE NOTE:
+The initial discovery grep accidentally matched untracked
+poly_add-era logs. Those logs exposed generic CBMC safety
+success lines for poly_sub and poly_reduce. Consequently,
+basic overflow, bounds and pointer-safety checks are not
+eligible for novelty claims in the poly_sub campaign.
+
+================================================================
+SOURCE-ONLY FILE INVENTORY
+================================================================
+cbmc.h
+common.h
+compress.c
+compress.h
+debug.c
+debug.h
+fips202/fips202.c
+fips202/fips202.h
+fips202/fips202x4.c
+fips202/fips202x4.h
+fips202/keccakf1600.c
+fips202/keccakf1600.h
+fips202/native/api.h
+fips202/native/auto.h
+indcpa.c
+indcpa.h
+kem.c
+kem.h
+native/aarch64/README.md
+native/aarch64/meta.h
+native/api.h
+native/meta.h
+native/ppc64le/README.md
+native/ppc64le/meta.h
+native/riscv64/README.md
+native/riscv64/meta.h
+native/x86_64/README.md
+native/x86_64/meta.h
+params.h
+poly.c
+poly.h
+poly_k.c
+poly_k.h
+randombytes.h
+sampling.c
+sampling.h
+symmetric.h
+sys.h
+verify.c
+verify.h
+zetas.inc
+
+================================================================
+FULL FILE: mlkem/src/poly.c
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	
+     6	/* References
+     7	 * ==========
+     8	 *
+     9	 * - [NeonNTT]
+    10	 *   Neon NTT: Faster Dilithium, Kyber, and Saber on Cortex-A72 and Apple M1
+    11	 *   Becker, Hwang, Kannwischer, Yang, Yang
+    12	 *   https://eprint.iacr.org/2021/986
+    13	 *
+    14	 * - [REF]
+    15	 *   CRYSTALS-Kyber C reference implementation
+    16	 *   Bos, Ducas, Kiltz, Lepoint, Lyubashevsky, Schanck, Schwabe, Seiler, Stehlé
+    17	 *   https://github.com/pq-crystals/kyber/tree/main/ref
+    18	 */
+    19	
+    20	#include "common.h"
+    21	#if !defined(MLK_CONFIG_MULTILEVEL_NO_SHARED)
+    22	
+    23	
+    24	#include "cbmc.h"
+    25	#include "debug.h"
+    26	#include "poly.h"
+    27	#include "sampling.h"
+    28	#include "symmetric.h"
+    29	#include "verify.h"
+    30	
+    31	/**
+    32	 * Montgomery multiplication modulo MLKEM_Q.
+    33	 *
+    34	 * @reference{`fqmul()` in the reference implementation @[REF].}
+    35	 *
+    36	 * @param a First factor. Can be any int16_t.
+    37	 * @param b Second factor. Must be signed canonical
+    38	 *          (abs value < (MLKEM_Q+1)/2).
+    39	 *
+    40	 * @return 16-bit integer congruent to a*b*R^{-1} mod MLKEM_Q, and
+    41	 *         smaller than MLKEM_Q in absolute value.
+    42	 */
+    43	static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b)
+    44	__contract__(
+    45	  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+    46	  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+    47	)
+    48	{
+    49	  int16_t res;
+    50	  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);
+    51	
+    52	  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);
+    53	  /* Bounds:
+    54	   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2
+    55	   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2
+    56	   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2
+    57	   *        < MLKEM_Q
+    58	   */
+    59	
+    60	  mlk_assert_abs_bound(&res, 1, MLKEM_Q);
+    61	  return res;
+    62	}
+    63	
+    64	/**
+    65	 * Barrett reduction; given a 16-bit integer a, computes the centered
+    66	 * representative congruent to a mod MLKEM_Q in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2].
+    67	 *
+    68	 * @reference{`barrett_reduce()` in the reference implementation @[REF].}
+    69	 *
+    70	 * @param a Input integer to be reduced.
+    71	 *
+    72	 * @return Integer in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2] congruent to @p a modulo
+    73	 *         MLKEM_Q.
+    74	 */
+    75	static MLK_INLINE int16_t mlk_barrett_reduce(int16_t a)
+    76	__contract__(
+    77	  ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)
+    78	)
+    79	{
+    80	  /* Barrett reduction approximates
+    81	   * ```
+    82	   *     round(a/MLKEM_Q)
+    83	   *   = round(a*(2^N/MLKEM_Q))/2^N)
+    84	   *  ~= round(a*round(2^N/MLKEM_Q)/2^N)
+    85	   * ```
+    86	   * Here, we pick N=26.
+    87	   */
+    88	  const int32_t magic = 20159; /* check-magic: 20159 == round(2^26 / MLKEM_Q) */
+    89	
+    90	  /*
+    91	   * PORTABILITY: Right-shift on a signed integer is
+    92	   * implementation-defined for negative left argument.
+    93	   * Here, we assume it's sign-preserving "arithmetic" shift right.
+    94	   * See (C99 6.5.7 (5))
+    95	   */
+    96	  const int32_t t = (magic * a + ((int32_t)1 << 25)) >> 26;
+    97	
+    98	  /*
+    99	   * t is in -10 .. +10, so we need 32-bit math to
+   100	   * evaluate t * MLKEM_Q and the subsequent subtraction
+   101	   */
+   102	  int16_t res = (int16_t)(a - t * MLKEM_Q);
+   103	
+   104	  mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);
+   105	  return res;
+   106	}
+   107	
+   108	/* Reference: `poly_tomont()` in the reference implementation @[REF]. */
+   109	MLK_STATIC_TESTABLE void mlk_poly_tomont_c(mlk_poly *r)
+   110	__contract__(
+   111	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   112	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   113	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+   114	)
+   115	{
+   116	  unsigned i;
+   117	  const int16_t f = 1353; /* check-magic: 1353 == signed_mod(2^32, MLKEM_Q) */
+   118	  for (i = 0; i < MLKEM_N; i++)
+   119	  __loop__(
+   120	    invariant(i <= MLKEM_N)
+   121	    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))
+   122	    decreases(MLKEM_N - i))
+   123	  {
+   124	    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);
+   125	  }
+   126	
+   127	  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   128	}
+   129	
+   130	MLK_INTERNAL_API
+   131	void mlk_poly_tomont(mlk_poly *r)
+   132	{
+   133	#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+   134	  int ret;
+   135	  ret = mlk_poly_tomont_native(r->coeffs);
+   136	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   137	  {
+   138	    mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   139	    return;
+   140	  }
+   141	#endif /* MLK_USE_NATIVE_POLY_TOMONT */
+   142	
+   143	  mlk_poly_tomont_c(r);
+   144	}
+   145	
+   146	/**
+   147	 * Constant-time conversion of signed representatives modulo MLKEM_Q within
+   148	 * range [-(MLKEM_Q-1), MLKEM_Q-1] into unsigned representatives within
+   149	 * range [0, MLKEM_Q-1].
+   150	 *
+   151	 * @reference{Not present in the reference implementation @[REF]. Used here
+   152	 * to implement different semantics of `poly_reduce()`; see below. In the
+   153	 * reference implementation @[REF] this logic is part of all compression
+   154	 * functions (see `compress.c`).}
+   155	 *
+   156	 * @param c Signed coefficient to be converted.
+   157	 *
+   158	 * @return Unsigned representative in [0, MLKEM_Q).
+   159	 */
+   160	static MLK_INLINE int16_t mlk_scalar_signed_to_unsigned_q(int16_t c)
+   161	__contract__(
+   162	  requires(c > -MLKEM_Q && c < MLKEM_Q)
+   163	  ensures(return_value >= 0 && return_value < MLKEM_Q)
+   164	  ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q)))
+   165	{
+   166	  mlk_assert_abs_bound(&c, 1, MLKEM_Q);
+   167	
+   168	  /* Add MLKEM_Q if c is negative, but in constant time.
+   169	   *
+   170	   * Note that c + MLKEM_Q does not overflow in int16_t,
+   171	   * so the cast to uint16_t is safe. */
+   172	  c = mlk_ct_sel_int16((int16_t)(c + MLKEM_Q), c, mlk_ct_cmask_neg_i16(c));
+   173	
+   174	  mlk_assert_bound(&c, 1, 0, MLKEM_Q);
+   175	  return c;
+   176	}
+   177	
+   178	/* Reference: `poly_reduce()` in the reference implementation @[REF]
+   179	 *            - We use _unsigned_ canonical outputs, while the reference
+   180	 *              implementation uses _signed_ canonical outputs.
+   181	 *              Accordingly, we need a conditional addition of MLKEM_Q
+   182	 *              here to go from signed to unsigned representatives.
+   183	 *              This conditional addition is then dropped from all
+   184	 *              polynomial compression functions instead (see `compress.c`). */
+   185	MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r)
+   186	__contract__(
+   187	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   188	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   189	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   190	)
+   191	{
+   192	  unsigned i;
+   193	
+   194	  for (i = 0; i < MLKEM_N; i++)
+   195	  __loop__(
+   196	    invariant(i <= MLKEM_N)
+   197	    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+   198	    decreases(MLKEM_N - i))
+   199	  {
+   200	    /* Barrett reduction, giving signed canonical representative */
+   201	    int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+   202	    /* Conditional addition to get unsigned canonical representative */
+   203	    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+   204	  }
+   205	
+   206	  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   207	}
+   208	
+   209	MLK_INTERNAL_API
+   210	void mlk_poly_reduce(mlk_poly *r)
+   211	{
+   212	#if defined(MLK_USE_NATIVE_POLY_REDUCE)
+   213	  int ret;
+   214	  ret = mlk_poly_reduce_native(r->coeffs);
+   215	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   216	  {
+   217	    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   218	    return;
+   219	  }
+   220	#endif /* MLK_USE_NATIVE_POLY_REDUCE */
+   221	
+   222	  mlk_poly_reduce_c(r);
+   223	}
+   224	
+   225	/* Reference: `poly_add()` in the reference implementation @[REF].
+   226	 *            - We use destructive version (output=first input) to avoid
+   227	 *              reasoning about aliasing in the CBMC specification */
+   228	MLK_INTERNAL_API
+   229	void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   230	{
+   231	  unsigned i;
+   232	  for (i = 0; i < MLKEM_N; i++)
+   233	  __loop__(
+   234	    invariant(i <= MLKEM_N)
+   235	    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+   236	    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+   237	    decreases(MLKEM_N - i))
+   238	  {
+   239	    /* The preconditions imply that the addition stays within int16_t. */
+   240	    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);
+   241	  }
+   242	}
+   243	
+   244	/* Reference: `poly_sub()` in the reference implementation @[REF].
+   245	 *            - We use destructive version (output=first input) to avoid
+   246	 *              reasoning about aliasing in the CBMC specification */
+   247	MLK_INTERNAL_API
+   248	void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+   249	{
+   250	  unsigned i;
+   251	  for (i = 0; i < MLKEM_N; i++)
+   252	  __loop__(
+   253	    invariant(i <= MLKEM_N)
+   254	    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+   255	    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))
+   256	    decreases(MLKEM_N - i))
+   257	  {
+   258	    /* The preconditions imply that the subtraction stays within int16_t. */
+   259	    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);
+   260	  }
+   261	}
+   262	
+   263	#include "zetas.inc"
+   264	
+   265	/* Reference: Does not exist in the reference implementation @[REF].
+   266	 *            - The reference implementation does not use a
+   267	 *              multiplication cache ('mulcache'). This idea originates
+   268	 *              from @[NeonNTT] and is used at the C level here. */
+   269	MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x,
+   270	                                                     const mlk_poly *a)
+   271	__contract__(
+   272	  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+   273	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+   274	  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+   275	)
+   276	{
+   277	  unsigned i;
+   278	  for (i = 0; i < MLKEM_N / 4; i++)
+   279	  __loop__(
+   280	    invariant(i <= MLKEM_N / 4)
+   281	    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+   282	    decreases(MLKEM_N / 4 - i))
+   283	  {
+   284	    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);
+   285	    /* The values in zeta table are <= MLKEM_Q in absolute value,
+   286	     * so the negation in int16_t is safe. */
+   287	    x->coeffs[2 * i + 1] =
+   288	        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));
+   289	  }
+   290	
+   291	  /*
+   292	   * This bound is true for the C implementation, but not needed
+   293	   * in the higher level bounds reasoning. It is thus omitted
+   294	   * from the spec to not unnecessarily constrain native
+   295	   * implementations, but checked here nonetheless.
+   296	   */
+   297	  mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);
+   298	}
+   299	
+   300	MLK_INTERNAL_API
+   301	void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+   302	{
+   303	#if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)
+   304	  int ret;
+   305	  ret = mlk_poly_mulcache_compute_native(x->coeffs, a->coeffs);
+   306	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   307	  {
+   308	    return;
+   309	  }
+   310	#endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */
+   311	
+   312	  mlk_poly_mulcache_compute_c(x, a);
+   313	}
+   314	
+   315	/*
+   316	 * Computes a block CT butterflies with a fixed twiddle factor,
+   317	 * using Montgomery multiplication.
+   318	 * Parameters:
+   319	 * - r: Pointer to base of polynomial (_not_ the base of butterfly block)
+   320	 * - root: Twiddle factor to use for the butterfly. This must be in
+   321	 *         Montgomery form and signed canonical.
+   322	 * - start: Offset to the beginning of the butterfly block
+   323	 * - len: Index difference between coefficients subject to a butterfly
+   324	 * - bound: Ghost variable describing coefficient bound: Prior to `start`,
+   325	 *          coefficients must be bound by `bound + MLKEM_Q`. Post `start`,
+   326	 *          they must be bound by `bound`.
+   327	 * When this function returns, output coefficients in the index range
+   328	 * [start, start+2*len) have bound bumped to `bound + MLKEM_Q`.
+   329	 * Example:
+   330	 * - start=8, len=4
+   331	 *   This would compute the following four butterflies
+   332	 *          8     --    12
+   333	 *             9    --     13
+   334	 *                10   --     14
+   335	 *                   11   --     15
+   336	 * - start=4, len=2
+   337	 *   This would compute the following two butterflies
+   338	 *          4 -- 6
+   339	 *             5 -- 7
+   340	 */
+   341	
+   342	/* Reference: Embedded in `ntt()` in the reference implementation @[REF]. */
+   343	static void mlk_ntt_butterfly_block(int16_t r[MLKEM_N], int16_t zeta,
+   344	                                    unsigned start, unsigned len,
+   345	                                    unsigned bound)
+   346	__contract__(
+   347	  requires(start < MLKEM_N)
+   348	  requires(1 <= len && len <= MLKEM_N / 2 && start + 2 * len <= MLKEM_N)
+   349	  requires(0 <= bound && bound < INT16_MAX - MLKEM_Q)
+   350	  requires(-MLKEM_Q_HALF < zeta && zeta < MLKEM_Q_HALF)
+   351	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   352	  requires(array_abs_bound(r, 0, start, bound + MLKEM_Q))
+   353	  requires(array_abs_bound(r, start, MLKEM_N, bound))
+   354	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   355	  ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q))
+   356	  ensures(array_abs_bound(r, start + 2 * len, MLKEM_N, bound)))
+   357	{
+   358	  /* `bound` is a ghost variable only needed in the CBMC specification */
+   359	  unsigned j;
+   360	  ((void)bound);
+   361	  for (j = start; j < start + len; j++)
+   362	  __loop__(
+   363	    invariant(start <= j && j <= start + len)
+   364	    /*
+   365	     * Coefficients are updated in strided pairs, so the bounds for the
+   366	     * intermediate states alternate twice between the old and new bound
+   367	     */
+   368	    invariant(array_abs_bound(r, 0,           j,           bound + MLKEM_Q))
+   369	    invariant(array_abs_bound(r, j,           start + len, bound))
+   370	    invariant(array_abs_bound(r, start + len, j + len,     bound + MLKEM_Q))
+   371	    invariant(array_abs_bound(r, j + len,     MLKEM_N,     bound))
+   372	    decreases(start + len - j))
+   373	  {
+   374	    int16_t t;
+   375	    t = mlk_fqmul(r[j + len], zeta);
+   376	    /* The precondition implies that the arithmetic does not overflow. */
+   377	    r[j + len] = (int16_t)(r[j] - t);
+   378	    r[j] = (int16_t)(r[j] + t);
+   379	  }
+   380	}
+   381	
+   382	/*
+   383	 * Compute one layer of forward NTT
+   384	 * Parameters:
+   385	 * - r: Pointer to base of polynomial
+   386	 * - layer: Variable indicating which layer is being applied.
+   387	 */
+   388	
+   389	/* Reference: Embedded in `ntt()` in the reference implementation @[REF]. */
+   390	static void mlk_ntt_layer(int16_t r[MLKEM_N], unsigned layer)
+   391	__contract__(
+   392	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   393	  requires(1 <= layer && layer <= 7)
+   394	  requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))
+   395	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   396	  ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q)))
+   397	{
+   398	  unsigned start, k, len;
+   399	  /* Twiddle factors for layer n are at indices 2^(n-1)..2^n-1. */
+   400	  k = 1u << (layer - 1);
+   401	  len = (unsigned)MLKEM_N >> layer;
+   402	  for (start = 0; start < MLKEM_N; start += 2 * len)
+   403	  __loop__(
+   404	    invariant(start < MLKEM_N + 2 * len)
+   405	    invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N)
+   406	    invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q))
+   407	    invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q))
+   408	    decreases(MLKEM_N - start))
+   409	  {
+   410	    int16_t zeta = mlk_zetas[k++];
+   411	    mlk_ntt_butterfly_block(r, zeta, start, len, layer * MLKEM_Q);
+   412	  }
+   413	}
+   414	
+   415	/*
+   416	 * Compute full forward NTT
+   417	 * NOTE: This particular implementation satisfies a much tighter
+   418	 * bound on the output coefficients (5*q) than the contractual one (8*q),
+   419	 * but this is not needed in the calling code. Should we change the
+   420	 * base multiplication strategy to require smaller NTT output bounds,
+   421	 * the proof may need strengthening.
+   422	 */
+   423	
+   424	/* Reference: `ntt()` in the reference implementation @[REF].
+   425	 * - Iterate over `layer` instead of `len` in the outer loop
+   426	 *   to simplify computation of zeta index. */
+   427	MLK_STATIC_TESTABLE void mlk_poly_ntt_c(mlk_poly *p)
+   428	__contract__(
+   429	  requires(memory_no_alias(p, sizeof(mlk_poly)))
+   430	  requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q))
+   431	  assigns(memory_slice(p, sizeof(mlk_poly)))
+   432	  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+   433	)
+   434	{
+   435	  unsigned layer;
+   436	  int16_t *r;
+   437	
+   438	  mlk_assert_abs_bound(p, MLKEM_N, MLKEM_Q);
+   439	
+   440	  r = p->coeffs;
+   441	
+   442	  for (layer = 1; layer <= 7; layer++)
+   443	  __loop__(
+   444	    invariant(1 <= layer && layer <= 8)
+   445	    invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))
+   446	    decreases(8 - layer))
+   447	  {
+   448	    mlk_ntt_layer(r, layer);
+   449	  }
+   450	
+   451	  /* Check the stronger bound */
+   452	  mlk_assert_abs_bound(p, MLKEM_N, MLK_NTT_BOUND);
+   453	}
+   454	
+   455	MLK_INTERNAL_API
+   456	void mlk_poly_ntt(mlk_poly *r)
+   457	{
+   458	#if defined(MLK_USE_NATIVE_NTT)
+   459	  int ret;
+   460	  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   461	  ret = mlk_ntt_native(r->coeffs);
+   462	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   463	  {
+   464	    mlk_assert_abs_bound(r, MLKEM_N, MLK_NTT_BOUND);
+   465	    return;
+   466	  }
+   467	#endif /* MLK_USE_NATIVE_NTT */
+   468	
+   469	  mlk_poly_ntt_c(r);
+   470	}
+   471	
+   472	
+   473	/* Compute one layer of inverse NTT */
+   474	
+   475	/* Reference: Embedded into `invntt()` in the reference implementation @[REF] */
+   476	static void mlk_invntt_layer(int16_t *r, unsigned layer)
+   477	__contract__(
+   478	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   479	  requires(1 <= layer && layer <= 7)
+   480	  requires(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   481	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   482	  ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)))
+   483	{
+   484	  unsigned start, k, len;
+   485	  len = (unsigned)MLKEM_N >> layer;
+   486	  k = (1u << layer) - 1;
+   487	  for (start = 0; start < MLKEM_N; start += 2 * len)
+   488	  __loop__(
+   489	    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   490	    invariant(start <= MLKEM_N && k <= 127)
+   491	    /* Normalised form of k == MLKEM_N / len - 1 - start / (2 * len) */
+   492	    invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len)
+   493	    decreases(MLKEM_N - start))
+   494	  {
+   495	    unsigned j;
+   496	    int16_t zeta = mlk_zetas[k--];
+   497	    for (j = start; j < start + len; j++)
+   498	    __loop__(
+   499	      invariant(start <= j && j <= start + len)
+   500	      invariant(start <= MLKEM_N && k <= 127)
+   501	      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   502	      decreases(start + len - j))
+   503	    {
+   504	      int16_t t = r[j];
+   505	      /* The preconditions imply that the arithmetic does not overflow. */
+   506	      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));
+   507	      r[j + len] = (int16_t)(r[j + len] - t);
+   508	      r[j + len] = mlk_fqmul(r[j + len], zeta);
+   509	    }
+   510	  }
+   511	}
+   512	
+   513	/* Reference: `invntt()` in the reference implementation @[REF]
+   514	 *            - We normalize at the beginning of the inverse NTT,
+   515	 *              while the reference implementation normalizes at
+   516	 *              the end. This allows us to drop a call to `poly_reduce()`
+   517	 *              from the base multiplication. */
+   518	MLK_STATIC_TESTABLE void mlk_poly_invntt_tomont_c(mlk_poly *p)
+   519	__contract__(
+   520	  requires(memory_no_alias(p, sizeof(mlk_poly)))
+   521	  assigns(memory_slice(p, sizeof(mlk_poly)))
+   522	  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+   523	)
+   524	{
+   525	  unsigned j, layer;
+   526	  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */
+   527	  int16_t *r = p->coeffs;
+   528	
+   529	  /*
+   530	   * Scale input polynomial to account for Montgomery factor
+   531	   * and NTT twist. This also brings coefficients down to
+   532	   * absolute value < MLKEM_Q.
+   533	   */
+   534	  for (j = 0; j < MLKEM_N; j++)
+   535	  __loop__(
+   536	    invariant(j <= MLKEM_N)
+   537	    invariant(array_abs_bound(r, 0, j, MLKEM_Q))
+   538	    decreases(MLKEM_N - j))
+   539	  {
+   540	    r[j] = mlk_fqmul(r[j], f);
+   541	  }
+   542	
+   543	  /* Run the invNTT layers */
+   544	  for (layer = 7; layer > 0; layer--)
+   545	  __loop__(
+   546	    invariant(0 <= layer && layer < 8)
+   547	    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   548	    decreases(layer))
+   549	  {
+   550	    mlk_invntt_layer(r, layer);
+   551	  }
+   552	
+   553	  mlk_assert_abs_bound(p, MLKEM_N, MLK_INVNTT_BOUND);
+   554	}
+   555	
+   556	MLK_INTERNAL_API
+   557	void mlk_poly_invntt_tomont(mlk_poly *r)
+   558	{
+   559	#if defined(MLK_USE_NATIVE_INTT)
+   560	  int ret;
+   561	  ret = mlk_intt_native(r->coeffs);
+   562	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   563	  {
+   564	    mlk_assert_abs_bound(r, MLKEM_N, MLK_INVNTT_BOUND);
+   565	    return;
+   566	  }
+   567	#endif /* MLK_USE_NATIVE_INTT */
+   568	
+   569	  mlk_poly_invntt_tomont_c(r);
+   570	}
+   571	
+   572	#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+   573	
+   574	MLK_EMPTY_CU(mlk_poly)
+   575	
+   576	#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+================================================================
+FULL FILE: mlkem/src/poly.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	
+     6	/* References
+     7	 * ==========
+     8	 *
+     9	 * - [FIPS203]
+    10	 *   FIPS 203 Module-Lattice-Based Key-Encapsulation Mechanism Standard
+    11	 *   National Institute of Standards and Technology
+    12	 *   https://csrc.nist.gov/pubs/fips/203/final
+    13	 */
+    14	
+    15	#ifndef MLK_POLY_H
+    16	#define MLK_POLY_H
+    17	
+    18	
+    19	#include "cbmc.h"
+    20	#include "common.h"
+    21	#include "debug.h"
+    22	#include "verify.h"
+    23	
+    24	/* Absolute exclusive upper bound for the output of the inverse NTT */
+    25	#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+    26	
+    27	/* Absolute exclusive upper bound for the output of the forward NTT */
+    28	#define MLK_NTT_BOUND (8 * MLKEM_Q)
+    29	
+    30	/**
+    31	 * Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial
+    32	 * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1].
+    33	 */
+    34	typedef struct
+    35	{
+    36	  int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */
+    37	} MLK_ALIGN mlk_poly;
+    38	
+    39	/**
+    40	 * INTERNAL representation of precomputed data speeding up
+    41	 * the base multiplication of two polynomials in NTT domain.
+    42	 */
+    43	typedef struct
+    44	{
+    45	  int16_t coeffs[MLKEM_N >> 1]; /**< Cached coefficients. */
+    46	} MLK_ALIGN mlk_poly_mulcache;
+    47	
+    48	/**
+    49	 * Generic Montgomery reduction; given a 32-bit integer a, computes a 16-bit
+    50	 * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+    51	 *
+    52	 * @param a Input integer to be reduced, of absolute value smaller or equal
+    53	 *          to INT32_MAX - 2^15 * MLKEM_Q.
+    54	 *
+    55	 * @return Integer congruent to a * R^-1 modulo MLKEM_Q, with absolute value
+    56	 *         <= ceil(|a| / 2^16) + (MLKEM_Q + 1)/2.
+    57	 */
+    58	static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a)
+    59	__contract__(
+    60	    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    61	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)))
+    62	    /* We don't attempt to express an input-dependent output bound
+    63	     * as the post-condition here. There are two call-sites for this
+    64	     * function:
+    65	     * - The base multiplication: Here, we need no output bound.
+    66	     * - mlk_fqmul: Here, we inline this function and prove another spec
+    67	     *          for mlk_fqmul which does have a post-condition bound. */
+    68	)
+    69	{
+    70	  /* check-magic: 62209 == unsigned_mod(pow(MLKEM_Q, -1, 2^16), 2^16) */
+    71	  const uint32_t QINV = 62209;
+    72	
+    73	  /* Compute a*q^{-1} mod 2^16 in unsigned representatives. */
+    74	  const uint16_t a_reduced = mlk_cast_int32_to_uint16(a);
+    75	  const uint16_t a_inverted = (a_reduced * QINV) & UINT16_MAX;
+    76	
+    77	  /* Lift to signed canonical representative mod 2^16. */
+    78	  const int16_t t = mlk_cast_uint16_to_int16(a_inverted);
+    79	
+    80	  int32_t r;
+    81	
+    82	  mlk_assert(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    83	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)));
+    84	
+    85	  r = a - ((int32_t)t * MLKEM_Q);
+    86	
+    87	  /*
+    88	   * PORTABILITY: Right-shift on a signed integer is, strictly-speaking,
+    89	   * implementation-defined for negative left argument. Here,
+    90	   * we assume it's sign-preserving "arithmetic" shift right. (C99 6.5.7 (5))
+    91	   */
+    92	  r = r >> 16;
+    93	  /* Bounds: |r >> 16| <= ceil(|r| / 2^16)
+    94	   *                   <= ceil(|a| / 2^16 + MLKEM_Q / 2)
+    95	   *                   <= ceil(|a| / 2^16) + (MLKEM_Q + 1) / 2
+    96	   *
+    97	   * (Note that |a >> n| = ceil(|a| / 2^16) for negative a)
+    98	   */
+    99	  return (int16_t)r;
+   100	}
+   101	
+   102	#define mlk_poly_tomont MLK_NAMESPACE(poly_tomont)
+   103	/**
+   104	 * In-place conversion of all coefficients of a polynomial from the normal
+   105	 * domain to the Montgomery domain.
+   106	 *
+   107	 * Bounds: output < MLKEM_Q in absolute value.
+   108	 *
+   109	 * @spec{Internal normalization required in `mlk_indcpa_keypair_derand` as
+   110	 * part of matrix-vector multiplication @[FIPS203, Algorithm 13, K-PKE.KeyGen,
+   111	 * L18].}
+   112	 *
+   113	 * @param[in,out] r Input/output polynomial.
+   114	 */
+   115	MLK_INTERNAL_API
+   116	void mlk_poly_tomont(mlk_poly *r)
+   117	__contract__(
+   118	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   119	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   120	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+   121	);
+   122	
+   123	#define mlk_poly_mulcache_compute MLK_NAMESPACE(poly_mulcache_compute)
+   124	/**
+   125	 * Compute the mulcache for a polynomial in NTT domain.
+   126	 *
+   127	 * The mulcache of a degree-2 polynomial b := b0 + b1*X in Fq[X]/(X^2-zeta)
+   128	 * is the value b1*zeta, needed when computing products of b in
+   129	 * Fq[X]/(X^2-zeta).
+   130	 *
+   131	 * The mulcache of a polynomial in NTT domain -- which is a 128-tuple of
+   132	 * degree-2 polynomials in Fq[X]/(X^2-zeta), for varying zeta, is the
+   133	 * 128-tuple of mulcaches of those polynomials.
+   134	 *
+   135	 * @spec{Caches `b_1 * \gamma` in @[FIPS203, Algorithm 12, BaseCaseMultiply,
+   136	 * L1].}
+   137	 *
+   138	 * @param[out] x Mulcache to be populated.
+   139	 * @param[in]  a Input polynomial.
+   140	 */
+   141	/*
+   142	 * NOTE: The default C implementation of this function populates
+   143	 * the mulcache with values in (-q,q), but this is not needed for the
+   144	 * higher level safety proofs, and thus not part of the spec.
+   145	 */
+   146	MLK_INTERNAL_API
+   147	void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+   148	__contract__(
+   149	  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+   150	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+   151	  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+   152	);
+   153	
+   154	#define mlk_poly_reduce MLK_NAMESPACE(poly_reduce)
+   155	/**
+   156	 * Convert a polynomial to unsigned canonical representatives.
+   157	 *
+   158	 * The input coefficients can be arbitrary integers in int16_t. The output
+   159	 * coefficients are in [0,1,..,MLKEM_Q-1].
+   160	 *
+   161	 * @spec{Normalizes on unsigned canonical representatives ahead of calling
+   162	 * @[FIPS203, Compress_d, Eq (4.7)]. This is not made explicit in FIPS 203.}
+   163	 *
+   164	 * @param[in,out] r Input/output polynomial.
+   165	 */
+   166	/*
+   167	 * NOTE: The semantics of mlk_poly_reduce() is different in
+   168	 * the reference implementation, which requires
+   169	 * signed canonical output data. Unsigned canonical
+   170	 * outputs are better suited to the only remaining
+   171	 * use of mlk_poly_reduce() in the context of (de)serialization.
+   172	 */
+   173	MLK_INTERNAL_API
+   174	void mlk_poly_reduce(mlk_poly *r)
+   175	__contract__(
+   176	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   177	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   178	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   179	);
+   180	
+   181	#define mlk_poly_add MLK_NAMESPACE(poly_add)
+   182	/**
+   183	 * Add two polynomials in place.
+   184	 *
+   185	 * The coefficients of @p r and @p b must be such that the addition does not
+   186	 * overflow. Otherwise, the behaviour of this function is undefined.
+   187	 *
+   188	 * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   189	 * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L21].}
+   190	 *
+   191	 * @param[in,out] r Input-output polynomial to be added to.
+   192	 * @param[in]     b Input polynomial that should be added to @p r. Must be
+   193	 *                  disjoint from @p r.
+   194	 */
+   195	/*
+   196	 * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+   197	 * We specialize to the accumulator form to avoid reasoning about aliasing.
+   198	 */
+   199	MLK_INTERNAL_API
+   200	void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   201	__contract__(
+   202	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   203	  requires(memory_no_alias(b, sizeof(mlk_poly)))
+   204	  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+   205	  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+   206	  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+   207	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   208	);
+   209	
+   210	#define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+   211	/**
+   212	 * Subtract two polynomials; no modular reduction is performed.
+   213	 *
+   214	 * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   215	 * Representations]. Used in @[FIPS203, Algorithm 15, K-PKE.Decrypt, L6].}
+   216	 *
+   217	 * @param[in,out] r Input-output polynomial to be subtracted from.
+   218	 * @param[in]     b Second input polynomial.
+   219	 */
+   220	/*
+   221	 * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+   222	 * We specialize to the accumulator form to avoid reasoning about aliasing.
+   223	 */
+   224	MLK_INTERNAL_API
+   225	void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+   226	__contract__(
+   227	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   228	  requires(memory_no_alias(b, sizeof(mlk_poly)))
+   229	  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))
+   230	  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN))
+   231	  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]))
+   232	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   233	);
+   234	
+   235	#define mlk_poly_ntt MLK_NAMESPACE(poly_ntt)
+   236	/**
+   237	 * Compute the negacyclic number-theoretic transform (NTT) of a polynomial
+   238	 * in place.
+   239	 *
+   240	 * The input is assumed to be in normal order and coefficient-wise bound by
+   241	 * MLKEM_Q in absolute value.
+   242	 *
+   243	 * The output polynomial is in bitreversed order, or of a custom order if
+   244	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set, and coefficient-wise bound
+   245	 * by MLK_NTT_BOUND in absolute value.
+   246	 *
+   247	 * (NOTE: Sometimes the input to the NTT is actually smaller, which gives
+   248	 * better bounds.)
+   249	 *
+   250	 * @spec{Implements @[FIPS203, Algorithm 9, NTT].}
+   251	 *
+   252	 * @param[in,out] r Input/output polynomial.
+   253	 */
+   254	MLK_INTERNAL_API
+   255	void mlk_poly_ntt(mlk_poly *r)
+   256	__contract__(
+   257	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   258	  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+   259	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   260	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+   261	);
+   262	
+   263	#define mlk_poly_invntt_tomont MLK_NAMESPACE(poly_invntt_tomont)
+   264	/**
+   265	 * Compute the inverse negacyclic number-theoretic transform (NTT) of a
+   266	 * polynomial in place; input assumed to be in bitreversed order, output in
+   267	 * normal order.
+   268	 *
+   269	 * The input is assumed to be in bitreversed order, or of a custom order if
+   270	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set, and can have arbitrary
+   271	 * coefficients in int16_t.
+   272	 *
+   273	 * The output polynomial is in normal order, and coefficient-wise bound by
+   274	 * MLK_INVNTT_BOUND in absolute value.
+   275	 *
+   276	 * @spec{Implements composition of @[FIPS203, Algorithm 10, NTT^{-1}] and
+   277	 * elementwise modular multiplication with a suitable Montgomery factor
+   278	 * introduced during the base multiplication.}
+   279	 *
+   280	 * @param[in,out] r Input/output polynomial.
+   281	 */
+   282	MLK_INTERNAL_API
+   283	void mlk_poly_invntt_tomont(mlk_poly *r)
+   284	__contract__(
+   285	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   286	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   287	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+   288	);
+   289	
+   290	#endif /* !MLK_POLY_H */
+
+================================================================
+FULL FILE: mlkem/src/params.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	#ifndef MLK_PARAMS_H
+     6	#define MLK_PARAMS_H
+     7	
+     8	#if !defined(MLK_CONFIG_PARAMETER_SET)
+     9	#error MLK_CONFIG_PARAMETER_SET is not defined
+    10	#endif
+    11	
+    12	#if MLK_CONFIG_PARAMETER_SET == 512
+    13	#define MLKEM_K 2
+    14	#elif MLK_CONFIG_PARAMETER_SET == 768
+    15	#define MLKEM_K 3
+    16	#elif MLK_CONFIG_PARAMETER_SET == 1024
+    17	#define MLKEM_K 4
+    18	#else
+    19	#error Invalid value for MLK_CONFIG_PARAMETER_SET. Must be 512, 768, or 1024.
+    20	#endif
+    21	
+    22	#define MLKEM_N 256
+    23	#define MLKEM_Q 3329
+    24	#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */
+    25	#define MLKEM_UINT12_LIMIT 4096
+    26	
+    27	#define MLKEM_SYMBYTES 32 /* size in bytes of hashes, and seeds */
+    28	#define MLKEM_SSBYTES 32  /* size in bytes of shared key */
+    29	
+    30	#define MLKEM_POLYBYTES 384
+    31	#define MLKEM_POLYVECBYTES (MLKEM_K * MLKEM_POLYBYTES)
+    32	
+    33	#define MLKEM_POLYCOMPRESSEDBYTES_D4 128
+    34	#define MLKEM_POLYCOMPRESSEDBYTES_D5 160
+    35	#define MLKEM_POLYCOMPRESSEDBYTES_D10 320
+    36	#define MLKEM_POLYCOMPRESSEDBYTES_D11 352
+    37	
+    38	#if MLKEM_K == 2
+    39	#define MLKEM_ETA1 3
+    40	#define MLKEM_DU 10
+    41	#define MLKEM_DV 4
+    42	#define MLKEM_POLYCOMPRESSEDBYTES_DV MLKEM_POLYCOMPRESSEDBYTES_D4
+    43	#define MLKEM_POLYCOMPRESSEDBYTES_DU MLKEM_POLYCOMPRESSEDBYTES_D10
+    44	#define MLKEM_POLYVECCOMPRESSEDBYTES_DU (MLKEM_K * MLKEM_POLYCOMPRESSEDBYTES_DU)
+    45	#elif MLKEM_K == 3
+    46	#define MLKEM_ETA1 2
+    47	#define MLKEM_DU 10
+    48	#define MLKEM_DV 4
+    49	#define MLKEM_POLYCOMPRESSEDBYTES_DV MLKEM_POLYCOMPRESSEDBYTES_D4
+    50	#define MLKEM_POLYCOMPRESSEDBYTES_DU MLKEM_POLYCOMPRESSEDBYTES_D10
+    51	#define MLKEM_POLYVECCOMPRESSEDBYTES_DU (MLKEM_K * MLKEM_POLYCOMPRESSEDBYTES_DU)
+    52	#elif MLKEM_K == 4
+    53	#define MLKEM_ETA1 2
+    54	#define MLKEM_DU 11
+    55	#define MLKEM_DV 5
+    56	#define MLKEM_POLYCOMPRESSEDBYTES_DV MLKEM_POLYCOMPRESSEDBYTES_D5
+    57	#define MLKEM_POLYCOMPRESSEDBYTES_DU MLKEM_POLYCOMPRESSEDBYTES_D11
+    58	#define MLKEM_POLYVECCOMPRESSEDBYTES_DU (MLKEM_K * MLKEM_POLYCOMPRESSEDBYTES_DU)
+    59	#endif /* MLKEM_K == 4 */
+    60	
+    61	#define MLKEM_ETA2 2
+    62	
+    63	#define MLKEM_INDCPA_MSGBYTES (MLKEM_SYMBYTES)
+    64	#define MLKEM_INDCPA_PUBLICKEYBYTES (MLKEM_POLYVECBYTES + MLKEM_SYMBYTES)
+    65	#define MLKEM_INDCPA_SECRETKEYBYTES (MLKEM_POLYVECBYTES)
+    66	#define MLKEM_INDCPA_BYTES \
+    67	  (MLKEM_POLYVECCOMPRESSEDBYTES_DU + MLKEM_POLYCOMPRESSEDBYTES_DV)
+    68	
+    69	#define MLKEM_INDCCA_PUBLICKEYBYTES (MLKEM_INDCPA_PUBLICKEYBYTES)
+    70	/* 32 bytes of additional space to save H(pk) */
+    71	#define MLKEM_INDCCA_SECRETKEYBYTES                            \
+    72	  (MLKEM_INDCPA_SECRETKEYBYTES + MLKEM_INDCPA_PUBLICKEYBYTES + \
+    73	   2 * MLKEM_SYMBYTES)
+    74	#define MLKEM_INDCCA_CIPHERTEXTBYTES (MLKEM_INDCPA_BYTES)
+    75	
+    76	#endif /* !MLK_PARAMS_H */
+
+================================================================
+FULL FILE: mlkem/src/common.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	#ifndef MLK_COMMON_H
+     6	#define MLK_COMMON_H
+     7	
+     8	#ifndef __ASSEMBLER__
+     9	#include <stdint.h>
+    10	#endif
+    11	
+    12	#define MLK_BUILD_INTERNAL
+    13	
+    14	#if defined(MLK_CONFIG_FILE)
+    15	#include MLK_CONFIG_FILE
+    16	#else
+    17	#include "mlkem_native_config.h"
+    18	#endif
+    19	
+    20	#include "params.h"
+    21	#include "sys.h"
+    22	
+    23	/* Internal and public API have external linkage by default, but
+    24	 * this can be overwritten by the user, e.g. for single-CU builds. */
+    25	#if !defined(MLK_CONFIG_INTERNAL_API_QUALIFIER)
+    26	#define MLK_INTERNAL_API
+    27	#define MLK_INTERNAL_DATA_DECLARATION extern
+    28	#define MLK_INTERNAL_DATA_DEFINITION
+    29	#else
+    30	#define MLK_INTERNAL_API MLK_CONFIG_INTERNAL_API_QUALIFIER
+    31	#define MLK_INTERNAL_DATA_DECLARATION MLK_CONFIG_INTERNAL_API_QUALIFIER
+    32	#define MLK_INTERNAL_DATA_DEFINITION MLK_CONFIG_INTERNAL_API_QUALIFIER
+    33	#endif
+    34	
+    35	#if !defined(MLK_CONFIG_EXTERNAL_API_QUALIFIER)
+    36	#define MLK_EXTERNAL_API
+    37	#else
+    38	#define MLK_EXTERNAL_API MLK_CONFIG_EXTERNAL_API_QUALIFIER
+    39	#endif
+    40	
+    41	#define MLK_CONCAT_(x1, x2) x1##x2
+    42	#define MLK_CONCAT(x1, x2) MLK_CONCAT_(x1, x2)
+    43	
+    44	#if (defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || \
+    45	     defined(MLK_CONFIG_MULTILEVEL_NO_SHARED))
+    46	#define MLK_ADD_PARAM_SET(s) MLK_CONCAT(s, MLK_CONFIG_PARAMETER_SET)
+    47	#else
+    48	#define MLK_ADD_PARAM_SET(s) s
+    49	#endif
+    50	
+    51	#define MLK_NAMESPACE_PREFIX MLK_CONCAT(MLK_CONFIG_NAMESPACE_PREFIX, _)
+    52	#define MLK_NAMESPACE_PREFIX_K \
+    53	  MLK_CONCAT(MLK_ADD_PARAM_SET(MLK_CONFIG_NAMESPACE_PREFIX), _)
+    54	
+    55	/* Functions are prefixed by MLK_CONFIG_NAMESPACE_PREFIX.
+    56	 *
+    57	 * If multiple parameter sets are used, functions depending on the parameter
+    58	 * set are additionally prefixed with 512/768/1024. See mlkem_native_config.h.
+    59	 *
+    60	 * Example: If MLK_CONFIG_NAMESPACE_PREFIX is mlkem, then
+    61	 * MLK_NAMESPACE_K(enc) becomes mlkem512_enc/mlkem768_enc/mlkem1024_enc.
+    62	 */
+    63	#define MLK_NAMESPACE(s) MLK_CONCAT(MLK_NAMESPACE_PREFIX, s)
+    64	#define MLK_NAMESPACE_K(s) MLK_CONCAT(MLK_NAMESPACE_PREFIX_K, s)
+    65	
+    66	/* On Apple platforms, we need to emit leading underscore
+    67	 * in front of assembly symbols. We thus introducee a separate
+    68	 * namespace wrapper for ASM symbols. */
+    69	#if !defined(__APPLE__)
+    70	#define MLK_ASM_NAMESPACE(sym) MLK_NAMESPACE(sym)
+    71	#else
+    72	#define MLK_ASM_NAMESPACE(sym) MLK_CONCAT(_, MLK_NAMESPACE(sym))
+    73	#endif
+    74	
+    75	/*
+    76	 * On X86_64 if control-flow protections (CET) are enabled (through
+    77	 * -fcf-protection=), we add an endbr64 instruction at every global function
+    78	 * label.  See sys.h for more details
+    79	 */
+    80	#if defined(MLK_SYS_X86_64)
+    81	#define MLK_ASM_FN_SYMBOL(sym) MLK_ASM_NAMESPACE(sym) : MLK_CET_ENDBR
+    82	#elif defined(MLK_SYS_ARMV81M_MVE)
+    83	/* clang-format off */
+    84	#define MLK_ASM_FN_SYMBOL(sym) \
+    85	  .type MLK_ASM_NAMESPACE(sym), %function; \
+    86	  MLK_ASM_NAMESPACE(sym) :
+    87	/* clang-format on */
+    88	#else /* !MLK_SYS_X86_64 && MLK_SYS_ARMV81M_MVE */
+    89	#define MLK_ASM_FN_SYMBOL(sym) MLK_ASM_NAMESPACE(sym) :
+    90	#endif /* !MLK_SYS_X86_64 && !MLK_SYS_ARMV81M_MVE */
+    91	
+    92	/*
+    93	 * Output the size of an assembly function.
+    94	 */
+    95	#if defined(__ELF__)
+    96	#define MLK_ASM_FN_SIZE(sym) \
+    97	  .size MLK_ASM_NAMESPACE(sym), .- MLK_ASM_NAMESPACE(sym)
+    98	#else
+    99	#define MLK_ASM_FN_SIZE(sym)
+   100	#endif
+   101	
+   102	/* We aim to simplify the user's life by supporting builds where
+   103	 * all source files are included, even those that are not needed.
+   104	 * Those files are appropriately guarded and will be empty when unneeded.
+   105	 * The following is to avoid compilers complaining about this. */
+   106	#define MLK_EMPTY_CU(s) extern int MLK_NAMESPACE_K(empty_cu_##s);
+   107	
+   108	/* MLK_CONFIG_NO_ASM takes precedence over MLK_USE_NATIVE_XXX */
+   109	#if defined(MLK_CONFIG_NO_ASM)
+   110	#undef MLK_CONFIG_USE_NATIVE_BACKEND_ARITH
+   111	#undef MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202
+   112	#endif
+   113	
+   114	#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_ARITH) && \
+   115	    !defined(MLK_CONFIG_ARITH_BACKEND_FILE)
+   116	#error Bad configuration: MLK_CONFIG_USE_NATIVE_BACKEND_ARITH is set, but MLK_CONFIG_ARITH_BACKEND_FILE is not.
+   117	#endif
+   118	
+   119	#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202) && \
+   120	    !defined(MLK_CONFIG_FIPS202_BACKEND_FILE)
+   121	#error Bad configuration: MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202 is set, but MLK_CONFIG_FIPS202_BACKEND_FILE is not.
+   122	#endif
+   123	
+   124	#if defined(MLK_CONFIG_NO_RANDOMIZED_API) && defined(MLK_CONFIG_KEYGEN_PCT)
+   125	#error Bad configuration: MLK_CONFIG_NO_RANDOMIZED_API is incompatible with MLK_CONFIG_KEYGEN_PCT as the current PCT implementation requires crypto_kem_enc()
+   126	#endif
+   127	
+   128	#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_ARITH)
+   129	#include MLK_CONFIG_ARITH_BACKEND_FILE
+   130	/* Include to enforce consistency of API and implementation,
+   131	 * and conduct sanity checks on the backend.
+   132	 *
+   133	 * Keep this _after_ the inclusion of the backend; otherwise,
+   134	 * the sanity checks won't have an effect. */
+   135	#if defined(MLK_CHECK_APIS) && !defined(__ASSEMBLER__)
+   136	#include "native/api.h"
+   137	#endif
+   138	#endif /* MLK_CONFIG_USE_NATIVE_BACKEND_ARITH */
+   139	
+   140	#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202)
+   141	#include MLK_CONFIG_FIPS202_BACKEND_FILE
+   142	/* Include to enforce consistency of API and implementation,
+   143	 * and conduct sanity checks on the backend.
+   144	 *
+   145	 * Keep this _after_ the inclusion of the backend; otherwise,
+   146	 * the sanity checks won't have an effect. */
+   147	#if defined(MLK_CHECK_APIS) && !defined(__ASSEMBLER__)
+   148	#include "fips202/native/api.h"
+   149	#endif
+   150	#endif /* MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202 */
+   151	
+   152	#if !defined(MLK_CONFIG_FIPS202_CUSTOM_HEADER)
+   153	#define MLK_FIPS202_HEADER_FILE "fips202/fips202.h"
+   154	#else
+   155	#define MLK_FIPS202_HEADER_FILE MLK_CONFIG_FIPS202_CUSTOM_HEADER
+   156	#endif
+   157	
+   158	#if !defined(MLK_CONFIG_FIPS202X4_CUSTOM_HEADER)
+   159	#define MLK_FIPS202X4_HEADER_FILE "fips202/fips202x4.h"
+   160	#else
+   161	#define MLK_FIPS202X4_HEADER_FILE MLK_CONFIG_FIPS202X4_CUSTOM_HEADER
+   162	#endif
+   163	
+   164	/* Standard library function replacements */
+   165	#if !defined(__ASSEMBLER__)
+   166	#if !defined(MLK_CONFIG_CUSTOM_MEMCPY)
+   167	#include <string.h>
+   168	#define mlk_memcpy memcpy
+   169	#endif
+   170	
+   171	#if !defined(MLK_CONFIG_CUSTOM_MEMSET)
+   172	#include <string.h>
+   173	#define mlk_memset memset
+   174	#endif
+   175	
+   176	
+   177	/* Allocation macros for large local structures
+   178	 *
+   179	 * MLK_ALLOC(v, T, N) declares T *v and attempts to point it to an T[N]
+   180	 * MLK_FREE(v, T, N) zeroizes and frees the allocation
+   181	 *
+   182	 * Default implementation uses stack allocation.
+   183	 * Can be overridden by setting the config option MLK_CONFIG_CUSTOM_ALLOC_FREE
+   184	 * and defining MLK_CUSTOM_ALLOC and MLK_CUSTOM_FREE.
+   185	 */
+   186	#if defined(MLK_CONFIG_CUSTOM_ALLOC_FREE) != \
+   187	    (defined(MLK_CUSTOM_ALLOC) && defined(MLK_CUSTOM_FREE))
+   188	#error Bad configuration: MLK_CONFIG_CUSTOM_ALLOC_FREE must be set together with MLK_CUSTOM_ALLOC and MLK_CUSTOM_FREE
+   189	#endif
+   190	
+   191	/*
+   192	 * If the integration wants to provide a context parameter for use in
+   193	 * platform-specific hooks, then it should define this parameter.
+   194	 *
+   195	 * The MLK_CONTEXT_PARAMETERS_n macros are intended to be used with macros
+   196	 * defining the function names and expand to either pass or discard the context
+   197	 * argument as required by the current build.  If there is no context parameter
+   198	 * requested then these are removed from the prototypes and from all calls.
+   199	 */
+   200	#ifdef MLK_CONFIG_CONTEXT_PARAMETER
+   201	#define MLK_CONTEXT_PARAMETERS_0(context) (context)
+   202	#define MLK_CONTEXT_PARAMETERS_1(arg0, context) (arg0, context)
+   203	#define MLK_CONTEXT_PARAMETERS_2(arg0, arg1, context) (arg0, arg1, context)
+   204	#define MLK_CONTEXT_PARAMETERS_3(arg0, arg1, arg2, context) \
+   205	  (arg0, arg1, arg2, context)
+   206	#define MLK_CONTEXT_PARAMETERS_4(arg0, arg1, arg2, arg3, context) \
+   207	  (arg0, arg1, arg2, arg3, context)
+   208	#else /* MLK_CONFIG_CONTEXT_PARAMETER */
+   209	#define MLK_CONTEXT_PARAMETERS_0(context) ()
+   210	#define MLK_CONTEXT_PARAMETERS_1(arg0, context) (arg0)
+   211	#define MLK_CONTEXT_PARAMETERS_2(arg0, arg1, context) (arg0, arg1)
+   212	#define MLK_CONTEXT_PARAMETERS_3(arg0, arg1, arg2, context) (arg0, arg1, arg2)
+   213	#define MLK_CONTEXT_PARAMETERS_4(arg0, arg1, arg2, arg3, context) \
+   214	  (arg0, arg1, arg2, arg3)
+   215	#endif /* !MLK_CONFIG_CONTEXT_PARAMETER */
+   216	
+   217	#if defined(MLK_CONFIG_CONTEXT_PARAMETER_TYPE) != \
+   218	    defined(MLK_CONFIG_CONTEXT_PARAMETER)
+   219	#error MLK_CONFIG_CONTEXT_PARAMETER_TYPE must be defined if and only if MLK_CONFIG_CONTEXT_PARAMETER is defined
+   220	#endif
+   221	
+   222	#if !defined(MLK_CONFIG_CUSTOM_ALLOC_FREE)
+   223	/* Default: stack allocation */
+   224	
+   225	/* This is a declaration macro, not an expression macro: T is a type and v is
+   226	 * a declarator, neither of which can be wrapped in parentheses. The
+   227	 * bugprone-macro-parentheses diagnostic is therefore a false positive here. */
+   228	#define MLK_ALLOC(v, T, N, context) \
+   229	  MLK_ALIGN T mlk_alloc_##v[N];     \
+   230	  T *v = mlk_alloc_##v /* NOLINT(bugprone-macro-parentheses) */
+   231	
+   232	/* The MLK_FREE macro body references mlk_zeroize(), which is declared in
+   233	 * verify.h. We deliberately do NOT include verify.h here: doing so would
+   234	 * create a circular dependency (verify.h includes common.h), and common.h
+   235	 * itself never calls mlk_zeroize() -- only the macro expansion does. Each
+   236	 * translation unit that uses MLK_FREE therefore includes verify.h directly. */
+   237	#define MLK_FREE(v, T, N, context)                     \
+   238	  do                                                   \
+   239	  {                                                    \
+   240	    mlk_zeroize(mlk_alloc_##v, sizeof(mlk_alloc_##v)); \
+   241	    (v) = NULL;                                        \
+   242	  } while (0)
+   243	
+   244	#else /* !MLK_CONFIG_CUSTOM_ALLOC_FREE */
+   245	
+   246	/* Custom allocation */
+   247	
+   248	/*
+   249	 * The indirection here is necessary to use MLK_CONTEXT_PARAMETERS_3 here.
+   250	 */
+   251	#define MLK_APPLY(f, args) f args
+   252	
+   253	#define MLK_ALLOC(v, T, N, context) \
+   254	  MLK_APPLY(MLK_CUSTOM_ALLOC, MLK_CONTEXT_PARAMETERS_3(v, T, N, context))
+   255	
+   256	#define MLK_FREE(v, T, N, context)                                            \
+   257	  do                                                                          \
+   258	  {                                                                           \
+   259	    if (v != NULL)                                                            \
+   260	    {                                                                         \
+   261	      mlk_zeroize(v, sizeof(T) * (N));                                        \
+   262	      MLK_APPLY(MLK_CUSTOM_FREE, MLK_CONTEXT_PARAMETERS_3(v, T, N, context)); \
+   263	      v = NULL;                                                               \
+   264	    }                                                                         \
+   265	  } while (0)
+   266	
+   267	#endif /* MLK_CONFIG_CUSTOM_ALLOC_FREE */
+   268	
+   269	/****************************** Error codes ***********************************/
+   270	
+   271	/* Generic failure condition */
+   272	#define MLK_ERR_FAIL (-1)
+   273	/* An allocation failed. This can only happen if MLK_CONFIG_CUSTOM_ALLOC_FREE
+   274	 * is defined and the provided MLK_CUSTOM_ALLOC can fail. */
+   275	#define MLK_ERR_OUT_OF_MEMORY (-2)
+   276	/* An rng failure occured. Might be due to insufficient entropy or
+   277	 * system misconfiguration. */
+   278	#define MLK_ERR_RNG_FAIL (-3)
+   279	
+   280	#endif /* !__ASSEMBLER__ */
+   281	
+   282	#endif /* !MLK_COMMON_H */
+
+================================================================
+FULL FILE: mlkem/src/verify.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	
+     6	/* References
+     7	 * ==========
+     8	 *
+     9	 * - [FIPS203]
+    10	 *   FIPS 203 Module-Lattice-Based Key-Encapsulation Mechanism Standard
+    11	 *   National Institute of Standards and Technology
+    12	 *   https://csrc.nist.gov/pubs/fips/203/final
+    13	 *
+    14	 * - [REF]
+    15	 *   CRYSTALS-Kyber C reference implementation
+    16	 *   Bos, Ducas, Kiltz, Lepoint, Lyubashevsky, Schanck, Schwabe, Seiler, Stehlé
+    17	 *   https://github.com/pq-crystals/kyber/tree/main/ref
+    18	 *
+    19	 * - [libmceliece]
+    20	 *   libmceliece implementation of Classic McEliece
+    21	 *   Bernstein, Chou
+    22	 *   https://lib.mceliece.org/
+    23	 *
+    24	 * - [optblocker]
+    25	 *   PQC forum post on opt-blockers using volatile globals
+    26	 *   Daniel J. Bernstein
+    27	 *   https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/hqbtIGFKIpU/m/H14H0wOlBgAJ
+    28	 */
+    29	
+    30	#ifndef MLK_VERIFY_H
+    31	#define MLK_VERIFY_H
+    32	
+    33	
+    34	#include "cbmc.h"
+    35	#include "common.h"
+    36	
+    37	/* Constant-time comparisons and conditional operations
+    38	
+    39	   We reduce the risk for compilation into variable-time code
+    40	   through the use of 'value barriers'.
+    41	
+    42	   Functionally, a value barrier is a no-op. To the compiler, however,
+    43	   it constitutes an arbitrary modification of its input, and therefore
+    44	   harden's value propagation and range analysis.
+    45	
+    46	   We consider two approaches to implement a value barrier:
+    47	   - An empty inline asm block which marks the target value as clobbered.
+    48	   - XOR'ing with the value of a volatile global that's set to 0;
+    49	     see @[optblocker] for a discussion of this idea, and
+    50	     @[libmceliece, inttypes/crypto_intN.h] for an implementation.
+    51	
+    52	   The first approach is cheap because it only prevents the compiler
+    53	   from reasoning about the value of the variable past the barrier,
+    54	   but does not directly generate additional instructions.
+    55	
+    56	   The second approach generates redundant loads and XOR operations
+    57	   and therefore comes at a higher runtime cost. However, it appears
+    58	   more robust towards optimization, as compilers should never drop
+    59	   a volatile load.
+    60	
+    61	   We use the empty-ASM value barrier for GCC and clang, and fall
+    62	   back to the global volatile barrier otherwise.
+    63	
+    64	   The global value barrier can be forced by setting
+    65	   MLK_CONFIG_NO_ASM_VALUE_BARRIER.
+    66	
+    67	*/
+    68	
+    69	#if defined(MLK_HAVE_INLINE_ASM) && !defined(MLK_CONFIG_NO_ASM_VALUE_BARRIER)
+    70	#define MLK_USE_ASM_VALUE_BARRIER
+    71	#endif
+    72	
+    73	#if !defined(MLK_USE_ASM_VALUE_BARRIER)
+    74	
+    75	/*
+    76	 * Declaration of global volatile that the global value barrier
+    77	 * is loading from and masking with.
+    78	 */
+    79	#define mlk_ct_opt_blocker_u64 MLK_NAMESPACE(ct_opt_blocker_u64)
+    80	extern volatile uint64_t mlk_ct_opt_blocker_u64;
+    81	
+    82	/* Helper functions for obtaining global masks of various sizes */
+    83	
+    84	/* This contract is not proved but treated as an axiom.
+    85	 *
+    86	 * Its validity relies on the assumption that the global opt-blocker
+    87	 * constant mlk_ct_opt_blocker_u64 is not modified.
+    88	 */
+    89	static MLK_INLINE uint64_t mlk_ct_get_optblocker_u64(void)
+    90	__contract__(ensures(return_value == 0)) { return mlk_ct_opt_blocker_u64; }
+    91	
+    92	static MLK_INLINE uint8_t mlk_ct_get_optblocker_u8(void)
+    93	__contract__(ensures(return_value == 0)) { return (uint8_t)mlk_ct_get_optblocker_u64(); }
+    94	
+    95	static MLK_INLINE uint32_t mlk_ct_get_optblocker_u32(void)
+    96	__contract__(ensures(return_value == 0)) { return (uint32_t)mlk_ct_get_optblocker_u64(); }
+    97	
+    98	static MLK_INLINE int32_t mlk_ct_get_optblocker_i32(void)
+    99	__contract__(ensures(return_value == 0)) { return (int32_t)mlk_ct_get_optblocker_u64(); }
+   100	
+   101	/* Opt-blocker based implementation of value barriers */
+   102	static MLK_INLINE uint32_t mlk_value_barrier_u32(uint32_t b)
+   103	__contract__(ensures(return_value == b)) { return (b ^ mlk_ct_get_optblocker_u32()); }
+   104	
+   105	static MLK_INLINE int32_t mlk_value_barrier_i32(int32_t b)
+   106	__contract__(ensures(return_value == b)) { return (b ^ mlk_ct_get_optblocker_i32()); }
+   107	
+   108	static MLK_INLINE uint8_t mlk_value_barrier_u8(uint8_t b)
+   109	__contract__(ensures(return_value == b)) { return (b ^ mlk_ct_get_optblocker_u8()); }
+   110	
+   111	#else /* !MLK_USE_ASM_VALUE_BARRIER */
+   112	
+   113	static MLK_INLINE uint32_t mlk_value_barrier_u32(uint32_t b)
+   114	__contract__(ensures(return_value == b))
+   115	{
+   116	  __asm__ volatile("" : "+r"(b));
+   117	  return b;
+   118	}
+   119	
+   120	static MLK_INLINE int32_t mlk_value_barrier_i32(int32_t b)
+   121	__contract__(ensures(return_value == b))
+   122	{
+   123	  __asm__ volatile("" : "+r"(b));
+   124	  return b;
+   125	}
+   126	
+   127	static MLK_INLINE uint8_t mlk_value_barrier_u8(uint8_t b)
+   128	__contract__(ensures(return_value == b))
+   129	{
+   130	  __asm__ volatile("" : "+r"(b));
+   131	  return b;
+   132	}
+   133	
+   134	#endif /* MLK_USE_ASM_VALUE_BARRIER */
+   135	
+   136	#ifdef CBMC
+   137	#pragma CPROVER check push
+   138	#pragma CPROVER check disable "conversion"
+   139	#endif
+   140	/**
+   141	 * Cast uint16 value to int16.
+   142	 *
+   143	 * @param x Input value.
+   144	 *
+   145	 * @return For uint16_t x, the unique y in int16_t so that x == y mod 2^16.
+   146	 *         Concretely:
+   147	 *         - x <  32768: returns x
+   148	 *         - x >= 32768: returns x - 65536
+   149	 */
+   150	static MLK_ALWAYS_INLINE int16_t mlk_cast_uint16_to_int16(uint16_t x)
+   151	{
+   152	  /*
+   153	   * PORTABILITY: This relies on uint16_t -> int16_t
+   154	   * being implemented as the inverse of int16_t -> uint16_t,
+   155	   * which is implementation-defined (C99 6.3.1.3 (3))
+   156	   * CBMC (correctly) fails to prove this conversion is OK,
+   157	   * so we have to suppress that check here
+   158	   */
+   159	  return (int16_t)x;
+   160	}
+   161	#ifdef CBMC
+   162	#pragma CPROVER check pop
+   163	#endif
+   164	
+   165	/**
+   166	 * Cast int32 value to uint16 as per C standard.
+   167	 *
+   168	 * @param x Input value.
+   169	 *
+   170	 * @return For int32_t x, the unique y in uint16_t so that x == y mod 2^16.
+   171	 */
+   172	static MLK_ALWAYS_INLINE uint16_t mlk_cast_int32_to_uint16(int32_t x)
+   173	{
+   174	  return (uint16_t)(x & (int32_t)UINT16_MAX);
+   175	}
+   176	
+   177	/**
+   178	 * Cast int16 value to uint16 as per C standard.
+   179	 *
+   180	 * @param x Input value.
+   181	 *
+   182	 * @return For int16_t x, the unique y in uint16_t so that x == y mod 2^16.
+   183	 */
+   184	static MLK_ALWAYS_INLINE uint16_t mlk_cast_int16_to_uint16(int32_t x)
+   185	{
+   186	  return mlk_cast_int32_to_uint16(x);
+   187	}
+   188	
+   189	/**
+   190	 * Return 0 if input is non-negative, and -1 otherwise.
+   191	 *
+   192	 * @reference{Embedded in the polynomial compression function in the
+   193	 * reference implementation @[REF]. Used as part of signed->unsigned
+   194	 * conversion for modular representatives to detect whether the input is
+   195	 * negative. This happens in `mlk_poly_reduce()` here, and as part of
+   196	 * polynomial compression functions in the reference implementation. See
+   197	 * `mlk_poly_reduce()`. We use value barriers to reduce the risk of
+   198	 * compiler-introduced branches.}
+   199	 *
+   200	 * @param x Value to be converted into a mask.
+   201	 *
+   202	 * @return Mask value (0 or 0xFFFF).
+   203	 */
+   204	static MLK_INLINE uint16_t mlk_ct_cmask_neg_i16(int16_t x)
+   205	__contract__(ensures(return_value == ((x < 0) ? 0xFFFF : 0)))
+   206	{
+   207	  int32_t tmp = mlk_value_barrier_i32((int32_t)x);
+   208	  /*
+   209	   * PORTABILITY: Right-shift on a signed integer is
+   210	   * implementation-defined for negative left argument.
+   211	   * Here, we assume it's sign-preserving "arithmetic" shift right.
+   212	   * See (C99 6.5.7 (5))
+   213	   */
+   214	  tmp >>= 16;
+   215	  return mlk_cast_int32_to_uint16(tmp);
+   216	}
+   217	
+   218	/**
+   219	 * Return 0 if input is zero, and -1 otherwise.
+   220	 *
+   221	 * @reference{Embedded in `cmov_int16()` in the reference implementation
+   222	 * @[REF]. Uses a value barrier and shift instead of `b = -b` to convert
+   223	 * condition into mask.}
+   224	 *
+   225	 * @param x Value to be converted into a mask.
+   226	 *
+   227	 * @return Mask value (0 or 0xFFFF).
+   228	 */
+   229	static MLK_INLINE uint16_t mlk_ct_cmask_nonzero_u16(uint16_t x)
+   230	__contract__(ensures(return_value == ((x == 0) ? 0 : 0xFFFF)))
+   231	{
+   232	  int32_t tmp = mlk_value_barrier_i32(-((int32_t)x));
+   233	  /*
+   234	   * PORTABILITY: Right-shift on a signed integer is
+   235	   * implementation-defined for negative left argument.
+   236	   * Here, we assume it's sign-preserving "arithmetic" shift right.
+   237	   * See (C99 6.5.7 (5))
+   238	   */
+   239	  tmp >>= 16;
+   240	  return mlk_cast_int32_to_uint16(tmp);
+   241	}
+   242	
+   243	/**
+   244	 * Return 0 if input is zero, and -1 otherwise.
+   245	 *
+   246	 * @reference{Embedded in `verify()` and `cmov()` in the reference
+   247	 * implementation @[REF]. We include a value barrier not present in the
+   248	 * reference implementation, to prevent the compiler from realizing that
+   249	 * this function returns a mask.}
+   250	 *
+   251	 * @param x Value to be converted into a mask.
+   252	 *
+   253	 * @return Mask value (0 or 0xFF).
+   254	 */
+   255	static MLK_INLINE uint8_t mlk_ct_cmask_nonzero_u8(uint8_t x)
+   256	__contract__(ensures(return_value == ((x == 0) ? 0 : 0xFF)))
+   257	{
+   258	  uint16_t mask = mlk_ct_cmask_nonzero_u16((uint16_t)x);
+   259	  return (uint8_t)(mask & 0xFF);
+   260	}
+   261	
+   262	/**
+   263	 * Functionally equivalent to cond ? a : b, but implemented with guards
+   264	 * against compiler-introduced branches.
+   265	 *
+   266	 * @spec{With `a = MLKEM_Q_HALF` and `b=0`, this essentially implements
+   267	 * `Decompress_1` @[FIPS203, Eq (4.8)] in `mlk_poly_frommsg()`. With
+   268	 * `a = x + MLKEM_Q`, `b = x`, and `cond` indicating whether `x` is negative,
+   269	 * implements signed->unsigned conversion of modular representatives.
+   270	 * Questions of representation are not considered in the specification
+   271	 * @[FIPS203, Section 2.4.1, "The pseudocode is agnostic regarding how an
+   272	 * integer modulo 𝑚 is represented in actual implementations"].}
+   273	 *
+   274	 * @reference{Embedded in the polynomial compression function in the
+   275	 * reference implementation @[REF]. Used as part of signed->unsigned
+   276	 * conversion for modular representatives. This happens in `mlk_poly_reduce()`
+   277	 * here, and as part of polynomial compression functions in @[REF]. See
+   278	 * `mlk_poly_reduce()`. Barrier to reduce the risk of compiler-introduced
+   279	 * branches. For `a = MLKEM_Q_HALF` and `b=0`, also embedded in
+   280	 * `poly_frommsg()` from the reference implementation, which uses
+   281	 * `cmov_int16()` instead.}
+   282	 *
+   283	 * @param a    First alternative.
+   284	 * @param b    Second alternative.
+   285	 * @param cond Condition variable.
+   286	 *
+   287	 * @return @p a if @p cond != 0, else @p b.
+   288	 */
+   289	static MLK_INLINE int16_t mlk_ct_sel_int16(int16_t a, int16_t b, uint16_t cond)
+   290	__contract__(ensures(return_value == (cond ? a : b)))
+   291	{
+   292	  uint16_t au = mlk_cast_int16_to_uint16(a);
+   293	  uint16_t bu = mlk_cast_int16_to_uint16(b);
+   294	  uint16_t res = bu ^ (mlk_ct_cmask_nonzero_u16(cond) & (au ^ bu));
+   295	  return mlk_cast_uint16_to_int16(res);
+   296	}
+   297	
+   298	/**
+   299	 * Functionally equivalent to cond ? a : b, but implemented with guards
+   300	 * against compiler-introduced branches.
+   301	 *
+   302	 * @reference{Embedded into `cmov()` in the reference implementation @[REF].
+   303	 * Uses a value barrier to get mask from condition value.}
+   304	 *
+   305	 * @param a    First alternative.
+   306	 * @param b    Second alternative.
+   307	 * @param cond Condition variable.
+   308	 *
+   309	 * @return @p a if @p cond != 0, else @p b.
+   310	 */
+   311	static MLK_INLINE uint8_t mlk_ct_sel_uint8(uint8_t a, uint8_t b, uint8_t cond)
+   312	__contract__(ensures(return_value == (cond ? a : b)))
+   313	{
+   314	  return b ^ (mlk_ct_cmask_nonzero_u8(cond) & (a ^ b));
+   315	}
+   316	
+   317	/**
+   318	 * Compare two arrays for equality in constant time.
+   319	 *
+   320	 * @spec{Used to securely compute conditional move in @[FIPS203, Algorithm
+   321	 * 18 (ML-KEM.Decaps_Internal, L9-11].}
+   322	 *
+   323	 * @reference{`cmov()` in the reference implementation @[REF]. We return
+   324	 * `uint8_t`, not `int`. We use an additional XOR-accumulator in the
+   325	 * comparison loop which prevents early abort if the OR-accumulator is 0xFF.
+   326	 * We use a value barrier to convert the OR-accumulator into a mask; the
+   327	 * reference implementation uses a shift which the compiler can argue to
+   328	 * result in either 0 or 0xFF..FF.}
+   329	 *
+   330	 * @param[in] a   First byte array.
+   331	 * @param[in] b   Second byte array.
+   332	 * @param     len Length of the byte arrays, upper-bounded to UINT16_MAX to
+   333	 *                control proof complexity only.
+   334	 *
+   335	 * @retval 0    The byte arrays are equal.
+   336	 * @retval 0xFF The byte arrays are not equal.
+   337	 */
+   338	static MLK_INLINE uint8_t mlk_ct_memcmp(const uint8_t *a, const uint8_t *b,
+   339	                                        const size_t len)
+   340	__contract__(
+   341	  requires(len <= UINT16_MAX)
+   342	  requires(memory_no_alias(a, len))
+   343	  requires(memory_no_alias(b, len))
+   344	  ensures((return_value == 0) || (return_value == 0xFF))
+   345	  ensures((return_value == 0) == forall(i, 0, len, (a[i] == b[i]))))
+   346	{
+   347	  uint8_t r = 0, s = 0;
+   348	  unsigned i;
+   349	
+   350	  for (i = 0; i < len; i++)
+   351	  __loop__(
+   352	    invariant(i <= len)
+   353	    invariant((r == 0) == (forall(k, 0, i, (a[k] == b[k]))))
+   354	    decreases(len - i))
+   355	  {
+   356	    r |= a[i] ^ b[i];
+   357	    /* s is useless, but prevents the loop from being aborted once r=0xff. */
+   358	    s ^= a[i] ^ b[i];
+   359	  }
+   360	
+   361	  /*
+   362	   * - Convert r into a mask; this may not be necessary, but is an additional
+   363	   *   safeguard
+   364	   *   towards leaking information about a and b.
+   365	   * - XOR twice with s, separated by a value barrier, to prevent the compile
+   366	   *   from dropping the s computation in the loop.
+   367	   */
+   368	  return (mlk_value_barrier_u8(mlk_ct_cmask_nonzero_u8(r) ^ s) ^ s);
+   369	}
+   370	
+   371	/**
+   372	 * Copy len bytes from x to r if b is zero; don't modify x if b is non-zero.
+   373	 * Assumes two's complement representation of negative integers. Runs in
+   374	 * constant time.
+   375	 *
+   376	 * @spec{Used to securely compute conditional move in @[FIPS203, Algorithm
+   377	 * 18 (ML-KEM.Decaps_Internal, L9-11].}
+   378	 *
+   379	 * @reference{`cmov()` in the reference implementation @[REF]. We move if
+   380	 * condition value is `0`, not `1`. We use `mlk_ct_sel_uint8` for
+   381	 * constant-time selection.}
+   382	 *
+   383	 * @param[out] r   Output byte array.
+   384	 * @param[in]  x   Input byte array.
+   385	 * @param      len Number of bytes to be copied.
+   386	 * @param      b   Condition value.
+   387	 */
+   388	static MLK_INLINE void mlk_ct_cmov_zero(uint8_t *r, const uint8_t *x,
+   389	                                        size_t len, uint8_t b)
+   390	__contract__(
+   391	  requires(len <= UINT32_MAX)
+   392	  requires(memory_no_alias(r, len))
+   393	  requires(memory_no_alias(x, len))
+   394	  assigns(memory_slice(r, len))
+   395	  ensures(forall(i, 0, len, (r[i] == (b == 0 ? x[i] : old(r)[i])))))
+   396	{
+   397	  size_t i;
+   398	  for (i = 0; i < len; i++)
+   399	  __loop__(
+   400	    invariant(i <= len)
+   401	    invariant(forall(k, 0, i, r[k] == (b == 0 ? x[k] : loop_entry(r)[k])))
+   402	    decreases(len - i))
+   403	  {
+   404	    r[i] = mlk_ct_sel_uint8(r[i], x[i], b);
+   405	  }
+   406	}
+   407	
+   408	/**
+   409	 * Force-zeroize a buffer.
+   410	 *
+   411	 * @spec{Used to implement @[FIPS203, Section 3.3, Destruction of
+   412	 * intermediate values].}
+   413	 *
+   414	 * @reference{Not present in the reference implementation @[REF].}
+   415	 *
+   416	 * @param[out] ptr Buffer to be zeroed.
+   417	 * @param      len Number of bytes to be zeroed.
+   418	 */
+   419	#if !defined(MLK_CONFIG_CUSTOM_ZEROIZE)
+   420	#if defined(MLK_SYS_WINDOWS)
+   421	#include <windows.h>
+   422	static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+   423	__contract__(
+   424	  requires(memory_no_alias(ptr, len))
+   425	  assigns(memory_slice(ptr, len))) { SecureZeroMemory(ptr, len); }
+   426	#elif defined(MLK_HAVE_INLINE_ASM)
+   427	#include <string.h>
+   428	static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+   429	__contract__(
+   430	  requires(memory_no_alias(ptr, len))
+   431	  assigns(memory_slice(ptr, len)))
+   432	{
+   433	  mlk_memset(ptr, 0, len);
+   434	  /* This follows OpenSSL and seems sufficient to prevent the compiler
+   435	   * from optimizing away the memset.
+   436	   *
+   437	   * If there was a reliable way to detect availability of memset_s(),
+   438	   * that would be preferred. */
+   439	  __asm__ volatile("" : : "r"(ptr) : "memory");
+   440	}
+   441	#else /* !MLK_SYS_WINDOWS && MLK_HAVE_INLINE_ASM */
+   442	#error No plausibly-secure implementation of mlk_zeroize available. Please provide your own using MLK_CONFIG_CUSTOM_ZEROIZE.
+   443	#endif /* !MLK_SYS_WINDOWS && !MLK_HAVE_INLINE_ASM */
+   444	#endif /* !MLK_CONFIG_CUSTOM_ZEROIZE */
+   445	
+   446	#endif /* !MLK_VERIFY_H */
+
+================================================================
+FULL FILE: mlkem/src/indcpa.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	
+     6	/* References
+     7	 * ==========
+     8	 *
+     9	 * - [FIPS203]
+    10	 *   FIPS 203 Module-Lattice-Based Key-Encapsulation Mechanism Standard
+    11	 *   National Institute of Standards and Technology
+    12	 *   https://csrc.nist.gov/pubs/fips/203/final
+    13	 */
+    14	
+    15	#ifndef MLK_INDCPA_H
+    16	#define MLK_INDCPA_H
+    17	
+    18	#include "cbmc.h"
+    19	#include "common.h"
+    20	#include "poly_k.h"
+    21	
+    22	#define mlk_gen_matrix MLK_NAMESPACE_K(gen_matrix)
+    23	/**
+    24	 * Deterministically generate matrix A (or the transpose of A) from a seed.
+    25	 * Entries of the matrix are polynomials that look uniformly random.
+    26	 * Performs rejection sampling on the output of an XOF.
+    27	 *
+    28	 * @spec{Implements @[FIPS203, Algorithm 13 (K-PKE.KeyGen), L3-7] and
+    29	 * @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L4-8]. The @p transposed
+    30	 * parameter only affects internal presentation.}
+    31	 *
+    32	 * @param[out] a          Output matrix A.
+    33	 * @param[in]  seed       Input seed.
+    34	 * @param      transposed Boolean deciding whether A or A^T is generated.
+    35	 */
+    36	MLK_INTERNAL_API
+    37	void mlk_gen_matrix(mlk_polymat *a, const uint8_t seed[MLKEM_SYMBYTES],
+    38	                    int transposed)
+    39	__contract__(
+    40	  requires(memory_no_alias(a, sizeof(mlk_polymat)))
+    41	  requires(memory_no_alias(seed, MLKEM_SYMBYTES))
+    42	  requires(transposed == 0 || transposed == 1)
+    43	  assigns(memory_slice(a, sizeof(mlk_polymat)))
+    44	  ensures(forall(x, 0, MLKEM_K, forall(y, 0, MLKEM_K,
+    45	  array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+    46	);
+    47	
+    48	#define mlk_indcpa_keypair_derand \
+    49	  MLK_NAMESPACE_K(indcpa_keypair_derand) MLK_CONTEXT_PARAMETERS_3
+    50	/**
+    51	 * Generate public and private key for the CPA-secure public-key encryption
+    52	 * scheme underlying ML-KEM.
+    53	 *
+    54	 * @spec{Implements @[FIPS203, Algorithm 13 (K-PKE.KeyGen)].}
+    55	 *
+    56	 * @param[out] pk      Output public key
+    57	 *                     (length MLKEM_INDCPA_PUBLICKEYBYTES bytes).
+    58	 * @param[out] sk      Output private key
+    59	 *                     (length MLKEM_INDCPA_SECRETKEYBYTES bytes).
+    60	 * @param[in]  coins   Input randomness (length MLKEM_SYMBYTES bytes).
+    61	 * @param      context Application context. Only present when
+    62	 *                     MLK_CONFIG_CONTEXT_PARAMETER is defined; type set by
+    63	 *                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE.
+    64	 *
+    65	 * @retval 0                     Success.
+    66	 * @retval MLK_ERR_FAIL          MLK_CONFIG_KEYGEN_PCT enabled and PCT failed.
+    67	 * @retval MLK_ERR_OUT_OF_MEMORY MLK_CONFIG_CUSTOM_ALLOC_FREE was used and
+    68	 *                               MLK_CUSTOM_ALLOC returned NULL.
+    69	 * @retval MLK_ERR_RNG_FAIL      Random number generation failed.
+    70	 */
+    71	MLK_INTERNAL_API
+    72	MLK_MUST_CHECK_RETURN_VALUE
+    73	int mlk_indcpa_keypair_derand(uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
+    74	                              uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
+    75	                              const uint8_t coins[MLKEM_SYMBYTES],
+    76	                              MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+    77	__contract__(
+    78	  requires(memory_no_alias(pk, MLKEM_INDCPA_PUBLICKEYBYTES))
+    79	  requires(memory_no_alias(sk, MLKEM_INDCPA_SECRETKEYBYTES))
+    80	  requires(memory_no_alias(coins, MLKEM_SYMBYTES))
+    81	  assigns(memory_slice(pk, MLKEM_INDCPA_PUBLICKEYBYTES))
+    82	  assigns(memory_slice(sk, MLKEM_INDCPA_SECRETKEYBYTES))
+    83	  ensures(return_value == 0 || return_value == MLK_ERR_FAIL ||
+    84	          return_value == MLK_ERR_OUT_OF_MEMORY ||
+    85	          return_value == MLK_ERR_RNG_FAIL)
+    86	);
+    87	
+    88	#define mlk_indcpa_enc MLK_NAMESPACE_K(indcpa_enc) MLK_CONTEXT_PARAMETERS_4
+    89	/**
+    90	 * Encryption function of the CPA-secure public-key encryption scheme
+    91	 * underlying ML-KEM.
+    92	 *
+    93	 * @spec{Implements @[FIPS203, Algorithm 14 (K-PKE.Encrypt)].}
+    94	 *
+    95	 * @param[out] c       Output ciphertext (length MLKEM_INDCPA_BYTES bytes).
+    96	 * @param[in]  m       Input message (length MLKEM_INDCPA_MSGBYTES bytes).
+    97	 * @param[in]  pk      Input public key
+    98	 *                     (length MLKEM_INDCPA_PUBLICKEYBYTES bytes).
+    99	 * @param[in]  coins   Input random coins used as seed (length MLKEM_SYMBYTES
+   100	 *                     bytes) to deterministically generate all randomness.
+   101	 * @param      context Application context. Only present when
+   102	 *                     MLK_CONFIG_CONTEXT_PARAMETER is defined; type set by
+   103	 *                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE.
+   104	 *
+   105	 * @retval 0                     Success.
+   106	 * @retval MLK_ERR_FAIL          Operation failed.
+   107	 * @retval MLK_ERR_OUT_OF_MEMORY MLK_CONFIG_CUSTOM_ALLOC_FREE was used and
+   108	 *                               MLK_CUSTOM_ALLOC returned NULL.
+   109	 */
+   110	MLK_INTERNAL_API
+   111	MLK_MUST_CHECK_RETURN_VALUE
+   112	int mlk_indcpa_enc(uint8_t c[MLKEM_INDCPA_BYTES],
+   113	                   const uint8_t m[MLKEM_INDCPA_MSGBYTES],
+   114	                   const uint8_t pk[MLKEM_INDCPA_PUBLICKEYBYTES],
+   115	                   const uint8_t coins[MLKEM_SYMBYTES],
+   116	                   MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+   117	__contract__(
+   118	  requires(memory_no_alias(c, MLKEM_INDCPA_BYTES))
+   119	  requires(memory_no_alias(m, MLKEM_INDCPA_MSGBYTES))
+   120	  requires(memory_no_alias(pk, MLKEM_INDCPA_PUBLICKEYBYTES))
+   121	  requires(memory_no_alias(coins, MLKEM_SYMBYTES))
+   122	  assigns(memory_slice(c, MLKEM_INDCPA_BYTES))
+   123	  ensures(return_value == 0 || return_value == MLK_ERR_FAIL ||
+   124	          return_value == MLK_ERR_OUT_OF_MEMORY)
+   125	);
+   126	
+   127	#define mlk_indcpa_dec MLK_NAMESPACE_K(indcpa_dec) MLK_CONTEXT_PARAMETERS_3
+   128	/**
+   129	 * Decryption function of the CPA-secure public-key encryption scheme
+   130	 * underlying ML-KEM.
+   131	 *
+   132	 * @spec{Implements @[FIPS203, Algorithm 15 (K-PKE.Decrypt)].}
+   133	 *
+   134	 * @param[out] m       Output decrypted message
+   135	 *                     (length MLKEM_INDCPA_MSGBYTES bytes).
+   136	 * @param[in]  c       Input ciphertext (length MLKEM_INDCPA_BYTES bytes).
+   137	 * @param[in]  sk      Input secret key
+   138	 *                     (length MLKEM_INDCPA_SECRETKEYBYTES bytes).
+   139	 * @param      context Application context. Only present when
+   140	 *                     MLK_CONFIG_CONTEXT_PARAMETER is defined; type set by
+   141	 *                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE.
+   142	 *
+   143	 * @retval 0                     Success.
+   144	 * @retval MLK_ERR_FAIL          Operation failed.
+   145	 * @retval MLK_ERR_OUT_OF_MEMORY MLK_CONFIG_CUSTOM_ALLOC_FREE was used and
+   146	 *                               MLK_CUSTOM_ALLOC returned NULL.
+   147	 */
+   148	MLK_INTERNAL_API
+   149	MLK_MUST_CHECK_RETURN_VALUE
+   150	int mlk_indcpa_dec(uint8_t m[MLKEM_INDCPA_MSGBYTES],
+   151	                   const uint8_t c[MLKEM_INDCPA_BYTES],
+   152	                   const uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
+   153	                   MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+   154	__contract__(
+   155	  requires(memory_no_alias(c, MLKEM_INDCPA_BYTES))
+   156	  requires(memory_no_alias(m, MLKEM_INDCPA_MSGBYTES))
+   157	  requires(memory_no_alias(sk, MLKEM_INDCPA_SECRETKEYBYTES))
+   158	  assigns(memory_slice(m, MLKEM_INDCPA_MSGBYTES))
+   159	  ensures(return_value == 0 || return_value == MLK_ERR_FAIL ||
+   160	          return_value == MLK_ERR_OUT_OF_MEMORY)
+   161	);
+   162	
+   163	#endif /* !MLK_INDCPA_H */
+
+================================================================
+FULL FILE: mlkem/src/sys.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	#ifndef MLK_SYS_H
+     6	#define MLK_SYS_H
+     7	
+     8	#if !defined(MLK_CONFIG_NO_ASM) && (defined(__GNUC__) || defined(__clang__))
+     9	#define MLK_HAVE_INLINE_ASM
+    10	#endif
+    11	
+    12	/* Try to find endianness, if not forced through CFLAGS already */
+    13	#if !defined(MLK_SYS_LITTLE_ENDIAN) && !defined(MLK_SYS_BIG_ENDIAN)
+    14	#if defined(__BYTE_ORDER__)
+    15	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    16	#define MLK_SYS_LITTLE_ENDIAN
+    17	#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    18	#define MLK_SYS_BIG_ENDIAN
+    19	#else
+    20	#error "__BYTE_ORDER__ defined, but don't recognize value."
+    21	#endif
+    22	#endif /* __BYTE_ORDER__ */
+    23	
+    24	/* MSVC does not define __BYTE_ORDER__. However, MSVC only supports
+    25	 * little endian x86, x86_64, and AArch64. It is, hence, safe to assume
+    26	 * little endian. */
+    27	#if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_AMD64) || \
+    28	                          defined(_M_IX86) || defined(_M_ARM64))
+    29	#define MLK_SYS_LITTLE_ENDIAN
+    30	#endif
+    31	
+    32	#endif /* !MLK_SYS_LITTLE_ENDIAN && !MLK_SYS_BIG_ENDIAN */
+    33	
+    34	/* Check if we're running on an AArch64 little endian system. _M_ARM64 is set by
+    35	 * MSVC. */
+    36	#if defined(__AARCH64EL__) || defined(_M_ARM64)
+    37	#define MLK_SYS_AARCH64
+    38	#endif
+    39	
+    40	/* Check if we're running on an AArch64 big endian system. */
+    41	#if defined(__AARCH64EB__)
+    42	#define MLK_SYS_AARCH64_EB
+    43	#endif
+    44	
+    45	/* Check if we're running on an Armv8.1-M system with MVE */
+    46	#if defined(__ARM_ARCH_8_1M_MAIN__) || defined(__ARM_FEATURE_MVE)
+    47	#define MLK_SYS_ARMV81M_MVE
+    48	#endif
+    49	
+    50	/* Check if we're running on an x86_64 system. */
+    51	#if defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64)
+    52	#define MLK_SYS_X86_64
+    53	#if defined(__AVX2__)
+    54	#define MLK_SYS_X86_64_AVX2
+    55	#endif
+    56	#endif /* __x86_64__ || _M_X64 || _M_AMD64 */
+    57	
+    58	#if defined(MLK_SYS_LITTLE_ENDIAN) && defined(__powerpc64__)
+    59	#define MLK_SYS_PPC64LE
+    60	#endif
+    61	
+    62	#if defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
+    63	#define MLK_SYS_RISCV64
+    64	#endif
+    65	
+    66	#if defined(MLK_SYS_RISCV64) && defined(__riscv_vector) && \
+    67	    defined(__riscv_v_intrinsic)
+    68	#define MLK_SYS_RISCV64_RVV
+    69	#endif
+    70	
+    71	#if defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 32
+    72	#define MLK_SYS_RISCV32
+    73	#endif
+    74	
+    75	#if defined(_WIN32)
+    76	#define MLK_SYS_WINDOWS
+    77	#endif
+    78	
+    79	#if defined(__linux__)
+    80	#define MLK_SYS_LINUX
+    81	#endif
+    82	
+    83	#if defined(__APPLE__)
+    84	#define MLK_SYS_APPLE
+    85	#endif
+    86	
+    87	#if defined(MLK_FORCE_AARCH64) && !defined(MLK_SYS_AARCH64)
+    88	#error "MLK_FORCE_AARCH64 is set, but we don't seem to be on an AArch64 system."
+    89	#endif
+    90	
+    91	#if defined(MLK_FORCE_AARCH64_EB) && !defined(MLK_SYS_AARCH64_EB)
+    92	#error \
+    93	    "MLK_FORCE_AARCH64_EB is set, but we don't seem to be on an AArch64 system."
+    94	#endif
+    95	
+    96	#if defined(MLK_FORCE_X86_64) && !defined(MLK_SYS_X86_64)
+    97	#error "MLK_FORCE_X86_64 is set, but we don't seem to be on an X86_64 system."
+    98	#endif
+    99	
+   100	#if defined(MLK_FORCE_PPC64LE) && !defined(MLK_SYS_PPC64LE)
+   101	#error "MLK_FORCE_PPC64LE is set, but we don't seem to be on a PPC64LE system."
+   102	#endif
+   103	
+   104	#if defined(MLK_FORCE_RISCV64) && !defined(MLK_SYS_RISCV64)
+   105	#error "MLK_FORCE_RISCV64 is set, but we don't seem to be on a RISCV64 system."
+   106	#endif
+   107	
+   108	#if defined(MLK_FORCE_RISCV32) && !defined(MLK_SYS_RISCV32)
+   109	#error "MLK_FORCE_RISCV32 is set, but we don't seem to be on a RISCV32 system."
+   110	#endif
+   111	
+   112	/*
+   113	 * MLK_INLINE: Hint for inlining.
+   114	 * - MSVC: __inline
+   115	 * - C99+: inline
+   116	 * - GCC/Clang C90: __attribute__((unused)) to silence warnings
+   117	 * - Other C90: empty
+   118	 */
+   119	#if !defined(MLK_INLINE)
+   120	#if defined(_MSC_VER)
+   121	#define MLK_INLINE __inline
+   122	#elif defined(inline) || \
+   123	    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+   124	#define MLK_INLINE inline
+   125	#elif defined(__GNUC__) || defined(__clang__)
+   126	#define MLK_INLINE __attribute__((unused))
+   127	#else
+   128	#define MLK_INLINE
+   129	#endif
+   130	#endif /* !MLK_INLINE */
+   131	
+   132	/*
+   133	 * MLK_ALWAYS_INLINE: Force inlining.
+   134	 * - MSVC: __forceinline
+   135	 * - GCC/Clang C99+: MLK_INLINE __attribute__((always_inline))
+   136	 * - Other: MLK_INLINE (no forced inlining)
+   137	 */
+   138	#if !defined(MLK_ALWAYS_INLINE)
+   139	#if defined(_MSC_VER)
+   140	#define MLK_ALWAYS_INLINE __forceinline
+   141	#elif (defined(__GNUC__) || defined(__clang__)) && \
+   142	    (defined(inline) ||                            \
+   143	     (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L))
+   144	#define MLK_ALWAYS_INLINE MLK_INLINE __attribute__((always_inline))
+   145	#else
+   146	#define MLK_ALWAYS_INLINE MLK_INLINE
+   147	#endif
+   148	#endif /* !MLK_ALWAYS_INLINE */
+   149	
+   150	/*
+   151	 * MLK_NOINLINE: Prevent inlining.
+   152	 * - MSVC: __declspec(noinline)
+   153	 * - GCC/Clang: __attribute__((noinline))
+   154	 * - Other: empty
+   155	 */
+   156	#if !defined(MLK_NOINLINE)
+   157	#if defined(_MSC_VER)
+   158	#define MLK_NOINLINE __declspec(noinline)
+   159	#elif defined(__GNUC__) || defined(__clang__)
+   160	#define MLK_NOINLINE __attribute__((noinline))
+   161	#else
+   162	#define MLK_NOINLINE
+   163	#endif
+   164	#endif /* !MLK_NOINLINE */
+   165	
+   166	#ifndef MLK_STATIC_TESTABLE
+   167	#define MLK_STATIC_TESTABLE static
+   168	#endif
+   169	
+   170	/*
+   171	 * C90 does not have the restrict compiler directive yet.
+   172	 * We don't use it in C90 builds.
+   173	 */
+   174	#if !defined(restrict)
+   175	#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+   176	#define MLK_RESTRICT restrict
+   177	#else
+   178	#define MLK_RESTRICT
+   179	#endif
+   180	
+   181	#else /* !restrict */
+   182	
+   183	#define MLK_RESTRICT restrict
+   184	#endif /* restrict */
+   185	
+   186	#define MLK_DEFAULT_ALIGN 32
+   187	#define MLK_ALIGN_UP(N) \
+   188	  ((((N) + (MLK_DEFAULT_ALIGN - 1)) / MLK_DEFAULT_ALIGN) * MLK_DEFAULT_ALIGN)
+   189	#if defined(__GNUC__)
+   190	#define MLK_ALIGN __attribute__((aligned(MLK_DEFAULT_ALIGN)))
+   191	#elif defined(_MSC_VER)
+   192	#define MLK_ALIGN __declspec(align(MLK_DEFAULT_ALIGN))
+   193	#else
+   194	#define MLK_ALIGN /* No known support for alignment constraints */
+   195	#endif
+   196	
+   197	
+   198	/* New X86_64 CPUs support Conflow-flow protection using the CET instructions.
+   199	 * When enabled (through -fcf-protection=), all compilation units (including
+   200	 * empty ones) need to support CET for this to work.
+   201	 * For assembly, this means that source files need to signal support for
+   202	 * CET by setting the appropriate note.gnu.property section.
+   203	 * This can be achieved by including the <cet.h> header in all assembly file.
+   204	 * This file also provides the _CET_ENDBR macro which needs to be placed at
+   205	 * every potential target of an indirect branch.
+   206	 * If CET is enabled _CET_ENDBR maps to the endbr64 instruction, otherwise
+   207	 * it is empty.
+   208	 * In case the compiler does not support CET (e.g., <gcc8, <clang11),
+   209	 * the __CET__ macro is not set and we default to nothing.
+   210	 * Note that we only issue _CET_ENDBR instructions through the MLK_ASM_FN_SYMBOL
+   211	 * macro as the global symbols are the only possible targets of indirect
+   212	 * branches in our code.
+   213	 */
+   214	#if defined(MLK_SYS_X86_64)
+   215	#if defined(__CET__)
+   216	#include <cet.h>
+   217	#define MLK_CET_ENDBR _CET_ENDBR
+   218	#else
+   219	#define MLK_CET_ENDBR
+   220	#endif
+   221	#endif /* MLK_SYS_X86_64 */
+   222	
+   223	#if defined(MLK_CONFIG_CT_TESTING_ENABLED) && !defined(__ASSEMBLER__)
+   224	#include <valgrind/memcheck.h>
+   225	#define MLK_CT_TESTING_SECRET(ptr, len) \
+   226	  VALGRIND_MAKE_MEM_UNDEFINED((ptr), (len))
+   227	#define MLK_CT_TESTING_DECLASSIFY(ptr, len) \
+   228	  VALGRIND_MAKE_MEM_DEFINED((ptr), (len))
+   229	#else /* MLK_CONFIG_CT_TESTING_ENABLED && !__ASSEMBLER__ */
+   230	#define MLK_CT_TESTING_SECRET(ptr, len) \
+   231	  do                                    \
+   232	  {                                     \
+   233	  } while (0)
+   234	#define MLK_CT_TESTING_DECLASSIFY(ptr, len) \
+   235	  do                                        \
+   236	  {                                         \
+   237	  } while (0)
+   238	#endif /* !(MLK_CONFIG_CT_TESTING_ENABLED && !__ASSEMBLER__) */
+   239	
+   240	#if defined(__GNUC__) || defined(__clang__)
+   241	#define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+   242	#else
+   243	#define MLK_MUST_CHECK_RETURN_VALUE
+   244	#endif
+   245	
+   246	/* The x86_64 assembly backend uses the SysV calling convention. On Windows,
+   247	 * where the Microsoft x64 calling convention is the default, it can still be
+   248	 * used with compilers that allow choosing the calling convention per
+   249	 * function: GCC and Clang support __attribute__((sysv_abi)), which makes
+   250	 * calls to the annotated function follow the SysV calling convention.
+   251	 *
+   252	 * MLK_SYSV_ABI_SUPPORTED signals that the toolchain can call SysV assembly
+   253	 * routines; the x86_64 assembly backend is only enabled if it is defined.
+   254	 * MLK_SYSV_ABI is the attribute carried by declarations of x86_64 assembly
+   255	 * routines. Both macros can be set externally for toolchains offering an
+   256	 * equivalent mechanism that is not recognized here. */
+   257	#if defined(MLK_SYS_X86_64) && !defined(MLK_SYSV_ABI_SUPPORTED)
+   258	#if !defined(MLK_SYS_WINDOWS) || defined(__GNUC__) || defined(__clang__)
+   259	#define MLK_SYSV_ABI_SUPPORTED
+   260	#endif
+   261	#endif
+   262	
+   263	#if !defined(MLK_SYSV_ABI)
+   264	#if defined(MLK_SYS_WINDOWS) && defined(MLK_SYSV_ABI_SUPPORTED)
+   265	#define MLK_SYSV_ABI __attribute__((sysv_abi))
+   266	#else
+   267	#define MLK_SYSV_ABI
+   268	#endif
+   269	#endif /* !MLK_SYSV_ABI */
+   270	
+   271	#if !defined(__ASSEMBLER__)
+   272	/* System capability enumeration */
+   273	typedef enum
+   274	{
+   275	  /* x86_64 */
+   276	  MLK_SYS_CAP_AVX2,
+   277	  /* AArch64 */
+   278	  MLK_SYS_CAP_SHA3
+   279	} mlk_sys_cap;
+   280	
+   281	#if !defined(MLK_CONFIG_CUSTOM_CAPABILITY_FUNC)
+   282	#include "cbmc.h"
+   283	
+   284	MLK_MUST_CHECK_RETURN_VALUE
+   285	static MLK_INLINE int mlk_sys_check_capability(mlk_sys_cap cap)
+   286	__contract__(
+   287	  ensures(return_value == 0 || return_value == 1)
+   288	)
+   289	{
+   290	  /* By default, we rely on compile-time feature detection/specification:
+   291	   * If a feature is enabled at compile-time, we assume it is supported by
+   292	   * the host that the resulting library/binary will be built on.
+   293	   * If this assumption is not true, you MUST overwrite this function.
+   294	   * See the documentation of MLK_CONFIG_CUSTOM_CAPABILITY_FUNC in
+   295	   * mlkem_native_config.h for more information. */
+   296	  (void)cap;
+   297	  return 1;
+   298	}
+   299	#endif /* !MLK_CONFIG_CUSTOM_CAPABILITY_FUNC */
+   300	#endif /* !__ASSEMBLER__ */
+   301	
+   302	#endif /* !MLK_SYS_H */
+
+MISSING OPTIONAL FILE: mlkem/src/config.h
+
+MISSING OPTIONAL FILE: mlkem/src/namespace.h
+
+================================================================
+FULL FILE: mlkem/src/native/api.h
+================================================================
+     1	/*
+     2	 * Copyright (c) The mlkem-native project authors
+     3	 * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     4	 */
+     5	
+     6	/* References
+     7	 * ==========
+     8	 *
+     9	 * - [FIPS203]
+    10	 *   FIPS 203 Module-Lattice-Based Key-Encapsulation Mechanism Standard
+    11	 *   National Institute of Standards and Technology
+    12	 *   https://csrc.nist.gov/pubs/fips/203/final
+    13	 */
+    14	
+    15	#ifndef MLK_NATIVE_API_H
+    16	#define MLK_NATIVE_API_H
+    17	/*
+    18	 * Native arithmetic interface
+    19	 *
+    20	 * This header is primarily for documentation purposes.
+    21	 * It should not be included by backend implementations.
+    22	 *
+    23	 * To ensure consistency with backends, the header will be
+    24	 * included automatically after inclusion of the active
+    25	 * backend, to ensure consistency of function signatures,
+    26	 * and run sanity checks.
+    27	 */
+    28	
+    29	#include "../cbmc.h"
+    30	#include "../common.h"
+    31	
+    32	/* Backends must return MLK_NATIVE_FUNC_SUCCESS upon success. */
+    33	#define MLK_NATIVE_FUNC_SUCCESS (0)
+    34	/* Backends may return MLK_NATIVE_FUNC_FALLBACK to signal to the frontend that
+    35	 * the target/parameters are unsupported; typically, this would be because of
+    36	 * dependencies on CPU features not detected on the host CPU. In this case,
+    37	 * the frontend falls back to the default C implementation. */
+    38	#define MLK_NATIVE_FUNC_FALLBACK (-1)
+    39	
+    40	
+    41	/* Absolute exclusive upper bound for the output of the inverse NTT
+    42	 *
+    43	 * NOTE: This is the same bound as in poly.h and has to be kept
+    44	 * in sync. */
+    45	#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+    46	
+    47	/* Absolute exclusive upper bound for the output of the forward NTT
+    48	 *
+    49	 * NOTE: This is the same bound as in poly.h and has to be kept
+    50	 * in sync. */
+    51	#define MLK_NTT_BOUND (8 * MLKEM_Q)
+    52	
+    53	/*
+    54	 * This is the C<->native interface allowing for the drop-in of
+    55	 * native code for performance critical arithmetic components of ML-KEM.
+    56	 *
+    57	 * A _backend_ is a specific implementation of (part of) this interface.
+    58	 *
+    59	 * To add a function to a backend, define MLK_USE_NATIVE_XXX and
+    60	 * implement `static inline xxx(...)` in the profile header.
+    61	 *
+    62	 * The only exception is MLK_USE_NATIVE_NTT_CUSTOM_ORDER. This option can
+    63	 * be set if there are native implementations for all of NTT, invNTT, and
+    64	 * base multiplication, and allows the native implementation to use a
+    65	 * custom order of polynomial coefficients in NTT domain -- the use of such
+    66	 * custom order is not an implementation-detail since the public matrix
+    67	 * is generated in NTT domain. In this case, a permutation function
+    68	 * mlk_poly_permute_bitrev_to_custom() needs to be provided that permutes
+    69	 * polynomials in NTT domain from bitreversed to the custom order.
+    70	 */
+    71	
+    72	/*
+    73	 * Those functions are meant to be trivial wrappers around the chosen native
+    74	 * implementation. The are static inline to avoid unnecessary calls.
+    75	 * The macro before each declaration controls whether a native
+    76	 * implementation is present.
+    77	 */
+    78	
+    79	#if defined(MLK_USE_NATIVE_NTT)
+    80	/**
+    81	 * Compute the negacyclic number-theoretic transform (NTT) of a polynomial
+    82	 * in place.
+    83	 *
+    84	 * The input polynomial is assumed to be in normal order. The output
+    85	 * polynomial is in bitreversed order, or of a custom order if
+    86	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the documentation of
+    87	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER for more information.
+    88	 *
+    89	 * @param[in,out] p Input/output polynomial.
+    90	 *
+    91	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+    92	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+    93	 */
+    94	MLK_MUST_CHECK_RETURN_VALUE
+    95	static MLK_INLINE int mlk_ntt_native(int16_t p[MLKEM_N])
+    96	__contract__(
+    97	  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+    98	  requires(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+    99	  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+   100	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   101	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLK_NTT_BOUND))
+   102	  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+   103	  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+   104	);
+   105	#endif /* MLK_USE_NATIVE_NTT */
+   106	
+   107	#if defined(MLK_USE_NATIVE_NTT_CUSTOM_ORDER)
+   108	/*
+   109	 * This must only be set if NTT, invNTT, basemul, mulcache, and
+   110	 * to/from byte stream conversions all have native implementations
+   111	 * that are adapted to the custom order.
+   112	 */
+   113	#if !defined(MLK_USE_NATIVE_NTT) || !defined(MLK_USE_NATIVE_INTT) ||  \
+   114	    !defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE) ||                 \
+   115	    !defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED) || \
+   116	    !defined(MLK_USE_NATIVE_POLY_TOBYTES) ||                          \
+   117	    !defined(MLK_USE_NATIVE_POLY_FROMBYTES)
+   118	#error \
+   119	    "Invalid native profile: MLK_USE_NATIVE_NTT_CUSTOM_ORDER can only be \
+   120	set if there are native implementations for NTT, invNTT, mulcache, basemul, \
+   121	and to/from bytes conversions."
+   122	#endif /* !MLK_USE_NATIVE_NTT || !MLK_USE_NATIVE_INTT ||           \
+   123	          !MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE ||                 \
+   124	          !MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED || \
+   125	          !MLK_USE_NATIVE_POLY_TOBYTES || !MLK_USE_NATIVE_POLY_FROMBYTES */
+   126	
+   127	/**
+   128	 * When MLK_USE_NATIVE_NTT_CUSTOM_ORDER is defined, convert a polynomial in
+   129	 * NTT domain from bitreversed order to the custom order output by the
+   130	 * native NTT.
+   131	 *
+   132	 * This must only be defined if there is native code for all of (a) NTT,
+   133	 * (b) invNTT, (c) basemul, (d) mulcache.
+   134	 *
+   135	 * @param[in,out] p Input/output polynomial.
+   136	 */
+   137	static MLK_INLINE void mlk_poly_permute_bitrev_to_custom(int16_t p[MLKEM_N])
+   138	__contract__(
+   139	  /* We don't specify that this should be a permutation, but only
+   140	   * that it does not change the bound established at the end of mlk_gen_matrix. */
+   141	  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+   142	  requires(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+   143	  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+   144	  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q)));
+   145	#endif /* MLK_USE_NATIVE_NTT_CUSTOM_ORDER */
+   146	
+   147	#if defined(MLK_USE_NATIVE_INTT)
+   148	/**
+   149	 * Compute the inverse negacyclic number-theoretic transform (NTT) of a
+   150	 * polynomial in place.
+   151	 *
+   152	 * The input polynomial is in bitreversed order, or of a custom order if
+   153	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the documentation of
+   154	 * MLK_USE_NATIVE_NTT_CUSTOM_ORDER for more information. The output
+   155	 * polynomial is assumed to be in normal order.
+   156	 *
+   157	 * @param[in,out] p Input/output polynomial.
+   158	 *
+   159	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   160	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   161	 */
+   162	MLK_MUST_CHECK_RETURN_VALUE
+   163	static MLK_INLINE int mlk_intt_native(int16_t p[MLKEM_N])
+   164	__contract__(
+   165	  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+   166	  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+   167	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   168	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLK_INVNTT_BOUND))
+   169	  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+   170	);
+   171	#endif /* MLK_USE_NATIVE_INTT */
+   172	
+   173	#if defined(MLK_USE_NATIVE_POLY_REDUCE)
+   174	/**
+   175	 * Apply modular reduction to all coefficients of a polynomial, mapping them
+   176	 * to unsigned canonical representatives in [0,..,MLKEM_Q-1].
+   177	 *
+   178	 * @param[in,out] p Input/output polynomial.
+   179	 *
+   180	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   181	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   182	 */
+   183	MLK_MUST_CHECK_RETURN_VALUE
+   184	static MLK_INLINE int mlk_poly_reduce_native(int16_t p[MLKEM_N])
+   185	__contract__(
+   186	  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+   187	  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+   188	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   189	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+   190	  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+   191	);
+   192	#endif /* MLK_USE_NATIVE_POLY_REDUCE */
+   193	
+   194	#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+   195	/**
+   196	 * In-place conversion of all coefficients of a polynomial from the normal
+   197	 * domain to the Montgomery domain.
+   198	 *
+   199	 * @param[in,out] p Input/output polynomial.
+   200	 *
+   201	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   202	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   203	 */
+   204	MLK_MUST_CHECK_RETURN_VALUE
+   205	static MLK_INLINE int mlk_poly_tomont_native(int16_t p[MLKEM_N])
+   206	__contract__(
+   207	  requires(memory_no_alias(p, sizeof(int16_t) * MLKEM_N))
+   208	  assigns(memory_slice(p, sizeof(int16_t) * MLKEM_N))
+   209	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   210	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+   211	  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_unchanged(p, MLKEM_N))
+   212	);
+   213	#endif /* MLK_USE_NATIVE_POLY_TOMONT */
+   214	
+   215	#if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)
+   216	/**
+   217	 * Compute multiplication cache for a polynomial in NTT domain.
+   218	 *
+   219	 * The purpose of the multiplication cache is to cache repeated computations
+   220	 * required during a base multiplication of polynomials in NTT domain. The
+   221	 * structure of the multiplication-cache is implementation defined.
+   222	 *
+   223	 * @param[out] cache    Multiplication cache.
+   224	 * @param[in]  mlk_poly Input polynomial. Must be in NTT domain and in
+   225	 *                      bitreversed order, or of a custom order if
+   226	 *                      MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the
+   227	 *                      documentation of MLK_USE_NATIVE_NTT_CUSTOM_ORDER for
+   228	 *                      more information.
+   229	 *
+   230	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   231	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   232	 */
+   233	MLK_MUST_CHECK_RETURN_VALUE
+   234	static MLK_INLINE int mlk_poly_mulcache_compute_native(
+   235	    int16_t cache[MLKEM_N / 2], const int16_t mlk_poly[MLKEM_N])
+   236	__contract__(
+   237	  requires(memory_no_alias(cache, sizeof(int16_t) * (MLKEM_N / 2)))
+   238	  requires(memory_no_alias(mlk_poly, sizeof(int16_t) * MLKEM_N))
+   239	  assigns(memory_slice(cache, sizeof(int16_t) * (MLKEM_N / 2)))
+   240	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   241	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(cache, 0, MLKEM_N/2, MLKEM_Q))
+   242	);
+   243	#endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */
+   244	
+   245	#if defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED)
+   246	#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || MLKEM_K == 2
+   247	/**
+   248	 * Compute scalar product of length-2 polynomial vectors in NTT domain.
+   249	 *
+   250	 * @param[out] r       Result of the scalar product. Again in NTT domain, of
+   251	 *                     the same ordering as @p a and @p b.
+   252	 * @param[in]  a       First polynomial vector operand. Must be in NTT
+   253	 *                     domain and in bitreversed order, or of a custom order
+   254	 *                     if MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the
+   255	 *                     documentation of MLK_USE_NATIVE_NTT_CUSTOM_ORDER for
+   256	 *                     more information.
+   257	 * @param[in]  b       Second polynomial vector operand. As for @p a.
+   258	 * @param[in]  b_cache Multiplication-cache for @p b.
+   259	 *
+   260	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   261	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   262	 */
+   263	MLK_MUST_CHECK_RETURN_VALUE
+   264	static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+   265	    int16_t r[MLKEM_N], const int16_t a[2 * MLKEM_N],
+   266	    const int16_t b[2 * MLKEM_N], const int16_t b_cache[2 * (MLKEM_N / 2)])
+   267	__contract__(
+   268	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   269	  requires(memory_no_alias(a, sizeof(int16_t) * 2 * MLKEM_N))
+   270	  requires(memory_no_alias(b, sizeof(int16_t) * 2 * MLKEM_N))
+   271	  requires(memory_no_alias(b_cache, sizeof(int16_t) * 2 * (MLKEM_N / 2)))
+   272	  requires(array_bound(a, 0, 2 * MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+   273	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   274	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   275	);
+   276	#endif /* MLK_CONFIG_MULTILEVEL_WITH_SHARED || MLKEM_K == 2 */
+   277	
+   278	#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || MLKEM_K == 3
+   279	/**
+   280	 * Compute scalar product of length-3 polynomial vectors in NTT domain.
+   281	 *
+   282	 * @param[out] r       Result of the scalar product. Again in NTT domain, of
+   283	 *                     the same ordering as @p a and @p b.
+   284	 * @param[in]  a       First polynomial vector operand. Must be in NTT
+   285	 *                     domain and in bitreversed order, or of a custom order
+   286	 *                     if MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the
+   287	 *                     documentation of MLK_USE_NATIVE_NTT_CUSTOM_ORDER for
+   288	 *                     more information.
+   289	 * @param[in]  b       Second polynomial vector operand. As for @p a.
+   290	 * @param[in]  b_cache Multiplication-cache for @p b.
+   291	 *
+   292	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   293	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   294	 */
+   295	MLK_MUST_CHECK_RETURN_VALUE
+   296	static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+   297	    int16_t r[MLKEM_N], const int16_t a[3 * MLKEM_N],
+   298	    const int16_t b[3 * MLKEM_N], const int16_t b_cache[3 * (MLKEM_N / 2)])
+   299	__contract__(
+   300	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   301	  requires(memory_no_alias(a, sizeof(int16_t) * 3 * MLKEM_N))
+   302	  requires(memory_no_alias(b, sizeof(int16_t) * 3 * MLKEM_N))
+   303	  requires(memory_no_alias(b_cache, sizeof(int16_t) * 3 * (MLKEM_N / 2)))
+   304	  requires(array_bound(a, 0, 3 * MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+   305	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   306	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   307	);
+   308	#endif /* MLK_CONFIG_MULTILEVEL_WITH_SHARED || MLKEM_K == 3 */
+   309	
+   310	#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || MLKEM_K == 4
+   311	/**
+   312	 * Compute scalar product of length-4 polynomial vectors in NTT domain.
+   313	 *
+   314	 * @param[out] r       Result of the scalar product. Again in NTT domain, of
+   315	 *                     the same ordering as @p a and @p b.
+   316	 * @param[in]  a       First polynomial vector operand. Must be in NTT
+   317	 *                     domain and in bitreversed order, or of a custom order
+   318	 *                     if MLK_USE_NATIVE_NTT_CUSTOM_ORDER is set. See the
+   319	 *                     documentation of MLK_USE_NATIVE_NTT_CUSTOM_ORDER for
+   320	 *                     more information.
+   321	 * @param[in]  b       Second polynomial vector operand. As for @p a.
+   322	 * @param[in]  b_cache Multiplication-cache for @p b.
+   323	 *
+   324	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   325	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   326	 */
+   327	MLK_MUST_CHECK_RETURN_VALUE
+   328	static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+   329	    int16_t r[MLKEM_N], const int16_t a[4 * MLKEM_N],
+   330	    const int16_t b[4 * MLKEM_N], const int16_t b_cache[4 * (MLKEM_N / 2)])
+   331	__contract__(
+   332	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   333	  requires(memory_no_alias(a, sizeof(int16_t) * 4 * MLKEM_N))
+   334	  requires(memory_no_alias(b, sizeof(int16_t) * 4 * MLKEM_N))
+   335	  requires(memory_no_alias(b_cache, sizeof(int16_t) * 4 * (MLKEM_N / 2)))
+   336	  requires(array_bound(a, 0, 4 * MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+   337	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   338	  ensures(return_value == MLK_NATIVE_FUNC_FALLBACK || return_value == MLK_NATIVE_FUNC_SUCCESS)
+   339	);
+   340	#endif /* MLK_CONFIG_MULTILEVEL_WITH_SHARED || MLKEM_K == 4 */
+   341	#endif /* MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED */
+   342	
+   343	#if defined(MLK_USE_NATIVE_POLY_TOBYTES)
+   344	/**
+   345	 * Serialization of a polynomial with unsigned canonical coefficients.
+   346	 *
+   347	 * @spec{Implements ByteEncode_12 from @[FIPS203, Algorithm 5].}
+   348	 *
+   349	 * @param[out] r Output byte array (of MLKEM_POLYBYTES bytes).
+   350	 * @param[in]  a Input polynomial, with each coefficient in [0,..,MLKEM_Q-1].
+   351	 *
+   352	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   353	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   354	 */
+   355	MLK_MUST_CHECK_RETURN_VALUE
+   356	static MLK_INLINE int mlk_poly_tobytes_native(uint8_t r[MLKEM_POLYBYTES],
+   357	                                              const int16_t a[MLKEM_N])
+   358	__contract__(
+   359	  requires(memory_no_alias(r, MLKEM_POLYBYTES))
+   360	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   361	  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+   362	  assigns(memory_slice(r, MLKEM_POLYBYTES))
+   363	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   364	);
+   365	#endif /* MLK_USE_NATIVE_POLY_TOBYTES */
+   366	
+   367	#if defined(MLK_USE_NATIVE_POLY_FROMBYTES)
+   368	/**
+   369	 * Deserialization of a polynomial.
+   370	 *
+   371	 * @spec{Implements ByteDecode_12 from @[FIPS203, Algorithm 6].}
+   372	 *
+   373	 * @param[out] a Output polynomial in NTT domain.
+   374	 * @param[in]  r Input byte array (of MLKEM_POLYBYTES bytes).
+   375	 *
+   376	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   377	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   378	 */
+   379	MLK_MUST_CHECK_RETURN_VALUE
+   380	static MLK_INLINE int mlk_poly_frombytes_native(
+   381	    int16_t a[MLKEM_N], const uint8_t r[MLKEM_POLYBYTES])
+   382	__contract__(
+   383	  requires(memory_no_alias(r, MLKEM_POLYBYTES))
+   384	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   385	  assigns(memory_slice(a, sizeof(int16_t) * MLKEM_N))
+   386	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   387	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(a, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+   388	);
+   389	#endif /* MLK_USE_NATIVE_POLY_FROMBYTES */
+   390	
+   391	#if defined(MLK_USE_NATIVE_REJ_UNIFORM)
+   392	/**
+   393	 * Run rejection sampling on uniformly random bytes to generate uniformly random
+   394	 * integers mod MLKEM_Q, represented in [0,..,MLKEM_Q-1].
+   395	 *
+   396	 * @param[out] r      Output buffer.
+   397	 * @param      len    Requested number of 16-bit integers (uniform mod MLKEM_Q).
+   398	 * @param[in]  buf    Input buffer (assumed to be uniform random bytes).
+   399	 * @param      buflen Length of input buffer in bytes.
+   400	 *
+   401	 * @retval MLK_NATIVE_FUNC_FALLBACK Native implementation does not support
+   402	 *                                  the input lengths.
+   403	 * @retval other                    Non-negative number of sampled 16-bit
+   404	 *                                  integers (at most @p len).
+   405	 */
+   406	MLK_MUST_CHECK_RETURN_VALUE
+   407	static MLK_INLINE int mlk_rej_uniform_native(int16_t *r, unsigned len,
+   408	                                             const uint8_t *buf,
+   409	                                             unsigned buflen)
+   410	__contract__(
+   411	  requires(len <= 4096 && buflen <= 4096 && buflen % 3 == 0)
+   412	  requires(memory_no_alias(r, sizeof(int16_t) * len))
+   413	  requires(memory_no_alias(buf, buflen))
+   414	  assigns(memory_slice(r, sizeof(int16_t) * len))
+   415	  ensures(return_value != MLK_NATIVE_FUNC_FALLBACK
+   416	              ==> (0 <= return_value && return_value <= len))
+   417	  ensures(return_value != MLK_NATIVE_FUNC_FALLBACK
+   418	              ==> array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+   419	);
+   420	#endif /* MLK_USE_NATIVE_REJ_UNIFORM */
+   421	
+   422	#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || (MLKEM_K == 2 || MLKEM_K == 3)
+   423	#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D4)
+   424	/**
+   425	 * Compression (4 bits) and subsequent serialization of a polynomial.
+   426	 *
+   427	 * @spec{Compress_4 from @[FIPS203, Eq (4.7)].}
+   428	 *
+   429	 * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D4
+   430	 *               bytes).
+   431	 * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+   432	 *               i.e. in [0,1,..,MLKEM_Q-1].
+   433	 *
+   434	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   435	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   436	 */
+   437	MLK_MUST_CHECK_RETURN_VALUE
+   438	static MLK_INLINE int mlk_poly_compress_d4_native(
+   439	    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D4], const int16_t a[MLKEM_N])
+   440	__contract__(
+   441	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+   442	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   443	  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+   444	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+   445	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK));
+   446	#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D4 */
+   447	
+   448	#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D10)
+   449	/**
+   450	 * Compression (10 bits) and subsequent serialization of a polynomial.
+   451	 *
+   452	 * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+   453	 *
+   454	 * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D10
+   455	 *               bytes).
+   456	 * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+   457	 *               i.e. in [0,1,..,MLKEM_Q-1].
+   458	 *
+   459	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   460	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   461	 */
+   462	MLK_MUST_CHECK_RETURN_VALUE
+   463	static MLK_INLINE int mlk_poly_compress_d10_native(
+   464	    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10], const int16_t a[MLKEM_N])
+   465	__contract__(
+   466	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+   467	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   468	  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+   469	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+   470	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK));
+   471	#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D10 */
+   472	
+   473	#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D4)
+   474	/**
+   475	 * De-serialization and subsequent decompression (4 bits) of a polynomial;
+   476	 * approximate inverse of mlk_poly_compress_d4.
+   477	 *
+   478	 * @spec{Decompress_4 from @[FIPS203, Eq (4.8)].}
+   479	 *
+   480	 * Upon return, the coefficients of the output polynomial are
+   481	 * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+   482	 *
+   483	 * @param[out] r Output polynomial.
+   484	 * @param[in]  a Input byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D4
+   485	 *               bytes).
+   486	 *
+   487	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   488	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   489	 */
+   490	MLK_MUST_CHECK_RETURN_VALUE
+   491	static MLK_INLINE int mlk_poly_decompress_d4_native(
+   492	    int16_t r[MLKEM_N], const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+   493	__contract__(
+   494	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   495	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+   496	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   497	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   498	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+   499	#endif /* MLK_USE_NATIVE_POLY_DECOMPRESS_D4 */
+   500	
+   501	#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D10)
+   502	/**
+   503	 * De-serialization and subsequent decompression (10 bits) of a polynomial;
+   504	 * approximate inverse of mlk_poly_compress_d10.
+   505	 *
+   506	 * @spec{Decompress_10 from @[FIPS203, Eq (4.8)].}
+   507	 *
+   508	 * Upon return, the coefficients of the output polynomial are
+   509	 * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+   510	 *
+   511	 * @param[out] r Output polynomial.
+   512	 * @param[in]  a Input byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D10
+   513	 *               bytes).
+   514	 *
+   515	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   516	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   517	 */
+   518	MLK_MUST_CHECK_RETURN_VALUE
+   519	static MLK_INLINE int mlk_poly_decompress_d10_native(
+   520	    int16_t r[MLKEM_N], const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D10])
+   521	__contract__(
+   522	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   523	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D10))
+   524	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   525	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   526	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+   527	#endif /* MLK_USE_NATIVE_POLY_DECOMPRESS_D10 */
+   528	#endif /* MLK_CONFIG_MULTILEVEL_WITH_SHARED || MLKEM_K == 2 || MLKEM_K == 3 */
+   529	
+   530	#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || MLKEM_K == 4
+   531	#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D5)
+   532	/**
+   533	 * Compression (5 bits) and subsequent serialization of a polynomial.
+   534	 *
+   535	 * @spec{Compress_5 from @[FIPS203, Eq (4.7)].}
+   536	 *
+   537	 * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D5
+   538	 *               bytes).
+   539	 * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+   540	 *               i.e. in [0,1,..,MLKEM_Q-1].
+   541	 *
+   542	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   543	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   544	 */
+   545	MLK_MUST_CHECK_RETURN_VALUE
+   546	static MLK_INLINE int mlk_poly_compress_d5_native(
+   547	    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D5], const int16_t a[MLKEM_N])
+   548	__contract__(
+   549	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D5))
+   550	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   551	  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+   552	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D5))
+   553	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK));
+   554	#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D5 */
+   555	
+   556	#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D11)
+   557	/**
+   558	 * Compression (11 bits) and subsequent serialization of a polynomial.
+   559	 *
+   560	 * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+   561	 *
+   562	 * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D11
+   563	 *               bytes).
+   564	 * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+   565	 *               i.e. in [0,1,..,MLKEM_Q-1].
+   566	 *
+   567	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   568	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   569	 */
+   570	MLK_MUST_CHECK_RETURN_VALUE
+   571	static MLK_INLINE int mlk_poly_compress_d11_native(
+   572	    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11], const int16_t a[MLKEM_N])
+   573	__contract__(
+   574	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+   575	  requires(memory_no_alias(a, sizeof(int16_t) * MLKEM_N))
+   576	  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+   577	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+   578	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK));
+   579	#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D11 */
+   580	
+   581	#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D5)
+   582	/**
+   583	 * De-serialization and subsequent decompression (5 bits) of a polynomial;
+   584	 * approximate inverse of mlk_poly_compress_d5.
+   585	 *
+   586	 * @spec{Decompress_5 from @[FIPS203, Eq (4.8)].}
+   587	 *
+   588	 * Upon return, the coefficients of the output polynomial are
+   589	 * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+   590	 *
+   591	 * @param[out] r Output polynomial.
+   592	 * @param[in]  a Input byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D5
+   593	 *               bytes).
+   594	 *
+   595	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   596	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   597	 */
+   598	MLK_MUST_CHECK_RETURN_VALUE
+   599	static MLK_INLINE int mlk_poly_decompress_d5_native(
+   600	    int16_t r[MLKEM_N], const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D5])
+   601	__contract__(
+   602	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   603	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D5))
+   604	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   605	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   606	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+   607	#endif /* MLK_USE_NATIVE_POLY_DECOMPRESS_D5 */
+   608	
+   609	#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D11)
+   610	/**
+   611	 * De-serialization and subsequent decompression (11 bits) of a polynomial;
+   612	 * approximate inverse of mlk_poly_compress_d11.
+   613	 *
+   614	 * @spec{Decompress_11 from @[FIPS203, Eq (4.8)].}
+   615	 *
+   616	 * Upon return, the coefficients of the output polynomial are
+   617	 * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+   618	 *
+   619	 * @param[out] r Output polynomial.
+   620	 * @param[in]  a Input byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D11
+   621	 *               bytes).
+   622	 *
+   623	 * @retval MLK_NATIVE_FUNC_SUCCESS  Operation succeeded.
+   624	 * @retval MLK_NATIVE_FUNC_FALLBACK Backend declined; caller should fall back.
+   625	 */
+   626	MLK_MUST_CHECK_RETURN_VALUE
+   627	static MLK_INLINE int mlk_poly_decompress_d11_native(
+   628	    int16_t r[MLKEM_N], const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D11])
+   629	__contract__(
+   630	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   631	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D11))
+   632	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   633	  ensures(return_value == MLK_NATIVE_FUNC_SUCCESS || return_value == MLK_NATIVE_FUNC_FALLBACK)
+   634	  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+   635	#endif /* MLK_USE_NATIVE_POLY_DECOMPRESS_D11 */
+   636	#endif /* MLK_CONFIG_MULTILEVEL_WITH_SHARED || MLKEM_K == 4 */
+   637	
+   638	#endif /* !MLK_NATIVE_API_H */
+
+================================================================
+FILE SLICE: mlkem/src/indcpa.c:540-645
+================================================================
+   540	      b == NULL || v == NULL || k == NULL || epp == NULL || sp_cache == NULL)
+   541	  {
+   542	    ret = MLK_ERR_OUT_OF_MEMORY;
+   543	    goto cleanup;
+   544	  }
+   545	
+   546	  mlk_unpack_pk(pkpv, seed, pk);
+   547	  mlk_poly_frommsg(k, m);
+   548	
+   549	  /*
+   550	   * Declassify the public seed.
+   551	   * Required to use it in conditional-branches in rejection sampling.
+   552	   * This is needed because in re-encryption the publicseed originated from sk
+   553	   * which is marked undefined.
+   554	   */
+   555	  MLK_CT_TESTING_DECLASSIFY(seed, MLKEM_SYMBYTES);
+   556	
+   557	  mlk_gen_matrix(at, seed, 1 /* transpose */);
+   558	
+   559	  mlk_enc_getnoise_eta1_eta2(sp, ep, epp, coins);
+   560	
+   561	  mlk_polyvec_ntt(sp);
+   562	
+   563	  mlk_polyvec_mulcache_compute(sp_cache, sp);
+   564	  mlk_matvec_mul(b, at, sp, sp_cache);
+   565	  mlk_polyvec_basemul_acc_montgomery_cached(v, pkpv, sp, sp_cache);
+   566	
+   567	  mlk_polyvec_invntt_tomont(b);
+   568	  mlk_poly_invntt_tomont(v);
+   569	
+   570	  mlk_polyvec_add(b, ep);
+   571	  mlk_poly_add(v, epp);
+   572	  mlk_poly_add(v, k);
+   573	
+   574	  mlk_polyvec_reduce(b);
+   575	  mlk_poly_reduce(v);
+   576	
+   577	  mlk_pack_ciphertext(c, b, v);
+   578	
+   579	cleanup:
+   580	  /* Specification: Partially implements
+   581	   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+   582	  MLK_FREE(sp_cache, mlk_polyvec_mulcache, 1, context);
+   583	  MLK_FREE(epp, mlk_poly, 1, context);
+   584	  MLK_FREE(k, mlk_poly, 1, context);
+   585	  MLK_FREE(v, mlk_poly, 1, context);
+   586	  MLK_FREE(b, mlk_polyvec, 1, context);
+   587	  MLK_FREE(ep, mlk_polyvec, 1, context);
+   588	  MLK_FREE(pkpv, mlk_polyvec, 1, context);
+   589	  MLK_FREE(sp, mlk_polyvec, 1, context);
+   590	  MLK_FREE(at, mlk_polymat, 1, context);
+   591	  MLK_FREE(seed, uint8_t, MLKEM_SYMBYTES, context);
+   592	  return ret;
+   593	}
+   594	
+   595	/* Reference: `indcpa_dec()` in the reference implementation @[REF].
+   596	 *            - We use a mulcache for the scalar product.
+   597	 *            - We include buffer zeroization. */
+   598	MLK_INTERNAL_API
+   599	int mlk_indcpa_dec(uint8_t m[MLKEM_INDCPA_MSGBYTES],
+   600	                   const uint8_t c[MLKEM_INDCPA_BYTES],
+   601	                   const uint8_t sk[MLKEM_INDCPA_SECRETKEYBYTES],
+   602	                   MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+   603	{
+   604	  int ret = 0;
+   605	  MLK_ALLOC(b, mlk_polyvec, 1, context);
+   606	  MLK_ALLOC(skpv, mlk_polyvec, 1, context);
+   607	  MLK_ALLOC(v, mlk_poly, 1, context);
+   608	  MLK_ALLOC(sb, mlk_poly, 1, context);
+   609	  MLK_ALLOC(b_cache, mlk_polyvec_mulcache, 1, context);
+   610	
+   611	  if (b == NULL || skpv == NULL || v == NULL || sb == NULL || b_cache == NULL)
+   612	  {
+   613	    ret = MLK_ERR_OUT_OF_MEMORY;
+   614	    goto cleanup;
+   615	  }
+   616	
+   617	  mlk_unpack_ciphertext(b, v, c);
+   618	  mlk_unpack_sk(skpv, sk);
+   619	
+   620	  mlk_polyvec_ntt(b);
+   621	  mlk_polyvec_mulcache_compute(b_cache, b);
+   622	  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+   623	  mlk_poly_invntt_tomont(sb);
+   624	
+   625	  mlk_poly_sub(v, sb);
+   626	  mlk_poly_reduce(v);
+   627	
+   628	  mlk_poly_tomsg(m, v);
+   629	
+   630	cleanup:
+   631	  /* Specification: Partially implements
+   632	   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+   633	  MLK_FREE(b_cache, mlk_polyvec_mulcache, 1, context);
+   634	  MLK_FREE(sb, mlk_poly, 1, context);
+   635	  MLK_FREE(v, mlk_poly, 1, context);
+   636	  MLK_FREE(skpv, mlk_polyvec, 1, context);
+   637	  MLK_FREE(b, mlk_polyvec, 1, context);
+   638	  return ret;
+   639	}
+   640	
+   641	/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
+   642	 * Don't modify by hand -- this is auto-generated by scripts/autogen. */
+   643	#undef mlk_pack_pk
+   644	#undef mlk_unpack_pk
+   645	#undef mlk_pack_sk

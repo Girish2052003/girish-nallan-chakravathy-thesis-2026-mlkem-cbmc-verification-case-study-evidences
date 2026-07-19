@@ -1,0 +1,701 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 0022
+
+BASE="/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3"
+B5="$BASE/SUB00Q_BATCH5_T5_RELATIONAL"
+FAMILY="$B5/frozen_harness_family_v1"
+SRC="$BASE/source/mlkem"
+B54="$B5/B5_4_GOTO_PREFLIGHT_MLKEM768"
+B55="$B5/B5_5_POSITIVE_RELATIONAL_EXECUTION_MLKEM768_RUN1"
+RUN="$B5/B5_6_REACHABILITY_EXECUTION_MLKEM768_RUN1"
+
+SUPPORT="$RUN/support"
+BUILD="$RUN/companion_build"
+INSPECT="$RUN/inspection"
+PROOF_RESULTS="$RUN/companion_proof_results"
+COVER_RESULTS="$RUN/coverage_results"
+COMMANDS="$RUN/commands"
+LOGS="$RUN/logs"
+EXITS="$RUN/exit_codes"
+RESOURCES="$RUN/resource_usage"
+FROZEN="$RUN/frozen_inputs"
+
+SUMMARY="$RUN/SUB00Q_B5_6_REACHABILITY_SUMMARY.txt"
+BINDING="$RUN/SUB00Q_B5_6_EXECUTION_INPUT_BINDING.txt"
+MANIFEST="$RUN/SUB00Q_B5_6_ARTIFACT_MANIFEST.sha256"
+NEUTRAL_HEADER="$SUPPORT/sub00q_b5_cover_neutral_companion.h"
+
+CASES=(
+  "reachability_locality"
+  "reachability_changed_index"
+  "reachability_identical_inputs"
+)
+
+HARNESSES=(
+  "sub_t5_reachability_locality_harness.c"
+  "sub_t5_reachability_changed_index_harness.c"
+  "sub_t5_reachability_identical_inputs_harness.c"
+)
+
+EXPECTED_COVERS=(
+  "4"
+  "5"
+  "2"
+)
+
+EXPECTED_ANCHORS=(
+  "SUB_T5_REACH_LOCALITY_ANCHOR"
+  "SUB_T5_REACH_CHANGED_ANCHOR"
+  "SUB_T5_REACH_DETERMINISM_ANCHOR"
+)
+
+die()
+{
+  echo "ERROR: $*" >&2
+  exit 1
+}
+
+SUCCESS=0
+cleanup()
+{
+  rc=$?
+  if [ "$SUCCESS" -ne 1 ] && [ -d "$RUN" ]; then
+    failed="${RUN}_FAILED_$(date -u +%Y%m%dT%H%M%SZ)"
+    chmod -R u+rwX "$RUN" 2>/dev/null || true
+    mv "$RUN" "$failed" 2>/dev/null || true
+    echo "FAILED_ATTEMPT_PRESERVED=$failed" >&2
+  fi
+  exit "$rc"
+}
+trap cleanup EXIT
+
+echo "============================================================"
+echo "SUB-T5 / B5.6 REACHABILITY EXECUTION"
+echo "============================================================"
+
+[ -d "$FAMILY" ] || die "frozen harness family missing: $FAMILY"
+[ -d "$SRC" ] || die "clean-room source missing: $SRC"
+[ -d "$B54" ] || die "B5.4 preflight missing: $B54"
+[ -d "$B55" ] || die "accepted B5.5 run missing: $B55"
+[ -f "$B54/SUB00Q_B5_4_PREFLIGHT_ARTIFACT_MANIFEST.sha256" ] ||
+  die "B5.4 manifest missing"
+[ -f "$B55/SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256" ] ||
+  die "B5.5 manifest missing"
+[ ! -e "$RUN" ] || die "B5.6 run directory already exists: $RUN"
+
+for tool in \
+  sha256sum goto-cc goto-instrument cbmc timeout python3 \
+  find sort grep awk sed wc readlink tr
+do
+  command -v "$tool" >/dev/null 2>&1 ||
+    die "required tool missing: $tool"
+done
+
+TIME_TOOL=""
+if [ -x /usr/bin/time ]; then
+  TIME_TOOL="/usr/bin/time"
+fi
+
+CBMC_VERSION="$(cbmc --version | sed -n '1p')"
+GOTOCC_VERSION="$(goto-cc --version 2>&1 | sed -n '1p')"
+
+echo "$CBMC_VERSION" | grep -q '6\.9\.0' ||
+  die "CBMC is not the frozen 6.9.0 toolchain"
+echo "$GOTOCC_VERSION" | grep -q '6\.9\.0' ||
+  die "goto-cc is not the frozen 6.9.0 toolchain"
+
+(
+  cd "$FAMILY"
+  sha256sum -c SUB00Q_B5_2_ARTIFACT_MANIFEST.sha256
+  bash scripts/validate_frozen_family.sh
+)
+
+(
+  cd "$B54"
+  sha256sum -c SUB00Q_B5_4_PREFLIGHT_ARTIFACT_MANIFEST.sha256
+)
+
+(
+  cd "$B55"
+  sha256sum -c SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256
+)
+
+grep -q '^B5_4_STATUS=PASS$' \
+  "$B54/SUB00Q_B5_4_PREFLIGHT_SUMMARY.txt" ||
+  die "B5.4 PASS verdict missing"
+
+grep -q '^B5_5_STATUS=PASS$' \
+  "$B55/SUB00Q_B5_5_POSITIVE_EXECUTION_SUMMARY.txt" ||
+  die "B5.5 PASS verdict missing"
+
+mkdir -p \
+  "$SUPPORT" "$BUILD" "$INSPECT" "$PROOF_RESULTS" "$COVER_RESULTS" \
+  "$COMMANDS" "$LOGS" "$EXITS" "$RESOURCES" "$FROZEN"
+
+RUNNER_PATH="$(readlink -f "$0")"
+cp "$RUNNER_PATH" "$RUN/executed_runner.sh"
+
+cat > "$NEUTRAL_HEADER" <<'EOF'
+#ifndef SUB00Q_B5_COVER_NEUTRAL_COMPANION_H
+#define SUB00Q_B5_COVER_NEUTRAL_COMPANION_H
+
+/*
+ * B5.6 proof-only companion transformation.
+ *
+ * __CPROVER_cover is observational and must not affect program state.
+ * It is neutralised only in separately named companion GOTO binaries so
+ * ordinary CBMC proof execution can retain --unwinding-assertions.
+ *
+ * The original frozen harnesses and original B5.4 GOTO models are unchanged
+ * and are used for the actual --cover cover reachability runs.
+ */
+#define __CPROVER_cover(condition) ((void)0)
+
+#endif
+EOF
+
+cp "$B54/SUB00Q_B5_4_PREFLIGHT_SUMMARY.txt" \
+   "$FROZEN/B5_4_PREFLIGHT_SUMMARY.txt"
+cp "$B54/SUB00Q_B5_4_PREFLIGHT_ARTIFACT_MANIFEST.sha256" \
+   "$FROZEN/B5_4_PREFLIGHT_ARTIFACT_MANIFEST.sha256"
+cp "$B55/SUB00Q_B5_5_POSITIVE_EXECUTION_SUMMARY.txt" \
+   "$FROZEN/B5_5_POSITIVE_EXECUTION_SUMMARY.txt"
+cp "$B55/SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256" \
+   "$FROZEN/B5_5_ARTIFACT_MANIFEST.sha256"
+cp "$FAMILY/SUB00Q_B5_2_ARTIFACT_MANIFEST.sha256" \
+   "$FROZEN/B5_2_ARTIFACT_MANIFEST.sha256"
+
+{
+  echo "SUB-T5 / B5.6 REACHABILITY EXECUTION INPUT BINDING"
+  echo
+  echo "CAPTURED_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "CBMC_VERSION=$CBMC_VERSION"
+  echo "GOTOCC_VERSION=$GOTOCC_VERSION"
+  echo "FROZEN_HARNESS_FAMILY=$FAMILY"
+  echo "ORIGINAL_GOTO_PREFLIGHT=$B54"
+  echo "ACCEPTED_POSITIVE_PARENT=$B55"
+  echo "REACHABILITY_CASE_COUNT=${#CASES[@]}"
+  echo
+  echo "Each reachability case is evaluated in two isolated runs:"
+  echo "1. a cover-neutral companion proof with unwinding assertions;"
+  echo "2. the untouched original B5.4 model with --cover cover."
+  echo
+  echo "The same model-derived unwindset is retained for both runs."
+  echo "Coverage runs omit --unwinding-assertions because CBMC disallows"
+  echo "combining explicit coverage instrumentation with that option."
+  echo
+  echo "COMPANION_MODEL_CREATION=YES"
+  echo "COMPANION_PROOF_EXECUTION=YES"
+  echo "ORIGINAL_MODEL_COVERAGE_EXECUTION=YES"
+  echo "ORIGINAL_REACHABILITY_MODELS_MODIFIED=NO"
+  echo "FROZEN_HARNESSES_MODIFIED=NO"
+  echo "PRODUCTION_SOURCE_MODIFICATION=NO"
+  echo "EARLIER_BATCH_MODIFICATION=NO"
+} > "$BINDING"
+
+printf '%s\n' \
+  "SUB-T5 / B5.6 REACHABILITY EXECUTION SUMMARY" \
+  "" \
+  "CAPTURED_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  "CBMC_VERSION=$CBMC_VERSION" \
+  "" \
+  "CASE|EXPECTED_COVERS|COMPANION_EXIT|COMPANION_SUCCESS|COMPANION_FAILURE|COMPANION_UNKNOWN|ANCHOR_FOUND|COVER_EXIT|SATISFIED|FAILED|TOTAL|VERDICT" \
+  > "$SUMMARY"
+
+for idx in "${!CASES[@]}"
+do
+  case_name="${CASES[$idx]}"
+  harness_name="${HARNESSES[$idx]}"
+  expected_cover="${EXPECTED_COVERS[$idx]}"
+  expected_anchor="${EXPECTED_ANCHORS[$idx]}"
+
+  harness="$FAMILY/harnesses/$harness_name"
+  original_goto="$B54/build/${case_name}.goto"
+  original_goto_sum="$original_goto.sha256"
+  original_unwind_file="$B54/inspection/${case_name}_frozen_unwindset.txt"
+
+  companion_goto="$BUILD/${case_name}_cover_neutral.goto"
+  companion_command="$COMMANDS/${case_name}_companion_build_command.txt"
+  companion_build_stdout="$LOGS/${case_name}_companion_build_stdout.txt"
+  companion_build_stderr="$LOGS/${case_name}_companion_build_stderr.txt"
+  companion_build_exit="$EXITS/${case_name}_companion_build_exit_code.txt"
+
+  companion_loops="$INSPECT/${case_name}_companion_show_loops.txt"
+  companion_unwind_file="$INSPECT/${case_name}_companion_unwindset.txt"
+  loop_comparison="$INSPECT/${case_name}_unwindset_comparison.txt"
+
+  proof_json="$PROOF_RESULTS/${case_name}_companion_cbmc_result.json"
+  proof_stderr="$LOGS/${case_name}_companion_cbmc_stderr.txt"
+  proof_exit="$EXITS/${case_name}_companion_cbmc_exit_code.txt"
+  proof_resource="$RESOURCES/${case_name}_companion_resource_usage.txt"
+  proof_command="$COMMANDS/${case_name}_companion_cbmc_command.txt"
+  proof_parsed="$PROOF_RESULTS/${case_name}_companion_parsed_result.txt"
+  anchor_audit="$PROOF_RESULTS/${case_name}_anchor_audit.txt"
+
+  cover_stdout="$COVER_RESULTS/${case_name}_coverage_result.txt"
+  cover_stderr="$LOGS/${case_name}_coverage_stderr.txt"
+  cover_exit="$EXITS/${case_name}_coverage_exit_code.txt"
+  cover_resource="$RESOURCES/${case_name}_coverage_resource_usage.txt"
+  cover_command="$COMMANDS/${case_name}_coverage_command.txt"
+  cover_parsed="$COVER_RESULTS/${case_name}_coverage_parsed.txt"
+
+  [ -f "$harness" ] || die "reachability harness missing: $harness"
+  [ -s "$original_goto" ] || die "original B5.4 GOTO missing: $original_goto"
+  [ -f "$original_goto_sum" ] || die "original GOTO checksum missing"
+  [ -s "$original_unwind_file" ] || die "original unwindset missing"
+
+  sha256sum -c "$original_goto_sum"
+
+  original_unwindset="$(tr -d '\r\n' < "$original_unwind_file")"
+  [ -n "$original_unwindset" ] || die "empty original unwindset for $case_name"
+
+  cp "$original_unwind_file" "$FROZEN/${case_name}_original_unwindset.txt"
+  cp "$original_goto_sum" "$FROZEN/${case_name}_original_goto.sha256"
+
+  build_cmd=(
+    goto-cc
+    -std=c90
+    -DMLK_CONFIG_PARAMETER_SET=768
+    -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_sub00q_b5
+    -DMLK_CONFIG_NO_ASM=1
+    -DMLK_CONFIG_CUSTOM_ZEROIZE=1
+    -include "$FAMILY/support/sub00q_b5_fail_closed_zeroize.h"
+    -include "$FAMILY/support/sub00q_b5_verify_pragma_scope.h"
+    -include "$NEUTRAL_HEADER"
+    -I"$SRC"
+    -I"$SRC/src"
+    -I"$FAMILY/support"
+    "$harness"
+    "$SRC/src/poly.c"
+    "$FAMILY/support/sub00q_b5_optblocker_zero.c"
+    -o "$companion_goto"
+  )
+
+  {
+    printf 'COMMAND:'
+    printf ' %q' "${build_cmd[@]}"
+    printf '\n'
+  } > "$companion_command"
+
+  set +e
+  "${build_cmd[@]}" >"$companion_build_stdout" 2>"$companion_build_stderr"
+  rc_build=$?
+  set -e
+  printf '%s\n' "$rc_build" > "$companion_build_exit"
+
+  [ "$rc_build" -eq 0 ] ||
+    die "cover-neutral companion build failed for $case_name"
+  [ -s "$companion_goto" ] ||
+    die "cover-neutral companion GOTO missing for $case_name"
+
+  sha256sum "$companion_goto" > "$companion_goto.sha256"
+
+  goto-instrument --validate-goto-binary "$companion_goto" \
+    >"$INSPECT/${case_name}_companion_validate.txt" 2>&1
+
+  goto-instrument --show-loops "$companion_goto" \
+    >"$companion_loops" 2>&1
+
+  mapfile -t companion_loop_ids < <(
+    awk '
+      /^Loop[[:space:]]+/ {
+        id=$2
+        sub(/:$/, "", id)
+        if(id ~ /^main\./ || id ~ /^mlk_sub00q_b5_poly_sub\./)
+          print id
+      }
+    ' "$companion_loops" | sort -u
+  )
+
+  [ "${#companion_loop_ids[@]}" -ge 2 ] ||
+    die "too few companion loop IDs for $case_name"
+
+  companion_unwindset=""
+  production_loop_count=0
+  main_loop_count=0
+
+  for loop_id in "${companion_loop_ids[@]}"
+  do
+    case "$loop_id" in
+      main.*)
+        main_loop_count=$((main_loop_count + 1))
+        ;;
+      mlk_sub00q_b5_poly_sub.*)
+        production_loop_count=$((production_loop_count + 1))
+        ;;
+    esac
+
+    if [ -n "$companion_unwindset" ]; then
+      companion_unwindset="${companion_unwindset},"
+    fi
+    companion_unwindset="${companion_unwindset}${loop_id}:257"
+  done
+
+  [ "$main_loop_count" -ge 1 ] ||
+    die "no companion main loop found for $case_name"
+  [ "$production_loop_count" -eq 1 ] ||
+    die "expected exactly one companion production loop for $case_name"
+
+  printf '%s\n' "$companion_unwindset" > "$companion_unwind_file"
+
+  {
+    echo "ORIGINAL_UNWINDSET=$original_unwindset"
+    echo "COMPANION_UNWINDSET=$companion_unwindset"
+  } > "$loop_comparison"
+
+  [ "$original_unwindset" = "$companion_unwindset" ] ||
+    die "companion/original unwindset mismatch for $case_name"
+
+  proof_cmd=(
+    cbmc
+    "$companion_goto"
+    --function main
+    --object-bits 8
+    --bounds-check
+    --pointer-check
+    --pointer-overflow-check
+    --pointer-primitive-check
+    --signed-overflow-check
+    --unsigned-overflow-check
+    --conversion-check
+    --undefined-shift-check
+    --div-by-zero-check
+    --unwinding-assertions
+    --unwindset "$companion_unwindset"
+    --slice-formula
+    --sat-solver minisat2
+    --trace
+    --json-ui
+  )
+
+  {
+    printf 'COMMAND:'
+    printf ' %q' "${proof_cmd[@]}"
+    printf '\n'
+  } > "$proof_command"
+
+  echo "CASE=$case_name PHASE=COMPANION_PROOF STATUS=RUNNING"
+
+  set +e
+  if [ -n "$TIME_TOOL" ]; then
+    "$TIME_TOOL" -v -o "$proof_resource" \
+      timeout --signal=TERM --kill-after=60s 21600s \
+      "${proof_cmd[@]}" >"$proof_json" 2>"$proof_stderr"
+    rc_proof=$?
+  else
+    timeout --signal=TERM --kill-after=60s 21600s \
+      "${proof_cmd[@]}" >"$proof_json" 2>"$proof_stderr"
+    rc_proof=$?
+    echo "RESOURCE_TOOL=UNAVAILABLE" > "$proof_resource"
+  fi
+  set -e
+
+  printf '%s\n' "$rc_proof" > "$proof_exit"
+
+  [ "$rc_proof" -eq 0 ] ||
+    die "companion proof failed for $case_name with exit $rc_proof"
+  [ -s "$proof_json" ] ||
+    die "empty companion proof JSON for $case_name"
+
+  python3 - "$proof_json" "$proof_parsed" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+src = Path(sys.argv[1])
+dst = Path(sys.argv[2])
+
+try:
+    data = json.loads(src.read_text(encoding="utf-8"))
+except Exception as exc:
+    raise SystemExit(f"JSON_PARSE_ERROR={exc}")
+
+records = []
+
+def walk(obj):
+    if isinstance(obj, dict):
+        if "property" in obj and "status" in obj:
+            records.append(obj)
+        for value in obj.values():
+            walk(value)
+    elif isinstance(obj, list):
+        for value in obj:
+            walk(value)
+
+walk(data)
+
+seen = set()
+unique = []
+for rec in records:
+    item = (
+        str(rec.get("property", "")),
+        str(rec.get("status", "")),
+        str(rec.get("description", "")),
+    )
+    if item not in seen:
+        seen.add(item)
+        unique.append(item)
+
+success = sum(1 for _, status, _ in unique if status == "SUCCESS")
+failure = sum(1 for _, status, _ in unique if status == "FAILURE")
+unknown = sum(1 for _, status, _ in unique if status not in {"SUCCESS", "FAILURE"})
+total = len(unique)
+
+lines = [
+    f"SUCCESS={success}",
+    f"FAILURE={failure}",
+    f"UNKNOWN={unknown}",
+    f"TOTAL_RESULTS={total}",
+]
+for prop, status, desc in unique:
+    lines.append(f"PROPERTY={prop}|STATUS={status}|DESCRIPTION={desc}")
+
+dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+if total < 1:
+    raise SystemExit("NO_PROPERTY_RESULTS")
+if failure:
+    raise SystemExit(f"FAILURE_RESULTS={failure}")
+if unknown:
+    raise SystemExit(f"UNKNOWN_RESULTS={unknown}")
+PY
+
+  proof_success="$(awk -F= '/^SUCCESS=/{print $2}' "$proof_parsed")"
+  proof_failure="$(awk -F= '/^FAILURE=/{print $2}' "$proof_parsed")"
+  proof_unknown="$(awk -F= '/^UNKNOWN=/{print $2}' "$proof_parsed")"
+
+  if grep -Fq "$expected_anchor" "$proof_parsed"; then
+    echo "$expected_anchor=FOUND" > "$anchor_audit"
+    anchor_found=1
+  else
+    echo "$expected_anchor=MISSING" > "$anchor_audit"
+    die "expected reachability anchor missing for $case_name"
+  fi
+
+  sha256sum "$proof_json" > "$proof_json.sha256"
+
+  cover_cmd=(
+    cbmc
+    "$original_goto"
+    --function main
+    --object-bits 8
+    --bounds-check
+    --pointer-check
+    --pointer-overflow-check
+    --pointer-primitive-check
+    --signed-overflow-check
+    --unsigned-overflow-check
+    --conversion-check
+    --undefined-shift-check
+    --div-by-zero-check
+    --unwindset "$original_unwindset"
+    --slice-formula
+    --sat-solver minisat2
+    --cover cover
+  )
+
+  {
+    printf 'COMMAND:'
+    printf ' %q' "${cover_cmd[@]}"
+    printf '\n'
+  } > "$cover_command"
+
+  echo "CASE=$case_name PHASE=ORIGINAL_MODEL_COVERAGE STATUS=RUNNING"
+
+  set +e
+  if [ -n "$TIME_TOOL" ]; then
+    "$TIME_TOOL" -v -o "$cover_resource" \
+      timeout --signal=TERM --kill-after=60s 21600s \
+      "${cover_cmd[@]}" >"$cover_stdout" 2>"$cover_stderr"
+    rc_cover=$?
+  else
+    timeout --signal=TERM --kill-after=60s 21600s \
+      "${cover_cmd[@]}" >"$cover_stdout" 2>"$cover_stderr"
+    rc_cover=$?
+    echo "RESOURCE_TOOL=UNAVAILABLE" > "$cover_resource"
+  fi
+  set -e
+
+  printf '%s\n' "$rc_cover" > "$cover_exit"
+
+  [ "$rc_cover" -eq 0 ] ||
+    die "coverage execution failed for $case_name with exit $rc_cover"
+  [ -s "$cover_stdout" ] ||
+    die "empty coverage result for $case_name"
+
+  coverage_values="$(
+    awk '
+      /^\*\* [0-9]+ of [0-9]+ covered/ {
+        covered=$2
+        total=$4
+      }
+      END {
+        if(covered != "" && total != "")
+          print covered, total
+      }
+    ' "$cover_stdout"
+  )"
+
+  [ -n "$coverage_values" ] ||
+    die "coverage summary not found for $case_name"
+
+  read -r satisfied total <<< "$coverage_values"
+  failed="$(grep -Ec ':[[:space:]]+FAILED$' "$cover_stdout" || true)"
+  satisfied_lines="$(grep -Ec ':[[:space:]]+SATISFIED$' "$cover_stdout" || true)"
+
+  {
+    echo "EXPECTED=$expected_cover"
+    echo "SUMMARY_SATISFIED=$satisfied"
+    echo "SATISFIED_LINES=$satisfied_lines"
+    echo "FAILED_LINES=$failed"
+    echo "TOTAL=$total"
+  } > "$cover_parsed"
+
+  [ "$total" -eq "$expected_cover" ] ||
+    die "unexpected cover-goal total for $case_name: $total, expected $expected_cover"
+  [ "$satisfied" -eq "$expected_cover" ] ||
+    die "not all cover goals satisfied for $case_name"
+  [ "$satisfied_lines" -eq "$expected_cover" ] ||
+    die "SATISFIED line count mismatch for $case_name"
+  [ "$failed" -eq 0 ] ||
+    die "unreachable cover goals found for $case_name"
+
+  sha256sum "$cover_stdout" > "$cover_stdout.sha256"
+
+  printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|PASS\n' \
+    "$case_name" \
+    "$expected_cover" \
+    "$rc_proof" \
+    "$proof_success" \
+    "$proof_failure" \
+    "$proof_unknown" \
+    "$anchor_found" \
+    "$rc_cover" \
+    "$satisfied" \
+    "$failed" \
+    "$total" \
+    >> "$SUMMARY"
+
+  echo "CASE=$case_name STATUS=PASS COMPANION_SUCCESS=$proof_success COVER=$satisfied/$total"
+done
+
+expected_total=0
+for value in "${EXPECTED_COVERS[@]}"
+do
+  expected_total=$((expected_total + value))
+done
+
+satisfied_total="$(
+  awk -F'|' '
+    /^reachability_/ {
+      sum += $9
+    }
+    END {
+      print sum+0
+    }
+  ' "$SUMMARY"
+)"
+
+failed_total="$(
+  awk -F'|' '
+    /^reachability_/ {
+      sum += $10
+    }
+    END {
+      print sum+0
+    }
+  ' "$SUMMARY"
+)"
+
+proof_failure_total="$(
+  awk -F'|' '
+    /^reachability_/ {
+      sum += $5
+    }
+    END {
+      print sum+0
+    }
+  ' "$SUMMARY"
+)"
+
+proof_unknown_total="$(
+  awk -F'|' '
+    /^reachability_/ {
+      sum += $6
+    }
+    END {
+      print sum+0
+    }
+  ' "$SUMMARY"
+)"
+
+{
+  echo
+  echo "=== B5.6 FINAL VERDICT ==="
+  echo "REACHABILITY_CASE_COUNT=${#CASES[@]}"
+  echo "COMPANION_GOTO_COUNT=$(find "$BUILD" -maxdepth 1 -type f -name '*.goto' | wc -l)"
+  echo "COMPANION_PROOF_ZERO_EXIT_COUNT=$(grep -l '^0$' "$EXITS"/*_companion_cbmc_exit_code.txt | wc -l)"
+  echo "COMPANION_PROOF_FAILURE_TOTAL=$proof_failure_total"
+  echo "COMPANION_PROOF_UNKNOWN_TOTAL=$proof_unknown_total"
+  echo "COMPANION_ANCHOR_AUDIT_COUNT=$(find "$PROOF_RESULTS" -maxdepth 1 -type f -name '*_anchor_audit.txt' | wc -l)"
+  echo "COVERAGE_ZERO_EXIT_COUNT=$(grep -l '^0$' "$EXITS"/*_coverage_exit_code.txt | wc -l)"
+  echo "COVERAGE_RESULT_COUNT=$(find "$COVER_RESULTS" -maxdepth 1 -type f -name '*_coverage_result.txt' | wc -l)"
+  echo "COVER_GOAL_EXPECTED_TOTAL=$expected_total"
+  echo "COVER_GOAL_SATISFIED_TOTAL=$satisfied_total"
+  echo "COVER_GOAL_FAILED_TOTAL=$failed_total"
+  echo "LOCALITY_COVERAGE=4_OF_4"
+  echo "CHANGED_INDEX_COVERAGE=5_OF_5"
+  echo "IDENTICAL_INPUTS_COVERAGE=2_OF_2"
+  echo "SAME_UNWINDSET_RETAINED=PASS"
+  echo "LOOP_COMPLETENESS_COMPANION_PROVED=PASS"
+  echo "ORIGINAL_REACHABILITY_MODELS_USED=YES"
+  echo "COVERAGE_EXPLICIT_UNWINDING_ASSERTIONS=OMITTED"
+  echo "B5_6_STATUS=PASS"
+  echo
+  echo "=== OPERATION BOUNDARY ==="
+  echo "COMPANION_MODEL_CREATION=YES"
+  echo "COMPANION_PROOF_EXECUTION=YES"
+  echo "ORIGINAL_MODEL_COVERAGE_EXECUTION=YES"
+  echo "ORIGINAL_REACHABILITY_MODELS_MODIFIED=NO"
+  echo "FROZEN_HARNESSES_MODIFIED=NO"
+  echo "PRODUCTION_SOURCE_MODIFICATION=NO"
+  echo "EARLIER_BATCH_MODIFICATION=NO"
+} >> "$SUMMARY"
+
+[ "$proof_failure_total" -eq 0 ] ||
+  die "companion proof failures detected"
+[ "$proof_unknown_total" -eq 0 ] ||
+  die "companion proof unknown results detected"
+[ "$satisfied_total" -eq "$expected_total" ] ||
+  die "aggregate cover-goal count mismatch"
+[ "$failed_total" -eq 0 ] ||
+  die "aggregate failed cover goals detected"
+
+(
+  cd "$RUN"
+  find . -type f \
+    ! -name "$(basename "$MANIFEST")" \
+    -print0 |
+    sort -z |
+    xargs -0 sha256sum > "$MANIFEST"
+  sha256sum -c "$MANIFEST"
+)
+
+find "$RUN" -type f -exec chmod 0444 {} +
+chmod 0555 "$RUN/executed_runner.sh"
+find "$RUN" -type d -exec chmod 0555 {} +
+
+SUCCESS=1
+trap - EXIT
+
+echo
+echo "=== B5.6 FINAL SUMMARY ==="
+grep -E \
+  'REACHABILITY_CASE_COUNT=|COMPANION_GOTO_COUNT=|COMPANION_PROOF_ZERO_EXIT_COUNT=|COMPANION_PROOF_FAILURE_TOTAL=|COMPANION_PROOF_UNKNOWN_TOTAL=|COMPANION_ANCHOR_AUDIT_COUNT=|COVERAGE_ZERO_EXIT_COUNT=|COVERAGE_RESULT_COUNT=|COVER_GOAL_EXPECTED_TOTAL=|COVER_GOAL_SATISFIED_TOTAL=|COVER_GOAL_FAILED_TOTAL=|LOCALITY_COVERAGE=|CHANGED_INDEX_COVERAGE=|IDENTICAL_INPUTS_COVERAGE=|SAME_UNWINDSET_RETAINED=|LOOP_COMPLETENESS_COMPANION_PROVED=|ORIGINAL_REACHABILITY_MODELS_USED=|COVERAGE_EXPLICIT_UNWINDING_ASSERTIONS=|B5_6_STATUS=|COMPANION_MODEL_CREATION=|COMPANION_PROOF_EXECUTION=|ORIGINAL_MODEL_COVERAGE_EXECUTION=|ORIGINAL_REACHABILITY_MODELS_MODIFIED=|FROZEN_HARNESSES_MODIFIED=|PRODUCTION_SOURCE_MODIFICATION=|EARLIER_BATCH_MODIFICATION=' \
+  "$SUMMARY"
+
+echo
+echo "B5_6_DIRECTORY=$RUN"
+echo "B5_6_SUMMARY=$SUMMARY"
+echo "============================================================"

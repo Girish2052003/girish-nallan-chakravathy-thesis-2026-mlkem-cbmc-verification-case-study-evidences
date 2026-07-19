@@ -1,0 +1,184 @@
+===== CLEAN-ROOM MLK_POLY_ADD — HEADER DECLARATION =====
+
+Source file: mlkem/src/poly.h
+
+----- MATCH 1 -----
+Matched source line: 181
+Extracted lines: 156-210
+
+   156   * Convert a polynomial to unsigned canonical representatives.
+   157   *
+   158   * The input coefficients can be arbitrary integers in int16_t. The output
+   159   * coefficients are in [0,1,..,MLKEM_Q-1].
+   160   *
+   161   * @spec{Normalizes on unsigned canonical representatives ahead of calling
+   162   * @[FIPS203, Compress_d, Eq (4.7)]. This is not made explicit in FIPS 203.}
+   163   *
+   164   * @param[in,out] r Input/output polynomial.
+   165   */
+   166  /*
+   167   * NOTE: The semantics of mlk_poly_reduce() is different in
+   168   * the reference implementation, which requires
+   169   * signed canonical output data. Unsigned canonical
+   170   * outputs are better suited to the only remaining
+   171   * use of mlk_poly_reduce() in the context of (de)serialization.
+   172   */
+   173  MLK_INTERNAL_API
+   174  void mlk_poly_reduce(mlk_poly *r)
+   175  __contract__(
+   176    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   177    assigns(memory_slice(r, sizeof(mlk_poly)))
+   178    ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   179  );
+   180  
+   181  #define mlk_poly_add MLK_NAMESPACE(poly_add)
+   182  /**
+   183   * Add two polynomials in place.
+   184   *
+   185   * The coefficients of @p r and @p b must be such that the addition does not
+   186   * overflow. Otherwise, the behaviour of this function is undefined.
+   187   *
+   188   * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   189   * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L21].}
+   190   *
+   191   * @param[in,out] r Input-output polynomial to be added to.
+   192   * @param[in]     b Input polynomial that should be added to @p r. Must be
+   193   *                  disjoint from @p r.
+   194   */
+   195  /*
+   196   * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+   197   * We specialize to the accumulator form to avoid reasoning about aliasing.
+   198   */
+   199  MLK_INTERNAL_API
+   200  void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   201  __contract__(
+   202    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   203    requires(memory_no_alias(b, sizeof(mlk_poly)))
+   204    requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+   205    requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+   206    ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+   207    assigns(memory_slice(r, sizeof(mlk_poly)))
+   208  );
+   209  
+   210  #define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+
+----- MATCH 2 -----
+Matched source line: 196
+Extracted lines: 171-225
+
+   171   * use of mlk_poly_reduce() in the context of (de)serialization.
+   172   */
+   173  MLK_INTERNAL_API
+   174  void mlk_poly_reduce(mlk_poly *r)
+   175  __contract__(
+   176    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   177    assigns(memory_slice(r, sizeof(mlk_poly)))
+   178    ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   179  );
+   180  
+   181  #define mlk_poly_add MLK_NAMESPACE(poly_add)
+   182  /**
+   183   * Add two polynomials in place.
+   184   *
+   185   * The coefficients of @p r and @p b must be such that the addition does not
+   186   * overflow. Otherwise, the behaviour of this function is undefined.
+   187   *
+   188   * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   189   * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L21].}
+   190   *
+   191   * @param[in,out] r Input-output polynomial to be added to.
+   192   * @param[in]     b Input polynomial that should be added to @p r. Must be
+   193   *                  disjoint from @p r.
+   194   */
+   195  /*
+   196   * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+   197   * We specialize to the accumulator form to avoid reasoning about aliasing.
+   198   */
+   199  MLK_INTERNAL_API
+   200  void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   201  __contract__(
+   202    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   203    requires(memory_no_alias(b, sizeof(mlk_poly)))
+   204    requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+   205    requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+   206    ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+   207    assigns(memory_slice(r, sizeof(mlk_poly)))
+   208  );
+   209  
+   210  #define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+   211  /**
+   212   * Subtract two polynomials; no modular reduction is performed.
+   213   *
+   214   * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   215   * Representations]. Used in @[FIPS203, Algorithm 15, K-PKE.Decrypt, L6].}
+   216   *
+   217   * @param[in,out] r Input-output polynomial to be subtracted from.
+   218   * @param[in]     b Second input polynomial.
+   219   */
+   220  /*
+   221   * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+   222   * We specialize to the accumulator form to avoid reasoning about aliasing.
+   223   */
+   224  MLK_INTERNAL_API
+   225  void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+
+----- MATCH 3 -----
+Matched source line: 200
+Extracted lines: 175-229
+
+   175  __contract__(
+   176    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   177    assigns(memory_slice(r, sizeof(mlk_poly)))
+   178    ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   179  );
+   180  
+   181  #define mlk_poly_add MLK_NAMESPACE(poly_add)
+   182  /**
+   183   * Add two polynomials in place.
+   184   *
+   185   * The coefficients of @p r and @p b must be such that the addition does not
+   186   * overflow. Otherwise, the behaviour of this function is undefined.
+   187   *
+   188   * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   189   * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L21].}
+   190   *
+   191   * @param[in,out] r Input-output polynomial to be added to.
+   192   * @param[in]     b Input polynomial that should be added to @p r. Must be
+   193   *                  disjoint from @p r.
+   194   */
+   195  /*
+   196   * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+   197   * We specialize to the accumulator form to avoid reasoning about aliasing.
+   198   */
+   199  MLK_INTERNAL_API
+   200  void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+   201  __contract__(
+   202    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   203    requires(memory_no_alias(b, sizeof(mlk_poly)))
+   204    requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+   205    requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+   206    ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+   207    assigns(memory_slice(r, sizeof(mlk_poly)))
+   208  );
+   209  
+   210  #define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+   211  /**
+   212   * Subtract two polynomials; no modular reduction is performed.
+   213   *
+   214   * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+   215   * Representations]. Used in @[FIPS203, Algorithm 15, K-PKE.Decrypt, L6].}
+   216   *
+   217   * @param[in,out] r Input-output polynomial to be subtracted from.
+   218   * @param[in]     b Second input polynomial.
+   219   */
+   220  /*
+   221   * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+   222   * We specialize to the accumulator form to avoid reasoning about aliasing.
+   223   */
+   224  MLK_INTERNAL_API
+   225  void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+   226  __contract__(
+   227    requires(memory_no_alias(r, sizeof(mlk_poly)))
+   228    requires(memory_no_alias(b, sizeof(mlk_poly)))
+   229    requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))
+

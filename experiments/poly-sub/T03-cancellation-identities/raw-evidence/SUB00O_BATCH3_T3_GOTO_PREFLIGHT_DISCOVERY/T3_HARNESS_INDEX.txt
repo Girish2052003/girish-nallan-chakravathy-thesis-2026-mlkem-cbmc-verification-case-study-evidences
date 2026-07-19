@@ -1,0 +1,271 @@
+SUB00O T3 HARNESS INDEX
+TIMESTAMP=2026-07-17T14:29:49+03:00
+
+============================================================
+FILE=sub_t3a_exact_sub_add_harness.c
+SIZE=1745
+MODE=-r--r--r--
+SHA256=51eb6080c758cd279eea47df90c9c4bb0f642d17557e5dbd2c6b2a2261133535
+
+3:int main(void)
+27:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+28:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+36:  mlk_poly_sub(&R, &RB);
+45:    __CPROVER_assert((int32_t)D.coeffs[i] == expected_difference,
+47:    __CPROVER_assert(RB.coeffs[i] == saved_B.coeffs[i],
+51:  mlk_poly_add(&R, &RB);
+55:    __CPROVER_assert(R.coeffs[i] == saved_A.coeffs[i],
+57:    __CPROVER_assert(RB.coeffs[i] == saved_B.coeffs[i],
+59:    __CPROVER_assert(D.coeffs[i] == D_snapshot.coeffs[i],
+61:    __CPROVER_assert(A0.coeffs[i] == saved_A.coeffs[i],
+63:    __CPROVER_assert(B0.coeffs[i] == saved_B.coeffs[i],
+
+============================================================
+FILE=sub_t3a_invalid_lower_harness.c
+SIZE=406
+MODE=-r--r--r--
+SHA256=a94ee5719e64578f915bfec6f3de65dd7c8af8fa511d11712e5f5fde343d3d0f
+
+2:int main(void)
+12:  __CPROVER_assert(d >= INT16_MIN,
+14:  mlk_poly_sub(&R, &B);
+
+============================================================
+FILE=sub_t3a_invalid_upper_harness.c
+SIZE=407
+MODE=-r--r--r--
+SHA256=5961d5d102130321d0d4d23c4d697ff972d141af87384d06bcb28ccbc5be0411
+
+2:int main(void)
+12:  __CPROVER_assert(d <= INT16_MAX,
+14:  mlk_poly_sub(&R, &B);
+
+============================================================
+FILE=sub_t3a_valid_lower_harness.c
+SIZE=530
+MODE=-r--r--r--
+SHA256=78a0ea03e9983e09a47e99bda65128db1b6a1d557385fd638a62f577b743d505
+
+2:int main(void)
+10:  __CPROVER_assert((int32_t)R.coeffs[0] - B.coeffs[0] == INT16_MIN,
+12:  mlk_poly_sub(&R, &B);
+13:  mlk_poly_add(&R, &B);
+14:  __CPROVER_assert(R.coeffs[0] == (int16_t)(INT16_MIN + 1),
+
+============================================================
+FILE=sub_t3a_valid_upper_harness.c
+SIZE=632
+MODE=-r--r--r--
+SHA256=0d3198c6f58f4f9bb78a2bf739fedf8e28f8c4085266d7147a27a38623d47f2b
+
+2:int main(void)
+10:  __CPROVER_assert((int32_t)R.coeffs[MLKEM_N - 1u] -
+13:  mlk_poly_sub(&R, &B);
+14:  mlk_poly_add(&R, &B);
+15:  __CPROVER_assert(R.coeffs[MLKEM_N - 1u] ==
+
+============================================================
+FILE=sub_t3b_exact_add_sub_harness.c
+SIZE=1721
+MODE=-r--r--r--
+SHA256=e943dfa09b7bb4ee0e3bddd2dc520cd46b405e78a54f55af133afe15d96e678a
+
+3:int main(void)
+27:    __CPROVER_assume(s >= (int32_t)INT16_MIN);
+28:    __CPROVER_assume(s <= (int32_t)INT16_MAX);
+36:  mlk_poly_add(&R, &RB);
+45:    __CPROVER_assert((int32_t)S.coeffs[i] == expected_sum,
+47:    __CPROVER_assert(RB.coeffs[i] == saved_B.coeffs[i],
+51:  mlk_poly_sub(&R, &RB);
+55:    __CPROVER_assert(R.coeffs[i] == saved_A.coeffs[i],
+57:    __CPROVER_assert(RB.coeffs[i] == saved_B.coeffs[i],
+59:    __CPROVER_assert(S.coeffs[i] == S_snapshot.coeffs[i],
+61:    __CPROVER_assert(A0.coeffs[i] == saved_A.coeffs[i],
+63:    __CPROVER_assert(B0.coeffs[i] == saved_B.coeffs[i],
+
+============================================================
+FILE=sub_t3b_invalid_lower_harness.c
+SIZE=407
+MODE=-r--r--r--
+SHA256=8ce2b802b67b56c55ef7fc8fef00a0e7117245ec96d338f5eaa58dd0d576b4e5
+
+2:int main(void)
+12:  __CPROVER_assert(s >= INT16_MIN,
+14:  mlk_poly_add(&R, &B);
+
+============================================================
+FILE=sub_t3b_invalid_upper_harness.c
+SIZE=406
+MODE=-r--r--r--
+SHA256=a152d84762856c29903cb93983cba59cd985fb6d72e916d81bd58eac01682553
+
+2:int main(void)
+12:  __CPROVER_assert(s <= INT16_MAX,
+14:  mlk_poly_add(&R, &B);
+
+============================================================
+FILE=sub_t3b_valid_lower_harness.c
+SIZE=524
+MODE=-r--r--r--
+SHA256=1b1fd0e6f0866d941dabdfe9da7691a173b69daca84cbf0854a69ec4092e7e0a
+
+2:int main(void)
+10:  __CPROVER_assert((int32_t)R.coeffs[0] + B.coeffs[0] == INT16_MIN,
+12:  mlk_poly_add(&R, &B);
+13:  mlk_poly_sub(&R, &B);
+14:  __CPROVER_assert(R.coeffs[0] == (int16_t)(INT16_MIN + 1),
+
+============================================================
+FILE=sub_t3b_valid_upper_harness.c
+SIZE=624
+MODE=-r--r--r--
+SHA256=5a37666b0c7b0ae05002be41059ab5ef9e54fc2bfd16a6f1a3f43af58c251dad
+
+2:int main(void)
+10:  __CPROVER_assert((int32_t)R.coeffs[MLKEM_N - 1u] +
+13:  mlk_poly_add(&R, &B);
+14:  mlk_poly_sub(&R, &B);
+15:  __CPROVER_assert(R.coeffs[MLKEM_N - 1u] ==
+
+============================================================
+FILE=sub_t3c_modular_cancellation_harness.c
+SIZE=4857
+MODE=-r--r--r--
+SHA256=bd5d7e432d74246d4c173bc64ae16e594eb39037e7da798ada4ea77642ade813
+
+3:int main(void)
+31:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+32:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+42:  mlk_poly_sub(&X, &XB);
+43:  mlk_poly_reduce(&X);
+48:    __CPROVER_assert(XB.coeffs[i] == saved_B.coeffs[i],
+50:    __CPROVER_assert(X.coeffs[i] >= 0,
+52:    __CPROVER_assert(X.coeffs[i] < SUB_T3_FIPS_Q,
+56:  mlk_poly_reduce(&NB);
+64:    __CPROVER_assert(X.coeffs[i] ==
+67:    __CPROVER_assert(NB.coeffs[i] >= 0,
+69:    __CPROVER_assert(NB.coeffs[i] < SUB_T3_FIPS_Q,
+71:    __CPROVER_assert(recovery_sum >= 0,
+73:    __CPROVER_assert(recovery_sum <=
+74:                         2 * (SUB_T3_FIPS_Q - 1),
+76:    __CPROVER_assert(recovery_sum <= (int32_t)INT16_MAX,
+80:  mlk_poly_add(&X, &NB);
+89:    __CPROVER_assert((int32_t)X.coeffs[i] == exact_recovery_sum,
+91:    __CPROVER_assert(NB.coeffs[i] ==
+96:  mlk_poly_reduce(&X);
+99:  mlk_poly_reduce(&NA);
+105:        (uint32_t)(a32 + 10 * SUB_T3_FIPS_Q);
+107:        shifted % (uint32_t)SUB_T3_FIPS_Q;
+109:    __CPROVER_assert(shifted >= 522u,
+111:    __CPROVER_assert(shifted <= 66057u,
+114:    __CPROVER_assert(X.coeffs[i] == NA.coeffs[i],
+116:    __CPROVER_assert((uint32_t)X.coeffs[i] == expected_A,
+118:    __CPROVER_assert((uint32_t)NA.coeffs[i] == expected_A,
+121:    __CPROVER_assert(X.coeffs[i] >= 0,
+123:    __CPROVER_assert(X.coeffs[i] < SUB_T3_FIPS_Q,
+125:    __CPROVER_assert(NA.coeffs[i] >= 0,
+127:    __CPROVER_assert(NA.coeffs[i] < SUB_T3_FIPS_Q,
+130:    __CPROVER_assert(X.coeffs[i] == final_X_snapshot.coeffs[i],
+132:    __CPROVER_assert(NB.coeffs[i] ==
+135:    __CPROVER_assert(A0.coeffs[i] == saved_A.coeffs[i],
+137:    __CPROVER_assert(B0.coeffs[i] == saved_B.coeffs[i],
+139:    __CPROVER_assert(X_after_recovery_addition.coeffs[i] >= 0,
+
+============================================================
+FILE=sub_t3_common.h
+SIZE=1518
+MODE=-r--r--r--
+SHA256=33a8430939a61d9b6d804b2bc6a2b8c4cf3675e1a074b35afa2876d6d1447602
+
+1:#ifndef SUB_T3_COMMON_H
+2:#define SUB_T3_COMMON_H
+11:  SUB_T3_FIPS_N = 256,
+12:  SUB_T3_FIPS_Q = 3329
+17:  __CPROVER_assert(CHAR_BIT == 8,
+18:                   "SUB_T3_MACHINE: CHAR_BIT must equal 8");
+19:  __CPROVER_assert(sizeof(short) * CHAR_BIT == 16u,
+20:                   "SUB_T3_MACHINE: short must be 16 bits");
+21:  __CPROVER_assert(sizeof(int) * CHAR_BIT == 32u,
+22:                   "SUB_T3_MACHINE: int must be 32 bits");
+23:  __CPROVER_assert(sizeof(int16_t) * CHAR_BIT == 16u,
+24:                   "SUB_T3_MACHINE: int16_t must be 16 bits");
+25:  __CPROVER_assert(sizeof(int32_t) * CHAR_BIT == 32u,
+26:                   "SUB_T3_MACHINE: int32_t must be 32 bits");
+27:  __CPROVER_assert(sizeof(void *) * CHAR_BIT == 64u,
+28:                   "SUB_T3_MACHINE: pointer width must be 64 bits");
+29:  __CPROVER_assert(((int32_t)-1 >> 1) == (int32_t)-1,
+30:                   "SUB_T3_MACHINE: negative right shift must preserve sign");
+31:  __CPROVER_assert(((int32_t)-3 >> 1) == (int32_t)-2,
+32:                   "SUB_T3_MACHINE: negative right shift must round arithmetically");
+34:  __CPROVER_assert(MLKEM_N == SUB_T3_FIPS_N,
+35:                   "SUB_T3_PARAMETER: MLKEM_N must equal FIPS_N");
+36:  __CPROVER_assert(MLKEM_Q == SUB_T3_FIPS_Q,
+37:                   "SUB_T3_PARAMETER: MLKEM_Q must equal FIPS_Q");
+
+============================================================
+FILE=sub_t3_coverage_harness.c
+SIZE=3734
+MODE=-r--r--r--
+SHA256=49a1c89c24d575ff7a7aa3b635ea0dd706bc32c02cc9b53ba480c376116d79b3
+
+3:int main(void)
+49:    __CPROVER_assume(d >= (int32_t)INT16_MIN);
+50:    __CPROVER_assume(d <= (int32_t)INT16_MAX);
+51:    __CPROVER_assume(s >= (int32_t)INT16_MIN);
+52:    __CPROVER_assume(s <= (int32_t)INT16_MAX);
+60:    if (a_i >= SUB_T3_FIPS_Q) has_noncanonical_positive_a = 1;
+62:    if (b_i >= SUB_T3_FIPS_Q) has_noncanonical_positive_b = 1;
+76:  mlk_poly_sub(&X, &B);
+77:  mlk_poly_reduce(&X);
+78:  mlk_poly_reduce(&NB);
+86:    if (recovery_sum == SUB_T3_FIPS_Q - 1) recovery_sum_q_minus_1 = 1;
+87:    if (recovery_sum == SUB_T3_FIPS_Q) recovery_sum_q = 1;
+88:    if (recovery_sum == 2 * (SUB_T3_FIPS_Q - 1))
+90:    if (recovery_sum < SUB_T3_FIPS_Q) recovery_without_wrap = 1;
+91:    if (recovery_sum >= SUB_T3_FIPS_Q) recovery_with_wrap = 1;
+94:  __CPROVER_cover(has_positive_b);
+95:  __CPROVER_cover(has_negative_b);
+96:  __CPROVER_cover(has_zero_b);
+97:  __CPROVER_cover(has_positive_difference);
+98:  __CPROVER_cover(has_negative_difference);
+99:  __CPROVER_cover(has_zero_difference);
+100:  __CPROVER_cover(has_noncanonical_positive_a);
+101:  __CPROVER_cover(has_noncanonical_negative_a);
+102:  __CPROVER_cover(has_noncanonical_positive_b);
+103:  __CPROVER_cover(has_noncanonical_negative_b);
+104:  __CPROVER_cover(has_valid_difference_min);
+105:  __CPROVER_cover(has_valid_difference_max);
+106:  __CPROVER_cover(has_valid_addition_min);
+107:  __CPROVER_cover(has_valid_addition_max);
+108:  __CPROVER_cover(coefficient_0_nontrivial);
+109:  __CPROVER_cover(coefficient_255_nontrivial);
+110:  __CPROVER_cover(recovery_sum_0);
+111:  __CPROVER_cover(recovery_sum_q_minus_1);
+112:  __CPROVER_cover(recovery_sum_q);
+113:  __CPROVER_cover(recovery_sum_2q_minus_2);
+114:  __CPROVER_cover(recovery_without_wrap);
+115:  __CPROVER_cover(recovery_with_wrap);
+116:  __CPROVER_cover(1);
+
+============================================================
+FILE=sub_t3c_recovery_sum_boundaries_harness.c
+SIZE=1792
+MODE=-r--r--r--
+SHA256=aac0a129f04b6bee3e683c5d3928993b68b6978ba28c920328605eac5cfdf911
+
+3:int main(void)
+35:  mlk_poly_sub(&X, &B);
+36:  mlk_poly_reduce(&X);
+37:  mlk_poly_reduce(&NB);
+45:  __CPROVER_assert(sum0 == 0,
+47:  __CPROVER_assert(sum1 == SUB_T3_FIPS_Q - 1,
+49:  __CPROVER_assert(sum2 == SUB_T3_FIPS_Q,
+51:  __CPROVER_assert(sum255 == 2 * (SUB_T3_FIPS_Q - 1),
+54:  mlk_poly_add(&X, &NB);
+55:  mlk_poly_reduce(&X);
+56:  mlk_poly_reduce(&NA);
+58:  __CPROVER_assert(X.coeffs[0] == NA.coeffs[0],
+60:  __CPROVER_assert(X.coeffs[1] == NA.coeffs[1],
+62:  __CPROVER_assert(X.coeffs[2] == NA.coeffs[2],
+64:  __CPROVER_assert(X.coeffs[MLKEM_N - 1u] ==
+

@@ -1,0 +1,127 @@
+SUB00M PRODUCTION SOURCE DISCOVERY
+TIMESTAMP=2026-07-17T14:05:43+03:00
+ROOT=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3
+EXPECTED_COMMIT=d9613cf60de3132d32475c102d8c2781d84feb34
+
+=== CANDIDATE POLY.C FILES ===
+
+FILE=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c
+f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.c
+75:static MLK_INLINE int16_t mlk_barrett_reduce(int16_t a)
+160:static MLK_INLINE int16_t mlk_scalar_signed_to_unsigned_q(int16_t c)
+185:MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r)
+201:    int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+203:    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+210:void mlk_poly_reduce(mlk_poly *r)
+214:  ret = mlk_poly_reduce_native(r->coeffs);
+222:  mlk_poly_reduce_c(r);
+229:void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+248:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+506:      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));
+
+=== CANDIDATE POLY.H FILES ===
+
+FILE=/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/source/mlkem/src/poly.h
+60:    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+118:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+119:  assigns(memory_slice(r, sizeof(mlk_poly)))
+120:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+149:  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+150:  requires(memory_no_alias(a, sizeof(mlk_poly)))
+151:  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+154:#define mlk_poly_reduce MLK_NAMESPACE(poly_reduce)
+167: * NOTE: The semantics of mlk_poly_reduce() is different in
+168: * the reference implementation, which requires
+171: * use of mlk_poly_reduce() in the context of (de)serialization.
+174:void mlk_poly_reduce(mlk_poly *r)
+176:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+177:  assigns(memory_slice(r, sizeof(mlk_poly)))
+178:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+181:#define mlk_poly_add MLK_NAMESPACE(poly_add)
+196: * NOTE: The reference implementation uses a 3-argument mlk_poly_add.
+200:void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+202:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+203:  requires(memory_no_alias(b, sizeof(mlk_poly)))
+204:  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX))
+205:  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))
+206:  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))
+207:  assigns(memory_slice(r, sizeof(mlk_poly)))
+210:#define mlk_poly_sub MLK_NAMESPACE(poly_sub)
+221: * NOTE: The reference implementation uses a 3-argument mlk_poly_sub.
+225:void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)
+227:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+228:  requires(memory_no_alias(b, sizeof(mlk_poly)))
+229:  requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX))
+230:  requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN))
+231:  ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]))
+232:  assigns(memory_slice(r, sizeof(mlk_poly)))
+257:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+258:  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+259:  assigns(memory_slice(r, sizeof(mlk_poly)))
+260:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))
+285:  requires(memory_no_alias(r, sizeof(mlk_poly)))
+286:  assigns(memory_slice(r, sizeof(mlk_poly)))
+287:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+
+=== CAMPAIGN COMMIT REFERENCES ===
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_failed_attempt_20260717T025707Z/SUB00E_DRAFT_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:6:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00D_BUILD_CONTEXT_DISCOVERY.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/executed_runner.sh:26:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00A_PRODUCTION_INPUT_PACKET.txt:6:Frozen commit: d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/post_freeze_novelty_audit/repository_commit.txt:1:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/SUB00I_COVERAGE_METHOD.md:5:- Commit: `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/result/executed_runner.sh:27:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/result/frozen_inputs/SUB00I_COVERAGE_METHOD.md:5:- Commit: `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:6:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00D_BUILD_CONTEXT_DISCOVERY.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00C_INDEPENDENT_HARNESS_ARCHITECTURE.md:11:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00C_INDEPENDENT_HARNESS_ARCHITECTURE.md:11:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00C_HARNESS_DRAFT_REVIEW_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/executed_preflight_runner.sh:30:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/SUB00G_R2_PREFLIGHT_MANIFEST.md:28:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/ENVIRONMENT.txt:3:EXPECTED_COMMIT=d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/SUB00M_T3_THEOREM_PREREGISTRATION.md:9:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:4:EXPECTED_COMMIT=d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:68:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_failed_attempt_20260717T025707Z/SUB00E_DRAFT_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:69:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00F_MODE_A_EXECUTION_MANIFEST.md:6:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:70:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00D_BUILD_CONTEXT_DISCOVERY.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:71:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/executed_runner.sh:26:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:72:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:73:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00A_PRODUCTION_INPUT_PACKET.txt:6:Frozen commit: d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:74:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:75:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R1_T1_CORRECTED_ENVIRONMENT_MLKEM768/post_freeze_novelty_audit/repository_commit.txt:1:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:76:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:77:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/SUB00I_COVERAGE_METHOD.md:5:- Commit: `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:78:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/result/executed_runner.sh:27:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:79:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00I_COVERAGE_NONVACUITY_PRAGMA_SCOPED_MLKEM768_RUN1/result/frozen_inputs/SUB00I_COVERAGE_METHOD.md:5:- Commit: `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:80:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/SUB00F_MODE_A_EXECUTION_MANIFEST.md:6:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:81:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00D_BUILD_CONTEXT_DISCOVERY.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:82:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R2_VALIDATION_REACHABILITY_AUDIT_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:83:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00C_INDEPENDENT_HARNESS_ARCHITECTURE.md:11:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:84:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00f_mode_a_execution_freeze_v1/provenance/SUB00E_R1_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:85:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00C_INDEPENDENT_HARNESS_ARCHITECTURE.md:11:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:86:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00C_HARNESS_DRAFT_REVIEW_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:87:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/executed_preflight_runner.sh:30:FROZEN_COMMIT="d9613cf60de3132d32475c102d8c2781d84feb34"
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:88:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00J_MUTATION_PREFLIGHT_PRAGMA_SCOPED_MLKEM768/environment.txt:4:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00M_BATCH3_T3_CANCELLATION_PREREGISTRATION/PRODUCTION_SOURCE_DISCOVERY.txt:89:/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00G_R2_T1_PRAGMA_SCOPED_PREFLIGHT_MLKEM768/SUB00G_R2_PREFLIGHT_MANIFEST.md:28:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00E_DRAFT_GOTO_MODEL_INSPECTION_PACKET.txt:6:d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00B_CORRECTED_THEOREM_EXPERIMENT_PREREGISTRATION.md:9:    d9613cf60de3132d32475c102d8c2781d84feb34
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00H_T1_PRAGMA_SCOPED_MODE_A_MLKEM768_RUN1/frozen_inputs/SUB00G_R2_PREFLIGHT_MANIFEST.md:28:  `d9613cf60de3132d32475c102d8c2781d84feb34`
+
+=== RELATED ACTIVE PROCESSES ===
+4942 timeout --signal=TERM --kill-after=60s 21600s cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/cases/T2_RELATIONAL/frozen_inputs/T2_RELATIONAL.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,main.1:257,main.2:257,main.3:257,main.4:257,main.5:257,main.6:257,main.7:257,mlk_barrett_reduce.0:2,mlk_sub00l_t2_poly_sub.0:257,mlk_poly_reduce_c.0:257,mlk_poly_reduce_c.1:257,mlk_scalar_signed_to_unsigned_q.0:2,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+4943 cbmc /home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00L_COMBINED_T2_BOUNDARY_EXECUTION_MLKEM768_RUN1/cases/T2_RELATIONAL/frozen_inputs/T2_RELATIONAL.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,main.1:257,main.2:257,main.3:257,main.4:257,main.5:257,main.6:257,main.7:257,mlk_barrett_reduce.0:2,mlk_sub00l_t2_poly_sub.0:257,mlk_poly_reduce_c.0:257,mlk_poly_reduce_c.1:257,mlk_scalar_signed_to_unsigned_q.0:2,mlk_scalar_signed_to_unsigned_q.1:2 --slice-formula --sat-solver minisat2 --trace --json-ui
+
+NO CBMC THEOREM EXECUTION WAS PERFORMED
+NO PRODUCTION SOURCE WAS MODIFIED
+NO PRIOR RESULT WAS MODIFIED

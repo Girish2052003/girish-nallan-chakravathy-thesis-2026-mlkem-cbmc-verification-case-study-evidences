@@ -1,0 +1,54 @@
+--- run_sub00q_b5_6_reachability_execution.sh
++++ run_sub00q_b5_6_reachability_execution.sh
+@@ -7,7 +7,9 @@
+ FAMILY="$B5/frozen_harness_family_v1"
+ SRC="$BASE/source/mlkem"
+ B54="$B5/B5_4_GOTO_PREFLIGHT_MLKEM768"
+-B55="$B5/B5_5_POSITIVE_RELATIONAL_EXECUTION_MLKEM768_RUN1"
++B55_DEFAULT="$B5/B5_5_POSITIVE_RELATIONAL_EXECUTION_MLKEM768_RUN1"
++B55="$B55_DEFAULT"
++B55_MANIFEST=""
+ RUN="$B5/B5_6_REACHABILITY_EXECUTION_MLKEM768_RUN1"
+ 
+ SUPPORT="$RUN/support"
+@@ -77,11 +79,29 @@
+ [ -d "$FAMILY" ] || die "frozen harness family missing: $FAMILY"
+ [ -d "$SRC" ] || die "clean-room source missing: $SRC"
+ [ -d "$B54" ] || die "B5.4 preflight missing: $B54"
++if [ ! -f "$B55/SUB00Q_B5_5_POSITIVE_EXECUTION_SUMMARY.txt" ]; then
++  B55="$(
++    find "$B5" -maxdepth 2 -type f       -name 'SUB00Q_B5_5_POSITIVE_EXECUTION_SUMMARY.txt'       -printf '%h\n' |
++    sort |
++    tail -n 1
++  )"
++fi
++
++[ -n "${B55:-}" ] || die "accepted B5.5 run directory not found"
+ [ -d "$B55" ] || die "accepted B5.5 run missing: $B55"
++[ -f "$B55/SUB00Q_B5_5_POSITIVE_EXECUTION_SUMMARY.txt" ] ||
++  die "accepted B5.5 summary missing: $B55"
++
++B55_MANIFEST="$(
++  find "$B55" -maxdepth 1 -type f     \( -name 'SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256'        -o -name '*B5_5*MANIFEST*.sha256' \) |
++  sort |
++  head -n 1
++)"
++
++[ -n "${B55_MANIFEST:-}" ] ||
++  die "B5.5 manifest not found under accepted run: $B55"
+ [ -f "$B54/SUB00Q_B5_4_PREFLIGHT_ARTIFACT_MANIFEST.sha256" ] ||
+   die "B5.4 manifest missing"
+-[ -f "$B55/SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256" ] ||
+-  die "B5.5 manifest missing"
+ [ ! -e "$RUN" ] || die "B5.6 run directory already exists: $RUN"
+ 
+ for tool in \
+@@ -118,7 +138,7 @@
+ 
+ (
+   cd "$B55"
+-  sha256sum -c SUB00Q_B5_5_ARTIFACT_MANIFEST.sha256
++  sha256sum -c "$(basename "$B55_MANIFEST")"
+ )
+ 
+ grep -q '^B5_4_STATUS=PASS$' \
