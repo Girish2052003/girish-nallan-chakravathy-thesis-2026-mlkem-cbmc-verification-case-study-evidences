@@ -1,1 +1,1 @@
-
+This directory contains supplementary experimental evidence identified during post-publication file reconciliation. The artifacts are preserved with their original filenames, paths, checksums, and provenance information.
