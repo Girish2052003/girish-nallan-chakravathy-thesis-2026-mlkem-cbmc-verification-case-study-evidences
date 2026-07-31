@@ -1,0 +1,13 @@
+diff --git a/mlkem/src/compress.c b/mlkem/src/compress.c
+index 874ea1ef..89c38d38 100644
+--- a/mlkem/src/compress.c
++++ b/mlkem/src/compress.c
+@@ -638,7 +638,7 @@ __contract__(
+     invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_UINT12_LIMIT))
+     decreases(MLKEM_N / 2 - i))
+   {
+-    const uint8_t t0 = a[3 * i + 0];
++    const uint8_t t0 = (uint8_t)(a[3 * i + 0] ^ a[(3 * (i + 1)) % MLKEM_POLYBYTES]);
+     const uint8_t t1 = a[3 * i + 1];
+     const uint8_t t2 = a[3 * i + 2];
+     /* Safety:

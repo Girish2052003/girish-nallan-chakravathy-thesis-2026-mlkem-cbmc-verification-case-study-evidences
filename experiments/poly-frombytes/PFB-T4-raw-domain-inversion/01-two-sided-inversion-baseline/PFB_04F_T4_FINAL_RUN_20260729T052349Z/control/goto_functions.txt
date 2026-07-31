@@ -1,0 +1,241 @@
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/gotos/pfb_t4_nonvacuity_20260729T052349Z_harness.goto'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER__start /* __CPROVER__start */
+        // 0 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 1 file <built-in-additions> line 26
+        CALL __CPROVER_initialize()
+        // 2 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 37
+        CALL harness()
+        // 3 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER_initialize /* __CPROVER_initialize */
+        // 4 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 5 file <built-in-additions> line 10
+        ASSIGN __CPROVER_dead_object := NULL
+        // 6 file <built-in-additions> line 9
+        ASSIGN __CPROVER_deallocated := NULL
+        // 7 file <built-in-additions> line 14
+        ASSIGN __CPROVER_max_malloc_size := 36028797018963968
+        // 8 file <built-in-additions> line 11
+        ASSIGN __CPROVER_memory_leak := NULL
+        // 9 file <built-in-additions> line 18
+        ASSIGN __CPROVER_rounding_mode := 0
+        // 10 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+encode_raw /* encode_raw */
+        // 11 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 9 function encode_raw
+        DECL encode_raw::1::block_index : unsignedbv[32]
+        // 12 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 10 function encode_raw
+        DECL encode_raw::1::x : unsignedbv[32]
+        // 13 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 11 function encode_raw
+        DECL encode_raw::1::y : unsignedbv[32]
+        // 14 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 13 function encode_raw
+        ASSIGN encode_raw::1::block_index := 0
+        // 15 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 14 function encode_raw
+     1: IF ¬(encode_raw::1::block_index < cast(256, unsignedbv[32]) / 2) THEN GOTO 2
+        // 16 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 17 function encode_raw
+        ASSIGN encode_raw::1::x := cast(cast(*encode_raw::p.coeffs[cast(2 * encode_raw::1::block_index, signedbv[64])], unsignedbv[16]), unsignedbv[32])
+        // 17 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 20 function encode_raw
+        ASSIGN encode_raw::1::y := cast(cast(*encode_raw::p.coeffs[cast(2 * encode_raw::1::block_index + 1, signedbv[64])], unsignedbv[16]), unsignedbv[32])
+        // 18 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 24 function encode_raw
+        ASSIGN *(encode_raw::out + cast(3 * encode_raw::1::block_index, signedbv[64])) := cast(mod(encode_raw::1::x, 256), unsignedbv[8])
+        // 19 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 27 function encode_raw
+        ASSIGN *(encode_raw::out + cast(3 * encode_raw::1::block_index + 1, signedbv[64])) := cast(encode_raw::1::x / 256 + 16 * mod(encode_raw::1::y, 16), unsignedbv[8])
+        // 20 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 32 function encode_raw
+        ASSIGN *(encode_raw::out + cast(3 * encode_raw::1::block_index + 2, signedbv[64])) := cast(encode_raw::1::y / 16, unsignedbv[8])
+        // 21 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 15 function encode_raw
+        ASSIGN encode_raw::1::block_index := encode_raw::1::block_index + 1
+        // 22 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 13 function encode_raw
+        GOTO 1
+        // 23 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 13 function encode_raw
+     2: SKIP
+        // 24 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 35 function encode_raw
+        DEAD encode_raw::1::y
+        // 25 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 35 function encode_raw
+        DEAD encode_raw::1::x
+        // 26 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 35 function encode_raw
+        DEAD encode_raw::1::block_index
+        // 27 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 35 function encode_raw
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+harness /* harness */
+        // 28 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 39 function harness
+        DECL harness::1::zero_bytes : unsignedbv[8][384]
+        // 29 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 39 function harness
+        ASSIGN harness::1::zero_bytes := { cast(0, unsignedbv[8]), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+        // 30 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 40 function harness
+        DECL harness::1::max_bytes : unsignedbv[8][384]
+        // 31 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 41 function harness
+        DECL harness::1::recovered_zero : unsignedbv[8][384]
+        // 32 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 42 function harness
+        DECL harness::1::recovered_max : unsignedbv[8][384]
+        // 33 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 44 function harness
+        DECL harness::1::encoded_zero : unsignedbv[8][384]
+        // 34 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 45 function harness
+        DECL harness::1::encoded_max : unsignedbv[8][384]
+        // 35 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 47 function harness
+        DECL harness::1::decoded_zero_bytes : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 36 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 48 function harness
+        DECL harness::1::decoded_max_bytes : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 37 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 49 function harness
+        DECL harness::1::raw_zero : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 38 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 49 function harness
+        ASSIGN harness::1::raw_zero := { { cast(0, signedbv[16]), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }
+        // 39 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 50 function harness
+        DECL harness::1::raw_max : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 40 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 51 function harness
+        DECL harness::1::decoded_raw_zero : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 41 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 52 function harness
+        DECL harness::1::decoded_raw_max : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 42 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 54 function harness
+        DECL harness::1::index : unsignedbv[32]
+        // 43 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 56 function harness
+        ASSIGN harness::1::index := 0
+        // 44 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 56 function harness
+     1: IF ¬(harness::1::index < cast(384, unsignedbv[32])) THEN GOTO 2
+        // 45 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 58 function harness
+        ASSIGN harness::1::max_bytes[cast(harness::1::index, signedbv[64])] := cast(255, unsignedbv[8])
+        // 46 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 56 function harness
+        ASSIGN harness::1::index := harness::1::index + 1
+        // 47 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 56 function harness
+        GOTO 1
+        // 48 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 56 function harness
+     2: SKIP
+        // 49 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 61 function harness
+        ASSIGN harness::1::index := 0
+        // 50 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 61 function harness
+     3: IF ¬(harness::1::index < cast(256, unsignedbv[32])) THEN GOTO 4
+        // 51 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 63 function harness
+        ASSIGN harness::1::raw_max.coeffs[cast(harness::1::index, signedbv[64])] := cast(4095, signedbv[16])
+        // 52 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 61 function harness
+        ASSIGN harness::1::index := harness::1::index + 1
+        // 53 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 61 function harness
+        GOTO 3
+        // 54 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 61 function harness
+     4: SKIP
+        // 55 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 66 function harness
+        CALL mlk_poly_frombytes(address_of(harness::1::decoded_zero_bytes), address_of(harness::1::zero_bytes[0]))
+        // 56 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 67 function harness
+        CALL mlk_poly_frombytes(address_of(harness::1::decoded_max_bytes), address_of(harness::1::max_bytes[0]))
+        // 57 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 69 function harness
+        CALL encode_raw(address_of(harness::1::recovered_zero[0]), address_of(harness::1::decoded_zero_bytes))
+        // 58 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 70 function harness
+        CALL encode_raw(address_of(harness::1::recovered_max[0]), address_of(harness::1::decoded_max_bytes))
+        // 59 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 72 function harness
+        ASSERT cast(harness::1::recovered_zero[cast(0, signedbv[64])], signedbv[32]) = 0 // PFB-T4 control zero-byte first boundary roundtrips
+        // 60 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 76 function harness
+        ASSERT cast(harness::1::recovered_zero[cast(cast(384, unsignedbv[32]) - 1, signedbv[64])], signedbv[32]) = 0 // PFB-T4 control zero-byte last boundary roundtrips
+        // 61 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 80 function harness
+        ASSERT cast(harness::1::recovered_max[cast(0, signedbv[64])], signedbv[32]) = 255 // PFB-T4 control max-byte first boundary roundtrips
+        // 62 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 84 function harness
+        ASSERT cast(harness::1::recovered_max[cast(cast(384, unsignedbv[32]) - 1, signedbv[64])], signedbv[32]) = 255 // PFB-T4 control max-byte last boundary roundtrips
+        // 63 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 88 function harness
+        CALL encode_raw(address_of(harness::1::encoded_zero[0]), address_of(harness::1::raw_zero))
+        // 64 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 89 function harness
+        CALL encode_raw(address_of(harness::1::encoded_max[0]), address_of(harness::1::raw_max))
+        // 65 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 91 function harness
+        CALL mlk_poly_frombytes(address_of(harness::1::decoded_raw_zero), address_of(harness::1::encoded_zero[0]))
+        // 66 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 92 function harness
+        CALL mlk_poly_frombytes(address_of(harness::1::decoded_raw_max), address_of(harness::1::encoded_max[0]))
+        // 67 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 94 function harness
+        ASSERT cast(harness::1::decoded_raw_zero.coeffs[cast(0, signedbv[64])], signedbv[32]) = 0 // PFB-T4 control raw-zero first coefficient roundtrips
+        // 68 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 98 function harness
+        ASSERT cast(harness::1::decoded_raw_zero.coeffs[cast(cast(256, unsignedbv[32]) - 1, signedbv[64])], signedbv[32]) = 0 // PFB-T4 control raw-zero last coefficient roundtrips
+        // 69 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 102 function harness
+        ASSERT cast(harness::1::decoded_raw_max.coeffs[cast(0, signedbv[64])], signedbv[32]) = 4095 // PFB-T4 control raw-4095 first coefficient roundtrips
+        // 70 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 106 function harness
+        ASSERT cast(harness::1::decoded_raw_max.coeffs[cast(cast(256, unsignedbv[32]) - 1, signedbv[64])], signedbv[32]) = 4095 // PFB-T4 control raw-4095 last coefficient roundtrips
+        // 71 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::index
+        // 72 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::decoded_raw_max
+        // 73 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::decoded_raw_zero
+        // 74 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::raw_max
+        // 75 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::raw_zero
+        // 76 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::decoded_max_bytes
+        // 77 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::decoded_zero_bytes
+        // 78 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::encoded_max
+        // 79 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::encoded_zero
+        // 80 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::recovered_max
+        // 81 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::recovered_zero
+        // 82 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::max_bytes
+        // 83 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        DEAD harness::1::zero_bytes
+        // 84 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/pfb_t4_nonvacuity_20260729T052349Z/pfb_t4_nonvacuity_20260729T052349Z_harness.c line 109 function harness
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_poly_frombytes /* mlk_poly_frombytes */
+        // 85 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 669 function mlk_poly_frombytes
+        CALL mlk_poly_frombytes_c(mlk_poly_frombytes::r, mlk_poly_frombytes::a)
+        // 86 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 670 function mlk_poly_frombytes
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_poly_frombytes_c /* mlk_poly_frombytes_c */
+        // 87 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 634 function mlk_poly_frombytes_c
+        DECL mlk_poly_frombytes_c::1::i : unsignedbv[32]
+        // 88 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+        ASSIGN mlk_poly_frombytes_c::1::i := cast(0, unsignedbv[32])
+        // 89 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+     1: IF ¬(mlk_poly_frombytes_c::1::i < cast(256 / 2, unsignedbv[32])) THEN GOTO 2
+        // 90 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 641 function mlk_poly_frombytes_c
+        DECL mlk_poly_frombytes_c::1::1::2::t0 : unsignedbv[8]
+        // 91 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 641 function mlk_poly_frombytes_c
+        ASSIGN mlk_poly_frombytes_c::1::1::2::t0 := *(mlk_poly_frombytes_c::a + cast(cast(3, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(0, unsignedbv[32]), signedbv[64]))
+        // 92 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 642 function mlk_poly_frombytes_c
+        DECL mlk_poly_frombytes_c::1::1::2::t1 : unsignedbv[8]
+        // 93 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 642 function mlk_poly_frombytes_c
+        ASSIGN mlk_poly_frombytes_c::1::1::2::t1 := *(mlk_poly_frombytes_c::a + cast(cast(3, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(1, unsignedbv[32]), signedbv[64]))
+        // 94 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 643 function mlk_poly_frombytes_c
+        DECL mlk_poly_frombytes_c::1::1::2::t2 : unsignedbv[8]
+        // 95 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 643 function mlk_poly_frombytes_c
+        ASSIGN mlk_poly_frombytes_c::1::1::2::t2 := *(mlk_poly_frombytes_c::a + cast(cast(3, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(2, unsignedbv[32]), signedbv[64]))
+        // 96 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 649 function mlk_poly_frombytes_c
+        ASSIGN *mlk_poly_frombytes_c::r.coeffs[cast(cast(2, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(0, unsignedbv[32]), signedbv[64])] := cast(bitor(cast(mlk_poly_frombytes_c::1::1::2::t0, signedbv[32]), bitand(shl(cast(cast(mlk_poly_frombytes_c::1::1::2::t1, unsignedbv[16]), signedbv[32]), 8), 4095)), signedbv[16])
+        // 97 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 650 function mlk_poly_frombytes_c
+        ASSIGN *mlk_poly_frombytes_c::r.coeffs[cast(cast(2, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(1, unsignedbv[32]), signedbv[64])] := cast(bitor(ashr(cast(mlk_poly_frombytes_c::1::1::2::t1, signedbv[32]), 4), shl(cast(mlk_poly_frombytes_c::1::1::2::t2, signedbv[32]), 4)), signedbv[16])
+        // 98 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 651 function mlk_poly_frombytes_c
+        DEAD mlk_poly_frombytes_c::1::1::2::t2
+        // 99 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 651 function mlk_poly_frombytes_c
+        DEAD mlk_poly_frombytes_c::1::1::2::t1
+        // 100 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 651 function mlk_poly_frombytes_c
+        DEAD mlk_poly_frombytes_c::1::1::2::t0
+        // 101 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+        ASSIGN mlk_poly_frombytes_c::1::i := mlk_poly_frombytes_c::1::i + 1
+        // 102 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+        GOTO 1
+        // 103 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+     2: SKIP
+        // 104 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 654 function mlk_poly_frombytes_c
+        ASSERT ∀ mlk_poly_frombytes_c::1::2::_cbmc_idx29 : unsignedbv[32] . (cast(0, unsignedbv[32]) ≤ mlk_poly_frombytes_c::1::2::_cbmc_idx29 ∧ mlk_poly_frombytes_c::1::2::_cbmc_idx29 < cast(256, unsignedbv[32])) ⇒ (cast(0, signedbv[32]) ≤ cast(*(cast(mlk_poly_frombytes_c::r, signedbv[16]*) + cast(mlk_poly_frombytes_c::1::2::_cbmc_idx29, signedbv[64])), signedbv[32]) ∧ cast(*(cast(mlk_poly_frombytes_c::r, signedbv[16]*) + cast(mlk_poly_frombytes_c::1::2::_cbmc_idx29, signedbv[64])), signedbv[32]) < cast(4096, signedbv[32])) // cbmc assertion failed
+        // 105 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 655 function mlk_poly_frombytes_c
+        DEAD mlk_poly_frombytes_c::1::i
+        // 106 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/mlkem/src/compress.c line 655 function mlk_poly_frombytes_c
+        END_FUNCTION
+
