@@ -1,0 +1,35 @@
+POLYCOMP-D4 THEOREM REGISTRY
+REGISTRY_VERSION=1.0
+REGISTRY_STATE=FROZEN_FOR_INITIAL_CBMC CAMPAIGN
+PARAMETER_SET=ML-KEM-768
+MLKEM_K=3
+PORTABLE_IMPLEMENTATION=YES
+PRODUCTION_SOURCE_MODIFICATION=FORBIDDEN
+
+T1_ID=POLYCOMP-D4-T1
+T1_NAME=Portable-C packed compressor refinement
+T1_DOMAIN=All canonical 256-coefficient polynomials
+T1_PRIMARY_CLAIM=All 128 produced bytes equal an independent ByteEncode_4(Compress_4(A)) specification
+T1_OBLIGATIONS=full-byte-refinement;coordinate-to-nibble;pair-packing;complete-overwrite-independence;relational-nibble-locality
+
+T2_ID=POLYCOMP-D4-T2
+T2_NAME=Portable-C unpacked decompressor refinement
+T2_DOMAIN=All 128-byte arrays
+T2_PRIMARY_CLAIM=All 256 coefficients equal an independent Decompress_4(ByteDecode_4(B)) specification
+T2_OBLIGATIONS=full-polynomial-refinement;exact-nibble-extraction;exact-scalar-decompression;image-membership;relational-byte-locality
+
+T3_ID=POLYCOMP-D4-T3
+T3_NAME=Exact compressed-domain retraction
+T3_DOMAIN=All 128-byte arrays
+T3_PRIMARY_CLAIM=compress_d4(decompress_d4(B)) equals B byte-for-byte
+T3_OBLIGATIONS=byte-identity;nibble-preservation;cycle-stability
+
+T4_ID=POLYCOMP-D4-T4
+T4_NAME=Quantizer projection and sharp modular distortion
+T4_DOMAIN=All canonical 256-coefficient polynomials
+T4_PRIMARY_CLAIM=decompress_d4(compress_d4(A)) is the D4 projection with sharp modular error at most 104
+T4_OBLIGATIONS=exact-composition;image-characterization;sharp-error-bound;error-witness;fixed-point-characterization;projection-idempotence;coordinate-locality
+
+COMMON_ASSURANCE=commit-binding;portable-body-binding;no-source-modification;full-unwinding;memory-safety;arithmetic-safety;reachability;coverage-non-vacuity;mutation;hash-freeze;reproducibility
+
+NOVELTY_BOUNDARY=New repository-level CBMC semantic and relational proof obligations; not new FIPS mathematics

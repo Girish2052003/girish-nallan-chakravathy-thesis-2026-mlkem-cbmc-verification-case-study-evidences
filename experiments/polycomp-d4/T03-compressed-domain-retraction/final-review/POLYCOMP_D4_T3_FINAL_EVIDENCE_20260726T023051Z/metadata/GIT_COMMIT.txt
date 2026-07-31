@@ -1,0 +1,25 @@
+commit af4c5abdd5958bdc65a03cd5ee86708264f93304
+Author:     Hanno Becker <beckphan@amazon.co.uk>
+AuthorDate: Thu Jul 16 13:16:55 2026 +0100
+Commit:     Matthias J. Kannwischer <matthias@kannwischer.eu>
+CommitDate: Fri Jul 17 13:10:32 2026 +0800
+
+    Wycheproof: Check K value and reject unrecognized vector fields
+    
+    Previous versions of the `semi_expanded_keys` Wycheproof test type
+    did not include a `K` output. Accordingly, the Wycheproof client
+    would only check if the test driver produced `K` upon a successful
+    run, but not compare it to anything from the Wycheproof test data.
+    
+    A recent commit 782238d4 added the expected `K` to the `semi_expanded_keys`
+    test schema. This commit modifies the Wycheproof client for this test
+    to check the calculated `K` against this expected `K`.
+    
+    The above commit also added `ek`, but this is merely the PK embedded in the
+    SK, and not returned from mlkem-native's API. We therefore ignore the value.
+    
+    To avoid a similar extension of the test schema go unnoticed in the future,
+    we explicitly list the keys of each schema that we know about and handle,
+    and error when new field are added.
+    
+    Signed-off-by: Hanno Becker <beckphan@amazon.co.uk>

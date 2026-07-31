@@ -1,0 +1,55 @@
+=== NUMBERED COMPRESSOR SOURCE CONTEXT ===
+    38	__contract__(
+    39	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+    40	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+    41	  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+    42	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+    43	)
+    44	{
+    45	  unsigned i;
+    46	  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+    47	
+    48	  for (i = 0; i < MLKEM_N / 8; i++)
+    49	  __loop__(invariant(i <= MLKEM_N / 8)
+    50	           decreases(MLKEM_N / 8 - i))
+    51	  {
+    52	    unsigned j;
+    53	    uint8_t t[8] = {0};
+    54	    for (j = 0; j < 8; j++)
+    55	    __loop__(
+    56	      invariant(i <= MLKEM_N / 8 && j <= 8)
+    57	      invariant(array_bound(t, 0, j, 0, 16))
+    58	      decreases(8 - j))
+    59	    {
+    60	      t[j] = mlk_scalar_compress_d4(a->coeffs[8 * i + j]);
+    61	    }
+    62	
+    63	    /* All t[i] are 4-bit wide, so the truncations don't alter the value. */
+    64	    r[i * 4] = (uint8_t)(t[0] | (t[1] << 4));
+    65	    r[i * 4 + 1] = (uint8_t)(t[2] | (t[3] << 4));
+    66	    r[i * 4 + 2] = (uint8_t)(t[4] | (t[5] << 4));
+
+=== NUMBERED DECOMPRESSOR SOURCE CONTEXT ===
+   166	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   167	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+   168	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   169	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   170	)
+   171	{
+   172	  unsigned i;
+   173	  for (i = 0; i < MLKEM_N / 2; i++)
+   174	  __loop__(
+   175	    invariant(i <= MLKEM_N / 2)
+   176	    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+   177	    decreases(MLKEM_N / 2 - i))
+   178	  {
+   179	    r->coeffs[2 * i + 0] = mlk_scalar_decompress_d4((a[i] >> 0) & 0xF);
+   180	    r->coeffs[2 * i + 1] = mlk_scalar_decompress_d4((a[i] >> 4) & 0xF);
+   181	  }
+   182	
+   183	  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   184	}
+   185	
+   186	MLK_INTERNAL_API
+   187	void mlk_poly_decompress_d4(mlk_poly *r,
+   188	                            const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])

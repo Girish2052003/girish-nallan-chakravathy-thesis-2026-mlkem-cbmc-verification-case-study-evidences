@@ -1,0 +1,467 @@
+
+============================================================
+POLYCOMP-D4-T3-00B — CORRECTED FOUR-LOOP POSITIVE PREFLIGHT
+============================================================
+UTC_TIME=2026-07-26T02:11:23Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE_PATH=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+WORK_REPO=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z
+PROOF_DIR=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction
+STAGE_DIR=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT
+
+============================================================
+T3-00B.1 — SOURCE AND ARTEFACT REBINDING
+============================================================
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORK_REPO_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_WORKTREE_BEFORE=CLEAN
+WORK_REPO_PRODUCTION_SOURCE_BEFORE=CLEAN
+HARNESS_SHA256=caf64341e43db7abf668241e4012d4ab1064536fd3237d0577826e4728c7ea8f
+EXPECTED_HARNESS_SHA256=caf64341e43db7abf668241e4012d4ab1064536fd3237d0577826e4728c7ea8f
+MAKEFILE_SHA256=02ef8132f84ade6447e7139d1ea1840443e349eb88a6fef74983a54f6ef21654
+EXPECTED_MAKEFILE_SHA256=02ef8132f84ade6447e7139d1ea1840443e349eb88a6fef74983a54f6ef21654
+GOTO_SHA256=6d35b9b1dac6fabf8f7fd207e9f9b116912e0351f30a543066dfd48d98bcc9c8
+EXPECTED_GOTO_SHA256=6d35b9b1dac6fabf8f7fd207e9f9b116912e0351f30a543066dfd48d98bcc9c8
+T3_SOURCE_AND_ARTEFACT_REBINDING=PASS
+
+============================================================
+T3-00B.2 — PRODUCTION LOOP SOURCE CONTEXT
+============================================================
+=== NUMBERED COMPRESSOR SOURCE CONTEXT ===
+    38	__contract__(
+    39	  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+    40	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+    41	  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+    42	  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D4))
+    43	)
+    44	{
+    45	  unsigned i;
+    46	  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+    47	
+    48	  for (i = 0; i < MLKEM_N / 8; i++)
+    49	  __loop__(invariant(i <= MLKEM_N / 8)
+    50	           decreases(MLKEM_N / 8 - i))
+    51	  {
+    52	    unsigned j;
+    53	    uint8_t t[8] = {0};
+    54	    for (j = 0; j < 8; j++)
+    55	    __loop__(
+    56	      invariant(i <= MLKEM_N / 8 && j <= 8)
+    57	      invariant(array_bound(t, 0, j, 0, 16))
+    58	      decreases(8 - j))
+    59	    {
+    60	      t[j] = mlk_scalar_compress_d4(a->coeffs[8 * i + j]);
+    61	    }
+    62	
+    63	    /* All t[i] are 4-bit wide, so the truncations don't alter the value. */
+    64	    r[i * 4] = (uint8_t)(t[0] | (t[1] << 4));
+    65	    r[i * 4 + 1] = (uint8_t)(t[2] | (t[3] << 4));
+    66	    r[i * 4 + 2] = (uint8_t)(t[4] | (t[5] << 4));
+
+=== NUMBERED DECOMPRESSOR SOURCE CONTEXT ===
+   166	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   167	  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+   168	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   169	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   170	)
+   171	{
+   172	  unsigned i;
+   173	  for (i = 0; i < MLKEM_N / 2; i++)
+   174	  __loop__(
+   175	    invariant(i <= MLKEM_N / 2)
+   176	    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+   177	    decreases(MLKEM_N / 2 - i))
+   178	  {
+   179	    r->coeffs[2 * i + 0] = mlk_scalar_decompress_d4((a[i] >> 0) & 0xF);
+   180	    r->coeffs[2 * i + 1] = mlk_scalar_decompress_d4((a[i] >> 4) & 0xF);
+   181	  }
+   182	
+   183	  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   184	}
+   185	
+   186	MLK_INTERNAL_API
+   187	void mlk_poly_decompress_d4(mlk_poly *r,
+   188	                            const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+SOURCE_LOOP_CONTEXT=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_COMPRESSOR_LOOP_CONTEXT_20260726T021122Z.txt
+SOURCE_LOOP_CONTEXT_SHA256=2b0ae999c0dcaf704763c55e668809a4e0b45c989fb353f932f50b92c0632925
+T3_PRODUCTION_LOOP_SOURCE_CONTEXT=PASS
+
+============================================================
+T3-00B.3 — CORRECTED LOOP INVENTORY AND EXACT UNWINDSET
+============================================================
+LOOP_DISCOVERY_EXIT=0
+LOOP_REPORT=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_LOOP_REPORT_20260726T021122Z.txt
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/gotos/polycomp_d4_t3_compressed_domain_retraction_harness.goto'
+Loop mlk_poly_compress_d4_c.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c line 54 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c line 48 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+Loop harness.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/polycomp_d4_t3_compressed_domain_retraction_harness.c line 48 function harness
+
+TOTAL_LOOP_COUNT=4
+UNIQUE_LOOP_COUNT=4
+HARNESS_LOOP_COUNT=1
+COMPRESSOR_LOOP_COUNT=2
+DECOMPRESSOR_LOOP_COUNT=1
+UNEXPECTED_LOOP_COUNT=0
+DISCOVERED_LOOP=mlk_poly_compress_d4_c.0|SOURCE_LINE=54
+DISCOVERED_LOOP=mlk_poly_compress_d4_c.1|SOURCE_LINE=48
+DISCOVERED_LOOP=mlk_poly_decompress_d4_c.0|SOURCE_LINE=173
+DISCOVERED_LOOP=harness.0|SOURCE_LINE=48
+LOOP_BOUND=harness.0|129|128-byte comparison loop
+LOOP_BOUND=mlk_poly_compress_d4_c.0|129|128-byte packing loop at line 54
+LOOP_BOUND=mlk_poly_compress_d4_c.1|257|256-coefficient quantization loop at line 48
+LOOP_BOUND=mlk_poly_decompress_d4_c.0|129|128-byte decompression loop
+UNWINDSET=harness.0:129,mlk_poly_compress_d4_c.0:129,mlk_poly_compress_d4_c.1:257,mlk_poly_decompress_d4_c.0:129
+LOOP_LOCATION_BINDING=PASS
+LOOP_MAP_STATUS=PASS
+LOOP_PARSE_EXIT=0
+LOOP_MAP=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_LOOP_MAP_20260726T021122Z.txt
+CONSTRUCTED_UNWINDSET=harness.0:129,mlk_poly_compress_d4_c.0:129,mlk_poly_compress_d4_c.1:257,mlk_poly_decompress_d4_c.0:129
+T3_CORRECTED_LOOP_COMPLETENESS_PLAN=PASS
+
+============================================================
+T3-00B.4 — PROPERTY BINDING
+============================================================
+PROPERTY_REPORT_EXIT=0
+PROPERTY_REPORT=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_PROPERTY_REPORT_20260726T021122Z.txt
+14-  array 'input' upper bound in input[(signed long int)i]
+15-  !((signed long int)i >= 128l)
+16-
+17-Property harness.assertion.1:
+18-  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/polycomp_d4_t3_compressed_domain_retraction_harness.c line 52 function harness
+19:  POLYCOMP-D4-T3: compressing the real D4 decompression reconstructs every original input byte
+20-  reconstructed[(signed long int)i] == input[(signed long int)i]
+21-
+22-Property mlk_poly_compress_d4_c.pointer_dereference.1:
+23-  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c line 46 function mlk_poly_compress_d4_c
+24-  dereference failure: pointer NULL in ((int16_t *)a)[(signed long int)_cbmc_idx10]
+25-  forall { uint32_t _cbmc_idx10; (uint32_t)0 <= _cbmc_idx10 && _cbmc_idx10 < (uint32_t)256 && TRUE ==> !(__CPROVER_POINTER_OBJECT(((int16_t *)NULL)) == __CPROVER_POINTER_OBJECT(a)) }
+26-
+27-Property mlk_poly_compress_d4_c.pointer_dereference.2:
+28-  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c line 46 function mlk_poly_compress_d4_c
+29-  dereference failure: pointer invalid in ((int16_t *)a)[(signed long int)_cbmc_idx10]
+T3_RETRACTION_PROPERTY_COUNT=1
+T3_PROPERTY_BINDING=PASS
+
+============================================================
+T3-00B.5 — DIRECT SEMANTIC PREFLIGHT
+============================================================
+SEMANTIC_COMMAND_BEGIN
+cbmc /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/gotos/polycomp_d4_t3_compressed_domain_retraction_harness.goto --object-bits 8 --slice-formula --unwind 1 --unwindset harness.0:129\,mlk_poly_compress_d4_c.0:129\,mlk_poly_compress_d4_c.1:257\,mlk_poly_decompress_d4_c.0:129 --unwinding-assertions --no-standard-checks --trace --json-ui
+SEMANTIC_COMMAND_END
+SEMANTIC_CBMC_EXIT=0
+SEMANTIC_JSON=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_SEMANTIC_RESULT_20260726T021122Z.json
+SEMANTIC_STDERR=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_SEMANTIC_STDERR_20260726T021122Z.txt
+SEMANTIC_JSON_SHA256=4cf15e0ac40c43b37b5ca96fefa30932f85ce79a792d29a6b3409d0b7d85a4ed
+JSON_PARSE_STATUS=PASS
+PROPERTY_RESULT_COUNT=3
+CPROVER_STATUSES=success
+ERROR_MESSAGE_COUNT=0
+T3_RETRACTION_RESULT_COUNT=1
+T3_RETRACTION_RESULT_0=SUCCESS|harness.assertion.1|POLYCOMP-D4-T3: compressing the real D4 decompression reconstructs every original input byte
+T3_COMPRESSED_DOMAIN_RETRACTION=PASS
+SEMANTIC_PARSE_EXIT=0
+SEMANTIC_SUMMARY=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_SEMANTIC_SUMMARY_20260726T021122Z.txt
+[
+  {
+    "program": "CBMC 6.9.0 (cbmc-6.9.0)"
+  },
+  {
+    "messageText": "CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Reading GOTO program from file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/gotos/polycomp_d4_t3_compressed_domain_retraction_harness.goto",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (x86_64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Passing problem to propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "converting SSA",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Running propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "SAT checker: instance is UNSATISFIABLE",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "POLYCOMP-D4-T3: compressing the real D4 decompression reconstructs every original input byte",
+        "property": "harness.assertion.1",
+        "sourceLocation": {
+          "comment": "POLYCOMP-D4-T3: compressing the real D4 decompression reconstructs every original input byte",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/polycomp_d4_t3_compressed_domain_retraction_harness.c",
+          "function": "harness",
+          "line": "52",
+          "propertyClass": "assertion",
+          "propertyId": "harness.assertion.1",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "cbmc assertion failed",
+        "property": "mlk_poly_compress_d4_c.assertion.1",
+        "sourceLocation": {
+          "comment": "cbmc assertion failed",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c",
+          "function": "mlk_poly_compress_d4_c",
+          "line": "46",
+          "propertyClass": "assertion",
+          "propertyId": "mlk_poly_compress_d4_c.assertion.1",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "cbmc assertion failed",
+        "property": "mlk_poly_decompress_d4_c.assertion.1",
+        "sourceLocation": {
+          "comment": "cbmc assertion failed",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c",
+          "function": "mlk_poly_decompress_d4_c",
+          "line": "183",
+          "propertyClass": "assertion",
+          "propertyId": "mlk_poly_decompress_d4_c.assertion.1",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]
+T3_SEMANTIC_UNWINDING_PREFLIGHT=PASS
+
+============================================================
+T3-00B.6 — STRICT SAFETY PLUS SEMANTIC PREFLIGHT
+============================================================
+STRICT_COMMAND_BEGIN
+cbmc /home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/gotos/polycomp_d4_t3_compressed_domain_retraction_harness.goto --object-bits 8 --slice-formula --unwind 1 --unwindset harness.0:129\,mlk_poly_compress_d4_c.0:129\,mlk_poly_compress_d4_c.1:257\,mlk_poly_decompress_d4_c.0:129 --unwinding-assertions --bounds-check --pointer-check --div-by-zero-check --signed-overflow-check --unsigned-overflow-check --undefined-shift-check --conversion-check --pointer-overflow-check --trace --json-ui
+STRICT_COMMAND_END
+STRICT_CBMC_EXIT=0
+STRICT_JSON=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_STRICT_RESULT_20260726T021122Z.json
+STRICT_STDERR=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_STRICT_STDERR_20260726T021122Z.txt
+STRICT_JSON_SHA256=f97760ff59f5ba711e4929f4046e9dec3bfb902cc2dd46288d54c5091b9c3163
+JSON_PARSE_STATUS=PASS
+PROPERTY_RESULT_COUNT=186
+CPROVER_STATUSES=success
+ERROR_MESSAGE_COUNT=0
+T3_RETRACTION_RESULT_COUNT=1
+T3_RETRACTION_RESULT_0=SUCCESS|harness.assertion.1|POLYCOMP-D4-T3: compressing the real D4 decompression reconstructs every original input byte
+T3_COMPRESSED_DOMAIN_RETRACTION=PASS
+ALL_REPORTED_PROPERTIES=PASS
+STRICT_PARSE_EXIT=0
+STRICT_SUMMARY=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_STRICT_SUMMARY_20260726T021122Z.txt
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "mlk_poly_decompress_d4_c.pointer_dereference.33",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+        "property": "mlk_poly_decompress_d4_c.pointer_dereference.34",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c",
+          "function": "mlk_poly_decompress_d4_c",
+          "line": "183",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "mlk_poly_decompress_d4_c.pointer_dereference.34",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+        "property": "mlk_poly_decompress_d4_c.pointer_dereference.35",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c",
+          "function": "mlk_poly_decompress_d4_c",
+          "line": "183",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "mlk_poly_decompress_d4_c.pointer_dereference.35",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+        "property": "mlk_poly_decompress_d4_c.pointer_dereference.36",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in ((int16_t *)r)[(signed long int)_cbmc_idx18]",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.c",
+          "function": "mlk_poly_decompress_d4_c",
+          "line": "183",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "mlk_poly_decompress_d4_c.pointer_dereference.36",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on signed to unsigned type conversion in (uint32_t)u",
+        "property": "mlk_scalar_compress_d4.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on signed to unsigned type conversion in (uint32_t)u",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.h",
+          "function": "mlk_scalar_compress_d4",
+          "line": "107",
+          "pragma": [ "disable:unsigned-overflow-check", "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "mlk_scalar_compress_d4.overflow.1",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned to unsigned type conversion in (uint8_t)(d0 + ((uint32_t)1u << 27) >> 28)",
+        "property": "mlk_scalar_compress_d4.overflow.2",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned to unsigned type conversion in (uint8_t)(d0 + ((uint32_t)1u << 27) >> 28)",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.h",
+          "function": "mlk_scalar_compress_d4",
+          "line": "109",
+          "pragma": [ "disable:unsigned-overflow-check", "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "mlk_scalar_compress_d4.overflow.2",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned * in (uint32_t)u * (unsigned int)3329",
+        "property": "mlk_scalar_decompress_d4.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned * in (uint32_t)u * (unsigned int)3329",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.h",
+          "function": "mlk_scalar_decompress_d4",
+          "line": "135",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "mlk_scalar_decompress_d4.overflow.1",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned + in (uint32_t)u * (unsigned int)3329 + (unsigned int)8",
+        "property": "mlk_scalar_decompress_d4.overflow.2",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned + in (uint32_t)u * (unsigned int)3329 + (unsigned int)8",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.h",
+          "function": "mlk_scalar_decompress_d4",
+          "line": "135",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "mlk_scalar_decompress_d4.overflow.2",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned to signed type conversion in (int16_t)((uint32_t)u * (unsigned int)3329 + (unsigned int)8 >> 4)",
+        "property": "mlk_scalar_decompress_d4.overflow.3",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned to signed type conversion in (int16_t)((uint32_t)u * (unsigned int)3329 + (unsigned int)8 >> 4)",
+          "file": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/mlkem/src/compress.h",
+          "function": "mlk_scalar_decompress_d4",
+          "line": "135",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "mlk_scalar_decompress_d4.overflow.3",
+          "workingDirectory": "/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]
+T3_STRICT_SAFETY_SEMANTIC_PREFLIGHT=PASS
+
+============================================================
+T3-00B.7 — POST-RUN SOURCE IMMUTABILITY
+============================================================
+AUTHORITATIVE_WORKTREE_AFTER=CLEAN
+WORK_REPO_PRODUCTION_SOURCE_AFTER=CLEAN
+AUTHORITATIVE_HEAD_AFTER=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORK_REPO_HEAD_AFTER=af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+============================================================
+POLYCOMP-D4-T3-00B VERDICT
+============================================================
+POLYCOMP_D4_T3_00B_STATUS=PASS
+T3_SOURCE_AND_ARTEFACT_REBINDING=PASS
+T3_CORRECTED_LOOP_COMPLETENESS_PLAN=PASS
+T3_PROPERTY_BINDING=PASS
+T3_SEMANTIC_UNWINDING_PREFLIGHT=PASS
+T3_STRICT_SAFETY_SEMANTIC_PREFLIGHT=PASS
+T3_THEOREM_STATUS=POSITIVE_PREFLIGHT_VERIFIED_NOT_FINAL
+NEXT_GATE=T3_COVERAGE_REACHABILITY_AND_ONE_SIDED_MUTATIONS
+WORK_REPO=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z
+HARNESS_FILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/polycomp_d4_t3_compressed_domain_retraction_harness.c
+HARNESS_SHA256=caf64341e43db7abf668241e4012d4ab1064536fd3237d0577826e4728c7ea8f
+MAKEFILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/Makefile
+MAKEFILE_SHA256=02ef8132f84ade6447e7139d1ea1840443e349eb88a6fef74983a54f6ef21654
+GOTO_FILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/polycomp_d4_t3_compressed_domain_retraction/gotos/polycomp_d4_t3_compressed_domain_retraction_harness.goto
+GOTO_SHA256=6d35b9b1dac6fabf8f7fd207e9f9b116912e0351f30a543066dfd48d98bcc9c8
+UNWINDSET=harness.0:129,mlk_poly_compress_d4_c.0:129,mlk_poly_compress_d4_c.1:257,mlk_poly_decompress_d4_c.0:129
+LOOP_MAP=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_LOOP_MAP_20260726T021122Z.txt
+SEMANTIC_JSON=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_SEMANTIC_RESULT_20260726T021122Z.json
+STRICT_JSON=/home/girish/THESIS-2026/mlk_polycomp_d4_cleanroom/POLYCOMP_D4_T3_00B_CORRECTED_LOOP_PREFLIGHT/T3_STRICT_RESULT_20260726T021122Z.json
