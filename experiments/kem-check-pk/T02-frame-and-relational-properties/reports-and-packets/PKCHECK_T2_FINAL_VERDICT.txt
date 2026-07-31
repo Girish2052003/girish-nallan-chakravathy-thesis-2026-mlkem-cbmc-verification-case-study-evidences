@@ -1,0 +1,41 @@
+PKCHECK-T2 FINAL VERDICT
+
+Frozen production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Harness SHA-256:
+1db5496f9992730fc965d34de669f0f771e1b8d82a694e0cd54c869bd1bfef62
+
+Makefile SHA-256:
+738492c2948610afbd43e6272f0406801089fd5207df521aa48f366e8af09d46
+
+Final GOTO SHA-256:
+6782995e8d61f04e292acc70eae2968b802185f0cd6c2668f85b35770b762b41
+
+PROVED:
+- PKCHECK-T2.FIRST_INPUT_FRAME
+- PKCHECK-T2.SECOND_INPUT_FRAME
+- PKCHECK-T2.REDZONE_PRESERVATION
+
+NOT ACCEPTED AS A PRODUCTION FAILURE:
+- PKCHECK-T2.SEED_NONINTERFERENCE
+
+Counterexample:
+first_result  = MLK_ERR_FAIL (-1)
+second_result = success (0)
+
+Classification:
+CONTRACT_ABSTRACTION_COUNTEREXAMPLE
+
+Reason:
+The actual mlk_check_pk target body does not access the public-seed suffix.
+However, the lower functions were replaced by contracts that permit
+independently nondeterministic abstract outcomes across the two executions.
+The relational equality assertion therefore fails in the abstraction even
+though no production-code defect was established.
+
+Production defect established:
+NO
+
+Production source modification:
+NO

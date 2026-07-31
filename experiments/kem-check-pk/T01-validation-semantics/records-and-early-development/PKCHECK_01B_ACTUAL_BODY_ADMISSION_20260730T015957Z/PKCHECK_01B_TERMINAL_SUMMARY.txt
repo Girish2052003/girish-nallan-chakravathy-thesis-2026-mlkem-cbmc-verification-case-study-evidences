@@ -1,0 +1,398 @@
+============================================================
+PKCHECK-01B — ACTUAL-BODY MALFORMED-COEFFICIENT ADMISSION
+============================================================
+UTC_TIMESTAMP=20260730T015957Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE_PATH=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+STAGE_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z
+WORKTREE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b
+PROOF_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01B_TERMINAL_SUMMARY.txt
+MAKE_LOG=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01B_MAKE.log
+
+============================================================
+GATE 1 — AUTHORITATIVE SOURCE BINDING
+============================================================
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_COMMIT_MATCH=YES
+AUTHORITATIVE_TREE_CLEAN_BEFORE=YES
+
+============================================================
+GATE 2 — CREATE ISOLATED CUSTOM-PROOF WORKTREE
+============================================================
+Note: switching to 'af4c5abdd5958bdc65a03cd5ee86708264f93304'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+CLONE_EXIT=0
+WORKTREE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_COMMIT_MATCH=YES
+WORKTREE_CLEAN_BEFORE_PROOF_CREATION=YES
+
+============================================================
+GATE 3 — CREATE INDEPENDENT PACKING HARNESS
+============================================================
+HARNESS_CREATED=YES
+HARNESS_PATH=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+
+============================================================
+GATE 4 — CREATE ACTUAL-BODY CBMC MAKEFILE
+============================================================
+MAKEFILE_CREATED=YES
+MAKEFILE_PATH=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+
+============================================================
+GATE 5 — HARNESS AND BUILD POLICY REVIEW
+============================================================
+===== HARNESS =====
+/*
+ * PKCHECK-01B
+ *
+ * Actual-body admission shard for mlk_kem_check_pk.
+ *
+ * The harness independently inserts one symbolic non-canonical 12-bit
+ * coefficient into an otherwise zero polynomial-vector encoding.
+ *
+ * Retained production bodies:
+ *   - mlk_kem_check_pk
+ *   - mlk_polyvec_frombytes
+ *   - mlk_polyvec_reduce
+ *   - mlk_polyvec_tobytes
+ *
+ * This shard does not claim the final arbitrary-neighbour theorem.
+ */
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include <cbmc.h>
+#include <kem.h>
+#include <params.h>
+
+#define PKCHECK_COEFFICIENT_COUNT \
+  ((size_t)MLKEM_K * (size_t)MLKEM_N)
+
+#define PKCHECK_UINT12_LIMIT 4096u
+
+static uint16_t pkcheck_decode12_at(
+    const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+    size_t coefficient_index)
+{
+  const size_t pair_index = coefficient_index / 2u;
+  const size_t byte_index = 3u * pair_index;
+
+  if ((coefficient_index & 1u) == 0u)
+  {
+    return (uint16_t)(
+        (uint16_t)pk[byte_index] |
+        ((uint16_t)(pk[byte_index + 1u] & 0x0Fu) << 8));
+  }
+
+  return (uint16_t)(
+      ((uint16_t)pk[byte_index + 1u] >> 4) |
+      ((uint16_t)pk[byte_index + 2u] << 4));
+}
+
+static void pkcheck_store12_at(
+    uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+    size_t coefficient_index,
+    uint16_t value)
+{
+  const size_t pair_index = coefficient_index / 2u;
+  const size_t byte_index = 3u * pair_index;
+
+  if ((coefficient_index & 1u) == 0u)
+  {
+    pk[byte_index] = (uint8_t)value;
+    pk[byte_index + 1u] =
+        (uint8_t)((pk[byte_index + 1u] & 0xF0u) |
+                  ((value >> 8) & 0x0Fu));
+  }
+  else
+  {
+    pk[byte_index + 1u] =
+        (uint8_t)((pk[byte_index + 1u] & 0x0Fu) |
+                  ((value & 0x0Fu) << 4));
+    pk[byte_index + 2u] = (uint8_t)(value >> 4);
+  }
+}
+
+void harness(void)
+{
+  uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES] = {0};
+  size_t coefficient_index = 0;
+  uint16_t malformed_value = MLKEM_Q;
+  uint16_t independently_decoded;
+  int result;
+
+  /*
+   * Explicit havoc avoids relying on implicit treatment of uninitialized
+   * automatic variables.
+   */
+  __CPROVER_havoc_object(&coefficient_index);
+  __CPROVER_havoc_object(&malformed_value);
+
+  __CPROVER_assume(
+      coefficient_index < PKCHECK_COEFFICIENT_COUNT);
+
+  __CPROVER_assume(
+      malformed_value >= (uint16_t)MLKEM_Q);
+
+  __CPROVER_assume(
+      malformed_value < (uint16_t)PKCHECK_UINT12_LIMIT);
+
+  /*
+   * Every other polynomial-vector coefficient remains zero and canonical.
+   * The 32-byte public-seed suffix also remains zero.
+   */
+  pkcheck_store12_at(
+      pk,
+      coefficient_index,
+      malformed_value);
+
+  independently_decoded =
+      pkcheck_decode12_at(pk, coefficient_index);
+
+  __CPROVER_assert(
+      independently_decoded == malformed_value,
+      "PKCHECK-01B.ORACLE_PACKING: independently packed coefficient decodes exactly");
+
+  result = mlk_kem_check_pk(
+      pk,
+      NULL /* context removed by preprocessing */);
+
+  /*
+   * The CBMC configuration permits malloc failure. Therefore:
+   *
+   *   successful allocation path -> MLK_ERR_FAIL
+   *   allocation failure path    -> MLK_ERR_OUT_OF_MEMORY
+   *
+   * Returning success is forbidden.
+   */
+  __CPROVER_assert(
+      result == MLK_ERR_FAIL ||
+          result == MLK_ERR_OUT_OF_MEMORY,
+      "PKCHECK-01B.REJECTION: one non-canonical coefficient cannot be accepted");
+}
+
+===== MAKEFILE =====
+# PKCHECK-01B actual-body admission proof.
+#
+# No production polyvector semantic body is replaced by a contract.
+# The default SAT backend is used because the local SMT2/Z3 route failed
+# independently of the verification conditions.
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = pkcheck_01b_actual_body_harness
+
+PROOF_UID = pkcheck_01b_actual_body
+
+DEFINES +=
+INCLUDES +=
+
+REMOVE_FUNCTION_BODY +=
+UNWINDSET +=
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+
+# Actual target and actual semantic dependencies.
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/kem.c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly_k.c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+
+# These contracts are exact enough for the present purpose:
+# - mlk_ct_memcmp: return==0 iff every compared byte is equal.
+# - mlk_zeroize: frame/write-set abstraction for cleanup only.
+USE_FUNCTION_CONTRACTS = mlk_ct_memcmp
+USE_FUNCTION_CONTRACTS += mlk_zeroize
+
+USE_DYNAMIC_FRAMES = 1
+
+# Deliberately do NOT set APPLY_LOOP_CONTRACTS.
+# Exact semantic loops are fully unwound instead.
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS += --unwind 400 --unwinding-assertions
+
+FUNCTION_NAME = mlk_check_pk
+CBMC_OBJECT_BITS = 10
+
+EXPENSIVE = true
+
+include ../Makefile.common
+
+===== FORBIDDEN REPLACEMENT CHECK =====
+FORBIDDEN_POLYVEC_CONTRACT_REPLACEMENT=NO
+SEMANTIC_LOOP_ABSTRACTION_ENABLED=NO
+
+===== PROOF ARTEFACT HASHES =====
+680a093dce40bba73f6a85e32c2382cda61709eaab47d5de7afcdb36fc740c3b  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+cf10daa3502270bdc9d43002ec781223d56cb186f6c0118af07a7e88882a3629  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+
+============================================================
+GATE 6 — NATIVE-COMPILER PREFLIGHT
+============================================================
+NATIVE_PREFLIGHT_EXIT=1
+===== PREFLIGHT STDERR =====
+In file included from /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:21:
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h: In function ‘mlk_sys_check_capability’:
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/cbmc.h:38:22: error: expected declaration specifiers before ‘__CPROVER_ensures’
+   38 | #define ensures(...) __CPROVER_ensures(__VA_ARGS__)
+      |                      ^~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/cbmc.h:29:25: note: in definition of macro ‘__contract__’
+   29 | #define __contract__(x) x /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */
+      |                         ^
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:289:3: note: in expansion of macro ‘ensures’
+  289 |   ensures(return_value == 0 || return_value == 1)
+      |   ^~~~~~~
+In file included from /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/common.h:167,
+                 from /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:24,
+                 from /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:22:
+/usr/include/string.h:43:14: error: storage class specified for parameter ‘memcpy’
+   43 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |              ^~~~~~
+/usr/include/string.h:47:14: error: storage class specified for parameter ‘memmove’
+   47 | extern void *memmove (void *__dest, const void *__src, size_t __n)
+      |              ^~~~~~~
+/usr/include/string.h:61:14: error: storage class specified for parameter ‘memset’
+   61 | extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
+      |              ^~~~~~
+/usr/include/string.h:64:12: error: storage class specified for parameter ‘memcmp’
+   64 | extern int memcmp (const void *__s1, const void *__s2, size_t __n)
+      |            ^~~~~~
+/usr/include/string.h:80:12: error: storage class specified for parameter ‘__memcmpeq’
+   80 | extern int __memcmpeq (const void *__s1, const void *__s2, size_t __n)
+      |            ^~~~~~~~~~
+/usr/include/string.h:107:14: error: storage class specified for parameter ‘memchr’
+  107 | extern void *memchr (const void *__s, int __c, size_t __n)
+      |              ^~~~~~
+/usr/include/string.h:141:14: error: storage class specified for parameter ‘strcpy’
+  141 | extern char *strcpy (char *__restrict __dest, const char *__restrict __src)
+      |              ^~~~~~
+/usr/include/string.h:144:14: error: storage class specified for parameter ‘strncpy’
+  144 | extern char *strncpy (char *__restrict __dest,
+      |              ^~~~~~~
+/usr/include/string.h:149:14: error: storage class specified for parameter ‘strcat’
+  149 | extern char *strcat (char *__restrict __dest, const char *__restrict __src)
+      |              ^~~~~~
+/usr/include/string.h:152:14: error: storage class specified for parameter ‘strncat’
+  152 | extern char *strncat (char *__restrict __dest, const char *__restrict __src,
+      |              ^~~~~~~
+/usr/include/string.h:156:12: error: storage class specified for parameter ‘strcmp’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |            ^~~~~~
+/usr/include/string.h:159:12: error: storage class specified for parameter ‘strncmp’
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |            ^~~~~~~
+/usr/include/string.h:163:12: error: storage class specified for parameter ‘strcoll’
+  163 | extern int strcoll (const char *__s1, const char *__s2)
+      |            ^~~~~~~
+/usr/include/string.h:166:15: error: storage class specified for parameter ‘strxfrm’
+  166 | extern size_t strxfrm (char *__restrict __dest,
+      |               ^~~~~~~
+/usr/include/string.h:246:14: error: storage class specified for parameter ‘strchr’
+  246 | extern char *strchr (const char *__s, int __c)
+      |              ^~~~~~
+/usr/include/string.h:273:14: error: storage class specified for parameter ‘strrchr’
+  273 | extern char *strrchr (const char *__s, int __c)
+      |              ^~~~~~~
+/usr/include/string.h:293:15: error: storage class specified for parameter ‘strcspn’
+  293 | extern size_t strcspn (const char *__s, const char *__reject)
+      |               ^~~~~~~
+/usr/include/string.h:297:15: error: storage class specified for parameter ‘strspn’
+  297 | extern size_t strspn (const char *__s, const char *__accept)
+      |               ^~~~~~
+/usr/include/string.h:323:14: error: storage class specified for parameter ‘strpbrk’
+  323 | extern char *strpbrk (const char *__s, const char *__accept)
+      |              ^~~~~~~
+/usr/include/string.h:350:14: error: storage class specified for parameter ‘strstr’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |              ^~~~~~
+/usr/include/string.h:356:14: error: storage class specified for parameter ‘strtok’
+  356 | extern char *strtok (char *__restrict __s, const char *__restrict __delim)
+      |              ^~~~~~
+/usr/include/string.h:361:14: error: storage class specified for parameter ‘__strtok_r’
+  361 | extern char *__strtok_r (char *__restrict __s,
+      |              ^~~~~~~~~~
+/usr/include/string.h:407:15: error: storage class specified for parameter ‘strlen’
+  407 | extern size_t strlen (const char *__s)
+      |               ^~~~~~
+/usr/include/string.h:419:14: error: storage class specified for parameter ‘strerror’
+  419 | extern char *strerror (int __errnum) __THROW;
+      |              ^~~~~~~~
+In file included from /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/common.h:21:
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:78:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+   78 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:108:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  108 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:138:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  138 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:174:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  174 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:212:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  212 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:252:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  252 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:241:37: error: expected declaration specifiers before ‘__attribute__’
+  241 | #define MLK_MUST_CHECK_RETURN_VALUE __attribute__((warn_unused_result))
+      |                                     ^~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/kem.h:290:1: note: in expansion of macro ‘MLK_MUST_CHECK_RETURN_VALUE’
+  290 | MLK_MUST_CHECK_RETURN_VALUE
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:33:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+   33 | {
+      | ^
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:53:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+   53 | {
+      | ^
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:74:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+   74 | {
+      | ^
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:287:23: error: old-style parameter declarations in prototyped function definition
+  287 | static MLK_INLINE int mlk_sys_check_capability(mlk_sys_cap cap)
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c:130: error: expected ‘{’ at end of input
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/mlkem/src/sys.h:287:60: error: unused parameter ‘cap’ [-Werror=unused-parameter]
+  287 | static MLK_INLINE int mlk_sys_check_capability(mlk_sys_cap cap)
+      |                                                ~~~~~~~~~~~~^~~
+cc1: all warnings being treated as errors
+NATIVE_PREFLIGHT_STATUS=FAIL
+PKCHECK_01B_STOPPED_AT_PREFLIGHT=YES

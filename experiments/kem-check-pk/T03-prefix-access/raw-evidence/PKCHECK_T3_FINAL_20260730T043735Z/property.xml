@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cprover>
+<program>CBMC 6.9.0 (cbmc-6.9.0)</program>
+<message type="STATUS-MESSAGE">
+  <text>CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux</text>
+</message>
+
+<message type="STATUS-MESSAGE">
+  <text>Reading GOTO program from file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access/gotos/pkcheck_t3_prefix_access_harness.goto</text>
+</message>
+
+<message type="STATUS-MESSAGE">
+  <text>Generating GOTO Program</text>
+</message>
+
+<message type="STATUS-MESSAGE">
+  <text>Adding CPROVER library (x86_64)</text>
+</message>
+
+<message type="STATUS-MESSAGE">
+  <text>Removal of function pointers and virtual functions</text>
+</message>
+
+<message type="STATUS-MESSAGE">
+  <text>Generic Property Instrumentation</text>
+</message>
+
+<property class="assertion" name="harness.assertion.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access/pkcheck_t3_prefix_access_harness.c" function="harness" line="22" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>PKCHECK-T3.RESULT_DOMAIN: the result is success, rejection, or allocation failure</description>
+  <expression>result == 0 || result == -1 || result == -2</expression>
+</property>
+
+<property class="assertion" name="malloc.assertion.1">
+  <location file="&lt;builtin-library-malloc&gt;" function="malloc" line="31" working-directory="/home/girish"/>
+  <description>max allocation size exceeded</description>
+  <expression>malloc_size &lt;= __CPROVER_max_malloc_size</expression>
+</property>
+
+<property class="assertion" name="malloc.assertion.2">
+  <location file="&lt;builtin-library-malloc&gt;" function="malloc" line="36" working-directory="/home/girish"/>
+  <description>max allocation may fail</description>
+  <expression>!(1 != 0) || !should_malloc_fail</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_frombytes.precondition.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="56" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_frombytes in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$4</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_frombytes.precondition.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="56" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_frombytes in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$5</expression>
+</property>
+
+<property class="assigns" name="mlk_polyvec_frombytes.assigns.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check that __CPROVER_object_upto((void *)p, sizeof(mlk_polyvec) /*1536ul*/ ) is valid</description>
+  <expression>W_OK((char *)p, sizeof(mlk_polyvec) /*1536ul*/ ) || __CPROVER_POINTER_OBJECT(((char *)NULL)) == __CPROVER_POINTER_OBJECT(p)</expression>
+</property>
+
+<property class="assertion" name="mlk_polyvec_frombytes.assertion.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>assertion havoc_slice W_OK(__car_lb, sizeof(mlk_polyvec) /*1536ul*/ )</description>
+  <expression>W_OK(__car_lb, sizeof(mlk_polyvec) /*1536ul*/ )</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_frombytes.array_bounds.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_frombytes.array_bounds.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx16 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_frombytes.pointer_dereference.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_frombytes.array_bounds.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_frombytes.array_bounds.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_frombytes" line="261" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx16; (uint32_t)0 &lt;= _cbmc_idx16 &amp;&amp; _cbmc_idx16 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx16] ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx16 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_reduce.precondition.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="57" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_reduce in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$6</expression>
+</property>
+
+<property class="assigns" name="mlk_polyvec_reduce.assigns.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check that __CPROVER_object_upto((void *)p, sizeof(mlk_polyvec) /*1536ul*/ ) is valid</description>
+  <expression>W_OK((char *)p, sizeof(mlk_polyvec) /*1536ul*/ ) || __CPROVER_POINTER_OBJECT(((char *)NULL)) == __CPROVER_POINTER_OBJECT(p)</expression>
+</property>
+
+<property class="assertion" name="mlk_polyvec_reduce.assertion.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>assertion havoc_slice W_OK(__car_lb, sizeof(mlk_polyvec) /*1536ul*/ )</description>
+  <expression>W_OK(__car_lb, sizeof(mlk_polyvec) /*1536ul*/ )</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_reduce.array_bounds.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_reduce.array_bounds.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx21 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_reduce.pointer_dereference.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !(__CPROVER_POINTER_OBJECT(((mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_reduce.array_bounds.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_reduce.array_bounds.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_reduce" line="407" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx21; (uint32_t)0 &lt;= _cbmc_idx21 &amp;&amp; _cbmc_idx21 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx21] ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx21 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_tobytes.precondition.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="58" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_tobytes in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$7</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_tobytes.precondition.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="58" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_tobytes in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$8</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((const mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !(__CPROVER_POINTER_OBJECT(((const mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_tobytes.array_bounds.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_tobytes.array_bounds.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; TRUE ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx15 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !(__CPROVER_POINTER_OBJECT(((const mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !IS_INVALID_POINTER(p) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !(__CPROVER_POINTER_OBJECT(p) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p) &gt;= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(p) + 1536 }) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_polyvec_tobytes.pointer_dereference.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p-&gt;vec</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !(__CPROVER_POINTER_OBJECT(((const mlk_poly (*)[3l])NULL)) == __CPROVER_POINTER_OBJECT(p)) || p == ((mlk_polyvec *)NULL) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_tobytes.array_bounds.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec dynamic object upper bound in p-&gt;vec[(signed long int)k0]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !((signed long int)k0 * 512l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="array bounds" name="mlk_polyvec_tobytes.array_bounds.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>array.vec[].coeffs dynamic object upper bound in p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15]</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 &amp;&amp; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] ==&gt; !((signed long int)k0 * 512l + (signed long int)_cbmc_idx15 * 2l + (signed long int)__CPROVER_POINTER_OFFSET(p) &gt;= (signed long int)__CPROVER_OBJECT_SIZE(p)) }) }</expression>
+</property>
+
+<property class="precondition" name="mlk_polyvec_tobytes.precondition.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="58" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_polyvec_tobytes in mlk_check_pk</description>
+  <expression>forall { uint32_t k0; (uint32_t)0 &lt;= k0 &amp;&amp; k0 &lt; (uint32_t)3 ==&gt; (forall { uint32_t _cbmc_idx15; (uint32_t)0 &lt;= _cbmc_idx15 &amp;&amp; _cbmc_idx15 &lt; (uint32_t)256 ==&gt; (signed int)0 &lt;= (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] &amp;&amp; (signed int)p-&gt;vec[(signed long int)k0].coeffs[(signed long int)_cbmc_idx15] &lt; (signed int)3329 }) }</expression>
+</property>
+
+<property class="assigns" name="mlk_polyvec_tobytes.assigns.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check that __CPROVER_object_upto((void *)p_reencoded, (__CPROVER_size_t)(3 * 384)) is valid</description>
+  <expression>W_OK((char *)p_reencoded, 1152ul) || __CPROVER_POINTER_OBJECT(((char *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)</expression>
+</property>
+
+<property class="assertion" name="mlk_polyvec_tobytes.assertion.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h" function="mlk_polyvec_tobytes" line="239" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>assertion havoc_slice W_OK(__car_lb, (__CPROVER_size_t)(3 * 384))</description>
+  <expression>W_OK(__car_lb, (__CPROVER_size_t)(3 * 384))</expression>
+</property>
+
+<property class="precondition" name="mlk_ct_memcmp.precondition.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_ct_memcmp in mlk_check_pk</description>
+  <expression>(const size_t)(3 * 384) &lt;= (unsigned long int)65535</expression>
+</property>
+
+<property class="precondition" name="mlk_ct_memcmp.precondition.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_ct_memcmp in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$9</expression>
+</property>
+
+<property class="precondition" name="mlk_ct_memcmp.precondition.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_ct_memcmp in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$10</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer NULL in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(pk)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer invalid in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !IS_INVALID_POINTER(pk) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: deallocated dynamic object in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(pk) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: dead object in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(pk) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer outside object bounds in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(pk) &gt;= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(pk) + (unsigned long int)(signed long int)i) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: invalid integer address in pk + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(pk)) || pk + (signed long int)i == ((const uint8_t *)NULL) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(pk)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !IS_INVALID_POINTER(pk) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(pk) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(pk) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(pk) &gt;= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(pk) + (unsigned long int)(signed long int)i) + 1 }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in pk[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(pk)) || pk + (signed long int)i == ((const uint8_t *)NULL) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer NULL in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer invalid in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !IS_INVALID_POINTER(p_reencoded) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: deallocated dynamic object in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(p_reencoded) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: dead object in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(p_reencoded) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: pointer outside object bounds in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p_reencoded) &gt;= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(p_reencoded) + (unsigned long int)(signed long int)i) }</expression>
+</property>
+
+<property class="pointer arithmetic" name="mlk_check_pk.pointer_arithmetic.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="62" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>pointer arithmetic: invalid integer address in p_reencoded + (signed long int)i</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)) || p_reencoded + (signed long int)i == ((const uint8_t *)NULL) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer NULL in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer invalid in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !IS_INVALID_POINTER(p_reencoded) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: deallocated dynamic object in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(p_reencoded) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: dead object in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(p_reencoded) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: pointer outside object bounds in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(p_reencoded) &gt;= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(p_reencoded) + (unsigned long int)(signed long int)i) + 1 }</expression>
+</property>
+
+<property class="pointer dereference" name="mlk_ct_memcmp.pointer_dereference.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_ct_memcmp" line="340" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>dereference failure: invalid integer address in p_reencoded[(signed long int)i]</description>
+  <expression>forall { uint32_t i; (uint32_t)0 &lt;= i &amp;&amp; i &lt; (uint32_t)(const size_t)(3 * 384) ==&gt; !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)) || p_reencoded + (signed long int)i == ((const uint8_t *)NULL) }</expression>
+</property>
+
+<property class="precondition" name="mlk_zeroize.precondition.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_zeroize in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$11</expression>
+</property>
+
+<property class="assigns" name="mlk_zeroize.assigns.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="429" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check that __CPROVER_object_upto((void *)p_reencoded, sizeof(uint8_t) /*1ul*/  * (unsigned long int)(3 * 384)) is valid</description>
+  <expression>W_OK((char *)p_reencoded, sizeof(uint8_t) * 1152ul /*1152ul*/ ) || __CPROVER_POINTER_OBJECT(((char *)NULL)) == __CPROVER_POINTER_OBJECT(p_reencoded)</expression>
+</property>
+
+<property class="assertion" name="mlk_zeroize.assertion.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="429" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>assertion havoc_slice W_OK(__car_lb$2, sizeof(uint8_t) /*1ul*/  * (unsigned long int)(3 * 384))</description>
+  <expression>W_OK(__car_lb$2, sizeof(uint8_t) /*1ul*/  * (unsigned long int)(3 * 384))</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument must be NULL or valid pointer</description>
+  <expression>(void *)p_reencoded == NULL || R_OK((void *)p_reencoded, (unsigned long int)0)</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument must be dynamic object</description>
+  <expression>(void *)p_reencoded == NULL || IS_DYNAMIC_OBJECT((void *)p_reencoded)</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.3">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument has offset zero</description>
+  <expression>(void *)p_reencoded == NULL || __CPROVER_POINTER_OFFSET((void *)p_reencoded) == (unsigned long int)0</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.4">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>double free</description>
+  <expression>(void *)p_reencoded == NULL || __CPROVER_deallocated != (void *)p_reencoded</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.5">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free called for new[] object</description>
+  <expression>(void *)p_reencoded == NULL || __CPROVER_new_object != (void *)p_reencoded || !__CPROVER_malloc_is_new_array</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.6">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free called for stack-allocated object</description>
+  <expression>(void *)p_reencoded == NULL || __CPROVER_alloca_object != (void *)p_reencoded</expression>
+</property>
+
+<property class="unwind" name="mlk_check_pk.unwind.1">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="67" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>unwinding assertion loop 0</description>
+  <expression>!(0 != 0)</expression>
+</property>
+
+<property class="precondition" name="mlk_zeroize.precondition.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check requires clause of mlk_zeroize in mlk_check_pk</description>
+  <expression>return_value___CPROVER_is_fresh$12</expression>
+</property>
+
+<property class="assigns" name="mlk_zeroize.assigns.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="429" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>Check that __CPROVER_object_upto((void *)p, sizeof(mlk_polyvec) /*1536ul*/  * (unsigned long int)1) is valid</description>
+  <expression>W_OK((char *)p, sizeof(mlk_polyvec) /*1536ul*/ ) || __CPROVER_POINTER_OBJECT(((char *)NULL)) == __CPROVER_POINTER_OBJECT(p)</expression>
+</property>
+
+<property class="assertion" name="mlk_zeroize.assertion.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h" function="mlk_zeroize" line="429" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>assertion havoc_slice W_OK(__car_lb$3, sizeof(mlk_polyvec) /*1536ul*/  * (unsigned long int)1)</description>
+  <expression>W_OK(__car_lb$3, sizeof(mlk_polyvec) /*1536ul*/  * (unsigned long int)1)</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.7">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument must be NULL or valid pointer</description>
+  <expression>(void *)p == NULL || R_OK((void *)p, (unsigned long int)0)</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.8">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument must be dynamic object</description>
+  <expression>(void *)p == NULL || IS_DYNAMIC_OBJECT((void *)p)</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.9">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free argument has offset zero</description>
+  <expression>(void *)p == NULL || __CPROVER_POINTER_OFFSET((void *)p) == (unsigned long int)0</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.10">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>double free</description>
+  <expression>(void *)p == NULL || __CPROVER_deallocated != (void *)p</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.11">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free called for new[] object</description>
+  <expression>(void *)p == NULL || __CPROVER_new_object != (void *)p || !__CPROVER_malloc_is_new_array</expression>
+</property>
+
+<property class="precondition_instance" name="mlk_check_pk.precondition_instance.12">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>free called for stack-allocated object</description>
+  <expression>(void *)p == NULL || __CPROVER_alloca_object != (void *)p</expression>
+</property>
+
+<property class="unwind" name="mlk_check_pk.unwind.2">
+  <location file="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c" function="mlk_check_pk" line="68" working-directory="/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t3_prefix_access"/>
+  <description>unwinding assertion loop 1</description>
+  <expression>!(0 != 0)</expression>
+</property>
+
+</cprover>

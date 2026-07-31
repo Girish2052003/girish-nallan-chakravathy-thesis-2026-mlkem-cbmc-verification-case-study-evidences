@@ -1,0 +1,194 @@
+MLK_KEM_CHECK_PK CBMC CAMPAIGN — FINAL CLOSURE
+
+Frozen production repository:
+mlkem-native
+
+Frozen production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Parameter set:
+MLKEM768
+
+============================================================
+T1 — PUBLIC-KEY VALIDATION SEMANTICS
+============================================================
+
+T1-R2:
+Arbitrary-context malformed-coefficient rejection.
+
+Domain:
+- Every coefficient position.
+- Every noncanonical 12-bit value from 3329 through 4095.
+- All surrounding public-key bytes symbolic.
+- Public-seed suffix symbolic.
+- Allocation failure permitted.
+
+Result:
+- 12 of 12 selected properties successful.
+- Functional rejection property successful.
+- Rejection path coverage satisfied.
+
+Harness SHA-256:
+43dd0282fa57f976920185908806ba3a6c9494f0b601e87c2a504c221ab78d8c
+
+Makefile SHA-256:
+c75ce8f02d2f40f8a08401e96f78d585fd9dec4522facd4db552e8b18e1739ab
+
+GOTO SHA-256:
+5cf49e4012d41919e95a8a512c38b893b8674beb0ac4b7459cbbe9e7d83730a3
+
+T1-R3:
+Canonical polynomial-vector encoding acceptance.
+
+Domain:
+- Every canonical polynomial-vector coefficient encoding.
+- Public-seed suffix symbolic.
+- Allocation failure permitted.
+
+Result:
+- 9 of 9 selected properties successful.
+- Canonical acceptance property successful.
+- Acceptance path coverage satisfied.
+
+Harness SHA-256:
+61362cd4e63f06b30952d94def19201dc5198caf224b0aa09a3441502297271e
+
+Makefile SHA-256:
+af966afec366566d88c2096b48095d3d5a7aeb2a7c9a9241b47a320794ea37d9
+
+GOTO SHA-256:
+63d071dea1ee122637b83d06dcb743fb2a8c8e33c6adaa48d7ed85b8d96e7efa
+
+T1 final closure verdict SHA-256:
+0689e8cfd2b18d746621965ccc9e9f970922778dc211b0f0967a567543f80592
+
+T1 classification:
+T1_ACTUAL_BODY_ARBITRARY_CONTEXT_REJECTION_AND_CANONICAL_ACCEPTANCE_SUCCESSFUL
+
+Trust boundary:
+The concrete mlk_check_pk body and polynomial decoding, reduction and
+re-encoding implementation bodies were retained. Native contracts were used
+for mlk_ct_memcmp and mlk_zeroize.
+
+============================================================
+T2 — FRAME AND RELATIONAL PROPERTIES
+============================================================
+
+Proved:
+- First public-key input preservation.
+- Second public-key input preservation.
+- Left and right redzone preservation.
+- Cleanup unwind closure.
+
+Harness SHA-256:
+1db5496f9992730fc965d34de669f0f771e1b8d82a694e0cd54c869bd1bfef62
+
+Makefile SHA-256:
+738492c2948610afbd43e6272f0406801089fd5207df521aa48f366e8af09d46
+
+GOTO SHA-256:
+6782995e8d61f04e292acc70eae2968b802185f0cd6c2668f85b35770b762b41
+
+Relational seed-noninterference attempt:
+The two-call contract-backed abstraction produced independently permitted
+results of MLK_ERR_FAIL and success.
+
+Classification:
+CONTRACT_ABSTRACTION_COUNTEREXAMPLE
+
+This was not classified as a production defect. The intended dependency
+question was addressed by the T3 prefix-access theorem.
+
+============================================================
+T3 — PUBLIC-SEED SUFFIX NON-ACCESS
+============================================================
+
+Theorem:
+Calling the concrete mlk_check_pk body with an object containing exactly
+MLKEM_POLYVECBYTES bytes does not cause an access beyond that prefix in the
+contract-backed model.
+
+Result:
+- Final model loop-free.
+- 110 genuine non-cover safety properties successful.
+- Result-domain assertion successful.
+- Non-OOM execution coverage satisfied.
+- No out-of-prefix memory access detected.
+
+Harness SHA-256:
+a1d9a60e50ced4a4be207a93dd5de650079242058229594bf2f04a1cc6719ed2
+
+Makefile SHA-256:
+c69deeefe8c207a3ffd197b4b4ff74cf82068f152c20b4cdc1c25a3243725cc4
+
+GOTO SHA-256:
+5e668297f43ea3b352d5e6d3a408d388a92960e2570917f5816453f1de87b3e0
+
+Classification:
+T3_CONTRACT_BACKED_PREFIX_ACCESS_VERIFICATION_SUCCESSFUL
+
+============================================================
+T4 — ENCAPSULATION VALIDATION GUARD
+============================================================
+
+Theorem:
+Subject to successful temporary allocation, when the validation proof stub
+returns MLK_ERR_FAIL, the concrete mlk_enc_derand caller body invokes
+validation once, propagates the failure and preserves ciphertext, shared
+secret, public-key and coins buffers.
+
+Result:
+- Six custom properties successful.
+- Two target unwind properties successful.
+- Validation-reached coverage satisfied.
+
+Harness SHA-256:
+d46d6c1a2934fe1f0e1ce8981b4839dec6128ee8615bf8a0a4f8bf2ebbdc96a0
+
+Makefile SHA-256:
+92d06786013810b6f836b5dd6b5d344de932352841c69b60bb93e028f5df765d
+
+GOTO SHA-256:
+3ea66fe0c6fbd6352eec1c922a5f9ab74338cfba6630681934dd27452d75a65e
+
+T4 verdict SHA-256:
+86d2678b93ca3d59b666a6306bb584f3faa613c0d895a97367092b57c5c86e0e
+
+Classification:
+T4_STUB_BACKED_EARLY_FAILURE_PROPAGATION_AND_FRAME_VERIFICATION_SUCCESSFUL
+
+Trust boundary:
+The mlk_enc_derand caller body remained concrete. The lower mlk_check_pk
+function was replaced with a deterministic MLK_ERR_FAIL proof stub.
+
+============================================================
+FINAL CAMPAIGN VERDICT
+============================================================
+
+Established:
+- Exhaustive malformed-coefficient rejection in arbitrary public-key context.
+- Exhaustive canonical polynomial-vector encoding acceptance.
+- Public-key input preservation.
+- Redzone preservation.
+- Public-seed suffix exclusion from the verified read footprint.
+- Validation-failure propagation and caller-side frame preservation.
+- Exact loop-unwind closure for the selected models.
+- Reachable rejection, acceptance, non-OOM and validation paths.
+- Production source integrity throughout the campaign.
+
+Not claimed:
+- Whole-library functional correctness.
+- Cryptographic security of ML-KEM.
+- Constant-time behavior.
+- Proof of every allocation implementation.
+- Direct two-call seed noninterference under fully concrete lower bodies.
+- Validation semantics from the T4 stub.
+
+Production defects established:
+NO
+
+Production source modifications:
+NO
+
+Campaign classification:
+PKCHECK_MLKEM768_CBMC_CAMPAIGN_SUCCESSFULLY_CLOSED

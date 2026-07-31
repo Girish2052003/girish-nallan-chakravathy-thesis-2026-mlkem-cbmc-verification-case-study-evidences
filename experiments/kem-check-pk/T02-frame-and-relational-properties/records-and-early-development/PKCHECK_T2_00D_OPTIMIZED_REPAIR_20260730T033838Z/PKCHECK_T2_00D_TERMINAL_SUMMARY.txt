@@ -1,0 +1,332 @@
+============================================================
+PKCHECK-T2-00D — SOUNDNESS REPAIR AND OPTIMIZED PROOF
+============================================================
+UTC_TIMESTAMP=20260730T033838Z
+STAGE_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z
+WORKTREE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2
+PROOF_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame
+RUN_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/PKCHECK_T2_00D_OPTIMIZED_REPAIR_20260730T033838Z
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/PKCHECK_T2_00D_OPTIMIZED_REPAIR_20260730T033838Z/PKCHECK_T2_00D_TERMINAL_SUMMARY.txt
+
+============================================================
+GATE 1 — OLD ARTEFACT REBINDING
+============================================================
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_COMMIT_MATCH=YES
+WORKTREE_COMMIT_MATCH=YES
+ARTEFACT_PRESENT=YES path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/pkcheck_t2_seed_frame_harness.c
+ARTEFACT_PRESENT=YES path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/Makefile
+ARTEFACT_PRESENT=YES path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/gotos/pkcheck_t2_seed_frame_harness.goto
+EXPECTED_OLD_HARNESS_SHA=7d43b426b4e05c5bf629f7e4e599a97d084c9718311e8eda01029f04deb598a8
+ACTUAL_OLD_HARNESS_SHA=7d43b426b4e05c5bf629f7e4e599a97d084c9718311e8eda01029f04deb598a8
+EXPECTED_MAKEFILE_SHA=d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+ACTUAL_MAKEFILE_SHA=d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+EXPECTED_OLD_GOTO_SHA=ebd3a6fbe6db17838125eabd4ecee81452461e2eefc7529680db0588808cb48b
+ACTUAL_OLD_GOTO_SHA=ebd3a6fbe6db17838125eabd4ecee81452461e2eefc7529680db0588808cb48b
+OLD_HARNESS_HASH_MATCH=YES
+MAKEFILE_HASH_MATCH=YES
+OLD_GOTO_HASH_MATCH=YES
+AUTHORITATIVE_TREE_CLEAN_BEFORE=YES
+WORKTREE_PRODUCTION_SOURCE_DIFF_EMPTY_BEFORE=YES
+OLD_ARTEFACTS_ARCHIVED=YES
+
+============================================================
+GATE 2 — CONTROLLED HARNESS REPAIR
+============================================================
+PKCHECK-T2-00D CONTROLLED HARNESS REPAIR
+
+Pinned production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Original harness:
+7d43b426b4e05c5bf629f7e4e599a97d084c9718311e8eda01029f04deb598a8
+
+Unchanged Makefile:
+d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+
+Original GOTO:
+ebd3a6fbe6db17838125eabd4ecee81452461e2eefc7529680db0588808cb48b
+
+Reasons for repair:
+1. CBMC 6.9.0 DFCC reported __CPROVER_array_equal as unsupported.
+2. Full-array relational state caused repeated kernel OOM kills.
+3. No property counterexample was produced.
+
+Repair:
+- remove all __CPROVER_array_equal operations;
+- use nondeterministic universal byte witnesses;
+- use one sequential self-composition public-key object;
+- retain two actual mlk_kem_check_pk calls;
+- retain independently symbolic public-seed values;
+- retain the same four T2 obligations;
+- retain native lower-function contracts;
+- leave production source unchanged.
+
+No result assumption.
+No target-function replacement.
+No production source modification.
+No domain reduction of the polynomial-vector prefix.
+No public-seed fixing.
+NEW_HARNESS_SHA=1db5496f9992730fc965d34de669f0f771e1b8d82a694e0cd54c869bd1bfef62
+POST_PATCH_MAKEFILE_SHA=d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+MAKEFILE_UNCHANGED=YES
+
+===== HARNESS DIFF =====
+--- /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/PKCHECK_T2_00D_OPTIMIZED_REPAIR_20260730T033838Z/harness.before.c	2026-07-30 06:38:38.991349469 +0300
++++ /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/pkcheck_t2_seed_frame_harness.c	2026-07-30 06:38:38.997757495 +0300
+@@ -8,17 +8,19 @@
+ #define PKCHECK_T2_REDZONE_BYTES 16u
+ 
+ /*
+- * ML-KEM public-key layout:
+- *
+- *   encoded polynomial-vector prefix || public-seed suffix
+- *
+- * All fields have byte alignment. The static assertions bind the harness
+- * representation to the repository parameter macros.
++ * A structure wrapper allows public seeds to be replaced using an ordinary
++ * structure assignment. This avoids the unsupported DFCC treatment of
++ * __CPROVER_array_equal and introduces no helper loops.
+  */
+ typedef struct
+ {
++  uint8_t bytes[MLKEM_SYMBYTES];
++} pkcheck_t2_seed_block;
++
++typedef struct
++{
+   uint8_t encoded_vector[MLKEM_POLYVECBYTES];
+-  uint8_t public_seed[MLKEM_SYMBYTES];
++  pkcheck_t2_seed_block public_seed;
+ } pkcheck_t2_payload;
+ 
+ typedef struct
+@@ -29,115 +31,150 @@
+ } pkcheck_t2_frame;
+ 
+ _Static_assert(
++  sizeof(pkcheck_t2_seed_block) == MLKEM_SYMBYTES,
++  "T2 seed-block layout mismatch");
++
++_Static_assert(
+   sizeof(pkcheck_t2_payload) == MLKEM_INDCCA_PUBLICKEYBYTES,
+   "T2 public-key payload layout mismatch");
+ 
+ _Static_assert(
+-  offsetof(pkcheck_t2_frame, payload) == PKCHECK_T2_REDZONE_BYTES,
++  offsetof(pkcheck_t2_frame, payload) ==
++    PKCHECK_T2_REDZONE_BYTES,
+   "T2 left red-zone layout mismatch");
+ 
+ _Static_assert(
+   offsetof(pkcheck_t2_frame, right_redzone) ==
+-    PKCHECK_T2_REDZONE_BYTES + MLKEM_INDCCA_PUBLICKEYBYTES,
++    PKCHECK_T2_REDZONE_BYTES +
++      MLKEM_INDCCA_PUBLICKEYBYTES,
+   "T2 right red-zone layout mismatch");
+ 
+ void harness(void)
+ {
+-  pkcheck_t2_frame first;
+-  pkcheck_t2_frame second;
++  pkcheck_t2_frame frame;
++
++  pkcheck_t2_seed_block first_seed;
++  pkcheck_t2_seed_block second_seed;
+ 
+-  pkcheck_t2_frame first_before;
+-  pkcheck_t2_frame second_before;
++  uint8_t *payload_bytes;
++
++  size_t payload_index;
++  size_t redzone_index;
++  size_t seed_difference_index;
++
++  uint8_t first_payload_byte_before;
++  uint8_t second_payload_byte_before;
++
++  uint8_t left_redzone_before;
++  uint8_t right_redzone_before;
++
++  uint8_t left_redzone_after_first;
++  uint8_t right_redzone_after_first;
+ 
+   int first_result;
+   int second_result;
+ 
++  payload_bytes = (uint8_t *)&frame.payload;
++
+   /*
+-   * Permitted relational input assumption:
+-   *
+-   * Both public keys have exactly the same encoded polynomial-vector
+-   * prefix. Their public-seed suffixes remain independently symbolic.
+-   *
+-   * This assumption constrains only the theorem's input relation. It
+-   * does not constrain either function result.
++   * A nondeterministic index followed by a range assumption universally
++   * represents every byte position across separate CBMC executions.
+    */
+   __CPROVER_assume(
+-    __CPROVER_array_equal(
+-      first.payload.encoded_vector,
+-      second.payload.encoded_vector));
++    payload_index < sizeof(frame.payload));
++
++  __CPROVER_assume(
++    redzone_index < PKCHECK_T2_REDZONE_BYTES);
++
++  __CPROVER_assume(
++    seed_difference_index < MLKEM_SYMBYTES);
++
++  /*
++   * First execution.
++   *
++   * The encoded polynomial-vector prefix is fully symbolic. The first
++   * public seed is independently symbolic.
++   */
++  frame.payload.public_seed = first_seed;
++
++  first_payload_byte_before =
++    payload_bytes[payload_index];
+ 
+-  first_before = first;
+-  second_before = second;
++  left_redzone_before =
++    frame.left_redzone[redzone_index];
++
++  right_redzone_before =
++    frame.right_redzone[redzone_index];
+ 
+   first_result =
+     mlk_kem_check_pk(
+-      (const uint8_t *)&first.payload,
++      (const uint8_t *)&frame.payload,
+       NULL);
+ 
++  left_redzone_after_first =
++    frame.left_redzone[redzone_index];
++
++  right_redzone_after_first =
++    frame.right_redzone[redzone_index];
++
++  __CPROVER_assert(
++    payload_bytes[payload_index] ==
++      first_payload_byte_before,
++    "PKCHECK-T2.FIRST_INPUT_FRAME: every byte of the first public-key input is unchanged");
++
++  /*
++   * Second execution over the same polynomial-vector prefix.
++   *
++   * Only the public-seed suffix is replaced. The separately proved first
++   * input-frame property establishes that the first target call preserves
++   * the shared polynomial-vector prefix.
++   */
++  frame.payload.public_seed = second_seed;
++
++  second_payload_byte_before =
++    payload_bytes[payload_index];
++
+   second_result =
+     mlk_kem_check_pk(
+-      (const uint8_t *)&second.payload,
++      (const uint8_t *)&frame.payload,
+       NULL);
+ 
++  __CPROVER_assert(
++    payload_bytes[payload_index] ==
++      second_payload_byte_before,
++    "PKCHECK-T2.SECOND_INPUT_FRAME: every byte of the second public-key input is unchanged");
++
++  __CPROVER_assert(
++    left_redzone_after_first ==
++      left_redzone_before &&
++    right_redzone_after_first ==
++      right_redzone_before &&
++    frame.left_redzone[redzone_index] ==
++      left_redzone_before &&
++    frame.right_redzone[redzone_index] ==
++      right_redzone_before,
++    "PKCHECK-T2.REDZONE_PRESERVATION: every left and right red-zone byte is unchanged after both calls");
++
+   /*
+-   * Allocation failure is independently nondeterministic for the two
+-   * calls. Therefore semantic equality is required whenever both actual
+-   * executions complete their allocations.
++   * Allocation failure is independently nondeterministic. Therefore,
++   * equal decision results are required whenever both executions are
++   * non-OOM.
+    */
+   __CPROVER_assert(
+     first_result == MLK_ERR_OUT_OF_MEMORY ||
+     second_result == MLK_ERR_OUT_OF_MEMORY ||
+     first_result == second_result,
+-    "PKCHECK-T2.SEED_NONINTERFERENCE: equal polynomial prefixes imply equal non-OOM decisions for arbitrary public seeds");
+-
+-  __CPROVER_assert(
+-    __CPROVER_array_equal(
+-      first.payload.encoded_vector,
+-      first_before.payload.encoded_vector) &&
+-    __CPROVER_array_equal(
+-      first.payload.public_seed,
+-      first_before.payload.public_seed),
+-    "PKCHECK-T2.FIRST_INPUT_FRAME: first public key is unchanged");
+-
+-  __CPROVER_assert(
+-    __CPROVER_array_equal(
+-      second.payload.encoded_vector,
+-      second_before.payload.encoded_vector) &&
+-    __CPROVER_array_equal(
+-      second.payload.public_seed,
+-      second_before.payload.public_seed),
+-    "PKCHECK-T2.SECOND_INPUT_FRAME: second public key is unchanged");
+-
+-  __CPROVER_assert(
+-    __CPROVER_array_equal(
+-      first.left_redzone,
+-      first_before.left_redzone) &&
+-    __CPROVER_array_equal(
+-      first.right_redzone,
+-      first_before.right_redzone) &&
+-    __CPROVER_array_equal(
+-      second.left_redzone,
+-      second_before.left_redzone) &&
+-    __CPROVER_array_equal(
+-      second.right_redzone,
+-      second_before.right_redzone),
+-    "PKCHECK-T2.REDZONE_PRESERVATION: all public-key red zones are unchanged");
++    "PKCHECK-T2.SEED_NONINTERFERENCE: changing only the public-seed suffix cannot change a non-OOM decision");
+ 
+   /*
+-   * Non-vacuity witnesses for the later coverage run:
++   * Non-vacuity witness for the companion coverage run:
+    *
+-   * 1. Different public seeds are reachable.
+-   * 2. Different public seeds with two non-OOM executions are reachable.
++   * There exists a public-seed byte position that differs while both
++   * target executions complete without allocation failure.
+    */
+   __CPROVER_cover(
+-    !__CPROVER_array_equal(
+-      first.payload.public_seed,
+-      second.payload.public_seed));
+-
+-  __CPROVER_cover(
+-    !__CPROVER_array_equal(
+-      first.payload.public_seed,
+-      second.payload.public_seed) &&
++    first_seed.bytes[seed_difference_index] !=
++      second_seed.bytes[seed_difference_index] &&
+     first_result != MLK_ERR_OUT_OF_MEMORY &&
+     second_result != MLK_ERR_OUT_OF_MEMORY);
+ }
+
+============================================================
+GATE 3 — REPAIRED HARNESS POLICY
+============================================================
+ARRAY_EQUAL_COUNT=1
+TARGET_CALL_COUNT=2
+CUSTOM_ASSERTION_COUNT=4
+UNSUPPORTED_ARRAY_EQUAL_REMOVED=NO

@@ -1,0 +1,494 @@
+============================================================
+PKCHECK-01C — TARGETED BUILD/HARNESS REPAIR AND RERUN
+============================================================
+UTC_TIMESTAMP=20260730T021509Z
+STAGE_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z
+WORKTREE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b
+PROOF_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body
+HARNESS_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+MAKEFILE_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+REPAIR_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_TERMINAL_SUMMARY.txt
+MAKE_LOG=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_MAKE.log
+
+============================================================
+GATE 1 — SOURCE AND FAILED-ARTEFACT REBINDING
+============================================================
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_COMMIT_MATCH=YES
+WORKTREE_COMMIT_MATCH=YES
+AUTHORITATIVE_TREE_CLEAN_BEFORE=YES
+ARTEFACT_PRESENT=YES path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+ARTEFACT_PRESENT=YES path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+EXPECTED_OLD_HARNESS_SHA=680a093dce40bba73f6a85e32c2382cda61709eaab47d5de7afcdb36fc740c3b
+ACTUAL_OLD_HARNESS_SHA=680a093dce40bba73f6a85e32c2382cda61709eaab47d5de7afcdb36fc740c3b
+EXPECTED_OLD_MAKEFILE_SHA=cf10daa3502270bdc9d43002ec781223d56cb186f6c0118af07a7e88882a3629
+ACTUAL_OLD_MAKEFILE_SHA=cf10daa3502270bdc9d43002ec781223d56cb186f6c0118af07a7e88882a3629
+OLD_HARNESS_HASH_MATCH=YES
+OLD_MAKEFILE_HASH_MATCH=YES
+FAILED_ARTEFACTS_ARCHIVED=YES
+
+============================================================
+GATE 2 — FAILURE CLASSIFICATION RECORD
+============================================================
+PKCHECK-01C CONTROLLED REPAIR
+
+Pinned production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Failed PKCHECK-01B properties:
+1. mlk_poly_frombytes.assertion.1
+2. pkcheck_store12_at.overflow.4
+
+Repair 1:
+Add mlkem/src/compress.c to PROJECT_SOURCES so the actual
+mlk_poly_frombytes[_c] and mlk_poly_tobytes[_c] implementations are linked.
+
+Repair 2:
+Replace symbolic size_t helper arithmetic with bounded unsigned arithmetic
+inlined after the original coefficient-index and malformed-value assumptions.
+
+Theorem domain unchanged:
+- MLKEM_K * MLKEM_N coefficient positions
+- malformed values MLKEM_Q through 4095 inclusive
+- all other coefficients zero
+- seed suffix zero
+- result may only be MLK_ERR_FAIL or MLK_ERR_OUT_OF_MEMORY
+
+No production source modification.
+No target replacement.
+No polyvector semantic contract replacement.
+No semantic loop-contract abstraction.
+No overflow check disabled.
+
+============================================================
+GATE 3 — WRITE REPAIRED INDEPENDENT ORACLE HARNESS
+============================================================
+REPAIRED_HARNESS_WRITTEN=YES
+
+============================================================
+GATE 4 — ADD MISSING ACTUAL COMPRESSION SOURCE
+============================================================
+COMPRESS_SOURCE_ADDED=YES
+
+===== REPAIRED PROJECT SOURCES =====
+23:PROJECT_SOURCES += $(SRCDIR)/mlkem/src/kem.c
+24:PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly_k.c
+25:PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+26:PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+COMPRESS_SOURCE_PRESENT=YES
+
+============================================================
+GATE 5 — CONTROLLED DIFF AND NEW HASHES
+============================================================
+===== HARNESS DIFF =====
+--- /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/pkcheck_01b_harness.before.c	2026-07-30 05:15:09.135615459 +0300
++++ /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c	2026-07-30 05:15:09.139808215 +0300
+@@ -1,21 +1,22 @@
+ /*
+- * PKCHECK-01B
++ * PKCHECK-01C
+  *
+- * Actual-body admission shard for mlk_kem_check_pk.
++ * Repaired actual-body admission shard for mlk_kem_check_pk.
+  *
+- * The harness independently inserts one symbolic non-canonical 12-bit
+- * coefficient into an otherwise zero polynomial-vector encoding.
++ * One symbolic non-canonical 12-bit coefficient is inserted into an
++ * otherwise-zero polynomial-vector encoding. All index arithmetic occurs
++ * after the domain assumptions and is accompanied by explicit assertions.
+  *
+- * Retained production bodies:
++ * Actual production bodies required:
+  *   - mlk_kem_check_pk
+  *   - mlk_polyvec_frombytes
++ *   - mlk_poly_frombytes / mlk_poly_frombytes_c
+  *   - mlk_polyvec_reduce
++ *   - mlk_poly_reduce / mlk_poly_reduce_c
+  *   - mlk_polyvec_tobytes
+- *
+- * This shard does not claim the final arbitrary-neighbour theorem.
++ *   - mlk_poly_tobytes / mlk_poly_tobytes_c
+  */
+ 
+-#include <stddef.h>
+ #include <stdint.h>
+ 
+ #include <cbmc.h>
+@@ -23,65 +24,27 @@
+ #include <params.h>
+ 
+ #define PKCHECK_COEFFICIENT_COUNT \
+-  ((size_t)MLKEM_K * (size_t)MLKEM_N)
+-
+-#define PKCHECK_UINT12_LIMIT 4096u
+-
+-static uint16_t pkcheck_decode12_at(
+-    const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+-    size_t coefficient_index)
+-{
+-  const size_t pair_index = coefficient_index / 2u;
+-  const size_t byte_index = 3u * pair_index;
+-
+-  if ((coefficient_index & 1u) == 0u)
+-  {
+-    return (uint16_t)(
+-        (uint16_t)pk[byte_index] |
+-        ((uint16_t)(pk[byte_index + 1u] & 0x0Fu) << 8));
+-  }
++  ((unsigned)MLKEM_K * (unsigned)MLKEM_N)
+ 
+-  return (uint16_t)(
+-      ((uint16_t)pk[byte_index + 1u] >> 4) |
+-      ((uint16_t)pk[byte_index + 2u] << 4));
+-}
++#define PKCHECK_POLYVEC_BYTE_COUNT \
++  ((unsigned)MLKEM_POLYVECBYTES)
+ 
+-static void pkcheck_store12_at(
+-    uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+-    size_t coefficient_index,
+-    uint16_t value)
+-{
+-  const size_t pair_index = coefficient_index / 2u;
+-  const size_t byte_index = 3u * pair_index;
+-
+-  if ((coefficient_index & 1u) == 0u)
+-  {
+-    pk[byte_index] = (uint8_t)value;
+-    pk[byte_index + 1u] =
+-        (uint8_t)((pk[byte_index + 1u] & 0xF0u) |
+-                  ((value >> 8) & 0x0Fu));
+-  }
+-  else
+-  {
+-    pk[byte_index + 1u] =
+-        (uint8_t)((pk[byte_index + 1u] & 0x0Fu) |
+-                  ((value & 0x0Fu) << 4));
+-    pk[byte_index + 2u] = (uint8_t)(value >> 4);
+-  }
+-}
++#define PKCHECK_UINT12_LIMIT 4096u
+ 
+ void harness(void)
+ {
+   uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES] = {0};
+-  size_t coefficient_index = 0;
+-  uint16_t malformed_value = MLKEM_Q;
++
++  unsigned coefficient_index = 0u;
++  unsigned pair_index;
++  unsigned byte_index;
++
++  uint16_t malformed_value = (uint16_t)MLKEM_Q;
++  uint32_t value32;
+   uint16_t independently_decoded;
++
+   int result;
+ 
+-  /*
+-   * Explicit havoc avoids relying on implicit treatment of uninitialized
+-   * automatic variables.
+-   */
+   __CPROVER_havoc_object(&coefficient_index);
+   __CPROVER_havoc_object(&malformed_value);
+ 
+@@ -94,36 +57,82 @@
+   __CPROVER_assume(
+       malformed_value < (uint16_t)PKCHECK_UINT12_LIMIT);
+ 
++  pair_index = coefficient_index / 2u;
++
++  __CPROVER_assert(
++      pair_index < (PKCHECK_COEFFICIENT_COUNT / 2u),
++      "PKCHECK-01C.INDEX_PAIR_BOUND: pair index is in range");
++
++  byte_index = pair_index * 3u;
++
++  __CPROVER_assert(
++      byte_index <= PKCHECK_POLYVEC_BYTE_COUNT - 3u,
++      "PKCHECK-01C.INDEX_BYTE_BOUND: three-byte block is in range");
++
++  value32 = (uint32_t)malformed_value;
++
+   /*
+-   * Every other polynomial-vector coefficient remains zero and canonical.
+-   * The 32-byte public-seed suffix also remains zero.
++   * Independent ByteEncode_12 insertion.
++   *
++   * The unrelated nibble in the shared middle byte is preserved.
+    */
+-  pkcheck_store12_at(
+-      pk,
+-      coefficient_index,
+-      malformed_value);
++  if ((coefficient_index & 1u) == 0u)
++  {
++    pk[byte_index] =
++        (uint8_t)(value32 & UINT32_C(0xFF));
++
++    pk[byte_index + 1u] =
++        (uint8_t)(
++            ((uint32_t)pk[byte_index + 1u] &
++             UINT32_C(0xF0)) |
++            ((value32 >> 8) & UINT32_C(0x0F)));
++  }
++  else
++  {
++    pk[byte_index + 1u] =
++        (uint8_t)(
++            ((uint32_t)pk[byte_index + 1u] &
++             UINT32_C(0x0F)) |
++            ((value32 & UINT32_C(0x0F)) << 4));
++
++    pk[byte_index + 2u] =
++        (uint8_t)((value32 >> 4) & UINT32_C(0xFF));
++  }
+ 
+-  independently_decoded =
+-      pkcheck_decode12_at(pk, coefficient_index);
++  /*
++   * Independent ByteDecode_12 oracle for the same coefficient.
++   */
++  if ((coefficient_index & 1u) == 0u)
++  {
++    independently_decoded =
++        (uint16_t)(
++            (uint16_t)pk[byte_index] |
++            ((uint16_t)(
++                 pk[byte_index + 1u] & UINT8_C(0x0F))
++             << 8));
++  }
++  else
++  {
++    independently_decoded =
++        (uint16_t)(
++            ((uint16_t)pk[byte_index + 1u] >> 4) |
++            ((uint16_t)pk[byte_index + 2u] << 4));
++  }
+ 
+   __CPROVER_assert(
+       independently_decoded == malformed_value,
+-      "PKCHECK-01B.ORACLE_PACKING: independently packed coefficient decodes exactly");
++      "PKCHECK-01C.ORACLE_PACKING: independently packed coefficient decodes exactly");
+ 
+   result = mlk_kem_check_pk(
+       pk,
+       NULL /* context removed by preprocessing */);
+ 
+   /*
+-   * The CBMC configuration permits malloc failure. Therefore:
+-   *
+-   *   successful allocation path -> MLK_ERR_FAIL
+-   *   allocation failure path    -> MLK_ERR_OUT_OF_MEMORY
+-   *
+-   * Returning success is forbidden.
++   * Allocation success must produce rejection. Allocation failure is the
++   * only additional result permitted by the CBMC custom-allocation config.
+    */
+   __CPROVER_assert(
+       result == MLK_ERR_FAIL ||
+           result == MLK_ERR_OUT_OF_MEMORY,
+-      "PKCHECK-01B.REJECTION: one non-canonical coefficient cannot be accepted");
++      "PKCHECK-01C.REJECTION: one non-canonical coefficient cannot be accepted");
+ }
+
+===== MAKEFILE DIFF =====
+--- /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/Makefile.before	2026-07-30 05:15:09.136816270 +0300
++++ /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile	2026-07-30 05:15:09.160130082 +0300
+@@ -23,6 +23,7 @@
+ PROJECT_SOURCES += $(SRCDIR)/mlkem/src/kem.c
+ PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly_k.c
+ PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
++PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+ 
+ # These contracts are exact enough for the present purpose:
+ # - mlk_ct_memcmp: return==0 iff every compared byte is equal.
+NEW_HARNESS_SHA=3e9d3626bc6272b590869d5870601e3c0ec83d3150c55f1dcad751560a1b7285
+NEW_MAKEFILE_SHA=9458d2764a2be68f0db359a94f94a652d5ebcc18a92d3286b5dc96dab08e75e1
+3e9d3626bc6272b590869d5870601e3c0ec83d3150c55f1dcad751560a1b7285  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+9458d2764a2be68f0db359a94f94a652d5ebcc18a92d3286b5dc96dab08e75e1  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+fc6db92936ece76f5f062cf9e4ff5de85564746cf59541807d126b785b9d911f  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_PATCH_RECORD.txt
+
+============================================================
+GATE 6 — PROOF-POLICY CHECK
+============================================================
+FORBIDDEN_POLYVEC_CONTRACT_REPLACEMENT=NO
+SEMANTIC_LOOP_ABSTRACTION_ENABLED=NO
+HARNESS_OVERFLOW_CHECK_DISABLED=NO
+
+============================================================
+GATE 7 — GOTO-CC PREFLIGHT
+============================================================
+GOTO_CC_PREFLIGHT_EXIT=0
+===== PREFLIGHT STDOUT =====
+===== PREFLIGHT STDERR =====
+GOTO_CC_PREFLIGHT_STATUS=PASS
+
+============================================================
+GATE 8 — REMOVE ONLY STALE GENERATED PROOF OUTPUTS
+============================================================
+STALE_GENERATED_OUTPUTS_REMOVED=YES
+
+============================================================
+GATE 9 — REPAIRED ACTUAL-BODY CBMC EXECUTION
+BACKEND=DEFAULT_SAT
+OUTER_TIMEOUT=900_SECONDS
+JOBS=1
+============================================================
+MAKE_EXIT=0
+ELAPSED_SECONDS=8
+MAKE_PROCESS_STATUS=COMMAND_COMPLETED
+
+============================================================
+GATE 10 — GENERATED FILE INVENTORY
+============================================================
+PRESENT size=311096 path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/result.xml
+PRESENT size=1 path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/result-err-log.txt
+PRESENT size=455397 path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/property.xml
+PRESENT size=205 path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml
+PRESENT size=370680 path=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto
+
+============================================================
+GATE 11 — RESULT + PROPERTY XML JOIN
+============================================================
+RESULT_XML_PRESENT=YES
+PROPERTY_XML_PRESENT=YES
+RESULT_XML_PARSE=PASS
+PROPERTY_XML_PARSE=PASS
+PROPERTY_COUNT=545
+PROPERTY_STATUS_FAILURE=1
+PROPERTY_STATUS_SUCCESS=544
+CPROVER_STATUSES=FAILURE
+NON_SUCCESS_PROPERTY_COUNT=1
+NON_SUCCESS_1: STATUS=FAILURE PROPERTY=mlk_poly_frombytes_c.unwind.1 DESCRIPTION=unwinding assertion loop 0
+PKCHECK_CUSTOM_PROPERTY_COUNT=4
+PKCHECK_CUSTOM_1: STATUS=SUCCESS PROPERTY=harness.assertion.1 DESCRIPTION=PKCHECK-01C.INDEX_PAIR_BOUND: pair index is in range
+PKCHECK_CUSTOM_2: STATUS=SUCCESS PROPERTY=harness.assertion.2 DESCRIPTION=PKCHECK-01C.INDEX_BYTE_BOUND: three-byte block is in range
+PKCHECK_CUSTOM_3: STATUS=SUCCESS PROPERTY=harness.assertion.3 DESCRIPTION=PKCHECK-01C.ORACLE_PACKING: independently packed coefficient decodes exactly
+PKCHECK_CUSTOM_4: STATUS=SUCCESS PROPERTY=harness.assertion.4 DESCRIPTION=PKCHECK-01C.REJECTION: one non-canonical coefficient cannot be accepted
+REQUIRED_CUSTOM_PKCHECK_01C_INDEX_BYTE_BOUND=PRESENT
+REQUIRED_CUSTOM_PKCHECK_01C_INDEX_PAIR_BOUND=PRESENT
+REQUIRED_CUSTOM_PKCHECK_01C_ORACLE_PACKING=PRESENT
+REQUIRED_CUSTOM_PKCHECK_01C_REJECTION=PRESENT
+MESSAGE_1: TYPE=STATUS-MESSAGE TEXT=CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+MESSAGE_2: TYPE=STATUS-MESSAGE TEXT=Reading GOTO program from file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto
+MESSAGE_3: TYPE=STATUS-MESSAGE TEXT=Generating GOTO Program
+MESSAGE_4: TYPE=STATUS-MESSAGE TEXT=Adding CPROVER library (x86_64)
+MESSAGE_5: TYPE=STATUS-MESSAGE TEXT=Removal of function pointers and virtual functions
+MESSAGE_6: TYPE=STATUS-MESSAGE TEXT=Generic Property Instrumentation
+MESSAGE_7: TYPE=STATUS-MESSAGE TEXT=Starting Bounded Model Checking
+MESSAGE_8: TYPE=STATUS-MESSAGE TEXT=Passing problem to propositional reduction
+MESSAGE_9: TYPE=STATUS-MESSAGE TEXT=converting SSA
+MESSAGE_10: TYPE=STATUS-MESSAGE TEXT=Running propositional reduction
+MESSAGE_11: TYPE=STATUS-MESSAGE TEXT=SAT checker: instance is SATISFIABLE
+MESSAGE_12: TYPE=STATUS-MESSAGE TEXT=Building error trace
+MESSAGE_13: TYPE=STATUS-MESSAGE TEXT=Running propositional reduction
+MESSAGE_14: TYPE=STATUS-MESSAGE TEXT=SAT checker: instance is UNSATISFIABLE
+MESSAGE_15: TYPE=STATUS-MESSAGE TEXT=VERIFICATION FAILED
+PKCHECK_01C_CLASSIFICATION=PROPERTY_FAILURE
+
+============================================================
+GATE 12 — ACTUAL LOWER-BODY CALL CHECK
+============================================================
+===== REQUIRED ACTUAL-BODY CALLS =====
+ACTUAL_BODY_CALL_PRESENT=YES pattern=CALL mlk_poly_frombytes_c
+ACTUAL_BODY_CALL_PRESENT=YES pattern=CALL mlk_poly_tobytes_c
+ACTUAL_BODY_CALL_PRESENT=YES pattern=CALL mlk_poly_reduce_c
+1964:     1: CALL mlk_polyvec_frombytes(mlk_check_pk::1::p, mlk_check_pk::pk, mlk_check_pk::__write_set_to_check)
+1966:        CALL mlk_polyvec_reduce(mlk_check_pk::1::p, mlk_check_pk::__write_set_to_check)
+1968:        CALL mlk_polyvec_tobytes(mlk_check_pk::1::p_reencoded, mlk_check_pk::1::p, mlk_check_pk::__write_set_to_check)
+2261:        CALL mlk_poly_frombytes_c(mlk_poly_frombytes::r, mlk_poly_frombytes::a, mlk_poly_frombytes::__write_set_to_check)
+2291:        CALL mlk_poly_frombytes_c::__check_lhs_assignment := __CPROVER_contracts_write_set_check_assignment(mlk_poly_frombytes_c::__write_set_to_check, cast(address_of(*mlk_poly_frombytes_c::r.coeffs[cast(cast(2, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(0, unsignedbv[32]), signedbv[64])]), empty*), 2)
+2303:        CALL mlk_poly_frombytes_c::__check_lhs_assignment$0 := __CPROVER_contracts_write_set_check_assignment(mlk_poly_frombytes_c::__write_set_to_check, cast(address_of(*mlk_poly_frombytes_c::r.coeffs[cast(cast(2, unsignedbv[32]) * mlk_poly_frombytes_c::1::i + cast(1, unsignedbv[32]), signedbv[64])]), empty*), 2)
+2333:        CALL mlk_poly_reduce_c(mlk_poly_reduce::r, mlk_poly_reduce::__write_set_to_check)
+2351:        CALL mlk_poly_reduce_c::$tmp::return_value_mlk_barrett_reduce := mlk_barrett_reduce(*mlk_poly_reduce_c::r.coeffs[cast(mlk_poly_reduce_c::1::i, signedbv[64])], mlk_poly_reduce_c::__write_set_to_check)
+2359:        CALL mlk_poly_reduce_c::$tmp::return_value_mlk_scalar_signed_to_unsigned_q := mlk_scalar_signed_to_unsigned_q(mlk_poly_reduce_c::1::1::2::t, mlk_poly_reduce_c::__write_set_to_check)
+2365:        CALL mlk_poly_reduce_c::__check_lhs_assignment := __CPROVER_contracts_write_set_check_assignment(mlk_poly_reduce_c::__write_set_to_check, cast(address_of(*mlk_poly_reduce_c::r.coeffs[cast(mlk_poly_reduce_c::1::i, signedbv[64])]), empty*), 2)
+2393:        CALL mlk_poly_tobytes_c(mlk_poly_tobytes::r, mlk_poly_tobytes::a, mlk_poly_tobytes::__write_set_to_check)
+2421:        CALL mlk_poly_tobytes_c::__check_lhs_assignment := __CPROVER_contracts_write_set_check_assignment(mlk_poly_tobytes_c::__write_set_to_check, cast(address_of(*(mlk_poly_tobytes_c::r + cast(cast(3, unsignedbv[32]) * mlk_poly_tobytes_c::1::i + cast(0, unsignedbv[32]), signedbv[64]))), empty*), 1)
+2433:        CALL mlk_poly_tobytes_c::__check_lhs_assignment$0 := __CPROVER_contracts_write_set_check_assignment(mlk_poly_tobytes_c::__write_set_to_check, cast(address_of(*(mlk_poly_tobytes_c::r + cast(cast(3, unsignedbv[32]) * mlk_poly_tobytes_c::1::i + cast(1, unsignedbv[32]), signedbv[64]))), empty*), 1)
+2445:        CALL mlk_poly_tobytes_c::__check_lhs_assignment$1 := __CPROVER_contracts_write_set_check_assignment(mlk_poly_tobytes_c::__write_set_to_check, cast(address_of(*(mlk_poly_tobytes_c::r + cast(cast(3, unsignedbv[32]) * mlk_poly_tobytes_c::1::i + cast(2, unsignedbv[32]), signedbv[64]))), empty*), 1)
+===== FUNCTION-LIST STDERR =====
+
+============================================================
+GATE 13 — RESULT AND PIPELINE MARKERS
+============================================================
+===== RESULT XML MARKERS =====
+136:<result property="mlk_poly_frombytes_c.unwind.1" status="FAILURE">
+2536:  <text>VERIFICATION FAILED</text>
+2539:<cprover-status>FAILURE</cprover-status>
+
+===== PROPERTY XML CUSTOM MARKERS =====
+276:  <description>PKCHECK-01C.INDEX_PAIR_BOUND: pair index is in range</description>
+288:  <description>PKCHECK-01C.INDEX_BYTE_BOUND: three-byte block is in range</description>
+444:  <description>PKCHECK-01C.ORACLE_PACKING: independently packed coefficient decodes exactly</description>
+450:  <description>PKCHECK-01C.REJECTION: one non-canonical coefficient cannot be accepted</description>
+
+===== RESULT STDERR =====
+
+
+===== MAKE LOG MARKERS =====
+10:[1/16] pkcheck_01b_actual_body: building proof binary                           [2/16] pkcheck_01b_actual_body: building project binary                         [3/16] pkcheck_01b_actual_body: removing function bodies from project sources   [4/16] pkcheck_01b_actual_body: linking project to proof                        [5/16] pkcheck_01b_actual_body: restricting function pointers in project sources[6/16] pkcheck_01b_actual_body: not setting static variables to nondet (will ...[7/16] pkcheck_01b_actual_body: linking CPROVER library                         [8/16] pkcheck_01b_actual_body: unwinding all loops                             [9/16] pkcheck_01b_actual_body: checking function contracts                     [10/16] pkcheck_01b_actual_body: slicing global initializations                 [11/16] pkcheck_01b_actual_body: dropping unused functions                      [12/16] pkcheck_01b_actual_body: copying final goto-binary                      [13/16] pkcheck_01b_actual_body: calculating coverage                           FAILED: /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml /tmp/litani/runs/ab383f55-6c94-4c3f-865b-b20e157003b9/status/9a6b9df7-07bc-4205-ab03-ce92d1344b1b.json 
+12:/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc   --unwind 400 --unwinding-assertions --flush --object-bits 10 --slice-formula --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto' --pipeline-name pkcheck_01b_actual_body --ci-stage test --job-id 9a6b9df7-07bc-4205-ab03-ce92d1344b1b --stdout-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml --stderr-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage-err-log.txt --description 'pkcheck_01b_actual_body: calculating coverage' --timeout 21600 --status-file /tmp/litani/runs/ab383f55-6c94-4c3f-865b-b20e157003b9/status/9a6b9df7-07bc-4205-ab03-ce92d1344b1b.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto --outputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml --ignore-returns 10 --tags 'stats-group:coverage computation'
+14:[14/16] pkcheck_01b_actual_body: printing safety properties                     [15/16] pkcheck_01b_actual_body: checking safety properties                     ninja: build stopped: cannot make progress due to previous errors.
+
+===== MAKE LOG TAIL =====
+make: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+Running litani init
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+Running litani add-job
+make[1]: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+make[1]: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body'
+Running litani build
+[1/16] pkcheck_01b_actual_body: building proof binary                           [2/16] pkcheck_01b_actual_body: building project binary                         [3/16] pkcheck_01b_actual_body: removing function bodies from project sources   [4/16] pkcheck_01b_actual_body: linking project to proof                        [5/16] pkcheck_01b_actual_body: restricting function pointers in project sources[6/16] pkcheck_01b_actual_body: not setting static variables to nondet (will ...[7/16] pkcheck_01b_actual_body: linking CPROVER library                         [8/16] pkcheck_01b_actual_body: unwinding all loops                             [9/16] pkcheck_01b_actual_body: checking function contracts                     [10/16] pkcheck_01b_actual_body: slicing global initializations                 [11/16] pkcheck_01b_actual_body: dropping unused functions                      [12/16] pkcheck_01b_actual_body: copying final goto-binary                      [13/16] pkcheck_01b_actual_body: calculating coverage                           FAILED: /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml /tmp/litani/runs/ab383f55-6c94-4c3f-865b-b20e157003b9/status/9a6b9df7-07bc-4205-ab03-ce92d1344b1b.json 
+
+/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc   --unwind 400 --unwinding-assertions --flush --object-bits 10 --slice-formula --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto' --pipeline-name pkcheck_01b_actual_body --ci-stage test --job-id 9a6b9df7-07bc-4205-ab03-ce92d1344b1b --stdout-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml --stderr-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage-err-log.txt --description 'pkcheck_01b_actual_body: calculating coverage' --timeout 21600 --status-file /tmp/litani/runs/ab383f55-6c94-4c3f-865b-b20e157003b9/status/9a6b9df7-07bc-4205-ab03-ce92d1344b1b.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto --outputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/coverage.xml --ignore-returns 10 --tags 'stats-group:coverage computation'
+
+[14/16] pkcheck_01b_actual_body: printing safety properties                     [15/16] pkcheck_01b_actual_body: checking safety properties                     ninja: build stopped: cannot make progress due to previous errors.
+
+
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+make: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body'
+
+============================================================
+GATE 14 — POST-RUN SOURCE INTEGRITY
+============================================================
+WORKTREE_PRODUCTION_SOURCE_DIFF_EMPTY_AFTER=YES
+AUTHORITATIVE_TREE_CLEAN_AFTER=YES
+===== WORKTREE STATUS =====
+?? proofs/cbmc/pkcheck_01b_actual_body/
+
+============================================================
+GATE 15 — EVIDENCE HASHES
+============================================================
+979468ddcebc1eaf5f12f1fe87004f52e54df996b58622d300638a7adb640300  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_TERMINAL_SUMMARY.txt
+6a6432209f5b4dea7876074569c93bd7df671d16a1138fedf04b0fb08e5b922e  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_MAKE.log
+fc6db92936ece76f5f062cf9e4ff5de85564746cf59541807d126b785b9d911f  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_PATCH_RECORD.txt
+680a093dce40bba73f6a85e32c2382cda61709eaab47d5de7afcdb36fc740c3b  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/pkcheck_01b_harness.before.c
+cf10daa3502270bdc9d43002ec781223d56cb186f6c0118af07a7e88882a3629  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/Makefile.before
+3e9d3626bc6272b590869d5870601e3c0ec83d3150c55f1dcad751560a1b7285  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/pkcheck_01b_actual_body_harness.c
+9458d2764a2be68f0db359a94f94a652d5ebcc18a92d3286b5dc96dab08e75e1  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/Makefile
+9662fd8add11cff0a87e7a3cc37dad2ad06f14efc26f08f0e987e32ac42fea2e  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/pkcheck_01c_preflight.goto
+66c98a04d123ee0798688b98c708cae26d9f3222ff87f0a7f534a41f21334f85  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/result.xml
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/result-err-log.txt
+58c8f5da15d502374defb0e88867da328a35cecf09b53b121420325526423d47  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/logs/property.xml
+9b7d42de1de5ad8753bbfee5303e9f6411ff04ea106fb8a5cd7156edeac8913d  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/mlkem-native_af4c5abd_pkcheck01b/proofs/cbmc/pkcheck_01b_actual_body/gotos/pkcheck_01b_actual_body_harness.goto
+
+============================================================
+PKCHECK-01C RESULT
+============================================================
+REPAIR_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_TERMINAL_SUMMARY.txt
+MAKE_LOG=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_MAKE.log
+PATCH_RECORD=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_01B_ACTUAL_BODY_ADMISSION_20260730T015957Z/PKCHECK_01C_REPAIR_20260730T021509Z/PKCHECK_01C_PATCH_RECORD.txt
+NEW_HARNESS_SHA=3e9d3626bc6272b590869d5870601e3c0ec83d3150c55f1dcad751560a1b7285
+NEW_MAKEFILE_SHA=9458d2764a2be68f0db359a94f94a652d5ebcc18a92d3286b5dc96dab08e75e1
+PREFLIGHT_EXIT=0
+MAKE_EXIT=0
+ELAPSED_SECONDS=8
+PKCHECK_01C_CAPTURE_COMPLETE=YES

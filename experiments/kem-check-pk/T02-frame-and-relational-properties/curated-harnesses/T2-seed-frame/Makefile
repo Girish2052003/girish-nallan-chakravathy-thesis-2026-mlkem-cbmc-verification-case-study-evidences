@@ -1,0 +1,40 @@
+# PKCHECK-T2 relational public-seed and frame proof.
+#
+# The target mlk_check_pk body remains concrete.
+# Repository-supplied contracts are used only for lower dependencies.
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = pkcheck_t2_seed_frame_harness
+
+PROOF_UID = pkcheck_t2_seed_frame
+
+DEFINES +=
+INCLUDES +=
+
+REMOVE_FUNCTION_BODY +=
+UNWINDSET += mlk_check_pk.0:1
+UNWINDSET += mlk_check_pk.1:1
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/kem.c
+
+USE_FUNCTION_CONTRACTS = mlk_polyvec_frombytes
+USE_FUNCTION_CONTRACTS += mlk_polyvec_reduce
+USE_FUNCTION_CONTRACTS += mlk_polyvec_tobytes
+USE_FUNCTION_CONTRACTS += mlk_ct_memcmp
+USE_FUNCTION_CONTRACTS += mlk_zeroize
+
+APPLY_LOOP_CONTRACTS = on
+
+# Use the qualified local default SAT backend.
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS =
+
+FUNCTION_NAME = mlk_check_pk
+CBMC_OBJECT_BITS = 10
+
+EXPENSIVE = true
+
+include ../Makefile.common

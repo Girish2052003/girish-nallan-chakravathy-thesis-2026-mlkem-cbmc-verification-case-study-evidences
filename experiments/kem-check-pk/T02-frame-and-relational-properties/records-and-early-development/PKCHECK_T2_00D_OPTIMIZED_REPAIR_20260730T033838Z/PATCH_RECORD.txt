@@ -1,0 +1,34 @@
+PKCHECK-T2-00D CONTROLLED HARNESS REPAIR
+
+Pinned production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Original harness:
+7d43b426b4e05c5bf629f7e4e599a97d084c9718311e8eda01029f04deb598a8
+
+Unchanged Makefile:
+d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+
+Original GOTO:
+ebd3a6fbe6db17838125eabd4ecee81452461e2eefc7529680db0588808cb48b
+
+Reasons for repair:
+1. CBMC 6.9.0 DFCC reported __CPROVER_array_equal as unsupported.
+2. Full-array relational state caused repeated kernel OOM kills.
+3. No property counterexample was produced.
+
+Repair:
+- remove all __CPROVER_array_equal operations;
+- use nondeterministic universal byte witnesses;
+- use one sequential self-composition public-key object;
+- retain two actual mlk_kem_check_pk calls;
+- retain independently symbolic public-seed values;
+- retain the same four T2 obligations;
+- retain native lower-function contracts;
+- leave production source unchanged.
+
+No result assumption.
+No target-function replacement.
+No production source modification.
+No domain reduction of the polynomial-vector prefix.
+No public-seed fixing.

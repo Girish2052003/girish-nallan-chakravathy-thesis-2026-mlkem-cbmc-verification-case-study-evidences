@@ -1,0 +1,260 @@
+============================================================
+PKCHECK-T2-00F — NON-DFCC MEASURED PREFLIGHT
+============================================================
+UTC_TIMESTAMP=20260730T040636Z
+STAGE_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z
+WORKTREE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2
+PROOF_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame
+RUN_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/PKCHECK_T2_00F_NON_DFCC_PREFLIGHT_20260730T040636Z
+
+============================================================
+GATE 1 — EXACT ARTEFACT REBINDING
+============================================================
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_HARNESS_SHA=1db5496f9992730fc965d34de669f0f771e1b8d82a694e0cd54c869bd1bfef62
+ACTUAL_OLD_MAKEFILE_SHA=d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+ACTUAL_OLD_GOTO_SHA=5490a6ac7c35aa64cda0887c239300ca748d3329102b5e59edddd53f85cfc3af
+AUTHORITATIVE_COMMIT_MATCH=YES
+WORKTREE_COMMIT_MATCH=YES
+HARNESS_HASH_MATCH=YES
+OLD_MAKEFILE_HASH_MATCH=YES
+OLD_GOTO_HASH_MATCH=YES
+AUTHORITATIVE_TREE_CLEAN_BEFORE=YES
+WORKTREE_PRODUCTION_SOURCE_DIFF_EMPTY_BEFORE=YES
+
+============================================================
+GATE 2 — REMOVE ONLY DFCC MODE
+============================================================
+DYNAMIC_FRAME_LINE_MATCH_COUNT=1
+DYNAMIC_FRAME_LINE_REMOVED=YES
+EXPECTED_NEW_MAKEFILE_SHA=83fbc37086b6da2b7a4ba5150138e72a8a5c13075a434ae68fa12a5fb979c16b
+ACTUAL_NEW_MAKEFILE_SHA=83fbc37086b6da2b7a4ba5150138e72a8a5c13075a434ae68fa12a5fb979c16b
+NEW_MAKEFILE_HASH_MATCH=YES
+PKCHECK-T2-00F PROOF-ENGINE PATCH
+
+Production source commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Harness unchanged:
+1db5496f9992730fc965d34de669f0f771e1b8d82a694e0cd54c869bd1bfef62
+
+Old Makefile:
+d26924baddf5a1e40b90ffe91781f1092c91a23826dd0af3ba3406ea6d0992b6
+
+New Makefile:
+83fbc37086b6da2b7a4ba5150138e72a8a5c13075a434ae68fa12a5fb979c16b
+
+Removed exactly:
+USE_DYNAMIC_FRAMES = 1
+
+Retained:
+- two actual mlk_kem_check_pk calls;
+- actual mlk_kem_check_pk body;
+- five native lower-function contracts;
+- APPLY_LOOP_CONTRACTS;
+- four T2 assertions;
+- all theorem inputs and domains.
+
+Purpose:
+Remove DFCC ghost write-set instrumentation while continuing to use
+CBMC's supported non-DFCC function-contract replacement mode.
+===== EXACT MAKEFILE DIFF =====
+--- /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/PKCHECK_T2_00F_NON_DFCC_PREFLIGHT_20260730T040636Z/Makefile.before	2026-07-30 07:06:36.817018389 +0300
++++ /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/Makefile	2026-07-30 07:06:36.841965066 +0300
+@@ -26,7 +26,6 @@
+ USE_FUNCTION_CONTRACTS += mlk_zeroize
+ 
+ APPLY_LOOP_CONTRACTS = on
+-USE_DYNAMIC_FRAMES = 1
+ 
+ # Use the qualified local default SAT backend.
+ EXTERNAL_SAT_SOLVER =
+
+============================================================
+GATE 3 — NON-DFCC PIPELINE DRY RUN
+============================================================
+DRY_RUN_EXIT=0
+===== CONTRACT-INSTRUMENTATION COMMAND =====
+74:    'goto-instrument     --replace-call-with-contract mlk_polyvec_frombytes --replace-call-with-contract mlk_polyvec_reduce --replace-call-with-contract mlk_polyvec_tobytes --replace-call-with-contract mlk_ct_memcmp --replace-call-with-contract mlk_zeroize --apply-loop-contracts /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/gotos/pkcheck_t2_seed_frame_harness0500.goto /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/gotos/pkcheck_t2_seed_frame_harness0600.goto' \
+DRY_RUN_DFCC_PRESENT=NO
+DRY_RUN_CPROVER_LIBRARY_LINK_PRESENT=NO
+TARGET_CONTRACT_REPLACEMENT=NO
+LOWER_CONTRACT_PRESENT=YES function=mlk_polyvec_frombytes
+LOWER_CONTRACT_PRESENT=YES function=mlk_polyvec_reduce
+LOWER_CONTRACT_PRESENT=YES function=mlk_polyvec_tobytes
+LOWER_CONTRACT_PRESENT=YES function=mlk_ct_memcmp
+LOWER_CONTRACT_PRESENT=YES function=mlk_zeroize
+LOOP_CONTRACT_APPLICATION_PRESENT=YES
+
+============================================================
+GATE 4 — BUILD ONLY THE GOTO MODEL
+COMMAND=make goto
+NO_COVERAGE_RUN=YES
+NO_MONOLITHIC_SAFETY_RUN=YES
+============================================================
+BUILD_EXIT=0
+BUILD_ELAPSED_SECONDS=4
+===== BUILD LOG =====
+make: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+Running litani init
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+Running litani add-job
+make[1]: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+make[1]: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame'
+Running litani build
+[1/12] pkcheck_t2_seed_frame: building proof binary                             [2/12] pkcheck_t2_seed_frame: building project binary                           [3/12] pkcheck_t2_seed_frame: removing function bodies from project sources     [4/12] pkcheck_t2_seed_frame: linking project to proof                          [5/12] pkcheck_t2_seed_frame: restricting function pointers in project sources  [6/12] pkcheck_t2_seed_frame: not setting static variables to nondet (will do...[7/12] pkcheck_t2_seed_frame: not linking CPROVER library                       [8/12] pkcheck_t2_seed_frame: unwinding loops in proof and project code         [9/12] pkcheck_t2_seed_frame: checking function contracts                       line 24 function __CPROVER_replace_ensures_is_fresh: function 'malloc' is not declared
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 384 function mlk_dec: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 100 function mlk_check_sk: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h line 340 function mlk_ct_memcmp: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 113 function mlk_check_sk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 402 function mlk_dec: no body for function 'mlk_indcpa_dec'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 409 function mlk_dec: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 412 function mlk_dec: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 416 function mlk_dec: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 428 function mlk_dec: no body for function 'mlk_shake256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 259 function mlk_keypair: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/randombytes.h line 49 function mlk_randombytes: no body for function 'randombytes'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 217 function mlk_keypair_derand: no body for function 'mlk_indcpa_keypair_derand'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 223 function mlk_keypair_derand: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 224 function mlk_keypair_derand: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 317 function mlk_enc_derand: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 320 function mlk_enc_derand: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 402 function mlk_dec: no body for function 'mlk_indcpa_dec'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 428 function mlk_dec: no body for function 'mlk_shake256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 80 function mlk_check_sk: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 100 function mlk_check_sk: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/verify.h line 340 function mlk_ct_memcmp: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 113 function mlk_check_sk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 297 function mlk_enc_derand: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 313 function mlk_enc_derand: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 316 function mlk_enc_derand: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 317 function mlk_enc_derand: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 320 function mlk_enc_derand: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 47 function mlk_check_pk: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 346 function mlk_enc: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/randombytes.h line 49 function mlk_randombytes: no body for function 'randombytes'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 313 function mlk_enc_derand: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 316 function mlk_enc_derand: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 317 function mlk_enc_derand: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 320 function mlk_enc_derand: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 141 function mlk_check_pct: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/randombytes.h line 49 function mlk_randombytes: no body for function 'randombytes'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 313 function mlk_enc_derand: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 316 function mlk_enc_derand: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 317 function mlk_enc_derand: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 320 function mlk_enc_derand: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 402 function mlk_dec: no body for function 'mlk_indcpa_dec'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 428 function mlk_dec: no body for function 'mlk_shake256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 217 function mlk_keypair_derand: no body for function 'mlk_indcpa_keypair_derand'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 223 function mlk_keypair_derand: no body for function 'memcpy'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 224 function mlk_keypair_derand: no body for function 'mlk_sha3_256'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 141 function mlk_check_pct: no body for function 'malloc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/randombytes.h line 49 function mlk_randombytes: no body for function 'randombytes'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/poly_k.h line 261 function mlk_polyvec_frombytes: no body for function '__CPROVER_replace_requires_is_fresh'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk: no body for function 'free'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 317 function mlk_enc_derand: no body for function 'mlk_sha3_512'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 320 function mlk_enc_derand: no body for function 'mlk_indcpa_enc'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 402 function mlk_dec: no body for function 'mlk_indcpa_dec'
+
+file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 428 function mlk_dec: no body for function 'mlk_shake256'
+
+[10/12] pkcheck_t2_seed_frame: slicing global initializations                   [11/12] pkcheck_t2_seed_frame: dropping unused functions                        [12/12] pkcheck_t2_seed_frame: copying final goto-binary                        
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+make: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame'
+GOTO_BUILD_STATUS=PASS
+FINAL_GOTO_PRESENT=YES
+NEW_GOTO_SHA=0e645e11d58745c4b49e7b1273eeec77464ee4a8e5bccb77dc7bcf00cf58e04e
+NEW_GOTO_SIZE=152521
+
+============================================================
+GATE 5 — MODEL STRUCTURAL CHECK
+============================================================
+ACTUAL_TARGET_BODY_PRESENT=YES
+DYNAMIC_FRAME_SYMBOL_COUNT=0
+FINAL_LOOP_COUNT=2
+FINAL_TARGET_LOOP_COUNT=2
+===== FINAL LOOP INVENTORY =====
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/proofs/cbmc/pkcheck_t2_seed_frame/gotos/pkcheck_t2_seed_frame_harness.goto'
+Loop mlk_check_pk.0:
+  file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 67 function mlk_check_pk
+
+Loop mlk_check_pk.1:
+  file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_T2_00A_SEED_FRAME_20260730T031357Z/mlkem-native_af4c5abd_t2/mlkem/src/kem.c line 68 function mlk_check_pk
+
+DYNAMIC_FRAME_MACHINERY_REMOVED=YES
+FINAL_MODEL_LOOP_FREE=NO

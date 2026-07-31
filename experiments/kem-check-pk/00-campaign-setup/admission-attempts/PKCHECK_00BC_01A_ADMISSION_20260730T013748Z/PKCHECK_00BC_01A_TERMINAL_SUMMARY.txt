@@ -1,0 +1,2282 @@
+============================================================
+PKCHECK-00B/00C/01A — COMBINED ADMISSION
+============================================================
+UTC_TIMESTAMP=20260730T013748Z
+AUTHORITATIVE_SOURCE_PATH=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+STAGE_DIR=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z
+ISOLATED_REPO=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_00BC_01A_TERMINAL_SUMMARY.txt
+NATIVE_LOG=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_01A_NATIVE_BASELINE.log
+
+============================================================
+GATE 1 — AUTHORITATIVE SOURCE REBINDING
+============================================================
+AUTHORITATIVE_SOURCE_DIRECTORY_FOUND=YES
+AUTHORITATIVE_GIT_WORKTREE_FOUND=YES
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_MATCH=YES
+AUTHORITATIVE_TRACKED_TREE_CLEAN=YES
+
+============================================================
+GATE 2 — COMPLETE TARGET FUNCTION
+============================================================
+/* Reference: Not implemented in the reference implementation @[REF]. */
+MLK_EXTERNAL_API
+MLK_MUST_CHECK_RETURN_VALUE
+int mlk_kem_check_pk(const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+{
+  int ret = 0;
+  MLK_ALLOC(p, mlk_polyvec, 1, context);
+  MLK_ALLOC(p_reencoded, uint8_t, MLKEM_POLYVECBYTES, context);
+
+  if (p == NULL || p_reencoded == NULL)
+  {
+    ret = MLK_ERR_OUT_OF_MEMORY;
+    goto cleanup;
+  }
+
+  mlk_polyvec_frombytes(p, pk);
+  mlk_polyvec_reduce(p);
+  mlk_polyvec_tobytes(p_reencoded, p);
+
+  /* We use a constant-time memcmp here to avoid having to
+   * declassify the PK before the PCT has succeeded. */
+  ret = mlk_ct_memcmp(pk, p_reencoded, MLKEM_POLYVECBYTES) ? MLK_ERR_FAIL : 0;
+
+cleanup:
+  /* Specification: Partially implements
+   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+  MLK_FREE(p_reencoded, uint8_t, MLKEM_POLYVECBYTES, context);
+  MLK_FREE(p, mlk_polyvec, 1, context);
+  return ret;
+}
+
+
+/* Reference: Not implemented in the reference implementation @[REF]. */
+MLK_EXTERNAL_API
+MLK_MUST_CHECK_RETURN_VALUE
+int mlk_kem_check_sk(const uint8_t sk[MLKEM_INDCCA_SECRETKEYBYTES],
+                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+{
+  int ret = 0;
+  MLK_ALLOC(test, uint8_t, MLKEM_SYMBYTES, context);
+
+  if (test == NULL)
+  {
+    ret = MLK_ERR_OUT_OF_MEMORY;
+    goto cleanup;
+  }
+
+  /*
+
+============================================================
+GATE 3 — COMPLETE TARGET CONTRACT
+============================================================
+ * @retval 0                     Success.
+ * @retval MLK_ERR_FAIL          Modulus check failed.
+ * @retval MLK_ERR_OUT_OF_MEMORY MLK_CONFIG_CUSTOM_ALLOC_FREE was used and
+ *                               MLK_CUSTOM_ALLOC returned NULL.
+ */
+MLK_EXTERNAL_API
+MLK_MUST_CHECK_RETURN_VALUE
+int mlk_kem_check_pk(const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+__contract__(
+  requires(memory_no_alias(pk, MLKEM_INDCCA_PUBLICKEYBYTES))
+  ensures(return_value == 0 || return_value == MLK_ERR_FAIL ||
+          return_value == MLK_ERR_OUT_OF_MEMORY)
+);
+
+
+/**
+ * Implements public key hash check mandated by FIPS 203, i.e., ensures that
+ * sk[768𝑘+32 ∶ 768𝑘+64] = H(pk) = H(sk[384𝑘 : 768𝑘+32]).
+ *
+ * @spec{Implements @[FIPS203, Section 7.3, 'hash check'].}
+ *
+ * @reference{Not implemented in the reference implementation @[REF].}
+ *
+ * @param[in] sk      Input private key (an already allocated array of
+ *                    MLKEM_INDCCA_SECRETKEYBYTES bytes).
+ * @param     context Application context. Only present when
+ *                    MLK_CONFIG_CONTEXT_PARAMETER is defined; type set by
+ *                    MLK_CONFIG_CONTEXT_PARAMETER_TYPE.
+ *
+ * @retval 0                     Success.
+ * @retval MLK_ERR_FAIL          Public key hash check failed.
+ * @retval MLK_ERR_OUT_OF_MEMORY MLK_CONFIG_CUSTOM_ALLOC_FREE was used and
+ *                               MLK_CUSTOM_ALLOC returned NULL.
+ */
+MLK_EXTERNAL_API
+MLK_MUST_CHECK_RETURN_VALUE
+int mlk_kem_check_sk(const uint8_t sk[MLKEM_INDCCA_SECRETKEYBYTES],
+                     MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+__contract__(
+  requires(memory_no_alias(sk, MLKEM_INDCCA_SECRETKEYBYTES))
+  ensures(return_value == 0 || return_value == MLK_ERR_FAIL ||
+          return_value == MLK_ERR_OUT_OF_MEMORY)
+);
+
+/**
+ * Generate a public/private keypair for the ML-KEM key encapsulation mechanism.
+
+============================================================
+GATE 4 — COMPLETE ENCAPSULATION GUARD
+============================================================
+ *            - We include stack buffer zeroization */
+MLK_EXTERNAL_API
+int mlk_kem_enc_derand(uint8_t ct[MLKEM_INDCCA_CIPHERTEXTBYTES],
+                       uint8_t ss[MLKEM_SSBYTES],
+                       const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+                       const uint8_t coins[MLKEM_SYMBYTES],
+                       MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+{
+  int ret = 0;
+  MLK_ALLOC(buf, uint8_t, 2 * MLKEM_SYMBYTES, context);
+  MLK_ALLOC(kr, uint8_t, 2 * MLKEM_SYMBYTES, context);
+
+  if (buf == NULL || kr == NULL)
+  {
+    ret = MLK_ERR_OUT_OF_MEMORY;
+    goto cleanup;
+  }
+
+  /* Specification: Implements @[FIPS203, Section 7.2, Modulus check] */
+  ret = mlk_kem_check_pk(pk, context);
+  if (ret != 0)
+  {
+    goto cleanup;
+  }
+
+  mlk_memcpy(buf, coins, MLKEM_SYMBYTES);
+
+  /* Multitarget countermeasure for coins + contributory KEM */
+  mlk_hash_h(buf + MLKEM_SYMBYTES, pk, MLKEM_INDCCA_PUBLICKEYBYTES);
+  mlk_hash_g(kr, buf, 2 * MLKEM_SYMBYTES);
+
+  /* coins are in kr+MLKEM_SYMBYTES */
+  ret = mlk_indcpa_enc(ct, buf, pk, kr + MLKEM_SYMBYTES, context);
+  if (ret != 0)
+  {
+    goto cleanup;
+  }
+
+  mlk_memcpy(ss, kr, MLKEM_SYMBYTES);
+
+cleanup:
+  /* Specification: Partially implements
+   * @[FIPS203, Section 3.3, Destruction of intermediate values] */
+  MLK_FREE(kr, uint8_t, 2 * MLKEM_SYMBYTES, context);
+  MLK_FREE(buf, uint8_t, 2 * MLKEM_SYMBYTES, context);
+  return ret;
+}
+
+#if !defined(MLK_CONFIG_NO_RANDOMIZED_API)
+/* Reference: `crypto_kem_enc()` in the reference implementation @[REF]
+ *            - We include stack buffer zeroization */
+MLK_EXTERNAL_API
+int mlk_kem_enc(uint8_t ct[MLKEM_INDCCA_CIPHERTEXTBYTES],
+                uint8_t ss[MLKEM_SSBYTES],
+                const uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES],
+                MLK_CONFIG_CONTEXT_PARAMETER_TYPE context)
+{
+  int ret = 0;
+  MLK_ALLOC(coins, uint8_t, MLKEM_SYMBYTES, context);
+
+  if (coins == NULL)
+  {
+    ret = MLK_ERR_OUT_OF_MEMORY;
+    goto cleanup;
+  }
+
+============================================================
+GATE 5 — CBMC CONFIGURATION FILE
+============================================================
+/*
+ * Copyright (c) The mlkem-native project authors
+ * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+ */
+
+/* References
+ * ==========
+ *
+ * - [FIPS140_3_IG]
+ *   Implementation Guidance for FIPS 140-3 and the Cryptographic Module
+ *   Validation Program
+ *   National Institute of Standards and Technology
+ *   https://csrc.nist.gov/projects/cryptographic-module-validation-program/fips-140-3-ig-announcements
+ *
+ * - [FIPS203]
+ *   FIPS 203 Module-Lattice-Based Key-Encapsulation Mechanism Standard
+ *   National Institute of Standards and Technology
+ *   https://csrc.nist.gov/pubs/fips/203/final
+ */
+
+/*
+ * WARNING: This file is auto-generated from scripts/autogen
+ *          in the mlkem-native repository.
+ *          Do not modify it directly.
+ */
+
+/*
+ * Test configuration: mlkem-native configuration used for CBMC proofs, using
+ * instrumented alloc/free
+ *
+ * This configuration differs from the default mlkem/mlkem_native_config.h in
+ * the following places:
+ *   - MLK_CONFIG_NAMESPACE_PREFIX
+ *   - MLK_CONFIG_KEYGEN_PCT
+ *   - MLK_CONFIG_CUSTOM_ALLOC_FREE
+ */
+
+
+#ifndef MLK_CONFIG_H
+#define MLK_CONFIG_H
+
+/**
+ * Specifies the parameter set for ML-KEM:
+ *  - MLK_CONFIG_PARAMETER_SET=512 corresponds to ML-KEM-512
+ *  - MLK_CONFIG_PARAMETER_SET=768 corresponds to ML-KEM-768
+ *  - MLK_CONFIG_PARAMETER_SET=1024 corresponds to ML-KEM-1024
+ *
+ * If you want to support multiple parameter sets, build the library multiple
+ * times and set MLK_CONFIG_MULTILEVEL_BUILD. See MLK_CONFIG_MULTILEVEL_BUILD
+ * for how to do this while minimizing code duplication.
+ *
+ * This can also be set using CFLAGS.
+ */
+#ifndef MLK_CONFIG_PARAMETER_SET
+#define MLK_CONFIG_PARAMETER_SET \
+  768 /* Change this for different security strengths */
+#endif
+
+/**
+ * MLK_CONFIG_FILE
+ *
+ * If defined, this is a header that will be included instead of the default
+ * configuration file mlkem/mlkem_native_config.h.
+ *
+ * When you need to build mlkem-native in multiple configurations, using
+ * varying MLK_CONFIG_FILE can be more convenient than configuring everything
+ * through CFLAGS.
+ *
+ * To use, MLK_CONFIG_FILE _must_ be defined prior to the inclusion of any
+ * mlkem-native headers. For example, it can be set by passing
+ * `-DMLK_CONFIG_FILE="..."` on the command line.
+ */
+/* No need to set this -- we _are_ already in a custom config */
+/* #define MLK_CONFIG_FILE "mlkem_native_config.h" */
+
+/**
+ * The prefix to use to namespace global symbols from mlkem/.
+ *
+ * In a multi-level build, level-dependent symbols will additionally be
+ * prefixed with the parameter set (512/768/1024).
+ *
+ * This can also be set using CFLAGS.
+ */
+#define MLK_CONFIG_NAMESPACE_PREFIX mlk
+
+/**
+ * MLK_CONFIG_MULTILEVEL_BUILD
+ *
+ * Set this if the build is part of a multi-level build supporting multiple
+ * parameter sets.
+ *
+ * If you need only a single parameter set, keep this unset.
+ *
+ * To build mlkem-native with support for all parameter sets, build it three
+ * times -- once per parameter set -- and set the option
+ * MLK_CONFIG_MULTILEVEL_WITH_SHARED for exactly one of them, and
+ * MLK_CONFIG_MULTILEVEL_NO_SHARED for the others.
+ * MLK_CONFIG_MULTILEVEL_BUILD should be set for all of them.
+ *
+ * See examples/multilevel_build for an example.
+ *
+ * This can also be set using CFLAGS.
+ */
+/* #define MLK_CONFIG_MULTILEVEL_BUILD */
+
+/**
+ * MLK_CONFIG_EXTERNAL_API_QUALIFIER
+ *
+ * If set, this option provides an additional function qualifier to be added
+ * to declarations of mlkem-native's public API.
+ *
+ * The primary use case for this option are single-CU builds where the public
+ * API exposed by mlkem-native is wrapped by another API in the consuming
+ * application. In this case, even mlkem-native's public API can be marked
+ * `static`.
+ */
+/* #define MLK_CONFIG_EXTERNAL_API_QUALIFIER */
+
+/**
+ * MLK_CONFIG_NO_RANDOMIZED_API
+ *
+ * If this option is set, mlkem-native will be built without the randomized
+ * API functions (crypto_kem_keypair and crypto_kem_enc). This allows users
+ * to build mlkem-native without providing a randombytes() implementation
+ * if they only need the deterministic API (crypto_kem_keypair_derand,
+ * crypto_kem_enc_derand, crypto_kem_dec).
+ *
+ * @note This option is incompatible with MLK_CONFIG_KEYGEN_PCT as the
+ *       current PCT implementation requires crypto_kem_enc().
+ */
+/* #define MLK_CONFIG_NO_RANDOMIZED_API */
+
+/**
+ * MLK_CONFIG_NO_SUPERCOP
+ *
+ * By default, mlkem_native.h exposes the mlkem-native API in the SUPERCOP
+ * naming convention (crypto_kem_xxx). If you don't need this, set
+ * MLK_CONFIG_NO_SUPERCOP.
+ *
+ * @note You must set this for a multi-level build as the SUPERCOP naming
+ *       does not disambiguate between the parameter sets.
+ */
+/* #define MLK_CONFIG_NO_SUPERCOP */
+
+/**
+ * MLK_CONFIG_CONSTANTS_ONLY
+ *
+ * If you only need the size constants (MLKEM_PUBLICKEYBYTES, etc.) but no
+ * function declarations, set MLK_CONFIG_CONSTANTS_ONLY.
+ *
+ * This only affects the public header mlkem_native.h, not the
+ * implementation.
+ */
+/* #define MLK_CONFIG_CONSTANTS_ONLY */
+
+/******************************************************************************
+ *
+ * Build-only configuration options
+ *
+ * The remaining configurations are build-options only.
+ * They do not affect the API described in mlkem_native.h.
+ *
+ *****************************************************************************/
+
+#if defined(MLK_BUILD_INTERNAL)
+/**
+ * MLK_CONFIG_MULTILEVEL_WITH_SHARED
+ *
+ * This is for multi-level builds of mlkem-native only. If you need only a
+ * single parameter set, keep this unset.
+ *
+ * If this is set, all MLK_CONFIG_PARAMETER_SET-independent code will be
+ * included in the build, including code needed only for other parameter
+ * sets.
+ *
+ * Example: mlk_poly_cbd3 is only needed for MLK_CONFIG_PARAMETER_SET == 512.
+ * Yet, if this option is set for a build with
+ * MLK_CONFIG_PARAMETER_SET == 768/1024, it would be included.
+ *
+ * To build mlkem-native with support for all parameter sets, build it three
+ * times -- once per parameter set -- and set the option
+ * MLK_CONFIG_MULTILEVEL_WITH_SHARED for exactly one of them, and
+ * MLK_CONFIG_MULTILEVEL_NO_SHARED for the others.
+ * MLK_CONFIG_MULTILEVEL_BUILD should be set for all of them.
+ *
+ * See examples/multilevel_build for an example.
+ *
+ * This can also be set using CFLAGS.
+ */
+/* #define MLK_CONFIG_MULTILEVEL_WITH_SHARED */
+
+/**
+ * MLK_CONFIG_MULTILEVEL_NO_SHARED
+ *
+ * This is for multi-level builds of mlkem-native only. If you need only a
+ * single parameter set, keep this unset.
+ *
+ * If this is set, no MLK_CONFIG_PARAMETER_SET-independent code will be
+ * included in the build.
+ *
+ * To build mlkem-native with support for all parameter sets, build it three
+ * times -- once per parameter set -- and set the option
+ * MLK_CONFIG_MULTILEVEL_WITH_SHARED for exactly one of them, and
+ * MLK_CONFIG_MULTILEVEL_NO_SHARED for the others.
+ * MLK_CONFIG_MULTILEVEL_BUILD should be set for all of them.
+ *
+ * See examples/multilevel_build for an example.
+ *
+ * This can also be set using CFLAGS.
+ */
+/* #define MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+/**
+ * MLK_CONFIG_MONOBUILD_KEEP_SHARED_HEADERS
+ *
+ * This is only relevant for single compilation unit (SCU) builds of
+ * mlkem-native. In this case, it determines whether directives defined in
+ * parameter-set-independent headers should be #undef'ined or not at the
+ * end of the SCU file. This is needed in multilevel builds.
+ *
+ * See examples/multilevel_build_native for an example.
+ *
+ * This can also be set using CFLAGS.
+ */
+/* #define MLK_CONFIG_MONOBUILD_KEEP_SHARED_HEADERS */
+
+/**
+ * MLK_CONFIG_USE_NATIVE_BACKEND_ARITH
+ *
+ * Determines whether a native arithmetic backend should be used.
+ *
+ * The arithmetic backend covers performance-critical functions such as the
+ * number-theoretic transform (NTT).
+ *
+ * If this option is unset, the C backend will be used.
+ *
+ * If this option is set, the arithmetic backend to be used is determined
+ * by MLK_CONFIG_ARITH_BACKEND_FILE: if the latter is unset, the default
+ * backend for the target architecture will be used. If set, it must be the
+ * name of a backend metadata file.
+ *
+ * This can also be set using CFLAGS.
+ */
+#if !defined(MLK_CONFIG_USE_NATIVE_BACKEND_ARITH)
+/* #define MLK_CONFIG_USE_NATIVE_BACKEND_ARITH */
+#endif
+
+/**
+ * MLK_CONFIG_ARITH_BACKEND_FILE
+ *
+ * The arithmetic backend to use.
+ *
+ * If MLK_CONFIG_USE_NATIVE_BACKEND_ARITH is unset, this option is ignored.
+ *
+ * If MLK_CONFIG_USE_NATIVE_BACKEND_ARITH is set, this option must either
+ * be undefined or the filename of an arithmetic backend. If unset, the
+ * default backend will be used.
+ *
+ * This can be set using CFLAGS.
+ */
+#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_ARITH) && \
+    !defined(MLK_CONFIG_ARITH_BACKEND_FILE)
+#define MLK_CONFIG_ARITH_BACKEND_FILE "native/meta.h"
+#endif
+
+/**
+ * MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202
+ *
+ * Determines whether a native FIPS202 backend should be used.
+ *
+ * The FIPS202 backend covers 1x/2x/4x-fold Keccak-f1600, which is the
+ * performance bottleneck of SHA3 and SHAKE.
+ *
+ * If this option is unset, the C backend will be used.
+ *
+ * If this option is set, the FIPS202 backend to be used is determined by
+ * MLK_CONFIG_FIPS202_BACKEND_FILE: if the latter is unset, the default
+ * backend for the target architecture will be used. If set, it must be
+ * the name of a backend metadata file.
+ *
+ * This can also be set using CFLAGS.
+ */
+#if !defined(MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202)
+/* #define MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202 */
+#endif
+
+/**
+ * MLK_CONFIG_FIPS202_BACKEND_FILE
+ *
+ * The FIPS-202 backend to use.
+ *
+ * If MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202 is set, this option must either
+ * be undefined or the filename of a FIPS202 backend. If unset, the default
+ * backend will be used.
+ *
+ * This can be set using CFLAGS.
+ */
+#if defined(MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202) && \
+    !defined(MLK_CONFIG_FIPS202_BACKEND_FILE)
+#define MLK_CONFIG_FIPS202_BACKEND_FILE "fips202/native/auto.h"
+#endif
+
+/**
+ * MLK_CONFIG_FIPS202_CUSTOM_HEADER
+ *
+ * Custom header to use for FIPS-202.
+ *
+ * This should only be set if you intend to use a custom FIPS-202
+ * implementation, different from the one shipped with mlkem-native.
+ *
+ * If set, it must be the name of a file serving as the replacement for
+ * mlkem/fips202/fips202.h, and exposing the same API (see FIPS202.md).
+ */
+/* #define MLK_CONFIG_FIPS202_CUSTOM_HEADER "SOME_FILE.h" */
+
+/**
+ * MLK_CONFIG_FIPS202X4_CUSTOM_HEADER
+ *
+ * Custom header to use for FIPS-202-X4.
+ *
+ * This should only be set if you intend to use a custom FIPS-202
+ * implementation, different from the one shipped with mlkem-native.
+ *
+ * If set, it must be the name of a file serving as the replacement for
+ * mlkem/fips202/fips202x4.h, and exposing the same API (see FIPS202.md).
+ */
+/* #define MLK_CONFIG_FIPS202X4_CUSTOM_HEADER "SOME_FILE.h" */
+
+/**
+ * MLK_CONFIG_CUSTOM_ZEROIZE
+ *
+ * In compliance with @[FIPS203, Section 3.3], mlkem-native zeroizes
+ * intermediate stack buffers before returning from function calls.
+ *
+ * Set this option and define `mlk_zeroize` if you want to use a custom
+ * method to zeroize intermediate stack buffers. The default implementation
+ * uses SecureZeroMemory on Windows and a memset + compiler barrier
+ * otherwise. If neither of those is available on the target platform,
+ * compilation will fail, and you will need to use MLK_CONFIG_CUSTOM_ZEROIZE
+ * to provide a custom implementation of `mlk_zeroize()`.
+ *
+ * @warning The explicit stack zeroization conducted by mlkem-native reduces
+ *          the likelihood of data leaking on the stack, but does not
+ *          eliminate it. The C standard makes no guarantee about where a
+ *          compiler allocates structures and whether/where it makes copies
+ *          of them. Also, in addition to entire structures, there may also
+ *          be potentially exploitable leakage of individual values on the
+ *          stack. If you need bullet-proof zeroization of the stack, you
+ *          need to consider additional measures instead of what this
+ *          feature provides. In this case, you can set mlk_zeroize to a
+ *          no-op.
+ */
+/* #define MLK_CONFIG_CUSTOM_ZEROIZE
+   #if !defined(__ASSEMBLER__)
+   #include <stdint.h>
+   #include "src/sys.h"
+   static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+   {
+       ... your implementation ...
+   }
+   #endif
+*/
+
+/**
+ * MLK_CONFIG_CUSTOM_RANDOMBYTES
+ *
+ * mlkem-native does not provide a secure randombytes implementation. Such
+ * an implementation has to be provided by the consumer.
+ *
+ * If this option is not set, mlkem-native expects a function
+ * int randombytes(uint8_t *out, size_t outlen). It is expected to return
+ * zero on success, and non-zero on failure. In case of failure, the
+ * top-level APIs will return an MLK_ERR_RNG_FAIL error code.
+ *
+ * Set this option and define `mlk_randombytes` (with the same signature
+ * and behaviour) if you want to use a custom method to sample randombytes
+ * with a different name or signature.
+ */
+/* #define MLK_CONFIG_CUSTOM_RANDOMBYTES
+   #if !defined(__ASSEMBLER__)
+   #include <stdint.h>
+   #include "src/sys.h"
+   static MLK_INLINE int mlk_randombytes(uint8_t *ptr, size_t len)
+   {
+       ... your implementation ...
+       return 0;
+   }
+   #endif
+*/
+
+/**
+ * MLK_CONFIG_CUSTOM_CAPABILITY_FUNC
+ *
+ * mlkem-native backends may rely on specific hardware features. Those
+ * backends will only be included in an mlkem-native build if support for
+ * the respective features is enabled at compile-time. However, when
+ * building for a heterogeneous set of CPUs to run the resulting
+ * binary/library on, feature detection at _runtime_ is needed to decide
+ * whether a backend can be used or not.
+ *
+ * Set this option and define `mlk_sys_check_capability` if you want to
+ * use a custom method to dispatch between implementations.
+ *
+ * If this option is not set, mlkem-native uses compile-time feature
+ * detection only to decide which backend to use.
+ *
+ * If you compile mlkem-native on a system with different capabilities
+ * than the system that the resulting binary/library will be run on, you
+ * must use this option.
+ */
+/* #define MLK_CONFIG_CUSTOM_CAPABILITY_FUNC
+   static MLK_INLINE int mlk_sys_check_capability(mlk_sys_cap cap)
+   __contract__(
+     ensures(return_value == 0 || return_value == 1)
+   )
+   {
+       ... your implementation ...
+   }
+*/
+
+/**
+ * MLK_CONFIG_CUSTOM_ALLOC_FREE [EXPERIMENTAL]
+ *
+ * Set this option and define `MLK_CUSTOM_ALLOC` and `MLK_CUSTOM_FREE` if
+ * you want to use custom allocation for large local structures or buffers.
+ *
+ * By default, all buffers/structures are allocated on the stack. If this
+ * option is set, most of them will be allocated via MLK_CUSTOM_ALLOC.
+ *
+ * Parameters to MLK_CUSTOM_ALLOC:
+ *  - T* v: Target pointer to declare.
+ *  - T: Type of structure to be allocated.
+ *  - N: Number of elements to be allocated.
+ *
+ * Parameters to MLK_CUSTOM_FREE:
+ *  - T* v: Target pointer to free. May be NULL.
+ *  - T: Type of structure to be freed.
+ *  - N: Number of elements to be freed.
+ *
+ * @warning This option is experimental. Its scope, configuration and
+ *          function/macro signatures may change at any time. We expect a
+ *          stable API for v2.
+ *
+ * @note Even if this option is set, some allocations further down the call
+ *       stack will still be made from the stack, consuming up to 3KB of
+ *       stack space. Those will likely be added to the scope of this
+ *       option in the future.
+ *
+ * @note MLK_CUSTOM_ALLOC need not guarantee a successful allocation nor
+ *       include error handling. Upon failure, the target pointer should
+ *       simply be set to NULL. The calling code will handle this case and
+ *       invoke MLK_CUSTOM_FREE.
+ */
+#define MLK_CONFIG_CUSTOM_ALLOC_FREE
+#if !defined(__ASSEMBLER__)
+#include <stdlib.h>
+#define MLK_CUSTOM_ALLOC(v, T, N) T *v = (T *)malloc(sizeof(T) * (N))
+#define MLK_CUSTOM_FREE(v, T, N) free(v)
+#endif
+
+
+/**
+ * MLK_CONFIG_CUSTOM_MEMCPY
+ *
+ * Set this option and define `mlk_memcpy` if you want to use a custom
+ * method to copy memory instead of the standard library memcpy function.
+ *
+ * The custom implementation must have the same signature and behavior as
+ * the standard memcpy function:
+ * void *mlk_memcpy(void *dest, const void *src, size_t n)
+ */
+/* #define MLK_CONFIG_CUSTOM_MEMCPY
+   #if !defined(__ASSEMBLER__)
+   #include <stdint.h>
+   #include "src/sys.h"
+   static MLK_INLINE void *mlk_memcpy(void *dest, const void *src, size_t n)
+   {
+       ... your implementation ...
+   }
+   #endif
+*/
+
+/**
+ * MLK_CONFIG_CUSTOM_MEMSET
+ *
+ * Set this option and define `mlk_memset` if you want to use a custom
+ * method to set memory instead of the standard library memset function.
+ *
+ * The custom implementation must have the same signature and behavior as
+ * the standard memset function:
+ * void *mlk_memset(void *s, int c, size_t n)
+ */
+/* #define MLK_CONFIG_CUSTOM_MEMSET
+   #if !defined(__ASSEMBLER__)
+   #include <stdint.h>
+   #include "src/sys.h"
+   static MLK_INLINE void *mlk_memset(void *s, int c, size_t n)
+   {
+       ... your implementation ...
+   }
+   #endif
+*/
+
+/**
+ * MLK_CONFIG_INTERNAL_API_QUALIFIER
+ *
+ * If set, this option provides an additional qualifier to be added to
+ * declarations of internal API functions and data.
+ *
+ * The primary use case for this option are single-CU builds, in which case
+ * this option can be set to `static`.
+ */
+/* #define MLK_CONFIG_INTERNAL_API_QUALIFIER */
+
+/**
+ * MLK_CONFIG_CT_TESTING_ENABLED
+ *
+ * If set, mlkem-native annotates data as secret/public using valgrind's
+ * annotations VALGRIND_MAKE_MEM_UNDEFINED and VALGRIND_MAKE_MEM_DEFINED,
+ * enabling various checks for secret-dependent control flow or
+ * variable-time execution (depending on the exact version of valgrind
+ * installed).
+ */
+/* #define MLK_CONFIG_CT_TESTING_ENABLED */
+
+/**
+ * MLK_CONFIG_NO_ASM
+ *
+ * If this option is set, mlkem-native will be built without use of native
+ * code or inline assembly.
+ *
+ * By default, inline assembly is used to implement value barriers. Without
+ * inline assembly, mlkem-native will use a global volatile 'opt blocker'
+ * instead; see verify.h.
+ *
+ * Inline assembly is also used to implement a secure zeroization function
+ * on non-Windows platforms. If this option is set and the target platform
+ * is not Windows, you MUST set MLK_CONFIG_CUSTOM_ZEROIZE and provide a
+ * custom zeroization function.
+ *
+ * If this option is set, MLK_CONFIG_USE_NATIVE_BACKEND_FIPS202 and
+ * MLK_CONFIG_USE_NATIVE_BACKEND_ARITH will be ignored, and no native
+ * backends will be used.
+ */
+/* #define MLK_CONFIG_NO_ASM */
+
+/**
+ * MLK_CONFIG_NO_ASM_VALUE_BARRIER
+ *
+ * If this option is set, mlkem-native will be built without use of native
+ * code or inline assembly for value barriers.
+ *
+ * By default, inline assembly (if available) is used to implement value
+ * barriers. Without inline assembly, mlkem-native will use a global
+ * volatile 'opt blocker' instead; see verify.h.
+ */
+/* #define MLK_CONFIG_NO_ASM_VALUE_BARRIER */
+
+/**
+ * MLK_CONFIG_KEYGEN_PCT
+ *
+ * Compliance with @[FIPS140_3_IG, p.87] requires a Pairwise Consistency
+ * Test (PCT) to be carried out on a freshly generated keypair before it
+ * can be exported.
+ *
+ * Set this option if such a check should be implemented. In this case,
+ * crypto_kem_keypair_derand and crypto_kem_keypair will return a non-zero
+ * error code if the PCT failed.
+ *
+ * @note This feature will drastically lower the performance of key
+ *       generation.
+ */
+#define MLK_CONFIG_KEYGEN_PCT
+
+/**
+ * MLK_CONFIG_KEYGEN_PCT_BREAKAGE_TEST
+ *
+ * If this option is set, the user must provide a runtime function
+ * `static inline int mlk_break_pct() { ... }` to indicate whether the PCT
+ * should be made to fail.
+ *
+ * This option only has an effect if MLK_CONFIG_KEYGEN_PCT is set.
+ */
+/* #define MLK_CONFIG_KEYGEN_PCT_BREAKAGE_TEST
+   #if !defined(__ASSEMBLER__)
+   #include "src/sys.h"
+   static MLK_INLINE int mlk_break_pct(void)
+   {
+       ... return 0/1 depending on whether PCT should be broken ...
+   }
+   #endif
+*/
+
+/**
+ * MLK_CONFIG_SERIAL_FIPS202_ONLY
+ *
+ * Set this to use a FIPS202 implementation with global state that supports
+ * only one active Keccak computation at a time (e.g. some hardware
+ * accelerators).
+ *
+ * If this option is set, batched Keccak operations are disabled for
+ * rejection sampling during matrix generation. Instead, matrix entries
+ * will be generated one at a time.
+ *
+ * This allows offloading Keccak computations to a hardware accelerator
+ * that holds only a single Keccak state locally, rather than requiring
+ * support for batched (4x) Keccak states.
+ *
+ * @note Depending on the target CPU, disabling batched Keccak may reduce
+ *       performance when using software FIPS202 implementations. Only
+ *       enable this when you have to.
+ */
+/* #define MLK_CONFIG_SERIAL_FIPS202_ONLY */
+
+/**
+ * MLK_CONFIG_CONTEXT_PARAMETER
+ *
+ * Set this to add a context parameter that is provided to public API
+ * functions and is then available in custom callbacks.
+ *
+ * The type of the context parameter is configured via
+ * MLK_CONFIG_CONTEXT_PARAMETER_TYPE.
+ */
+/* #define MLK_CONFIG_CONTEXT_PARAMETER */
+
+/**
+ * MLK_CONFIG_CONTEXT_PARAMETER_TYPE
+ *
+ * Set this to define the type for the context parameter used by
+ * MLK_CONFIG_CONTEXT_PARAMETER.
+ *
+ * This is only relevant if MLK_CONFIG_CONTEXT_PARAMETER is set.
+ */
+/* #define MLK_CONFIG_CONTEXT_PARAMETER_TYPE void* */
+
+/*************************  Config internals  ********************************/
+
+#endif /* MLK_BUILD_INTERNAL */
+
+/* Default namespace
+ *
+ * Don't change this. If you need a different namespace, re-define
+ * MLK_CONFIG_NAMESPACE_PREFIX above instead, and remove the following.
+ *
+ * The default MLKEM namespace is
+ *
+ *   PQCP_MLKEM_NATIVE_MLKEM<LEVEL>_
+ *
+ * e.g., PQCP_MLKEM_NATIVE_MLKEM512_
+ */
+
+#if MLK_CONFIG_PARAMETER_SET == 512
+#define MLK_DEFAULT_NAMESPACE_PREFIX PQCP_MLKEM_NATIVE_MLKEM512
+#elif MLK_CONFIG_PARAMETER_SET == 768
+#define MLK_DEFAULT_NAMESPACE_PREFIX PQCP_MLKEM_NATIVE_MLKEM768
+#elif MLK_CONFIG_PARAMETER_SET == 1024
+#define MLK_DEFAULT_NAMESPACE_PREFIX PQCP_MLKEM_NATIVE_MLKEM1024
+#endif
+
+#endif /* !MLK_CONFIG_H */
+
+============================================================
+GATE 6 — RESOLVED NATIVE PROOF VARIABLES
+============================================================
+FUNCTION_NAME = mlk_check_pk
+CBMCFLAGS :=   --flush --object-bits 10 --slice-formula
+MLKEM_K = 3
+INCLUDES = -I$(PROOFDIR) -I$(SRCDIR)/proofs/cbmc -I$(SRCDIR)/mlkem -I$(SRCDIR)/mlkem/src/ -I$(SRCDIR)/mlkem/src/fips202
+DEFINES = -DCBMC=1 -DCBMC_OBJECT_BITS=$(CBMC_OBJECT_BITS) -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=$(MLK_CONFIG_PARAMETER_SET) -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE=
+HARNESS_FILE = kem_check_pk_harness
+CBMC_OBJECT_BITS = 10
+CHECK_FUNCTION_CONTRACTS = mlk_check_pk
+USE_DYNAMIC_FRAMES = 1
+HARNESS_ENTRY = harness
+USE_FUNCTION_CONTRACTS = mlk_polyvec_frombytes mlk_polyvec_reduce mlk_polyvec_tobytes mlk_ct_memcmp mlk_zeroize
+APPLY_LOOP_CONTRACTS = on
+FUNCTION_NAME = mlk_check_pk
+CBMCFLAGS :=   --flush --object-bits 10 --slice-formula
+MLKEM_K = 3
+INCLUDES = -I$(PROOFDIR) -I$(SRCDIR)/proofs/cbmc -I$(SRCDIR)/mlkem -I$(SRCDIR)/mlkem/src/ -I$(SRCDIR)/mlkem/src/fips202
+DEFINES = -DCBMC=1 -DCBMC_OBJECT_BITS=$(CBMC_OBJECT_BITS) -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=$(MLK_CONFIG_PARAMETER_SET) -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE=
+HARNESS_FILE = kem_check_pk_harness
+CBMC_OBJECT_BITS = 10
+CHECK_FUNCTION_CONTRACTS = mlk_check_pk
+USE_DYNAMIC_FRAMES = 1
+HARNESS_ENTRY = harness
+USE_FUNCTION_CONTRACTS = mlk_polyvec_frombytes mlk_polyvec_reduce mlk_polyvec_tobytes mlk_ct_memcmp mlk_zeroize
+APPLY_LOOP_CONTRACTS = on
+
+============================================================
+GATE 7 — DRY-RUN BUILD COMMANDS
+============================================================
+make: Entering directory '/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+echo Running 'litani init'
+litani init  --project "mlkem-native"
+echo Running 'litani add-job'
+make -B _report
+make[1]: Entering directory '/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=10 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c -o /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/proof0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/proof0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/proof_sources-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: building proof binary"
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=10 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c -o /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/project_sources-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: building project binary"
+litani add-job \
+  --command \
+    'goto-instrument   /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0100.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0200.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0100.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0200.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/remove_function_body-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: removing function bodies from project sources"
+litani add-job \
+  --command 'goto-cc  --function harness /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/proof0100.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0200.goto -Wall -Werror -o /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/proof0100.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/project0200.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/link_proof_project-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: linking project to proof"
+litani add-job \
+  --command \
+    'goto-instrument   --remove-function-pointers /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0100.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0200.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0100.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0200.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/restrict_function_pointer-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: restricting function pointers in project sources"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0200.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0300.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0200.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0300.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/nondet_static-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: not setting static variables to nondet (will do during contract instrumentation)"
+litani add-job \
+  --command \
+    'goto-instrument  --add-library --malloc-may-fail --malloc-fail-null   /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0300.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0400.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0300.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0400.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/linking-library-models-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: linking CPROVER library"
+litani add-job \
+  --command \
+    'goto-instrument     /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0400.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0500.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0400.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0500.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/unwind_loops-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: unwinding specified subset of loops"
+litani add-job \
+  --command \
+    'goto-instrument --malloc-may-fail --malloc-fail-null   --dfcc harness    --enforce-contract mlk_check_pk --replace-call-with-contract mlk_polyvec_frombytes --replace-call-with-contract mlk_polyvec_reduce --replace-call-with-contract mlk_polyvec_tobytes --replace-call-with-contract mlk_ct_memcmp --replace-call-with-contract mlk_zeroize --apply-loop-contracts /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0500.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0600.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0500.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0600.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/check_function_contracts-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: checking function contracts"
+litani add-job \
+  --command \
+    'goto-instrument  --slice-global-inits /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0600.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0700.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0600.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0700.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/slice_global_inits-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: slicing global initializations"
+litani add-job \
+  --command \
+    'goto-instrument  --drop-unused-functions /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0700.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0800.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0700.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0800.goto \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/drop_unused_functions-log.txt \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: dropping unused functions"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0800.goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness0800.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto \
+  --pipeline-name "kem_check_pk" \
+  --ci-stage build \
+  --description "kem_check_pk: copying final goto-binary"
+litani add-job \
+   \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 10 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/result.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/result.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "kem_check_pk" \
+  --tags "stats-group:safety checks" \
+  --stderr-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/result-err-log.txt \
+  --description "kem_check_pk: checking safety properties"
+litani add-job \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 10 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --show-properties --xml-ui /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/property.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/property.xml \
+  --ignore-returns 10 \
+  --pipeline-name "kem_check_pk" \
+  --stderr-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/property-err-log.txt \
+  --description "kem_check_pk: printing safety properties"
+litani add-job \
+   \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 10 --slice-formula --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/coverage.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/coverage.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "kem_check_pk" \
+  --tags "stats-group:coverage computation" \
+  --stderr-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/coverage-err-log.txt \
+  --description "kem_check_pk: calculating coverage"
+litani add-job \
+  --command " cbmc-viewer \
+    --result /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/result.xml \
+    --coverage /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/coverage.xml \
+    --property /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/property.xml \
+    --srcdir /home/girish/THESIS-2026/mlkem-native_af4c5abd \
+    --goto /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto \
+    --reportdir /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/report \
+    --config /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/cbmc-viewer.json" \
+  --inputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/result.xml /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/property.xml /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/coverage.xml \
+  --outputs /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/report \
+  --pipeline-name "kem_check_pk" \
+  --stdout-file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/logs/viewer-log.txt \
+  --ci-stage report \
+  --description "kem_check_pk: generating report"
+make[1]: Leaving directory '/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk'
+echo Running 'litani build'
+litani run-build
+make: Leaving directory '/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk'
+
+============================================================
+GATE 8 — LOWER-LEVEL CONTRACT LOCATIONS
+============================================================
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.c:26:  mlk_zeroize(state_tmp, sizeof(state_tmp));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202.c:204:  mlk_zeroize(state, sizeof(mlk_shake128ctx));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202.c:218:  mlk_zeroize(&state, sizeof(state));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202.c:230:  mlk_zeroize(ctx, sizeof(ctx));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202.c:242:  mlk_zeroize(ctx, sizeof(ctx));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:142:  mlk_zeroize(state, sizeof(mlk_shake128x4ctx));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:196:  mlk_zeroize(&statex, sizeof(statex));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:197:  mlk_zeroize(tmp0, sizeof(tmp0));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:198:  mlk_zeroize(tmp1, sizeof(tmp1));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:199:  mlk_zeroize(tmp2, sizeof(tmp2));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202/fips202x4.c:200:  mlk_zeroize(tmp3, sizeof(tmp3));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:225:#define mlk_polyvec_tobytes MLK_NAMESPACE_K(polyvec_tobytes)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:238:void mlk_polyvec_tobytes(uint8_t r[MLKEM_POLYVECBYTES], const mlk_polyvec *a)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:247:#define mlk_polyvec_frombytes MLK_NAMESPACE_K(polyvec_frombytes)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:249: * De-serialize a vector of polynomials; inverse of mlk_polyvec_tobytes.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:260:void mlk_polyvec_frombytes(mlk_polyvec *r, const uint8_t a[MLKEM_POLYVECBYTES])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:387:#define mlk_polyvec_reduce MLK_NAMESPACE_K(polyvec_reduce)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:399: * NOTE: The semantics of mlk_polyvec_reduce() is different in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:406:void mlk_polyvec_reduce(mlk_polyvec *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:207:/* The MLK_FREE macro body references mlk_zeroize(), which is declared in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:210: * itself never calls mlk_zeroize() -- only the macro expansion does. Each
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:215:    mlk_zeroize(mlk_alloc_##v, sizeof(mlk_alloc_##v)); \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:236:      mlk_zeroize(v, sizeof(T) * (N));                                        \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:56:  mlk_polyvec_frombytes(p, pk);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:57:  mlk_polyvec_reduce(p);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:58:  mlk_polyvec_tobytes(p_reencoded, p);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:62:  ret = mlk_ct_memcmp(pk, p_reencoded, MLKEM_POLYVECBYTES) ? MLK_ERR_FAIL : 0;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:105:  ret = mlk_ct_memcmp(sk + MLKEM_INDCCA_SECRETKEYBYTES - 2 * MLKEM_SYMBYTES,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:171:  ret = mlk_ct_memcmp(ss_enc, ss_dec, MLKEM_SSBYTES);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:243:    mlk_zeroize(pk, MLKEM_INDCCA_PUBLICKEYBYTES);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:244:    mlk_zeroize(sk, MLKEM_INDCCA_SECRETKEYBYTES);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/kem.c:422:  fail = mlk_ct_memcmp(ct, tmp, MLKEM_INDCCA_CIPHERTEXTBYTES);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/sampling.c:214:  mlk_zeroize(buf, sizeof(buf));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/sampling.c:251:  mlk_zeroize(buf, sizeof(buf));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:80:void mlk_polyvec_tobytes(uint8_t r[MLKEM_POLYVECBYTES], const mlk_polyvec *a)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:98:void mlk_polyvec_frombytes(mlk_polyvec *r, const uint8_t a[MLKEM_POLYVECBYTES])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:245:void mlk_polyvec_reduce(mlk_polyvec *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:378:  mlk_zeroize(buf, sizeof(buf));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:379:  mlk_zeroize(extkey, sizeof(extkey));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:431:  mlk_zeroize(buf, sizeof(buf));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:432:  mlk_zeroize(extkey, sizeof(extkey));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:492:  mlk_zeroize(buf, sizeof(buf));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.c:493:  mlk_zeroize(extkey, sizeof(extkey));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:338:static MLK_INLINE uint8_t mlk_ct_memcmp(const uint8_t *a, const uint8_t *b,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:422:static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:428:static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:442:#error No plausibly-secure implementation of mlk_zeroize available. Please provide your own using MLK_CONFIG_CUSTOM_ZEROIZE.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:63:  mlk_polyvec_tobytes(r, pk);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:81:  mlk_polyvec_frombytes(pk, packedpk);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:102:  mlk_polyvec_tobytes(r, sk);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:116:  mlk_polyvec_frombytes(sk, packedsk);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:299:  mlk_zeroize(seed_ext, sizeof(seed_ext));
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:493:  mlk_polyvec_reduce(pkpv);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:494:  mlk_polyvec_reduce(skpv);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/indcpa.c:574:  mlk_polyvec_reduce(b);
+
+============================================================
+GATE 9 — CONTRACT TEXT: POLYVECTOR OPERATIONS
+============================================================
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-215-void mlk_polyvec_decompress_du(mlk_polyvec *r,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-216-                               const uint8_t a[MLKEM_POLYVECCOMPRESSEDBYTES_DU])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-217-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-218-  requires(memory_no_alias(a, MLKEM_POLYVECCOMPRESSEDBYTES_DU))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-219-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-220-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-221-  ensures(forall(k0, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-222-         array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-223-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-224-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:225:#define mlk_polyvec_tobytes MLK_NAMESPACE_K(polyvec_tobytes)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-226-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-227- * Serialize a vector of polynomials.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-228- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-229- * @spec{Implements ByteEncode_12 @[FIPS203, Algorithm 5]. Extended to
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-230- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays] and
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-231- * @[FIPS203, 2.4.6, Matrices and Vectors].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-232- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-233- * @param[out] r Output byte array (needs space for MLKEM_POLYVECBYTES bytes).
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-234- * @param[in]  a Input vector of polynomials. Each polynomial must have
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-235- *               coefficients in [0,1,..,MLKEM_Q-1].
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-236- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-237-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:238:void mlk_polyvec_tobytes(uint8_t r[MLKEM_POLYVECBYTES], const mlk_polyvec *a)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-239-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-240-  requires(memory_no_alias(a, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-241-  requires(memory_no_alias(r, MLKEM_POLYVECBYTES))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-242-  requires(forall(k0, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-243-         array_bound(a->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-244-  assigns(memory_slice(r, MLKEM_POLYVECBYTES))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-245-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-246-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-247-#define mlk_polyvec_frombytes MLK_NAMESPACE_K(polyvec_frombytes)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-248-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:249: * De-serialize a vector of polynomials; inverse of mlk_polyvec_tobytes.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-250- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-251- * @spec{Implements ByteDecode_12 @[FIPS203, Algorithm 6]. Extended to
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-252- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays] and
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-253- * @[FIPS203, 2.4.6, Matrices and Vectors].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-254- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-255- * @param[out] r Output vector of polynomials. Coefficients will be
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-256- *               normalized in [0,1,..,4095].
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-257- * @param[in]  a Input byte array (of length MLKEM_POLYVECBYTES bytes).
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-258- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-259-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:260:void mlk_polyvec_frombytes(mlk_polyvec *r, const uint8_t a[MLKEM_POLYVECBYTES])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-261-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-262-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-263-  requires(memory_no_alias(a, MLKEM_POLYVECBYTES))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-264-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-265-  ensures(forall(k0, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-266-        array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-267-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-268-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-269-#define mlk_polyvec_ntt MLK_NAMESPACE_K(polyvec_ntt)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-270-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-271- * Apply forward NTT to all elements of a vector of polynomials.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-272- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-273- * The input is assumed to be in normal order and coefficient-wise bound by
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-274- * MLKEM_Q in absolute value.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-275- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-276- * The output polynomial is in bitreversed order, and coefficient-wise bound
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-277- * by MLK_NTT_BOUND in absolute value.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-278- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-279- * @spec{Implements @[FIPS203, Algorithm 9, NTT]. Extended to vectors as per
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-280- * @[FIPS203, 2.4.6, Matrices and Vectors].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-281- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-282- * @param[in,out] r Input/output vector of polynomials.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-283- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-284-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-285-void mlk_polyvec_ntt(mlk_polyvec *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-286-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-287-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-288-  requires(forall(j, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-289-  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLKEM_Q)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-290-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-291-  ensures(forall(j, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-292-  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLK_NTT_BOUND)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-293-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-294-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-295-#define mlk_polyvec_invntt_tomont MLK_NAMESPACE_K(polyvec_invntt_tomont)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-296-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-297- * Apply inverse NTT to all elements of a vector of polynomials and multiply
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-298- * by Montgomery factor 2^16.
+--
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-377- * higher level safety proofs, and thus not part of the spec.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-378- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-379-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-380-void mlk_polyvec_mulcache_compute(mlk_polyvec_mulcache *x, const mlk_polyvec *a)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-381-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-382-  requires(memory_no_alias(x, sizeof(mlk_polyvec_mulcache)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-383-  requires(memory_no_alias(a, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-384-  assigns(memory_slice(x, sizeof(mlk_polyvec_mulcache)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-385-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-386-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:387:#define mlk_polyvec_reduce MLK_NAMESPACE_K(polyvec_reduce)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-388-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-389- * Apply Barrett reduction to each coefficient of each element of a vector
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-390- * of polynomials. For details of the Barrett reduction see comments in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-391- * poly.c.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-392- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-393- * @spec{Normalizes on unsigned canonical representatives ahead of calling
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-394- * @[FIPS203, Compress_d, Eq (4.7)]. This is not made explicit in FIPS 203.}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-395- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-396- * @param[in,out] r Input/output polynomial vector.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-397- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-398-/*
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:399: * NOTE: The semantics of mlk_polyvec_reduce() is different in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-400- *       the reference implementation, which requires
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-401- *       signed canonical output data. Unsigned canonical
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-402- *       outputs are better suited to the only remaining
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-403- *       use of mlk_poly_reduce() in the context of (de)serialization.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-404- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-405-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h:406:void mlk_polyvec_reduce(mlk_polyvec *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-407-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-408-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-409-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-410-  ensures(forall(k0, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-411-    array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-412-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-413-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-414-#define mlk_polyvec_add MLK_NAMESPACE_K(polyvec_add)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-415-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-416- * Add vectors of polynomials.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-417- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-418- * The coefficients of @p r and @p b must be such that the addition does
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-419- * not overflow. Otherwise, the behaviour of this function is undefined.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-420- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-421- * The coefficients returned in @p *r are in int16_t which is sufficient to
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-422- * prove type-safety of calling units. Therefore, no stronger ensures clause
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-423- * is required on this function.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-424- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-425- * @spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-426- * Representations]. Used in @[FIPS203, Algorithm 14 (K-PKE.Encrypt), L19].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-427- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-428- * @param[in,out] r Input-output vector of polynomials to be added to.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-429- * @param[in]     b Second input vector of polynomials.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-430- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-431-MLK_INTERNAL_API
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-432-void mlk_polyvec_add(mlk_polyvec *r, const mlk_polyvec *b)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-433-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-434-  requires(memory_no_alias(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-435-  requires(memory_no_alias(b, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-436-  requires(forall(j0, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-437-          forall(k0, 0, MLKEM_N,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-438-            (int32_t)r->vec[j0].coeffs[k0] + b->vec[j0].coeffs[k0] <= INT16_MAX)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-439-  requires(forall(j1, 0, MLKEM_K,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-440-          forall(k1, 0, MLKEM_N,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-441-            (int32_t)r->vec[j1].coeffs[k1] + b->vec[j1].coeffs[k1] >= INT16_MIN)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-442-  assigns(memory_slice(r, sizeof(mlk_polyvec)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-443-);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly_k.h-444-
+
+============================================================
+GATE 10 — CONTRACT TEXT: MEMCMP AND ZEROIZE
+============================================================
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-197-#if !defined(MLK_CONFIG_CUSTOM_ALLOC_FREE)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-198-/* Default: stack allocation */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-199-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-200-/* This is a declaration macro, not an expression macro: T is a type and v is
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-201- * a declarator, neither of which can be wrapped in parentheses. The
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-202- * bugprone-macro-parentheses diagnostic is therefore a false positive here. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-203-#define MLK_ALLOC(v, T, N, context) \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-204-  MLK_ALIGN T mlk_alloc_##v[N];     \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-205-  T *v = mlk_alloc_##v /* NOLINT(bugprone-macro-parentheses) */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-206-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:207:/* The MLK_FREE macro body references mlk_zeroize(), which is declared in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-208- * verify.h. We deliberately do NOT include verify.h here: doing so would
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-209- * create a circular dependency (verify.h includes common.h), and common.h
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:210: * itself never calls mlk_zeroize() -- only the macro expansion does. Each
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-211- * translation unit that uses MLK_FREE therefore includes verify.h directly. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-212-#define MLK_FREE(v, T, N, context)                     \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-213-  do                                                   \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-214-  {                                                    \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:215:    mlk_zeroize(mlk_alloc_##v, sizeof(mlk_alloc_##v)); \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-216-    (v) = NULL;                                        \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-217-  } while (0)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-218-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-219-#else /* !MLK_CONFIG_CUSTOM_ALLOC_FREE */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-220-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-221-/* Custom allocation */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-222-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-223-/*
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-224- * The indirection here is necessary to use MLK_CONTEXT_PARAMETERS_3 here.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-225- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-226-#define MLK_APPLY(f, args) f args
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-227-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-228-#define MLK_ALLOC(v, T, N, context) \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-229-  MLK_APPLY(MLK_CUSTOM_ALLOC, MLK_CONTEXT_PARAMETERS_3(v, T, N, context))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-230-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-231-#define MLK_FREE(v, T, N, context)                                            \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-232-  do                                                                          \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-233-  {                                                                           \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-234-    if (v != NULL)                                                            \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-235-    {                                                                         \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h:236:      mlk_zeroize(v, sizeof(T) * (N));                                        \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-237-      MLK_APPLY(MLK_CUSTOM_FREE, MLK_CONTEXT_PARAMETERS_3(v, T, N, context)); \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-238-      v = NULL;                                                               \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-239-    }                                                                         \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-240-  } while (0)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-241-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-242-#endif /* MLK_CONFIG_CUSTOM_ALLOC_FREE */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-243-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-244-/****************************** Error codes ***********************************/
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-245-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-246-/* Generic failure condition */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-247-#define MLK_ERR_FAIL (-1)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-248-/* An allocation failed. This can only happen if MLK_CONFIG_CUSTOM_ALLOC_FREE
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-249- * is defined and the provided MLK_CUSTOM_ALLOC can fail. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-250-#define MLK_ERR_OUT_OF_MEMORY (-2)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-251-/* An rng failure occured. Might be due to insufficient entropy or
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-252- * system misconfiguration. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-253-#define MLK_ERR_RNG_FAIL (-3)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-254-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-255-#endif /* !__ASSEMBLER__ */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-256-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/common.h-257-#endif /* !MLK_COMMON_H */
+--
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-328- * result in either 0 or 0xFF..FF.}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-329- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-330- * @param[in] a   First byte array.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-331- * @param[in] b   Second byte array.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-332- * @param     len Length of the byte arrays, upper-bounded to UINT16_MAX to
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-333- *                control proof complexity only.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-334- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-335- * @retval 0    The byte arrays are equal.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-336- * @retval 0xFF The byte arrays are not equal.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-337- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:338:static MLK_INLINE uint8_t mlk_ct_memcmp(const uint8_t *a, const uint8_t *b,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-339-                                        const size_t len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-340-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-341-  requires(len <= UINT16_MAX)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-342-  requires(memory_no_alias(a, len))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-343-  requires(memory_no_alias(b, len))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-344-  ensures((return_value == 0) || (return_value == 0xFF))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-345-  ensures((return_value == 0) == forall(i, 0, len, (a[i] == b[i]))))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-346-{
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-347-  uint8_t r = 0, s = 0;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-348-  unsigned i;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-349-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-350-  for (i = 0; i < len; i++)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-351-  __loop__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-352-    invariant(i <= len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-353-    invariant((r == 0) == (forall(k, 0, i, (a[k] == b[k]))))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-354-    decreases(len - i))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-355-  {
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-356-    r |= a[i] ^ b[i];
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-357-    /* s is useless, but prevents the loop from being aborted once r=0xff. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-358-    s ^= a[i] ^ b[i];
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-359-  }
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-360-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-361-  /*
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-362-   * - Convert r into a mask; this may not be necessary, but is an additional
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-363-   *   safeguard
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-364-   *   towards leaking information about a and b.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-365-   * - XOR twice with s, separated by a value barrier, to prevent the compile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-366-   *   from dropping the s computation in the loop.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-367-   */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-368-  return (mlk_value_barrier_u8(mlk_ct_cmask_nonzero_u8(r) ^ s) ^ s);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-369-}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-370-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-371-/**
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-372- * Copy len bytes from x to r if b is zero; don't modify x if b is non-zero.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-373- * Assumes two's complement representation of negative integers. Runs in
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-374- * constant time.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-375- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-376- * @spec{Used to securely compute conditional move in @[FIPS203, Algorithm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-377- * 18 (ML-KEM.Decaps_Internal, L9-11].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-378- *
+--
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-412- * intermediate values].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-413- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-414- * @reference{Not present in the reference implementation @[REF].}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-415- *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-416- * @param[out] ptr Buffer to be zeroed.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-417- * @param      len Number of bytes to be zeroed.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-418- */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-419-#if !defined(MLK_CONFIG_CUSTOM_ZEROIZE)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-420-#if defined(MLK_SYS_WINDOWS)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-421-#include <windows.h>
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:422:static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-423-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-424-  requires(memory_no_alias(ptr, len))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-425-  assigns(memory_slice(ptr, len))) { SecureZeroMemory(ptr, len); }
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-426-#elif defined(MLK_HAVE_INLINE_ASM)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-427-#include <string.h>
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:428:static MLK_INLINE void mlk_zeroize(void *ptr, size_t len)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-429-__contract__(
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-430-  requires(memory_no_alias(ptr, len))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-431-  assigns(memory_slice(ptr, len)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-432-{
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-433-  mlk_memset(ptr, 0, len);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-434-  /* This follows OpenSSL and seems sufficient to prevent the compiler
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-435-   * from optimizing away the memset.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-436-   *
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-437-   * If there was a reliable way to detect availability of memset_s(),
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-438-   * that would be preferred. */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-439-  __asm__ volatile("" : : "r"(ptr) : "memory");
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-440-}
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-441-#else /* !MLK_SYS_WINDOWS && MLK_HAVE_INLINE_ASM */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h:442:#error No plausibly-secure implementation of mlk_zeroize available. Please provide your own using MLK_CONFIG_CUSTOM_ZEROIZE.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-443-#endif /* !MLK_SYS_WINDOWS && !MLK_HAVE_INLINE_ASM */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-444-#endif /* !MLK_CONFIG_CUSTOM_ZEROIZE */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-445-
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h-446-#endif /* !MLK_VERIFY_H */
+
+============================================================
+GATE 11 — EXISTING PKCHECK/KEM CHECK ARTEFACTS
+============================================================
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t3_20260726T020556Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t2_20260725T172440Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t2_20260725T172440Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t2_20260725T172440Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_odd_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_odd_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_odd_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t1_20260725T152707Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t1_20260725T152707Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t1_20260725T152707Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t4_20260726T024145Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t4_20260726T024145Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_polycomp_d4_t4_20260726T024145Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlkem-native/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlkem-native/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013520Z
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013520Z/PKCHECK_00BC_01A_TERMINAL_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013533Z
+/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013533Z/PKCHECK_00BC_01A_TERMINAL_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG00B_af4c5abdd595/frozen_source/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/PROFESSOR_HARDEN_VC_SR1_2026-07-18/00_frozen_source/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01A_WORKTREE_RUN1_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01A_WORKTREE_RUN1_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01A_WORKTREE_RUN1_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_POSITIVE_af4c5abd/99_worktree/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_POSITIVE_af4c5abd/99_worktree/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_POSITIVE_af4c5abd/99_worktree/mlkem-native/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_af4c5abd/01_build_workspace/mlkem-native_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T4_WORKTREE_af4c5abd_20260726T225651Z/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T4_WORKTREE_af4c5abd_20260726T225651Z/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T4_WORKTREE_af4c5abd_20260726T225651Z/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T3_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T3_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_T3_WORKTREE_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/kem_check_pk
+/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/kem_check_pk/kem_check_pk_harness.c
+/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/kem_check_pk/Makefile
+
+============================================================
+GATE 12 — PRIOR BRIDGE-CAMPAIGN DIRECTORIES
+============================================================
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_authoritative_20260724T135730Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_authoritative_20260724T150425Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t4_20260724T161124Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pbcodec_cv1_20260729T173459Z/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_tobytes_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/poly_tobytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_add
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k2_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k3_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_aarch64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_k4_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_basemul_acc_montgomery_cached_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_compress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_decompress_du
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_invntt_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_mulcache_compute
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_ntt
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_permute_bitrev_to_custom
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_permute_bitrev_to_custom_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_reduce
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_af4c5abd/proofs/cbmc/polyvec_tomont
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/ct_memcmp
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_frombytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_frombytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_frombytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_frombytes_native_x86_64
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_tobytes
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_tobytes_c
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_tobytes_native
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_pfb_t1_mut_even_af4c5abd/proofs/cbmc/poly_tobytes_native_aarch64
+
+============================================================
+GATE 13 — PRIOR FINAL/PROOF SUMMARY FILES
+============================================================
+/home/girish/THESIS-2026/CLASSIFICATION GIT/MLKEM_CBMC_FULL_CLASSIFIED_BASELINE_2026-07-19/experiments/poly-add/PA01-canonical-domain/raw-runs/mlk_poly_add_768_20260716T010907Z/summary.txt
+/home/girish/THESIS-2026/CLASSIFICATION GIT/MLKEM_CBMC_FULL_CLASSIFIED_BASELINE_2026-07-19/experiments/poly-add/PA01-canonical-domain/raw-runs/mlk_poly_add_768_20260716T013225Z/RESULT_INTERPRETATION.txt
+/home/girish/THESIS-2026/CLASSIFICATION GIT/MLKEM_CBMC_FULL_CLASSIFIED_BASELINE_2026-07-19/experiments/poly-add/PA01-canonical-domain/raw-runs/mlk_poly_add_768_20260716T013225Z/summary.txt
+/home/girish/THESIS-2026/mlkem-native/cleanroom_results/pa05_mlk_poly_add_callsites_768_20260716T111930Z/pa05a_polyvec_callsite/summary.txt
+/home/girish/THESIS-2026/mlkem-native/cleanroom_results/pa06_mlk_poly_add_cross_parameter_20260716T122530Z/512/pa01_canonical_fips/summary.txt
+/home/girish/THESIS-2026/mlkem-native/cleanroom_results/pa07_mlk_poly_add_mutation_20260716T131107Z/baseline/pa01_canonical_fips/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01C_T1_CONTROL_SUITE_20260729T042046Z/PFB_01C_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01C_T1_CONTROL_SUITE_20260729T042046Z/results/control_summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/baseline_replay/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/baseline_replay/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/boundary/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/boundary/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/mutants/even/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/mutants/even/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/mutants/odd/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/mutants/odd/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/PFB_01M_GATE_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01M_T1_BOUNDARY_MUTATION_RUN_20260729T043912Z/PFB_01M_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01R_T1_EXACT_RAW_DECODING_RUN1_20260729T033348Z/results/property_status_lines.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01S_T1_SAT_SEMANTIC_RUN1_20260729T034940Z/results/theorem_only.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01S_T1_SAT_SEMANTIC_RUN2_20260729T040920Z/PFB_01S_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01S_T1_SAT_SEMANTIC_RUN2_20260729T040920Z/results/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_01S_T1_SAT_SEMANTIC_RUN2_20260729T040920Z/results/theorem_only.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/PFB_02R_CORRECTED_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/PFB_02R_XML_REPARSE_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/results/bit_routes_all.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/results/bit_routes_theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/results/block_locality_all.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02A_T2_SEMANTIC_BASELINE_20260729T044653Z/results/block_locality_theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p1_first_byte_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p1_first_byte_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p2_low_nibble_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p2_low_nibble_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p3_high_nibble_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p3_high_nibble_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p4_third_byte_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p4_third_byte_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p5_cross_block_dependency/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_02M_T2_FINAL_MUTATION_RUN_20260729T050106Z/mutants/p5_cross_block_dependency/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/baseline/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/baseline/theorem_only.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/mutants/p1_bijective_permutation/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/mutants/p1_bijective_permutation/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/mutants/p2_information_loss/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_03F_T3_FINAL_RUN_20260729T051133Z/mutants/p2_information_loss/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/control/result.unwind385.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/p1_bytes_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/p1_bytes_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/p2_raw_poly_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T052349Z/p2_raw_poly_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/mutants/p1_even_decode_shift/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/mutants/p1_even_decode_shift/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/mutants/p2_odd_decode_shift/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/mutants/p2_odd_decode_shift/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/p1_bytes_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/p1_bytes_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/p2_raw_poly_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_04F_T4_FINAL_RUN_20260729T053316Z/p2_raw_poly_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_CAMPAIGN_FINAL_SEAL_af4c5abd_20260729T054222Z/PFB_CAMPAIGN_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01C/PFB_01C_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01C/results/control_summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/baseline_replay/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/baseline_replay/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/boundary/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/boundary/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/mutants/even/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/mutants/even/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/mutants/odd/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/mutants/odd/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01M/PFB_01M_GATE_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01S/PFB_01S_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01S/results/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/input_evidence/PFB_01S/results/theorem_only.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/mutation_evidence/even_summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T1_FINAL_FREEZE_af4c5abd_20260729T043912Z/mutation_evidence/odd_summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p1_first_byte_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p1_first_byte_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p2_low_nibble_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p2_low_nibble_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p3_high_nibble_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p3_high_nibble_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p4_third_byte_route/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p4_third_byte_route/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p5_cross_block_dependency/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/mutants/p5_cross_block_dependency/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/prior_evidence/PFB_02R_CORRECTED_RESULT.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T2_FINAL_FREEZE_af4c5abd_20260729T050106Z/prior_evidence/PFB_02R_XML_REPARSE_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/baseline/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/baseline/theorem_only.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/mutants/p1_bijective_permutation/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/mutants/p1_bijective_permutation/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/mutants/p2_information_loss/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T3_FINAL_FREEZE_af4c5abd_20260729T051133Z/mutants/p2_information_loss/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/control/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/control/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/mutants/p1_even_decode_shift/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/mutants/p1_even_decode_shift/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/mutants/p2_odd_decode_shift/result.stderr.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/mutants/p2_odd_decode_shift/summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/p1_bytes_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/p1_bytes_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/p2_raw_poly_roundtrip/all_properties.summary.txt
+/home/girish/THESIS-2026/mlk_poly_frombytes_cleanroom/PFB_T4_FINAL_FREEZE_af4c5abd_20260729T053316Z/p2_raw_poly_roundtrip/theorem.summary.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_lower_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_invalid_upper_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_boundary_valid_extremes_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_cov_reachability_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t1_semantic_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/sub00e_r2_validation_reachability_audit_v1/sub_t2_relational_harness/zeroize_reachability.status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_5_GOTO_PREFLIGHT_MLKEM768/cases/INVALID_LOWER/CASE_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_5_GOTO_PREFLIGHT_MLKEM768/cases/INVALID_UPPER/CASE_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_5_GOTO_PREFLIGHT_MLKEM768/cases/POSITIVE/CASE_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_5_GOTO_PREFLIGHT_MLKEM768/cases/REACHABILITY/CASE_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_5_GOTO_PREFLIGHT_MLKEM768/SUB00N_B4_5_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_B4_8_COVER_NEUTRAL_COMPANION_PREFLIGHT_MLKEM768/SUB00N_B4_8_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_COMBINED_EXECUTION_MLKEM768_RUN1/parent_manifest_verification.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_COMBINED_EXECUTION_MLKEM768_RUN1/wrapper_status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_CONTINUATION_MLKEM768_RUN2/wrapper_status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_CONTINUATION_MLKEM768_RUN3/wrapper_status.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_FINAL_CONTINUATION_MLKEM768_RUN4/BATCH4_FINAL_COMBINED_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_sub_cleanroom/SUB00A_d9613cf60de3/SUB00N_BATCH4_CANONICAL_DOMAIN/SUB00N_BATCH4_FINAL_CONTINUATION_MLKEM768_RUN4/wrapper_status.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_00D_THEOREM_FREEZE_af4c5abd/PBYTES_00D_FREEZE_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_00D_THEOREM_FREEZE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01A_T1_POSITIVE_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01A_T1_POSITIVE_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01B_R1_T1_REACHABLE_PROOF_RUN1_af4c5abd/identity/BASE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01B_R1_T1_REACHABLE_PROOF_RUN1_af4c5abd/identity/PBYTES_01B_STATUS1_CLASSIFICATION.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01B_R2_T1_POSITIVE_PROOF_RUN1_af4c5abd/identity/BASE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01B_R2_T1_POSITIVE_PROOF_RUN1_af4c5abd/identity/PBYTES_01B_R1_STATUS2_CLASSIFICATION.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01B_T1_REACHABLE_RERUN1_af4c5abd/identity/PREVIOUS_RUN_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01C_T1_VALIDATION_BYPASS_PROOF_RUN1_af4c5abd/identity/BASE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01C_T1_VALIDATION_BYPASS_PROOF_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01D_T1_DEFAULT_SAT_PROOF_RUN1_af4c5abd/identity/PBYTES_01C_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01D_T1_DEFAULT_SAT_PROOF_RUN1_af4c5abd/results/pbytes_01c_error_summary.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01D_T1_DEFAULT_SAT_PROOF_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01E_T1_UNWIND_CONTROL_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01E_T1_UNWIND_CONTROL_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01F_T1_NONVACUITY_RUN1_af4c5abd/identity/ACCEPTANCE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01F_T1_NONVACUITY_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01G_T1_MUTATION_HARDENING_RUN1_af4c5abd/identity/BOUND_MANIFEST_CONTENT_CHECKS.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01G_T1_MUTATION_HARDENING_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01H_T1_FREEZE_CANDIDATE_af4c5abd/closure/MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01H_T1_FREEZE_CANDIDATE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_01H_T1_FREEZE_CANDIDATE_af4c5abd/tool_limitations/pbytes_01c_error_summary.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02A_T2_SUCCESSOR_PROOF_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02A_T2_SUCCESSOR_PROOF_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02B_T2_NONVACUITY_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02B_T2_NONVACUITY_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02C_T2_MUTATION_HARDENING_RUN1_af4c5abd/identity/NONVAC_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02C_T2_MUTATION_HARDENING_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02C_T2_MUTATION_HARDENING_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02D_T2_CLOSURE_af4c5abd/closure/MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_02D_T2_CLOSURE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03A_T3_FREEZE_EXTRACTION_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03A_T3_FREEZE_EXTRACTION_RUN1_af4c5abd/identity/T2_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03A_T3_FREEZE_EXTRACTION_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03B_T3_POSITIVE_PROOF_RUN1_af4c5abd/identity/EXTRACTION_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03B_T3_POSITIVE_PROOF_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03B_T3_POSITIVE_PROOF_RUN1_af4c5abd/identity/T2_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03B_T3_POSITIVE_PROOF_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03C_T3_INTEGRITY_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03C_T3_INTEGRITY_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03D_T3_MUTATION_HARDENING_RUN1_af4c5abd/identity/INTEGRITY_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03D_T3_MUTATION_HARDENING_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03D_T3_MUTATION_HARDENING_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03E_T3_CLOSURE_af4c5abd/closure/MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_03E_T3_CLOSURE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04A_T4_FREEZE_EXTRACTION_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04A_T4_FREEZE_EXTRACTION_RUN1_af4c5abd/identity/T3_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04A_T4_FREEZE_EXTRACTION_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04B_T4_POSITIVE_PROOF_RUN1_af4c5abd/identity/EXTRACTION_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04B_T4_POSITIVE_PROOF_RUN1_af4c5abd/identity/FREEZE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04B_T4_POSITIVE_PROOF_RUN1_af4c5abd/identity/T3_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04B_T4_POSITIVE_PROOF_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04C_T4_INTEGRITY_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04C_T4_INTEGRITY_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/identity/INTEGRITY_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/identity/POSITIVE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/identity/T2_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/identity/T3_CLOSURE_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/results/T1_MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04D_T4_MUTATION_HARDENING_RUN1_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04E_T4_CLOSURE_af4c5abd/closure/MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04E_T4_CLOSURE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/family_manifests/T1_SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/family_manifests/T2_SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/family_manifests/T3_SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/family_manifests/T4_SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/SHA256_MANIFEST.txt
+/home/girish/THESIS-2026/mlk_poly_tobytes_cleanroom/PBYTES_04F_ALL_19_OBLIGATION_CLOSURE_af4c5abd/summary/MANIFEST_CONTENT_CHECK.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_af4c5abd/08_validator_recovery/CANON00C_R3_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_af4c5abd/08_validator_recovery/native_control_result.exit_code.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_af4c5abd/08_validator_recovery/native_control_result.stderr.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_af4c5abd/08_validator_recovery/native_control_result.stdout.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_R4_T1_af4c5abd/01_native_direct_control/original_native_result.stderr.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_R4_T1_af4c5abd/01_native_direct_control/original_native_result.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_R4_T1_af4c5abd/07_final_status/CANON00C_R4_T1_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON00C_R5_T1_CLEAN_af4c5abd/08_status/CANON00C_R5_R1_T1_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_CAMPAIGN_CLOSURE_af4c5abd/01_family_status/CANON_T1_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_CAMPAIGN_CLOSURE_af4c5abd/01_family_status/CANON_T2_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_CAMPAIGN_CLOSURE_af4c5abd/01_family_status/CANON_T3_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_CAMPAIGN_CLOSURE_af4c5abd/01_family_status/CANON_T4_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_CAMPAIGN_CLOSURE_af4c5abd/04_campaign_summary/CANON_CAMPAIGN_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/00_freeze/T1_POSITIVE_RUN_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M1_identity/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M1_identity/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M2_qminus1/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M2_qminus1/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M3_reversed_selection/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/02_mutants/M3_reversed_selection/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/03_final_status/CANON_T1_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T1_FINAL_af4c5abd/05_recovery/tree_manifest_sha256.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/00_freeze/T2_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M1_identity/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M1_identity/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M2_swap_zero_one/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M2_swap_zero_one/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M3_zero_collapse/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/02_mutants/M3_zero_collapse/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/03_final_status/CANON_T2_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_FINAL_af4c5abd/05_tree_validation/tree_manifest_sha256.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T2_POSITIVE_af4c5abd/07_status/CANON_T2_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/00_freeze/T3_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M1_identity/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M1_identity/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M2_qminus1/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M2_qminus1/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M3_swap_zero_one/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/02_mutants/M3_swap_zero_one/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/03_final_status/CANON_T3_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_FINAL_af4c5abd/05_tree_validation/tree_manifest_sha256.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T3_POSITIVE_af4c5abd/07_status/CANON_T3_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/00_freeze/T4_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M1_barrett_identity/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M1_barrett_identity/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M2_barrett_zero/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M2_barrett_zero/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M3_normalizer_identity/result/property_summary.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/02_mutants/M3_normalizer_identity/result/status.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/03_final_status/CANON_T4_FINAL_STATUS.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_FINAL_af4c5abd/05_tree_validation/tree_manifest_sha256.txt
+/home/girish/THESIS-2026/mlk_scalar_signed_to_unsigned_q_cleanroom/CANON_T4_POSITIVE_af4c5abd/07_status/CANON_T4_POSITIVE_STATUS.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/audit/ZERO-T1_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/audit/ZERO-T2_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/audit/ZERO-T3_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/audit/ZERO-T4_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/audit/ZERO-V1_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-FINAL_CAMPAIGN_v1_af4c5abd/results/ZERO-V1_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M1_remove_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M1_remove_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M2_fill_with_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M2_fill_with_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M3_length_minus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M3_length_minus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M4_pointer_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M4_pointer_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M5_length_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M5_length_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M6_free_before_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M6_free_before_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M7_double_free/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M7_double_free/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M8_omit_second_partition/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M8_omit_second_partition/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/extracted/ZERO-V1_FREEZE_v1_af4c5abd/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/ZERO-V1_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/ZERO-T1_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/ZERO-T2_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/ZERO-T3_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/ZERO-T4_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/.ZERO_FINAL_RUN2_AUDIT_TMP_17878/ZERO-V1_FREEZE_v1_af4c5abd_INTERNAL_MANIFEST_CHECK.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M1_remove_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M1_remove_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M2_fill_with_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M2_fill_with_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M3_length_minus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M3_length_minus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M4_pointer_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M4_pointer_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M5_length_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M5_length_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M6_free_before_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M6_free_before_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M7_double_free/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M7_double_free/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M8_omit_second_partition/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/M8_omit_second_partition/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_FREEZE_v1_af4c5abd/RUN1/ZERO-V1_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M1_remove_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M1_remove_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M2_fill_with_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M2_fill_with_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M3_length_minus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M3_length_minus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M4_pointer_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M4_pointer_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M5_length_plus_one/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M5_length_plus_one/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M7_double_free/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M7_double_free/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M8_omit_second_partition/build_status.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M8_omit_second_partition/result.txt
+/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/ZERO-V1_SUMMARY.txt
+/home/girish/THESIS-2026/thesis-pipeline/.patch_validation/agent5_structured_outputs_integrated_20260715_v1_20260715T062707Z/full_regressions/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/.patch_validation/agent5_structured_outputs_integrated_20260715_v1_20260715T062707Z/full_regressions/verify_canonical_tool_result_contract.py.stdout.txt
+/home/girish/THESIS-2026/thesis-pipeline/release_evidence/local_regression_logs/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/release_evidence/local_regression_logs/verify_canonical_tool_result_contract.py.stdout.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/FINAL_TRUST_CHAIN_ACCEPTANCE_20260715T031522Z/regressions/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/FINAL_TRUST_CHAIN_ACCEPTANCE_20260715T031522Z/regressions/verify_canonical_tool_result_contract.py.stdout.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/FINAL_TRUST_CHAIN_ACCEPTANCE_20260715T035643Z/regressions/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/FINAL_TRUST_CHAIN_ACCEPTANCE_20260715T035643Z/regressions/verify_canonical_tool_result_contract.py.stdout.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/regressions_after_final_relocation/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/regressions_after_final_relocation/verify_canonical_tool_result_contract.py.stdout.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/regressions_after_underscore_rename/verify_canonical_tool_result_contract.py.stderr.txt
+/home/girish/THESIS-2026/thesis-pipeline/reports/regressions_after_underscore_rename/verify_canonical_tool_result_contract.py.stdout.txt
+
+============================================================
+GATE 14 — CREATE ISOLATED COMMIT-PINNED CLONE
+============================================================
+Note: switching to 'af4c5abdd5958bdc65a03cd5ee86708264f93304'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+CLONE_EXIT=0
+ISOLATED_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_COMMIT_MATCH=YES
+ISOLATED_TREE_CLEAN_BEFORE=YES
+
+============================================================
+GATE 15 — NATIVE KEM_CHECK_PK BASELINE
+TIMEOUT=900_SECONDS
+JOBS=1
+============================================================
+NATIVE_BASELINE_EXIT=0
+NATIVE_BASELINE_ELAPSED_SECONDS=6
+NATIVE_BASELINE_STATUS=COMMAND_SUCCESS
+
+===== NATIVE RESULT MARKERS =====
+[1/16] kem_check_pk: building proof binary                                      [2/16] kem_check_pk: building project binary                                    [3/16] kem_check_pk: removing function bodies from project sources              [4/16] kem_check_pk: linking project to proof                                   [5/16] kem_check_pk: restricting function pointers in project sources           [6/16] kem_check_pk: not setting static variables to nondet (will do during c...[7/16] kem_check_pk: linking CPROVER library                                    [8/16] kem_check_pk: unwinding specified subset of loops                        [9/16] kem_check_pk: checking function contracts                                [10/16] kem_check_pk: slicing global initializations                            [11/16] kem_check_pk: dropping unused functions                                 [12/16] kem_check_pk: copying final goto-binary                                 [13/16] kem_check_pk: printing safety properties                                [14/16] kem_check_pk: calculating coverage                                      [15/16] kem_check_pk: checking safety properties                                FAILED: /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml /tmp/litani/runs/090bbd07-8e39-4bc3-be24-54b4ea537379/status/7c89848b-9153-447e-9cb0-b3018d5db0f7.json 
+/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc  --smt2   --flush --object-bits 10 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' --pipeline-name kem_check_pk --ci-stage test --job-id 7c89848b-9153-447e-9cb0-b3018d5db0f7 --stdout-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml --stderr-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result-err-log.txt --description 'kem_check_pk: checking safety properties' --timeout 21600 --status-file /tmp/litani/runs/090bbd07-8e39-4bc3-be24-54b4ea537379/status/7c89848b-9153-447e-9cb0-b3018d5db0f7.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto --outputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml --ignore-returns 10 --tags 'stats-group:safety checks'
+
+===== NATIVE LOG TAIL =====
+make: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+Running litani init
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+Running litani add-job
+make[1]: Entering directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk'
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+make[1]: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk'
+Running litani build
+[1/16] kem_check_pk: building proof binary                                      [2/16] kem_check_pk: building project binary                                    [3/16] kem_check_pk: removing function bodies from project sources              [4/16] kem_check_pk: linking project to proof                                   [5/16] kem_check_pk: restricting function pointers in project sources           [6/16] kem_check_pk: not setting static variables to nondet (will do during c...[7/16] kem_check_pk: linking CPROVER library                                    [8/16] kem_check_pk: unwinding specified subset of loops                        [9/16] kem_check_pk: checking function contracts                                [10/16] kem_check_pk: slicing global initializations                            [11/16] kem_check_pk: dropping unused functions                                 [12/16] kem_check_pk: copying final goto-binary                                 [13/16] kem_check_pk: printing safety properties                                [14/16] kem_check_pk: calculating coverage                                      [15/16] kem_check_pk: checking safety properties                                FAILED: /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml /tmp/litani/runs/090bbd07-8e39-4bc3-be24-54b4ea537379/status/7c89848b-9153-447e-9cb0-b3018d5db0f7.json 
+
+/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc  --smt2   --flush --object-bits 10 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto' --pipeline-name kem_check_pk --ci-stage test --job-id 7c89848b-9153-447e-9cb0-b3018d5db0f7 --stdout-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml --stderr-file /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result-err-log.txt --description 'kem_check_pk: checking safety properties' --timeout 21600 --status-file /tmp/litani/runs/090bbd07-8e39-4bc3-be24-54b4ea537379/status/7c89848b-9153-447e-9cb0-b3018d5db0f7.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/gotos/kem_check_pk_harness.goto --outputs /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk/logs/result.xml --ignore-returns 10 --tags 'stats-group:safety checks'
+
+ninja: build stopped: cannot make progress due to previous errors.
+
+
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+make: Leaving directory '/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated/proofs/cbmc/kem_check_pk'
+
+============================================================
+GATE 16 — POST-RUN INTEGRITY
+============================================================
+AUTHORITATIVE_TREE_CLEAN_AFTER=YES
+===== ISOLATED TRACKED STATE =====
+
+============================================================
+GATE 17 — EVIDENCE HASHES
+============================================================
+0aa6d3bcdbe591d33635f0fa7c0c40ff55b961d907ae43b9176ea245d1acbd24  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_00BC_01A_TERMINAL_SUMMARY.txt
+f1ae532f027c6a494e83815a8a84236ba3b2264b175f24e99851bc4bd7a370ac  /home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_01A_NATIVE_BASELINE.log
+
+============================================================
+PKCHECK-00B/00C/01A RESULT
+============================================================
+SUMMARY_FILE=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_00BC_01A_TERMINAL_SUMMARY.txt
+NATIVE_LOG=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/PKCHECK_01A_NATIVE_BASELINE.log
+ISOLATED_REPO=/home/girish/THESIS-2026/mlk_kem_check_pk_cleanroom/PKCHECK_00BC_01A_ADMISSION_20260730T013748Z/mlkem-native_af4c5abd_isolated
+NATIVE_EXIT=0
+ELAPSED_SECONDS=6
+PKCHECK_00BC_01A_CAPTURE_COMPLETE=YES

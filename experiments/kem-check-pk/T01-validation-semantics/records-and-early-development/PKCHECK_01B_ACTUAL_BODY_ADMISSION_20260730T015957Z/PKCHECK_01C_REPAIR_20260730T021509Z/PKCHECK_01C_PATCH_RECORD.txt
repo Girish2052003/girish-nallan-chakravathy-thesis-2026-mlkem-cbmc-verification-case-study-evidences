@@ -1,0 +1,29 @@
+PKCHECK-01C CONTROLLED REPAIR
+
+Pinned production commit:
+af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Failed PKCHECK-01B properties:
+1. mlk_poly_frombytes.assertion.1
+2. pkcheck_store12_at.overflow.4
+
+Repair 1:
+Add mlkem/src/compress.c to PROJECT_SOURCES so the actual
+mlk_poly_frombytes[_c] and mlk_poly_tobytes[_c] implementations are linked.
+
+Repair 2:
+Replace symbolic size_t helper arithmetic with bounded unsigned arithmetic
+inlined after the original coefficient-index and malformed-value assumptions.
+
+Theorem domain unchanged:
+- MLKEM_K * MLKEM_N coefficient positions
+- malformed values MLKEM_Q through 4095 inclusive
+- all other coefficients zero
+- seed suffix zero
+- result may only be MLK_ERR_FAIL or MLK_ERR_OUT_OF_MEMORY
+
+No production source modification.
+No target replacement.
+No polyvector semantic contract replacement.
+No semantic loop-contract abstraction.
+No overflow check disabled.
