@@ -1,0 +1,45 @@
+THEOREM_FAMILY=PBYTES-T3
+THEOREM_NAME=Exact canonical image and invalid-codeword exclusion
+
+SOURCE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+
+INDEPENDENT_BLOCK_DECODER:
+W = b0 + 256*b1 + 65536*b2
+even_field = W mod 4096
+odd_field = W / 4096
+
+EQUIVALENT_IMPLEMENTATION:
+even_field = b0 + 256*(b1 mod 16)
+odd_field = floor(b1 / 16) + 16*b2
+
+PBYTES-T3.P1:
+Every even field decoded from an actual output block is below MLKEM_Q.
+
+PBYTES-T3.P2:
+Every odd field decoded from an actual output block is below MLKEM_Q.
+
+PBYTES-T3.P3:
+For every pair of canonical fields and every pair position, a canonical
+polynomial exists whose actual serialization contains the corresponding
+three-byte block at that position.
+
+PBYTES-T3.P4:
+For every canonical input polynomial, every output position and every
+candidate block with at least one invalid field, the actual output block
+is different from that candidate block.
+
+PBYTES-T3.P5:
+The forward image direction is established by the global form of P1 and P2.
+The reverse image direction is proved by decoding an arbitrary full byte
+array with 256 canonical fields, serializing those decoded fields through
+the real public wrapper and asserting complete 384-byte equality.
+
+P5_THEOREM_COUNT=1
+P5_PROOF_CLAUSE_COUNT=2
+P5_FORWARD_CLAUSE=P1_AND_P2_GLOBAL_CANONICALITY
+P5_REVERSE_CLAUSE=P5_FULL_ARRAY_REENCODING
+
+MLK_POLY_FROMBYTES_USED=NO
+CONTRACT_REPLACEMENT_USED=NO
+AUTHORITATIVE_SOURCE_MODIFIED=NO

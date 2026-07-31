@@ -1,0 +1,42 @@
+THEOREM_FAMILY=PBYTES-T2
+THEOREM_NAME=Exact successor and carry-transition partition
+SOURCE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+
+RELATION:
+Input B equals input A except for one selected canonical coefficient.
+The selected coefficient in B equals the selected coefficient in A plus one.
+
+CORE_OBLIGATIONS=4
+
+PBYTES-T2.P1:
+Even coefficient, low byte not 255.
+Byte zero increments by one; bytes one and two remain unchanged.
+
+PBYTES-T2.P2:
+Even coefficient, low byte equal to 255.
+Byte zero wraps to zero; the low nibble of byte one increments;
+the upper nibble of byte one and byte two remain unchanged.
+
+PBYTES-T2.P3:
+Odd coefficient, low nibble not 15.
+The upper nibble of byte one increments by 0x10;
+its lower nibble and the other two bytes remain unchanged.
+
+PBYTES-T2.P4:
+Odd coefficient, low nibble equal to 15.
+The upper nibble of byte one wraps from 0xF0 to zero;
+byte two increments by one; byte zero and the lower nibble remain unchanged.
+
+INPUT_DOMAIN:
+All coefficients of both inputs are canonical:
+0 <= coefficient < MLKEM_Q.
+
+NONCLAIMS:
+No native backend correctness.
+No timing or side-channel correctness.
+No mlk_poly_frombytes correctness.
+No complete ML-KEM correctness.
+No out-of-domain theorem.
+
+FINAL_T2_CLOSURE=NOT_YET

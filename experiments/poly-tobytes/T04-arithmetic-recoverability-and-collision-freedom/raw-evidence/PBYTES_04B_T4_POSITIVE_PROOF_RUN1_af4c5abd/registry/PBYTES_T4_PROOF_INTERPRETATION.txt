@@ -1,0 +1,37 @@
+THEOREM_FAMILY=PBYTES-T4
+THEOREM_NAME=Arithmetic recoverability and collision freedom
+
+SOURCE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+
+INDEPENDENT_ARITHMETIC_DECODER:
+W = b0 + 256*b1 + 65536*b2
+even_coefficient = W mod 4096
+odd_coefficient = W / 4096
+
+PBYTES-T4.P1:
+For every canonical polynomial and every pair position, independently
+decoding the actual output block recovers the original even coefficient.
+
+PBYTES-T4.P2:
+For every canonical polynomial and every pair position, independently
+decoding the actual output block recovers the original odd coefficient.
+
+PBYTES-T4.P3:
+For any two canonical polynomials and every pair position, their output
+blocks at that position are equal if and only if their corresponding
+coefficient pairs are equal.
+
+PBYTES-T4.P4:
+For any two complete canonical polynomials, equality of all 384 output
+bytes implies equality of all 256 input coefficients.
+
+P4_LOGICAL_FORM:
+serialize(A) = serialize(B) implies A = B.
+
+P4_REVERSE_DIRECTION_REQUIRED=NO
+P4_REASON=INJECTIVITY_IS_OUTPUT_EQUALITY_IMPLIES_INPUT_EQUALITY
+
+MLK_POLY_FROMBYTES_USED=NO
+CONTRACT_REPLACEMENT_USED=NO
+AUTHORITATIVE_SOURCE_MODIFIED=NO
