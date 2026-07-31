@@ -1,0 +1,66 @@
+{
+  "campaign": "BR-AF4",
+  "stage": "BR-AF4-10-T5",
+  "title": "Exact admissible rounding-offset interval",
+  "frozen_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "frozen_tree": "54805daff6a91a010c05467ea678117c42a71559",
+  "target_function": "mlk_barrett_reduce",
+  "parent_t4_final_archive_sha256": "46e9ad14ce4f73cd99242a77b5a12ebf1f1666d55b33c6d1b4cecc2eda884435",
+  "fixed_parameters": {
+    "modulus": 3329,
+    "multiplier": 20159,
+    "shift": 26,
+    "production_offset": 33554432
+  },
+  "offset_design_domain": {
+    "lower": 0,
+    "upper": 67108863,
+    "count": 67108864
+  },
+  "expected_admissible_interval": {
+    "lower": 33548599,
+    "upper": 33560264,
+    "count": 11666
+  },
+  "expected_production_margins": {
+    "lower_margin": 5833,
+    "upper_margin": 5832
+  },
+  "properties": [
+    {
+      "id": "BR-AF4-T5.P19",
+      "claim": "All offsets in 0..2^26-1 have signed-int32-representable numerators for every int16_t input, and wide and int32 shifts agree."
+    },
+    {
+      "id": "BR-AF4-T5.P20",
+      "claim": "Every offset in 33548599..33560264 produces the independent centered result for every int16_t input."
+    },
+    {
+      "id": "BR-AF4-T5.P21",
+      "claim": "Every offset below 33548599 is rejected by witness a=-31625."
+    },
+    {
+      "id": "BR-AF4-T5.P22",
+      "claim": "Every offset above 33560264 is rejected by witness a=31625."
+    },
+    {
+      "id": "BR-AF4-T5.P23",
+      "claim": "Within the design domain, passing both endpoint witnesses is equivalent to membership in the exact admissible interval."
+    },
+    {
+      "id": "BR-AF4-T5.P24",
+      "claim": "The production offset 33554432 is full-domain correct and agrees with the real frozen production function."
+    }
+  ],
+  "input_domains": {
+    "a": "all 65536 int16_t values",
+    "offset": "all int32 values, with the design domain encoded through logical implications",
+    "effective_pair_count": 4398046511104
+  },
+  "input_assumptions": 0,
+  "production_source_modified": false,
+  "target_body_removal": false,
+  "contract_replacement": false,
+  "mathematical_world_first_claim": false,
+  "portability_scope": "Signed right shift follows the semantics represented by the recorded CBMC environment."
+}

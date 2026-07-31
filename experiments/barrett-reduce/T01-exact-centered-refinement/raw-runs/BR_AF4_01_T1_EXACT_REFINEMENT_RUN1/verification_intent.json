@@ -1,0 +1,52 @@
+{
+  "campaign": "BR-AF4",
+  "stage": "BR-AF4-01-T1",
+  "title": "Full-domain exact centered-residue refinement",
+  "frozen_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "target_function": "mlk_barrett_reduce",
+  "production_source": "mlkem/src/poly.c",
+  "input_type": "int16_t",
+  "input_domain": "all 65536 int16_t values",
+  "modulus": 3329,
+  "centered_output_min": -1664,
+  "centered_output_max": 1664,
+  "properties": [
+    {
+      "id": "BR-AF4-T1.P2",
+      "claim": "The result is in the centered interval [-1664,1664].",
+      "classification": "existing-contract baseline"
+    },
+    {
+      "id": "BR-AF4-T1.P3",
+      "claim": "The input minus the result is divisible by 3329.",
+      "classification": "documented semantics newly asserted in the harness"
+    },
+    {
+      "id": "BR-AF4-T1.P4",
+      "claim": "The production result equals an independent Euclidean centered-modulo oracle.",
+      "classification": "research-added functional-refinement obligation"
+    }
+  ],
+  "independent_oracle": {
+    "method": "C remainder, negative correction, then centered conversion",
+    "forbidden_constants_or_techniques": [
+      "20159",
+      "2^25 rounding offset",
+      "2^26 shift",
+      "production Barrett multiplication formula",
+      "copied reference Barrett implementation"
+    ]
+  },
+  "allowed_environment_assumption": "Signed right shift follows the semantics represented by the recorded CBMC environment.",
+  "forbidden_transformations": [
+    "production source modification",
+    "target function stubbing",
+    "target function contract replacement",
+    "removal of the target body",
+    "assume(false)",
+    "input-domain restriction",
+    "oracle copied from the production implementation"
+  ],
+  "loop_policy": "The target and harness contain no loops; no unwinding bound is required.",
+  "authoritative_result": "The direct CBMC result over the final linked GOTO model."
+}

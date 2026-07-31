@@ -1,0 +1,168 @@
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+echo Running 'litani init'
+litani init  --project "mlkem-native"
+echo Running 'litani add-job'
+make -B _report
+../Makefile_params.common:5: MLKEM_K not set -- defaulting to MLKEM_K=3
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/barrett_reduce_harness.c -o /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/proof0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/barrett_reduce_harness.c \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/proof0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/proof_sources-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: building proof binary"
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c -o /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/project_sources-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: building project binary"
+litani add-job \
+  --command \
+    'goto-instrument   /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0100.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0200.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0100.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0200.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/remove_function_body-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: removing function bodies from project sources"
+litani add-job \
+  --command 'goto-cc  --function harness /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/proof0100.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0200.goto -Wall -Werror -o /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0100.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/proof0100.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/project0200.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0100.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/link_proof_project-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: linking project to proof"
+litani add-job \
+  --command \
+    'goto-instrument   --remove-function-pointers /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0100.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0200.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0100.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0200.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/restrict_function_pointer-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: restricting function pointers in project sources"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0200.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0300.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0200.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0300.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/nondet_static-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: not setting static variables to nondet (will do during contract instrumentation)"
+litani add-job \
+  --command \
+    'goto-instrument  --add-library --malloc-may-fail --malloc-fail-null   /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0300.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0400.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0300.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0400.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/linking-library-models-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: linking CPROVER library"
+litani add-job \
+  --command \
+    'goto-instrument     /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0400.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0500.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0400.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0500.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/unwind_loops-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: unwinding specified subset of loops"
+litani add-job \
+  --command \
+    'goto-instrument --malloc-may-fail --malloc-fail-null   --dfcc harness    --enforce-contract mlk_barrett_reduce  --apply-loop-contracts /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0500.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0600.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0500.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0600.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/check_function_contracts-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: checking function contracts"
+litani add-job \
+  --command \
+    'goto-instrument  --slice-global-inits /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0600.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0700.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0600.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0700.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/slice_global_inits-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: slicing global initializations"
+litani add-job \
+  --command \
+    'goto-instrument  --drop-unused-functions /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0700.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0800.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0700.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0800.goto \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/drop_unused_functions-log.txt \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: dropping unused functions"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0800.goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness0800.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto \
+  --pipeline-name "mlk_barrett_reduce" \
+  --ci-stage build \
+  --description "mlk_barrett_reduce: copying final goto-binary"
+litani add-job \
+   \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 8 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/result.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/result.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "mlk_barrett_reduce" \
+  --tags "stats-group:safety checks" \
+  --stderr-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/result-err-log.txt \
+  --description "mlk_barrett_reduce: checking safety properties"
+litani add-job \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 8 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --show-properties --xml-ui /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/property.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/property.xml \
+  --ignore-returns 10 \
+  --pipeline-name "mlk_barrett_reduce" \
+  --stderr-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/property-err-log.txt \
+  --description "mlk_barrett_reduce: printing safety properties"
+litani add-job \
+   \
+  --command \
+    'cbmc  --smt2   --flush --object-bits 8 --slice-formula --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto' \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/coverage.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/coverage.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "mlk_barrett_reduce" \
+  --tags "stats-group:coverage computation" \
+  --stderr-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/coverage-err-log.txt \
+  --description "mlk_barrett_reduce: calculating coverage"
+litani add-job \
+  --command " cbmc-viewer \
+    --result /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/result.xml \
+    --coverage /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/coverage.xml \
+    --property /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/property.xml \
+    --srcdir /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd \
+    --goto /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/gotos/barrett_reduce_harness.goto \
+    --reportdir /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/report \
+    --config /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/cbmc-viewer.json" \
+  --inputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/result.xml /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/property.xml /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/coverage.xml \
+  --outputs /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/report \
+  --pipeline-name "mlk_barrett_reduce" \
+  --stdout-file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/proofs/cbmc/barrett_reduce/logs/viewer-log.txt \
+  --ci-stage report \
+  --description "mlk_barrett_reduce: generating report"
+echo Running 'litani build'
+litani run-build

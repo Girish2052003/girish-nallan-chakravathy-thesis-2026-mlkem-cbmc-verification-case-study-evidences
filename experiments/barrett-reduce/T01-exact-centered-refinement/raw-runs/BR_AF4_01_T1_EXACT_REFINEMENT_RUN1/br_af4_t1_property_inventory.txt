@@ -1,0 +1,81 @@
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_final.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Property br_af4_centered_oracle.overflow.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 28 function br_af4_centered_oracle
+  arithmetic overflow on signed + in u + 3329
+  !overflow("+", int32_t, u, 3329)
+
+Property br_af4_centered_oracle.overflow.2:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 33 function br_af4_centered_oracle
+  arithmetic overflow on signed - in u - 3329
+  !overflow("-", int32_t, u, 3329)
+
+Property harness.assertion.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 45 function harness
+  BR-AF4-T1.P2 centered output range
+  (int32_t)r >= -1664 && (int32_t)r <= 1664
+
+Property harness.overflow.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 50 function harness
+  arithmetic overflow on signed - in (int32_t)a - (int32_t)r
+  !overflow("-", int32_t, (int32_t)a, (int32_t)r)
+
+Property harness.assertion.2:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 49 function harness
+  BR-AF4-T1.P3 congruence modulo 3329
+  ((int32_t)a - (int32_t)r) % 3329 == 0
+
+Property harness.assertion.3:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_01_T1_EXACT_REFINEMENT_RUN1/br_af4_t1_exact_refinement_harness.c line 53 function harness
+  BR-AF4-T1.P4 independent centered-oracle equivalence
+  (int32_t)r == expected
+
+Property mlk_barrett_reduce.overflow.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 96 function mlk_barrett_reduce
+  arithmetic overflow on signed * in magic * (signed int)a
+  !overflow("*", const int32_t, magic, (signed int)a)
+
+Property mlk_barrett_reduce.overflow.2:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 96 function mlk_barrett_reduce
+  arithmetic overflow on signed + in magic * (signed int)a + ((int32_t)1 << 25)
+  !overflow("+", const int32_t, magic * (signed int)a, 33554432)
+
+Property mlk_barrett_reduce.overflow.3:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 102 function mlk_barrett_reduce
+  arithmetic overflow on signed * in t * 3329
+  !overflow("*", const int32_t, t, 3329)
+
+Property mlk_barrett_reduce.overflow.4:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 102 function mlk_barrett_reduce
+  arithmetic overflow on signed - in (signed int)a - t * 3329
+  !overflow("-", signed int, (signed int)a, t * 3329)
+
+Property mlk_barrett_reduce.pointer_dereference.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+  dereference failure: dead object in ((int16_t *)&res)[(signed long int)_cbmc_idx12]
+  forall { uint32_t _cbmc_idx12; (uint32_t)0 <= _cbmc_idx12 && _cbmc_idx12 < (uint32_t)1 && TRUE ==> !(__CPROVER_POINTER_OBJECT(&res) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }
+
+Property mlk_barrett_reduce.pointer_dereference.2:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+  dereference failure: pointer outside object bounds in ((int16_t *)&res)[(signed long int)_cbmc_idx12]
+  forall { uint32_t _cbmc_idx12; (uint32_t)0 <= _cbmc_idx12 && _cbmc_idx12 < (uint32_t)1 && TRUE ==> !((unsigned __CPROVER_bitvector[65])((unsigned long int)(signed long int)_cbmc_idx12 * 2ul) + 2 >= 3) }
+
+Property mlk_barrett_reduce.pointer_dereference.3:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+  dereference failure: dead object in ((int16_t *)&res)[(signed long int)_cbmc_idx12]
+  forall { uint32_t _cbmc_idx12; (uint32_t)0 <= _cbmc_idx12 && _cbmc_idx12 < (uint32_t)1 && (signed int)(-((signed int)((3329 + 1) / 2)) + 1) <= (signed int)((int16_t *)&res)[(signed long int)_cbmc_idx12] ==> !(__CPROVER_POINTER_OBJECT(&res) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object)) }
+
+Property mlk_barrett_reduce.pointer_dereference.4:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+  dereference failure: pointer outside object bounds in ((int16_t *)&res)[(signed long int)_cbmc_idx12]
+  forall { uint32_t _cbmc_idx12; (uint32_t)0 <= _cbmc_idx12 && _cbmc_idx12 < (uint32_t)1 && (signed int)(-((signed int)((3329 + 1) / 2)) + 1) <= (signed int)((int16_t *)&res)[(signed long int)_cbmc_idx12] ==> !((unsigned __CPROVER_bitvector[65])((unsigned long int)(signed long int)_cbmc_idx12 * 2ul) + 2 >= 3) }
+
+Property mlk_barrett_reduce.assertion.1:
+  file /home/girish/THESIS-2026/mlk_barrett_reduce_cleanroom/BR_AF4_00A_af4c5abd/mlkem/src/poly.c line 104 function mlk_barrett_reduce
+  cbmc assertion failed
+  forall { uint32_t _cbmc_idx12; (uint32_t)0 <= _cbmc_idx12 && _cbmc_idx12 < (uint32_t)1 ==> (signed int)(-((signed int)((3329 + 1) / 2)) + 1) <= (signed int)((int16_t *)&res)[(signed long int)_cbmc_idx12] && (signed int)((int16_t *)&res)[(signed long int)_cbmc_idx12] < (signed int)((3329 + 1) / 2) }
+

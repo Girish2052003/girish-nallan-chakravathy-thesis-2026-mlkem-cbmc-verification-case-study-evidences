@@ -1,0 +1,38 @@
+{
+  "campaign": "BR-AF4",
+  "stage": "BR-AF4-02",
+  "frozen_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "target_function": "mlk_barrett_reduce",
+  "parent_theorem": "BR-AF4-T1 Run 3",
+  "parent_result": "PASS",
+  "properties": [
+    {
+      "id": "BR-AF4-T1.P5",
+      "claim": "For every int16_t input a, the result is strictly closer to zero than every distinct int16_t value congruent to a modulo 3329."
+    },
+    {
+      "id": "BR-AF4-C1",
+      "claim": "Critical endpoint, modulus and centered-boundary examples execute the real production body and return the expected values."
+    }
+  ],
+  "mutations": [
+    {
+      "id": "BR-AF4-M1",
+      "change": "20159 to 20158",
+      "expected_result": "VERIFICATION FAILED"
+    },
+    {
+      "id": "BR-AF4-M2",
+      "change": "remove the 2^25 rounding offset",
+      "expected_result": "VERIFICATION FAILED"
+    },
+    {
+      "id": "BR-AF4-M3",
+      "change": "change the independent oracle centering threshold from 1664 to 1663",
+      "expected_result": "VERIFICATION FAILED"
+    }
+  ],
+  "authoritative_source_policy": "The frozen production source is unchanged. Implementation mutants are isolated copies under the evidence directory.",
+  "input_policy": "P5 has no assumptions on a or y. Both range over all int16_t values.",
+  "portability_assumption": "Signed right shift follows the semantics represented by CBMC 6.9.0 on the recorded x86_64 model."
+}
