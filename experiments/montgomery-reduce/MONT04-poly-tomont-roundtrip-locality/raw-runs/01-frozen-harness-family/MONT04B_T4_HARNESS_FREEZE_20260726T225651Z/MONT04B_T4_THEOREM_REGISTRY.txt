@@ -1,0 +1,72 @@
+MONT-T4 — PORTABLE-C ROUND TRIP, BIJECTION AND LOCALITY
+========================================================
+
+Pinned target:
+  mlk_poly_tomont_c
+
+Pinned commit:
+  af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+Core theorem count:
+  5
+
+T4-P1 — De-Montgomery round trip
+  For an arbitrary int16_t polynomial A and arbitrary valid index k:
+    canonical_q(montgomery_reduce(T(A)[k]))
+      ==
+    canonical_q(A_before[k])
+
+T4-P2 — Residue-vector equivalence preservation
+  Old vector theorem:
+    whole-vector input residue equivalence implies whole-vector output
+    residue equivalence.
+
+  Direct stronger local form used by CBMC:
+    for arbitrary A, D and valid k,
+    canonical_q(A[k]) == canonical_q(D[k])
+      implies
+    canonical_q(T(A)[k]) == canonical_q(T(D)[k]),
+    regardless of all unrelated coefficients.
+
+T4-P3 — Residue-vector equivalence reflection
+  Old vector theorem:
+    whole-vector output residue equivalence implies whole-vector input
+    residue equivalence.
+
+  Direct stronger local form used by CBMC:
+    for arbitrary A, D and valid k,
+    canonical_q(T(A)[k]) == canonical_q(T(D)[k])
+      implies
+    canonical_q(A[k]) == canonical_q(D[k]),
+    regardless of all unrelated coefficients.
+
+T4-P4 — Zero-support preservation
+  For arbitrary A and valid k:
+    canonical_q(T(A)[k]) == 0
+      iff
+    canonical_q(A_before[k]) == 0
+
+T4-P5 — Coefficient locality and no cross-talk
+  For arbitrary A, D and valid k:
+    A[k] == D[k]
+      implies
+    T(A)[k] == T(D)[k],
+    regardless of differences at all other coefficients.
+
+Supporting overlap lemma — not counted as a new theorem
+  For arbitrary A and valid k:
+    canonical_q(T(A)[k])
+      ==
+    canonical_q(A_before[k] * (2^16 mod q))
+
+  This is supporting evidence only because native HOL Light proofs already
+  cover basic forward Montgomery conversion congruence.
+
+Solver packaging:
+  Harness H14: P1, P4, and the supporting forward law.
+  Harness H235: P2, P3, and P5.
+
+No weakening:
+  The stronger arbitrary-index local forms imply the originally frozen
+  vector-level P2 and P3 statements.
+  No core property is deleted, narrowed, or accepted solely from T1-T3.

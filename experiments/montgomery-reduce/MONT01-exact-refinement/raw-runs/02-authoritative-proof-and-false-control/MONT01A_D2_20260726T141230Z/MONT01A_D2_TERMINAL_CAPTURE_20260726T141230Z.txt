@@ -1,0 +1,206 @@
+
+============================================================
+MONT-01A-D2 — FINAL FUNCTIONAL PROOF AND NON-VACUITY CONTROL
+============================================================
+UTC_TIME=20260726T141230Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPERIMENT_WORKTREE=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd
+OUTPUT_DIRECTORY=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT01A_D2_20260726T141230Z
+
+============================================================
+E1 — SOURCE BINDING
+============================================================
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING_GATE=PASS
+AUTHORITATIVE_CLEAN_GATE=PASS
+PRODUCTION_SOURCE_BINDING=PASS
+
+============================================================
+E2 — PRESERVE PRE-D2 ARTEFACTS
+============================================================
+PRE_D2_HARNESS_SHA256=7fe7a09fce4f0819e615e6a21b463f5829db2989b99136a1e1b9f1871d113036
+PRE_D2_MAKEFILE_SHA256=8405231c41f7f3f527e210fde58422e743f724c30274c1b18416c3d9cb6abb21
+
+============================================================
+E3 — PATCH INDEPENDENT LOW-WORD ORACLE
+============================================================
+ORACLE_PATCH_TARGET_FOUND=YES
+ORACLE_PATCH_APPLIED=YES
+ORACLE_PATCH_RC=0
+
+============================================================
+E4 — SWITCH AUTHORITATIVE BACKEND TO DEFAULT SAT
+============================================================
+BACKEND_PATCH_TARGET_FOUND=YES
+BACKEND_PATCH_APPLIED=YES
+BACKEND_PATCH_RC=0
+POST_D2_HARNESS_SHA256=ba7aa005f34f4cfdead81067223a35b968ed46eca942c350c6ae48bbaa1f341d
+POST_D2_MAKEFILE_SHA256=404c11722ef402f06973916a4a07b394a456108edb78a75790fca9754d4f577e
+ORACLE_PATCH_CONTEXT_BEGIN
+23- * 4. Divide the exactly divisible numerator using int64_t arithmetic.
+24- */
+25-static int64_t mont_oracle_t(int32_t a)
+26-{
+27:  int64_t low_signed;
+28-  uint64_t low;
+29-  uint64_t raw_t;
+30-
+31-  /*
+32-   * Compute the canonical residue in [0, R) without a value-changing
+33-   * negative-signed-to-unsigned conversion.
+34-   */
+35:  low_signed = (int64_t)a % MONT_R;
+36-
+37:  if (low_signed < 0)
+38-  {
+39:    low_signed += MONT_R;
+40-  }
+41-
+42-  __CPROVER_assert(
+43:      low_signed >= 0 && low_signed < MONT_R,
+44-      "MONT-T1.ORACLE.low_word_normalized");
+45-
+46:  low = (uint64_t)low_signed;
+47-  raw_t = (low * MONT_QINV_UNSIGNED) % (uint64_t)MONT_R;
+48-
+49-  if (raw_t >= (uint64_t)(MONT_R / 2))
+50-  {
+51-    return (int64_t)raw_t - MONT_R;
+52-  }
+53-
+54-  return (int64_t)raw_t;
+55-}
+56-
+57-static int64_t mont_oracle_result(int32_t a, int64_t *witness_t)
+58-{
+59-  int64_t t;
+60-  int64_t numerator;
+61-
+62-  t = mont_oracle_t(a);
+63-  numerator = (int64_t)a - t * MONT_Q;
+64-
+65-  __CPROVER_assert(
+66-      numerator % MONT_R == 0,
+67-      "MONT-T1.P2.oracle_numerator_exactly_divisible_by_R");
+68-
+ORACLE_PATCH_CONTEXT_END
+BACKEND_CONFIGURATION_BEGIN
+29:CBMCFLAGS =
+BACKEND_CONFIGURATION_END
+
+============================================================
+E5 — REBUILD AUTHORITATIVE T1 PROOF
+============================================================
+T1_MAKE_CLEAN_RC=0
+T1_MAKE_RC=0
+T1_MAKE_KEY_OUTPUT_BEGIN
+[1/16] MONT-T1 full-domain exact refinement: building proof binary              [2/16] MONT-T1 full-domain exact refinement: building project binary            [3/16] MONT-T1 full-domain exact refinement: removing function bodies from pr...[4/16] MONT-T1 full-domain exact refinement: linking project to proof           [5/16] MONT-T1 full-domain exact refinement: restricting function pointers in...[6/16] MONT-T1 full-domain exact refinement: not setting static variables to ...[7/16] MONT-T1 full-domain exact refinement: linking CPROVER library            [8/16] MONT-T1 full-domain exact refinement: unwinding specified subset of loops[9/16] MONT-T1 full-domain exact refinement: checking function contracts        [10/16] MONT-T1 full-domain exact refinement: slicing global initializations    [11/16] MONT-T1 full-domain exact refinement: dropping unused functions         [12/16] MONT-T1 full-domain exact refinement: copying final goto-binary         [13/16] MONT-T1 full-domain exact refinement: printing safety properties        [14/16] MONT-T1 full-domain exact refinement: calculating coverage              [15/16] MONT-T1 full-domain exact refinement: checking safety properties        [16/16] MONT-T1 full-domain exact refinement: generating report                 FAILED: /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t1_exact_refinement/report /tmp/litani/runs/10875581-1402-4fdf-ba66-da7cf9e133a3/status/4c1c5f23-6d18-4c41-b4d6-185bbf5ec69f.json 
+ninja: build stopped: cannot make progress due to previous errors.
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+T1_MAKE_KEY_OUTPUT_END
+
+============================================================
+E6 — AUDIT MAKE-GENERATED XML
+============================================================
+T1_DEFAULT_SAT_XML_XML_PATH=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t1_exact_refinement/logs/result.xml
+T1_DEFAULT_SAT_XML_XML_PRESENT=YES
+T1_DEFAULT_SAT_XML_XML_SIZE=21881
+T1_DEFAULT_SAT_XML_CPROVER_STATUS=SUCCESS
+T1_DEFAULT_SAT_XML_RESULT_COUNT=52
+T1_DEFAULT_SAT_XML_NON_SUCCESS_COUNT=0
+T1_DEFAULT_SAT_XML_REQUIRED_ASSERTION_COUNT=12
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_COUNT=12
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_1=MONT-T1.ORACLE.low_word_normalized
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_2=MONT-T1.P2.oracle_numerator_exactly_divisible_by_R
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_3=MONT-T1.P2.oracle_witness_is_signed16
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_4=MONT-T1.P1.oracle_result_fits_int16
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_5=MONT-T1.P1.full_domain_exact_oracle_equality
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_6=MONT-T1.P2.exact_signed_witness_reconstruction
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_7=MONT-T1.P2.scaled_modular_congruence_divisibility
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_8=MONT-T1.P3.unique_result_in_signed16_decomposition
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_9=MONT-T1.P3.unique_witness_in_signed16_decomposition
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_10=MONT-T1.P4.full_contract_domain_sharp_output_bound
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_11=MONT-T1.P5.minimum_output_is_attainable
+T1_DEFAULT_SAT_XML_MISSING_REQUIRED_12=MONT-T1.P5.maximum_output_is_attainable
+T1_DEFAULT_SAT_XML_AUDIT=FAIL
+T1_XML_AUDIT_RC=3
+
+============================================================
+E7 — DIRECT AUTHORITATIVE CBMC RUN
+============================================================
+T1_GOTO_PRESENT=YES
+T1_GOTO_SHA256=4630a866855c0806afb02f62302fa9af3b689e2594c661b4b4d15ecae61749aa
+T1_DIRECT_CBMC_RC=0
+T1_DIRECT_KEY_RESULTS_BEGIN
+[harness.assertion.1] line 96 MONT-T1.P2.oracle_witness_is_signed16: SUCCESS
+[harness.assertion.2] line 100 MONT-T1.P1.oracle_result_fits_int16: SUCCESS
+[harness.assertion.3] line 104 MONT-T1.P1.full_domain_exact_oracle_equality: SUCCESS
+[harness.assertion.4] line 111 MONT-T1.P2.exact_signed_witness_reconstruction: SUCCESS
+[harness.assertion.5] line 115 MONT-T1.P2.scaled_modular_congruence_divisibility: SUCCESS
+[harness.assertion.6] line 130 MONT-T1.P3.unique_result_in_signed16_decomposition: SUCCESS
+[harness.assertion.7] line 134 MONT-T1.P3.unique_witness_in_signed16_decomposition: SUCCESS
+[harness.assertion.8] line 138 MONT-T1.P4.full_contract_domain_sharp_output_bound: SUCCESS
+[harness.assertion.9] line 147 MONT-T1.P5.minimum_output_is_attainable: SUCCESS
+[harness.assertion.10] line 151 MONT-T1.P5.maximum_output_is_attainable: SUCCESS
+[mont_oracle_result.assertion.1] line 65 MONT-T1.P2.oracle_numerator_exactly_divisible_by_R: SUCCESS
+[mont_oracle_t.assertion.1] line 42 MONT-T1.ORACLE.low_word_normalized: SUCCESS
+VERIFICATION SUCCESSFUL
+T1_DIRECT_KEY_RESULTS_END
+T1_DIRECT_DIRECT_RC=0
+T1_DIRECT_SUCCESS_MARKER=YES
+T1_DIRECT_FAILED_MARKER=NO
+T1_DIRECT_FAILURE_LINE_COUNT=0
+T1_DIRECT_MISSING_REQUIRED_COUNT=0
+T1_DIRECT_AUDIT=PASS
+T1_DIRECT_AUDIT_RC=0
+
+============================================================
+E8 — CREATE POST-UNIQUENESS FALSE CONTROL
+============================================================
+FALSE_CONTROL_INSERTION_POINT_FOUND=YES
+FALSE_CONTROL_INSERTED=YES
+FALSE_CONTROL_INSERT_RC=0
+FALSE_CONTROL_MAKEFILE_PATCHED=YES
+FALSE_CONTROL_MAKEFILE_RC=0
+c283ba7bdc1690fbfd6a830c9e47b6af8aab45ef693b9262c47d55b6e40094dc  /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t1_false_control/mont_t1_false_control_harness.c
+dda0aa8f701311918cb3e9320c4f73b546713a11e61fca972af08f4c88ae4fe2  /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t1_false_control/Makefile
+
+============================================================
+E9 — BUILD AND EXECUTE FALSE CONTROL
+============================================================
+FALSE_CONTROL_CLEAN_RC=0
+FALSE_CONTROL_MAKE_RC=0
+FALSE_CONTROL_GOTO_PRESENT=YES
+FALSE_CONTROL_GOTO_SHA256=ada445fb2d1648d66f4b6d495067615698f28004d1ecf0b367a8462702b31dd4
+FALSE_CONTROL_DIRECT_CBMC_RC=10
+FALSE_CONTROL_KEY_RESULTS_BEGIN
+[harness.assertion.11] line 158 MONT-T1.CONTROL.post_uniqueness_path_reachable: FAILURE
+  MONT-T1.CONTROL.post_uniqueness_path_reachable
+VERIFICATION FAILED
+FALSE_CONTROL_KEY_RESULTS_END
+FALSE_CONTROL_DIRECT_RC=10
+FALSE_CONTROL_FAILED_MARKER=YES
+FALSE_CONTROL_FAILURE_COUNT=1
+FALSE_CONTROL_EXPECTED_FAILURE_COUNT=1
+FALSE_CONTROL_UNEXPECTED_FAILURE_COUNT=0
+FALSE_CONTROL_FAILURE_1=[harness.assertion.11] line 158 MONT-T1.CONTROL.post_uniqueness_path_reachable: FAILURE
+FALSE_CONTROL_AUDIT=PASS
+FALSE_CONTROL_AUDIT_RC=0
+
+============================================================
+E10 — FINAL INTEGRITY AND VERDICT
+============================================================
+FINAL_AUTHORITATIVE_GATE=PASS
+FINAL_PRODUCTION_SOURCE_BINDING=PASS
+EXPERIMENT_WORKTREE_STATUS_BEGIN
+?? proofs/cbmc/mont_t1_exact_refinement/Makefile
+?? proofs/cbmc/mont_t1_exact_refinement/mont_t1_exact_refinement_harness.c
+?? proofs/cbmc/mont_t1_false_control/Makefile
+?? proofs/cbmc/mont_t1_false_control/mont_t1_false_control_harness.c
+EXPERIMENT_WORKTREE_STATUS_END
+MONT01A_D2_GATE=FAIL
+MONT_T1_STATUS=NOT_ACCEPTED
+NEXT_GATE=REVIEW_REMAINING_OUTPUT
+MONT01A_D2_CAPTURE_END=YES

@@ -1,0 +1,77 @@
+MONT-T4 — PORTABLE-C ROUND TRIP, BIJECTION AND LOCALITY
+========================================================
+
+Target:
+  mlk_poly_tomont_c
+
+Supporting scalar functions:
+  mlk_fqmul
+  mlk_montgomery_reduce
+
+Input domain:
+  Every polynomial coefficient is an arbitrary int16_t value unless a
+  narrower domain is explicitly inherent in a relational premise.
+
+T4-P1 — De-Montgomery round trip
+  For every coefficient i:
+    canonical_q(montgomery_reduce(T(A)[i]))
+      ==
+    canonical_q(A_before[i])
+
+T4-P2 — Residue-vector equivalence preservation
+  For two arbitrary int16_t polynomials A and D:
+    (for every i, A[i] == D[i] mod q)
+      implies
+    (for every i, T(A)[i] == T(D)[i] mod q)
+
+T4-P3 — Residue-vector equivalence reflection
+  For two arbitrary int16_t polynomials A and D:
+    (for every i, T(A)[i] == T(D)[i] mod q)
+      implies
+    (for every i, A[i] == D[i] mod q)
+
+T4-P4 — Zero-support preservation
+  For every coefficient i:
+    T(A)[i] == 0 mod q
+      iff
+    A_before[i] == 0 mod q
+
+T4-P5 — Coefficient locality and no cross-talk
+  For two arbitrary polynomials A and D and an arbitrary valid index k:
+    A[k] == D[k]
+      implies
+    T(A)[k] == T(D)[k]
+  regardless of differences at every other coefficient.
+
+NOVELTY BOUNDARY
+================
+The basic forward representation congruence:
+  T(A)[i] == A[i] * R mod q
+may be proved only as a supporting lemma.
+
+It is not the T4 headline novelty because corresponding native/HOL proof
+coverage already exists for basic conversion congruence and bounds.
+
+The headline T4 contribution is:
+  de-Montgomery round trip
+  residue-vector equivalence preservation and reflection
+  zero-support preservation
+  two-execution coefficient locality/no cross-talk
+
+ASSURANCE GATES — NOT COUNTED AS EXTRA THEOREMS
+===============================================
+  source and commit binding
+  target-call reachability
+  assumption satisfiability
+  assertion reachability
+  CBMC safety and unwinding checks
+  false controls
+  T4-specific mutations
+  K=2, K=3 and K=4 reproduction where relevant
+  evidence hashing
+  production-source integrity
+
+NO-WEAKENING RULE
+=================
+No T4 property may be removed, narrowed, replaced by a scalar-only theorem,
+or accepted solely because T1-T3 passed.

@@ -1,0 +1,71 @@
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/gotos/mont_t2a_p3_single_call_decomposition_harness.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.1:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: pointer NULL in *ptr
+  !(__CPROVER_POINTER_OBJECT(((void **)NULL)) == __CPROVER_POINTER_OBJECT(ptr))
+
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.2:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: pointer invalid in *ptr
+  !IS_INVALID_POINTER(ptr)
+
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.3:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: deallocated dynamic object in *ptr
+  !(__CPROVER_POINTER_OBJECT(ptr) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated))
+
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.4:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: dead object in *ptr
+  !(__CPROVER_POINTER_OBJECT(ptr) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object))
+
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.5:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: pointer outside object bounds in *ptr
+  (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(ptr) >= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(ptr) + 8
+
+Property __CPROVER_contracts_make_invalid_pointer.pointer_dereference.6:
+  file <builtin-library-__CPROVER_contracts_library> line 1186 function __CPROVER_contracts_make_invalid_pointer
+  dereference failure: invalid integer address in *ptr
+  !(__CPROVER_POINTER_OBJECT(((void **)NULL)) == __CPROVER_POINTER_OBJECT(ptr)) || ptr == ((void **)NULL)
+
+Property harness.overflow.1:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/mont_t2a_p3_single_call_decomposition_harness.c line 38 function harness
+  arithmetic overflow on signed * in (int64_t)result * (int64_t)65536
+  !overflow("*", int64_t, (int64_t)result, 65536l)
+
+Property harness.overflow.2:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/mont_t2a_p3_single_call_decomposition_harness.c line 39 function harness
+  arithmetic overflow on signed * in (int64_t)witness * (int64_t)3329
+  !overflow("*", int64_t, (int64_t)witness, 3329l)
+
+Property harness.overflow.3:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/mont_t2a_p3_single_call_decomposition_harness.c line 38 function harness
+  arithmetic overflow on signed + in (int64_t)result * (int64_t)65536 + (int64_t)witness * (int64_t)3329
+  !overflow("+", int64_t, (int64_t)result * 65536l, (int64_t)witness * 3329l)
+
+Property harness.assertion.1:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/mont_t2a_p3_single_call_decomposition_harness.c line 37 function harness
+  MONT-T2A.P3L1.universal_single_call_exact_decomposition
+  (int64_t)result * (int64_t)65536 + (int64_t)witness * (int64_t)3329 == (int64_t)x
+
+Property mlk_montgomery_reduce.assertion.1:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/../../../mlkem/src/poly.h line 82 function mlk_montgomery_reduce
+  cbmc assertion failed
+  a < +(2147483647 - ((int32_t)1 << 15) * 3329) && a > -(2147483647 - ((int32_t)1 << 15) * 3329)
+
+Property mlk_montgomery_reduce.overflow.1:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/../../../mlkem/src/poly.h line 85 function mlk_montgomery_reduce
+  arithmetic overflow on signed * in (int32_t)t * 3329
+  !overflow("*", int32_t, (int32_t)t, 3329)
+
+Property mlk_montgomery_reduce.overflow.2:
+  file /home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd/proofs/cbmc/mont_t2a_p3_single_call_decomposition/../../../mlkem/src/poly.h line 85 function mlk_montgomery_reduce
+  arithmetic overflow on signed - in a - (int32_t)t * 3329
+  !overflow("-", int32_t, a, (int32_t)t * 3329)
+

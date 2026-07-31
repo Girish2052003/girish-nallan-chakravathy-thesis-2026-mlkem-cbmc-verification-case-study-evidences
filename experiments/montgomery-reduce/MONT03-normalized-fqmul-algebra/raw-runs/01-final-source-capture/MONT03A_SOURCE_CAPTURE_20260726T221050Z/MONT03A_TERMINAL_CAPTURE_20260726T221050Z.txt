@@ -1,0 +1,1013 @@
+
+============================================================
+MONT-03A — FQMUL SOURCE / CONTRACT / NATIVE-OVERLAP CAPTURE
+============================================================
+UTC_TIME=20260726T221050Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+============================================================
+G0 — SOURCE BINDING
+============================================================
+AUTHORITATIVE_GIT_GATE=PASS
+AUTHORITATIVE_GIT_DIR=/home/girish/THESIS-2026/mlkem-native/.git/worktrees/mlkem-native_af4c5abd
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_STATUS_BEGIN
+
+AUTHORITATIVE_STATUS_END
+POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+SOURCE_BINDING_GATE=PASS
+
+============================================================
+G1 — EXACT FQMUL AND REDUCTION LOCATIONS
+============================================================
+FQMUL_MATCH_COUNT=7
+mlkem/src/poly.c:43:static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b)
+mlkem/src/poly.c:124:    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);
+mlkem/src/poly.c:284:    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);
+mlkem/src/poly.c:288:        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));
+mlkem/src/poly.c:375:    t = mlk_fqmul(r[j + len], zeta);
+mlkem/src/poly.c:508:      r[j + len] = mlk_fqmul(r[j + len], zeta);
+mlkem/src/poly.c:540:    r[j] = mlk_fqmul(r[j], f);
+MONT_REDUCE_MATCH_COUNT=4
+mlkem/src/poly.c:52:  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);
+mlkem/src/poly.h:58:static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a)
+mlkem/src/poly_k.c:186:    r->coeffs[2 * i + 0] = mlk_montgomery_reduce(t[0]);
+mlkem/src/poly_k.c:187:    r->coeffs[2 * i + 1] = mlk_montgomery_reduce(t[1]);
+
+============================================================
+G2 — SOURCE CONTEXT
+============================================================
+
+--- mlkem/src/poly.c:43 context ---
+    23	
+    24	#include "cbmc.h"
+    25	#include "debug.h"
+    26	#include "poly.h"
+    27	#include "sampling.h"
+    28	#include "symmetric.h"
+    29	#include "verify.h"
+    30	
+    31	/**
+    32	 * Montgomery multiplication modulo MLKEM_Q.
+    33	 *
+    34	 * @reference{`fqmul()` in the reference implementation @[REF].}
+    35	 *
+    36	 * @param a First factor. Can be any int16_t.
+    37	 * @param b Second factor. Must be signed canonical
+    38	 *          (abs value < (MLKEM_Q+1)/2).
+    39	 *
+    40	 * @return 16-bit integer congruent to a*b*R^{-1} mod MLKEM_Q, and
+    41	 *         smaller than MLKEM_Q in absolute value.
+    42	 */
+    43	static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b)
+    44	__contract__(
+    45	  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+    46	  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+    47	)
+    48	{
+    49	  int16_t res;
+    50	  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);
+    51	
+    52	  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);
+    53	  /* Bounds:
+    54	   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2
+    55	   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2
+    56	   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2
+    57	   *        < MLKEM_Q
+    58	   */
+    59	
+    60	  mlk_assert_abs_bound(&res, 1, MLKEM_Q);
+    61	  return res;
+    62	}
+    63	
+    64	/**
+    65	 * Barrett reduction; given a 16-bit integer a, computes the centered
+    66	 * representative congruent to a mod MLKEM_Q in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2].
+    67	 *
+    68	 * @reference{`barrett_reduce()` in the reference implementation @[REF].}
+    69	 *
+    70	 * @param a Input integer to be reduced.
+    71	 *
+    72	 * @return Integer in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2] congruent to @p a modulo
+    73	 *         MLKEM_Q.
+    74	 */
+    75	static MLK_INLINE int16_t mlk_barrett_reduce(int16_t a)
+    76	__contract__(
+    77	  ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)
+    78	)
+
+--- mlkem/src/poly.c:124 context ---
+   104	  mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);
+   105	  return res;
+   106	}
+   107	
+   108	/* Reference: `poly_tomont()` in the reference implementation @[REF]. */
+   109	MLK_STATIC_TESTABLE void mlk_poly_tomont_c(mlk_poly *r)
+   110	__contract__(
+   111	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   112	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   113	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+   114	)
+   115	{
+   116	  unsigned i;
+   117	  const int16_t f = 1353; /* check-magic: 1353 == signed_mod(2^32, MLKEM_Q) */
+   118	  for (i = 0; i < MLKEM_N; i++)
+   119	  __loop__(
+   120	    invariant(i <= MLKEM_N)
+   121	    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))
+   122	    decreases(MLKEM_N - i))
+   123	  {
+   124	    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);
+   125	  }
+   126	
+   127	  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   128	}
+   129	
+   130	MLK_INTERNAL_API
+   131	void mlk_poly_tomont(mlk_poly *r)
+   132	{
+   133	#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+   134	  int ret;
+   135	  ret = mlk_poly_tomont_native(r->coeffs);
+   136	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   137	  {
+   138	    mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   139	    return;
+   140	  }
+   141	#endif /* MLK_USE_NATIVE_POLY_TOMONT */
+   142	
+   143	  mlk_poly_tomont_c(r);
+   144	}
+   145	
+   146	/**
+   147	 * Constant-time conversion of signed representatives modulo MLKEM_Q within
+   148	 * range [-(MLKEM_Q-1), MLKEM_Q-1] into unsigned representatives within
+   149	 * range [0, MLKEM_Q-1].
+   150	 *
+   151	 * @reference{Not present in the reference implementation @[REF]. Used here
+   152	 * to implement different semantics of `poly_reduce()`; see below. In the
+   153	 * reference implementation @[REF] this logic is part of all compression
+   154	 * functions (see `compress.c`).}
+   155	 *
+   156	 * @param c Signed coefficient to be converted.
+   157	 *
+   158	 * @return Unsigned representative in [0, MLKEM_Q).
+   159	 */
+
+--- mlkem/src/poly.c:284 context ---
+   264	
+   265	/* Reference: Does not exist in the reference implementation @[REF].
+   266	 *            - The reference implementation does not use a
+   267	 *              multiplication cache ('mulcache'). This idea originates
+   268	 *              from @[NeonNTT] and is used at the C level here. */
+   269	MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x,
+   270	                                                     const mlk_poly *a)
+   271	__contract__(
+   272	  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+   273	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+   274	  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+   275	)
+   276	{
+   277	  unsigned i;
+   278	  for (i = 0; i < MLKEM_N / 4; i++)
+   279	  __loop__(
+   280	    invariant(i <= MLKEM_N / 4)
+   281	    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+   282	    decreases(MLKEM_N / 4 - i))
+   283	  {
+   284	    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);
+   285	    /* The values in zeta table are <= MLKEM_Q in absolute value,
+   286	     * so the negation in int16_t is safe. */
+   287	    x->coeffs[2 * i + 1] =
+   288	        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));
+   289	  }
+   290	
+   291	  /*
+   292	   * This bound is true for the C implementation, but not needed
+   293	   * in the higher level bounds reasoning. It is thus omitted
+   294	   * from the spec to not unnecessarily constrain native
+   295	   * implementations, but checked here nonetheless.
+   296	   */
+   297	  mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);
+   298	}
+   299	
+   300	MLK_INTERNAL_API
+   301	void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+   302	{
+   303	#if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)
+   304	  int ret;
+   305	  ret = mlk_poly_mulcache_compute_native(x->coeffs, a->coeffs);
+   306	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   307	  {
+   308	    return;
+   309	  }
+   310	#endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */
+   311	
+   312	  mlk_poly_mulcache_compute_c(x, a);
+   313	}
+   314	
+   315	/*
+   316	 * Computes a block CT butterflies with a fixed twiddle factor,
+   317	 * using Montgomery multiplication.
+   318	 * Parameters:
+   319	 * - r: Pointer to base of polynomial (_not_ the base of butterfly block)
+
+--- mlkem/src/poly.c:288 context ---
+   268	 *              from @[NeonNTT] and is used at the C level here. */
+   269	MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x,
+   270	                                                     const mlk_poly *a)
+   271	__contract__(
+   272	  requires(memory_no_alias(x, sizeof(mlk_poly_mulcache)))
+   273	  requires(memory_no_alias(a, sizeof(mlk_poly)))
+   274	  assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))
+   275	)
+   276	{
+   277	  unsigned i;
+   278	  for (i = 0; i < MLKEM_N / 4; i++)
+   279	  __loop__(
+   280	    invariant(i <= MLKEM_N / 4)
+   281	    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+   282	    decreases(MLKEM_N / 4 - i))
+   283	  {
+   284	    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);
+   285	    /* The values in zeta table are <= MLKEM_Q in absolute value,
+   286	     * so the negation in int16_t is safe. */
+   287	    x->coeffs[2 * i + 1] =
+   288	        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));
+   289	  }
+   290	
+   291	  /*
+   292	   * This bound is true for the C implementation, but not needed
+   293	   * in the higher level bounds reasoning. It is thus omitted
+   294	   * from the spec to not unnecessarily constrain native
+   295	   * implementations, but checked here nonetheless.
+   296	   */
+   297	  mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);
+   298	}
+   299	
+   300	MLK_INTERNAL_API
+   301	void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)
+   302	{
+   303	#if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)
+   304	  int ret;
+   305	  ret = mlk_poly_mulcache_compute_native(x->coeffs, a->coeffs);
+   306	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   307	  {
+   308	    return;
+   309	  }
+   310	#endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */
+   311	
+   312	  mlk_poly_mulcache_compute_c(x, a);
+   313	}
+   314	
+   315	/*
+   316	 * Computes a block CT butterflies with a fixed twiddle factor,
+   317	 * using Montgomery multiplication.
+   318	 * Parameters:
+   319	 * - r: Pointer to base of polynomial (_not_ the base of butterfly block)
+   320	 * - root: Twiddle factor to use for the butterfly. This must be in
+   321	 *         Montgomery form and signed canonical.
+   322	 * - start: Offset to the beginning of the butterfly block
+   323	 * - len: Index difference between coefficients subject to a butterfly
+
+--- mlkem/src/poly.c:375 context ---
+   355	  ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q))
+   356	  ensures(array_abs_bound(r, start + 2 * len, MLKEM_N, bound)))
+   357	{
+   358	  /* `bound` is a ghost variable only needed in the CBMC specification */
+   359	  unsigned j;
+   360	  ((void)bound);
+   361	  for (j = start; j < start + len; j++)
+   362	  __loop__(
+   363	    invariant(start <= j && j <= start + len)
+   364	    /*
+   365	     * Coefficients are updated in strided pairs, so the bounds for the
+   366	     * intermediate states alternate twice between the old and new bound
+   367	     */
+   368	    invariant(array_abs_bound(r, 0,           j,           bound + MLKEM_Q))
+   369	    invariant(array_abs_bound(r, j,           start + len, bound))
+   370	    invariant(array_abs_bound(r, start + len, j + len,     bound + MLKEM_Q))
+   371	    invariant(array_abs_bound(r, j + len,     MLKEM_N,     bound))
+   372	    decreases(start + len - j))
+   373	  {
+   374	    int16_t t;
+   375	    t = mlk_fqmul(r[j + len], zeta);
+   376	    /* The precondition implies that the arithmetic does not overflow. */
+   377	    r[j + len] = (int16_t)(r[j] - t);
+   378	    r[j] = (int16_t)(r[j] + t);
+   379	  }
+   380	}
+   381	
+   382	/*
+   383	 * Compute one layer of forward NTT
+   384	 * Parameters:
+   385	 * - r: Pointer to base of polynomial
+   386	 * - layer: Variable indicating which layer is being applied.
+   387	 */
+   388	
+   389	/* Reference: Embedded in `ntt()` in the reference implementation @[REF]. */
+   390	static void mlk_ntt_layer(int16_t r[MLKEM_N], unsigned layer)
+   391	__contract__(
+   392	  requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N))
+   393	  requires(1 <= layer && layer <= 7)
+   394	  requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))
+   395	  assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N))
+   396	  ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q)))
+   397	{
+   398	  unsigned start, k, len;
+   399	  /* Twiddle factors for layer n are at indices 2^(n-1)..2^n-1. */
+   400	  k = 1u << (layer - 1);
+   401	  len = (unsigned)MLKEM_N >> layer;
+   402	  for (start = 0; start < MLKEM_N; start += 2 * len)
+   403	  __loop__(
+   404	    invariant(start < MLKEM_N + 2 * len)
+   405	    invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N)
+   406	    invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q))
+   407	    invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q))
+   408	    decreases(MLKEM_N - start))
+   409	  {
+   410	    int16_t zeta = mlk_zetas[k++];
+
+--- mlkem/src/poly.c:508 context ---
+   488	  __loop__(
+   489	    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   490	    invariant(start <= MLKEM_N && k <= 127)
+   491	    /* Normalised form of k == MLKEM_N / len - 1 - start / (2 * len) */
+   492	    invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len)
+   493	    decreases(MLKEM_N - start))
+   494	  {
+   495	    unsigned j;
+   496	    int16_t zeta = mlk_zetas[k--];
+   497	    for (j = start; j < start + len; j++)
+   498	    __loop__(
+   499	      invariant(start <= j && j <= start + len)
+   500	      invariant(start <= MLKEM_N && k <= 127)
+   501	      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   502	      decreases(start + len - j))
+   503	    {
+   504	      int16_t t = r[j];
+   505	      /* The preconditions imply that the arithmetic does not overflow. */
+   506	      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));
+   507	      r[j + len] = (int16_t)(r[j + len] - t);
+   508	      r[j + len] = mlk_fqmul(r[j + len], zeta);
+   509	    }
+   510	  }
+   511	}
+   512	
+   513	/* Reference: `invntt()` in the reference implementation @[REF]
+   514	 *            - We normalize at the beginning of the inverse NTT,
+   515	 *              while the reference implementation normalizes at
+   516	 *              the end. This allows us to drop a call to `poly_reduce()`
+   517	 *              from the base multiplication. */
+   518	MLK_STATIC_TESTABLE void mlk_poly_invntt_tomont_c(mlk_poly *p)
+   519	__contract__(
+   520	  requires(memory_no_alias(p, sizeof(mlk_poly)))
+   521	  assigns(memory_slice(p, sizeof(mlk_poly)))
+   522	  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+   523	)
+   524	{
+   525	  unsigned j, layer;
+   526	  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */
+   527	  int16_t *r = p->coeffs;
+   528	
+   529	  /*
+   530	   * Scale input polynomial to account for Montgomery factor
+   531	   * and NTT twist. This also brings coefficients down to
+   532	   * absolute value < MLKEM_Q.
+   533	   */
+   534	  for (j = 0; j < MLKEM_N; j++)
+   535	  __loop__(
+   536	    invariant(j <= MLKEM_N)
+   537	    invariant(array_abs_bound(r, 0, j, MLKEM_Q))
+   538	    decreases(MLKEM_N - j))
+   539	  {
+   540	    r[j] = mlk_fqmul(r[j], f);
+   541	  }
+   542	
+   543	  /* Run the invNTT layers */
+
+--- mlkem/src/poly.c:540 context ---
+   520	  requires(memory_no_alias(p, sizeof(mlk_poly)))
+   521	  assigns(memory_slice(p, sizeof(mlk_poly)))
+   522	  ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))
+   523	)
+   524	{
+   525	  unsigned j, layer;
+   526	  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */
+   527	  int16_t *r = p->coeffs;
+   528	
+   529	  /*
+   530	   * Scale input polynomial to account for Montgomery factor
+   531	   * and NTT twist. This also brings coefficients down to
+   532	   * absolute value < MLKEM_Q.
+   533	   */
+   534	  for (j = 0; j < MLKEM_N; j++)
+   535	  __loop__(
+   536	    invariant(j <= MLKEM_N)
+   537	    invariant(array_abs_bound(r, 0, j, MLKEM_Q))
+   538	    decreases(MLKEM_N - j))
+   539	  {
+   540	    r[j] = mlk_fqmul(r[j], f);
+   541	  }
+   542	
+   543	  /* Run the invNTT layers */
+   544	  for (layer = 7; layer > 0; layer--)
+   545	  __loop__(
+   546	    invariant(0 <= layer && layer < 8)
+   547	    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+   548	    decreases(layer))
+   549	  {
+   550	    mlk_invntt_layer(r, layer);
+   551	  }
+   552	
+   553	  mlk_assert_abs_bound(p, MLKEM_N, MLK_INVNTT_BOUND);
+   554	}
+   555	
+   556	MLK_INTERNAL_API
+   557	void mlk_poly_invntt_tomont(mlk_poly *r)
+   558	{
+   559	#if defined(MLK_USE_NATIVE_INTT)
+   560	  int ret;
+   561	  ret = mlk_intt_native(r->coeffs);
+   562	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   563	  {
+   564	    mlk_assert_abs_bound(r, MLKEM_N, MLK_INVNTT_BOUND);
+   565	    return;
+   566	  }
+   567	#endif /* MLK_USE_NATIVE_INTT */
+   568	
+   569	  mlk_poly_invntt_tomont_c(r);
+   570	}
+   571	
+   572	#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+   573	
+   574	MLK_EMPTY_CU(mlk_poly)
+   575	
+
+--- mlkem/src/poly.c:52 context ---
+    32	 * Montgomery multiplication modulo MLKEM_Q.
+    33	 *
+    34	 * @reference{`fqmul()` in the reference implementation @[REF].}
+    35	 *
+    36	 * @param a First factor. Can be any int16_t.
+    37	 * @param b Second factor. Must be signed canonical
+    38	 *          (abs value < (MLKEM_Q+1)/2).
+    39	 *
+    40	 * @return 16-bit integer congruent to a*b*R^{-1} mod MLKEM_Q, and
+    41	 *         smaller than MLKEM_Q in absolute value.
+    42	 */
+    43	static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b)
+    44	__contract__(
+    45	  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+    46	  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+    47	)
+    48	{
+    49	  int16_t res;
+    50	  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);
+    51	
+    52	  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);
+    53	  /* Bounds:
+    54	   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2
+    55	   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2
+    56	   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2
+    57	   *        < MLKEM_Q
+    58	   */
+    59	
+    60	  mlk_assert_abs_bound(&res, 1, MLKEM_Q);
+    61	  return res;
+    62	}
+    63	
+    64	/**
+    65	 * Barrett reduction; given a 16-bit integer a, computes the centered
+    66	 * representative congruent to a mod MLKEM_Q in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2].
+    67	 *
+    68	 * @reference{`barrett_reduce()` in the reference implementation @[REF].}
+    69	 *
+    70	 * @param a Input integer to be reduced.
+    71	 *
+    72	 * @return Integer in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2] congruent to @p a modulo
+    73	 *         MLKEM_Q.
+    74	 */
+    75	static MLK_INLINE int16_t mlk_barrett_reduce(int16_t a)
+    76	__contract__(
+    77	  ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)
+    78	)
+    79	{
+    80	  /* Barrett reduction approximates
+    81	   * ```
+    82	   *     round(a/MLKEM_Q)
+    83	   *   = round(a*(2^N/MLKEM_Q))/2^N)
+    84	   *  ~= round(a*round(2^N/MLKEM_Q)/2^N)
+    85	   * ```
+    86	   * Here, we pick N=26.
+    87	   */
+
+--- mlkem/src/poly.h:58 context ---
+    38	
+    39	/**
+    40	 * INTERNAL representation of precomputed data speeding up
+    41	 * the base multiplication of two polynomials in NTT domain.
+    42	 */
+    43	typedef struct
+    44	{
+    45	  int16_t coeffs[MLKEM_N >> 1]; /**< Cached coefficients. */
+    46	} MLK_ALIGN mlk_poly_mulcache;
+    47	
+    48	/**
+    49	 * Generic Montgomery reduction; given a 32-bit integer a, computes a 16-bit
+    50	 * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+    51	 *
+    52	 * @param a Input integer to be reduced, of absolute value smaller or equal
+    53	 *          to INT32_MAX - 2^15 * MLKEM_Q.
+    54	 *
+    55	 * @return Integer congruent to a * R^-1 modulo MLKEM_Q, with absolute value
+    56	 *         <= ceil(|a| / 2^16) + (MLKEM_Q + 1)/2.
+    57	 */
+    58	static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a)
+    59	__contract__(
+    60	    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    61	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)))
+    62	    /* We don't attempt to express an input-dependent output bound
+    63	     * as the post-condition here. There are two call-sites for this
+    64	     * function:
+    65	     * - The base multiplication: Here, we need no output bound.
+    66	     * - mlk_fqmul: Here, we inline this function and prove another spec
+    67	     *          for mlk_fqmul which does have a post-condition bound. */
+    68	)
+    69	{
+    70	  /* check-magic: 62209 == unsigned_mod(pow(MLKEM_Q, -1, 2^16), 2^16) */
+    71	  const uint32_t QINV = 62209;
+    72	
+    73	  /* Compute a*q^{-1} mod 2^16 in unsigned representatives. */
+    74	  const uint16_t a_reduced = mlk_cast_int32_to_uint16(a);
+    75	  const uint16_t a_inverted = (a_reduced * QINV) & UINT16_MAX;
+    76	
+    77	  /* Lift to signed canonical representative mod 2^16. */
+    78	  const int16_t t = mlk_cast_uint16_to_int16(a_inverted);
+    79	
+    80	  int32_t r;
+    81	
+    82	  mlk_assert(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    83	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)));
+    84	
+    85	  r = a - ((int32_t)t * MLKEM_Q);
+    86	
+    87	  /*
+    88	   * PORTABILITY: Right-shift on a signed integer is, strictly-speaking,
+    89	   * implementation-defined for negative left argument. Here,
+    90	   * we assume it's sign-preserving "arithmetic" shift right. (C99 6.5.7 (5))
+    91	   */
+    92	  r = r >> 16;
+    93	  /* Bounds: |r >> 16| <= ceil(|r| / 2^16)
+
+--- mlkem/src/poly_k.c:186 context ---
+   166	  for (i = 0; i < MLKEM_N / 2; i++)
+   167	  __loop__(invariant(i <= MLKEM_N / 2)
+   168	           decreases(MLKEM_N / 2 - i))
+   169	  {
+   170	    unsigned k;
+   171	    int32_t t[2] = {0};
+   172	    for (k = 0; k < MLKEM_K; k++)
+   173	    __loop__(
+   174	      invariant(k <= MLKEM_K &&
+   175	         t[0] <=    (int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768  &&
+   176	         t[0] >= - ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768) &&
+   177	         t[1] <=   ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768) &&
+   178	         t[1] >= - ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768))
+   179	      decreases(MLKEM_K - k))
+   180	    {
+   181	      t[0] += (int32_t)a->vec[k].coeffs[2 * i + 1] * b_cache->vec[k].coeffs[i];
+   182	      t[0] += (int32_t)a->vec[k].coeffs[2 * i] * b->vec[k].coeffs[2 * i];
+   183	      t[1] += (int32_t)a->vec[k].coeffs[2 * i] * b->vec[k].coeffs[2 * i + 1];
+   184	      t[1] += (int32_t)a->vec[k].coeffs[2 * i + 1] * b->vec[k].coeffs[2 * i];
+   185	    }
+   186	    r->coeffs[2 * i + 0] = mlk_montgomery_reduce(t[0]);
+   187	    r->coeffs[2 * i + 1] = mlk_montgomery_reduce(t[1]);
+   188	  }
+   189	}
+   190	
+   191	MLK_INTERNAL_API
+   192	void mlk_polyvec_basemul_acc_montgomery_cached(
+   193	    mlk_poly *r, const mlk_polyvec *a, const mlk_polyvec *b,
+   194	    const mlk_polyvec_mulcache *b_cache)
+   195	{
+   196	#if defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED)
+   197	  {
+   198	    int ret;
+   199	    mlk_assert_bound_2d(a->vec, MLKEM_K, MLKEM_N, 0, MLKEM_UINT12_LIMIT);
+   200	#if MLKEM_K == 2
+   201	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+   202	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   203	        (const int16_t *)b_cache);
+   204	#elif MLKEM_K == 3
+   205	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+   206	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   207	        (const int16_t *)b_cache);
+   208	#elif MLKEM_K == 4
+   209	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+   210	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   211	        (const int16_t *)b_cache);
+   212	#endif
+   213	    if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   214	    {
+   215	      return;
+   216	    }
+   217	  }
+   218	#endif /* MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED */
+   219	
+   220	  mlk_polyvec_basemul_acc_montgomery_cached_c(r, a, b, b_cache);
+   221	}
+
+--- mlkem/src/poly_k.c:187 context ---
+   167	  __loop__(invariant(i <= MLKEM_N / 2)
+   168	           decreases(MLKEM_N / 2 - i))
+   169	  {
+   170	    unsigned k;
+   171	    int32_t t[2] = {0};
+   172	    for (k = 0; k < MLKEM_K; k++)
+   173	    __loop__(
+   174	      invariant(k <= MLKEM_K &&
+   175	         t[0] <=    (int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768  &&
+   176	         t[0] >= - ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768) &&
+   177	         t[1] <=   ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768) &&
+   178	         t[1] >= - ((int32_t) k * 2 * MLKEM_UINT12_LIMIT * 32768))
+   179	      decreases(MLKEM_K - k))
+   180	    {
+   181	      t[0] += (int32_t)a->vec[k].coeffs[2 * i + 1] * b_cache->vec[k].coeffs[i];
+   182	      t[0] += (int32_t)a->vec[k].coeffs[2 * i] * b->vec[k].coeffs[2 * i];
+   183	      t[1] += (int32_t)a->vec[k].coeffs[2 * i] * b->vec[k].coeffs[2 * i + 1];
+   184	      t[1] += (int32_t)a->vec[k].coeffs[2 * i + 1] * b->vec[k].coeffs[2 * i];
+   185	    }
+   186	    r->coeffs[2 * i + 0] = mlk_montgomery_reduce(t[0]);
+   187	    r->coeffs[2 * i + 1] = mlk_montgomery_reduce(t[1]);
+   188	  }
+   189	}
+   190	
+   191	MLK_INTERNAL_API
+   192	void mlk_polyvec_basemul_acc_montgomery_cached(
+   193	    mlk_poly *r, const mlk_polyvec *a, const mlk_polyvec *b,
+   194	    const mlk_polyvec_mulcache *b_cache)
+   195	{
+   196	#if defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED)
+   197	  {
+   198	    int ret;
+   199	    mlk_assert_bound_2d(a->vec, MLKEM_K, MLKEM_N, 0, MLKEM_UINT12_LIMIT);
+   200	#if MLKEM_K == 2
+   201	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+   202	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   203	        (const int16_t *)b_cache);
+   204	#elif MLKEM_K == 3
+   205	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+   206	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   207	        (const int16_t *)b_cache);
+   208	#elif MLKEM_K == 4
+   209	    ret = mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+   210	        r->coeffs, (const int16_t *)a, (const int16_t *)b,
+   211	        (const int16_t *)b_cache);
+   212	#endif
+   213	    if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   214	    {
+   215	      return;
+   216	    }
+   217	  }
+   218	#endif /* MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED */
+   219	
+   220	  mlk_polyvec_basemul_acc_montgomery_cached_c(r, a, b, b_cache);
+   221	}
+   222	
+
+============================================================
+G3 — CONSTANTS AND TYPE CONTRACTS
+============================================================
+mlkem/src/cbmc.h:135: *  array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q)
+mlkem/src/cbmc.h:138: *  0 <= a->coeffs[k]) && a->coeffs[k] < MLKEM_Q)) }
+mlkem/src/compress.c:35: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:41:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:46:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:77:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:83:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:99: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:105:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:110:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:144:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:150:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:169:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:176:    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:183:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:193:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:201:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:217:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:224:    invariant(array_bound(r->coeffs, 0, 4 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:239:      invariant(array_bound(r->coeffs, 0, 4 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:246:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:256:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:264:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:279: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:285:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:290:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:321:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:327:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:343: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:349:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:354:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:395:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:401:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:420:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:427:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:456:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:463:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:473:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:481:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:497:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:504:    invariant(array_bound(r->coeffs, 0, 8 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:524:      invariant(array_bound(r->coeffs, 0, 8 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:531:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:541:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:549:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:563: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:569:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:574:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:585:     * t0 and t1 are both < MLKEM_Q, so contain at most 12 bits each of
+mlkem/src/compress.c:613:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:689:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:696:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:699:      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+mlkem/src/compress.c:704:      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+mlkem/src/compress.c:707:  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/compress.c:714: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+mlkem/src/compress.c:720:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.h:40: * Compute round(u * 2 / MLKEM_Q).
+mlkem/src/compress.h:46: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:52:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:54:  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+mlkem/src/compress.h:58:   * round(u * 2 / MLKEM_Q)
+mlkem/src/compress.h:59:   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:60:   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:63:  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+mlkem/src/compress.h:82: * Compute round(u * 16 / MLKEM_Q) % 16.
+mlkem/src/compress.h:89: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:95:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:97:  ensures(return_value == (((uint32_t)u * 16 + MLKEM_Q / 2) / MLKEM_Q) % 16))
+mlkem/src/compress.h:101:   * round(u * 16 / MLKEM_Q)
+mlkem/src/compress.h:102:   *   = round(u * 16 * (2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:103:   *  ~= round(u * 16 * round(2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:106:  /* check-magic: 1290160 == 16 * round(2^28 / MLKEM_Q) */
+mlkem/src/compress.h:116: * Compute round(u * MLKEM_Q / 16).
+mlkem/src/compress.h:130:  ensures(return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:133:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:135:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 8) >> 4);
+mlkem/src/compress.h:148: * Compute round(u * 32 / MLKEM_Q) % 32.
+mlkem/src/compress.h:155: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:161:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:163:  ensures(return_value == (((uint32_t)u * 32 + MLKEM_Q / 2) / MLKEM_Q) % 32)  )
+mlkem/src/compress.h:167:   * round(u * 32 / MLKEM_Q)
+mlkem/src/compress.h:168:   *   = round(u * 32 * (2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:169:   *  ~= round(u * 32 * round(2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:172:  /* check-magic: 1290176 == 2^5 * round(2^27 / MLKEM_Q) */
+mlkem/src/compress.h:182: * Compute round(u * MLKEM_Q / 32).
+mlkem/src/compress.h:196:  ensures(0 <= return_value && return_value <= MLKEM_Q - 1)
+mlkem/src/compress.h:199:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:201:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 16) >> 5);
+mlkem/src/compress.h:214: * Compute round(u * 2**10 / MLKEM_Q) % 2**10.
+mlkem/src/compress.h:221: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:227:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:229:  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+mlkem/src/compress.h:233:   * round(u * 1024 / MLKEM_Q)
+mlkem/src/compress.h:234:   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:235:   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:238:  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:248: * Compute round(u * MLKEM_Q / 1024).
+mlkem/src/compress.h:262:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:265:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:267:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 512) >> 10);
+mlkem/src/compress.h:280: * Compute round(u * 2**11 / MLKEM_Q) % 2**11.
+mlkem/src/compress.h:287: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:293:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:295:  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+mlkem/src/compress.h:299:   * round(u * 2048 / MLKEM_Q)
+mlkem/src/compress.h:300:   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:301:   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:304:  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:314: * Compute round(u * MLKEM_Q / 2048).
+mlkem/src/compress.h:328:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:331:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:333:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 1024) >> 11);
+mlkem/src/compress.h:351: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:371: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:383: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:406: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:439: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:459: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:471: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:494: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:522: *               [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:529:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:574:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:595:  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/indcpa.c:55: *                  [0,..,MLKEM_Q-1].
+mlkem/src/indcpa.c:62:  mlk_assert_bound_2d(pk->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/indcpa.c:74: *                      will be normalized to [0,1,..,MLKEM_Q-1].
+mlkem/src/indcpa.c:101:  mlk_assert_bound_2d(sk->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/indcpa.c:166:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:169:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:178:       array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:195:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:198:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))))
+mlkem/src/indcpa.c:206:       array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:333:    mlk_polyvec_basemul_acc_montgomery_cached(&out->vec[i], &a->vec[i], v, vc);
+mlkem/src/indcpa.c:565:  mlk_polyvec_basemul_acc_montgomery_cached(v, pkpv, sp, sp_cache);
+mlkem/src/indcpa.c:622:  mlk_polyvec_basemul_acc_montgomery_cached(sb, skpv, b, b_cache);
+mlkem/src/indcpa.h:45:  array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/native/aarch64/meta.h:13:#define MLK_USE_NATIVE_POLY_TOMONT
+mlkem/src/native/aarch64/meta.h:15:#define MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED
+mlkem/src/native/aarch64/meta.h:70:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+mlkem/src/native/aarch64/meta.h:74:  mlk_polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm(r, a, b, b_cache);
+mlkem/src/native/aarch64/meta.h:81:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+mlkem/src/native/aarch64/meta.h:85:  mlk_polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm(r, a, b, b_cache);
+mlkem/src/native/aarch64/meta.h:92:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+mlkem/src/native/aarch64/meta.h:96:  mlk_polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm(r, a, b, b_cache);
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:75:  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:85:  ensures(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:102:  ensures(array_abs_bound(cache, 0, MLKEM_N/2, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:116:#define mlk_polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm \
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:117:  MLK_NAMESPACE(polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:118:void mlk_polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:122: * proofs/hol_light/aarch64/proofs/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.ml.
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:133:#define mlk_polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm \
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:134:  MLK_NAMESPACE(polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:135:void mlk_polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:139: * proofs/hol_light/aarch64/proofs/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.ml.
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:150:#define mlk_polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm \
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:151:  MLK_NAMESPACE(polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm)
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:152:void mlk_polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm(
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:156: * proofs/hol_light/aarch64/proofs/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.ml.
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:180:    ensures(array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+mlkem/src/native/api.h:45:#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/api.h:51:#define MLK_NTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/api.h:98:  requires(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:102:  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:115:    !defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED) || \
+mlkem/src/native/api.h:124:          !MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED || \
+mlkem/src/native/api.h:142:  requires(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:144:  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:176: * to unsigned canonical representatives in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:189:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:194:#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+mlkem/src/native/api.h:210:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:213:#endif /* MLK_USE_NATIVE_POLY_TOMONT */
+mlkem/src/native/api.h:241:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(cache, 0, MLKEM_N/2, MLKEM_Q))
+mlkem/src/native/api.h:245:#if defined(MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED)
+mlkem/src/native/api.h:264:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+mlkem/src/native/api.h:296:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+mlkem/src/native/api.h:328:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+mlkem/src/native/api.h:341:#endif /* MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED */
+mlkem/src/native/api.h:350: * @param[in]  a Input polynomial, with each coefficient in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:361:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:394: * integers mod MLKEM_Q, represented in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:397: * @param      len    Requested number of 16-bit integers (uniform mod MLKEM_Q).
+mlkem/src/native/api.h:418:              ==> array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+mlkem/src/native/api.h:432: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:443:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:457: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:468:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:481: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:498:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:509: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:526:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:540: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:551:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:565: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:576:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:589: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:606:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:617: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:634:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/ppc64le/meta.h:19:#define MLK_USE_NATIVE_POLY_TOMONT
+mlkem/src/native/ppc64le/src/consts.c:29:    /* round(2^26 / MLKEM_Q), Barrett reduction constant */
+mlkem/src/native/ppc64le/src/consts.c:35:    /* 2^16 mod MLKEM_Q (R), Barrett tomont factor */
+mlkem/src/native/ppc64le/src/consts.h:22:#define MLK_PPC_TOMONT_OFFSET 80
+mlkem/src/native/ppc64le/src/consts.h:23:#define MLK_PPC_TOMONT_TW_OFFSET 96
+mlkem/src/native/riscv64/meta.h:16:#define MLK_USE_NATIVE_POLY_TOMONT
+mlkem/src/native/riscv64/meta.h:20:#define MLK_USE_NATIVE_POLYVEC_BASEMUL_ACC_MONTGOMERY_CACHED
+mlkem/src/native/riscv64/meta.h:97:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k2_native(
+mlkem/src/native/riscv64/meta.h:109:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k3_native(
+mlkem/src/native/riscv64/meta.h:121:static MLK_INLINE int mlk_polyvec_basemul_acc_montgomery_cached_k4_native(
+mlkem/src/native/riscv64/src/rv64v_poly.c:19:/* check-magic: -3327 == signed_mod(pow(MLKEM_Q,-1,2^16), 2^16) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:22:/* check-magic: 2285 == unsigned_mod(2^16, MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:23:#define MLK_RVV_MONT_R1 2285
+mlkem/src/native/riscv64/src/rv64v_poly.c:25:/* check-magic: 1353 == pow(2, 32, MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:26:#define MLK_RVV_MONT_R2 1353
+mlkem/src/native/riscv64/src/rv64v_poly.c:28:/* check-magic: 1441 == pow(2,32-7,MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:29:#define MLK_RVV_MONT_NR 1441
+mlkem/src/native/riscv64/src/rv64v_poly.c:36:  t = __riscv_vmulh_vx_i16m1(t, MLKEM_Q, vl);    /* t = (t*Q) / R  */
+mlkem/src/native/riscv64/src/rv64v_poly.c:50:  z = __riscv_vsub_vv_i32m2(z, __riscv_vwmul_vx_i32m2(t, MLKEM_Q, vl),
+mlkem/src/native/riscv64/src/rv64v_poly.c:62:  const int16_t v = ((1 << 26) + MLKEM_Q / 2) / MLKEM_Q;
+mlkem/src/native/riscv64/src/rv64v_poly.c:67:  t = __riscv_vmul_vx_i16m1(t, MLKEM_Q, vl);
+mlkem/src/native/riscv64/src/rv64v_poly.c:70:  mlk_assert_abs_bound_int16m1(t, vl, MLKEM_Q_HALF);
+mlkem/src/native/riscv64/src/rv64v_poly.c:89:  m = __riscv_vand_vx_i16m1(m, MLKEM_Q, vl); /* m = (x < 0) ?  Q : 0 */
+mlkem/src/native/riscv64/src/rv64v_poly.c:124:  mlk_assert_abs_bound_int16m1(result, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:155:    mlk_assert_abs_bound(&uc, 1, MLKEM_Q_HALF);                  \
+mlkem/src/native/riscv64/src/rv64v_poly.c:158:    mlk_assert_abs_bound_int16m1(ut, vl, MLKEM_Q);               \
+mlkem/src/native/riscv64/src/rv64v_poly.c:162:    mlk_assert_abs_bound_int16m1(u0, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:163:    mlk_assert_abs_bound_int16m1(u1, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:168:    mlk_assert_abs_bound_int16m1(uc, vl, MLKEM_Q_HALF);          \
+mlkem/src/native/riscv64/src/rv64v_poly.c:171:    mlk_assert_abs_bound_int16m1(ut, vl, MLKEM_Q);               \
+mlkem/src/native/riscv64/src/rv64v_poly.c:175:    mlk_assert_abs_bound_int16m1(u0, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:176:    mlk_assert_abs_bound_int16m1(u1, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:372:  t0 = fq_mulq_vx(t0, MLK_RVV_MONT_NR, vl);
+mlkem/src/native/riscv64/src/rv64v_poly.c:373:  t1 = fq_mulq_vx(t1, MLK_RVV_MONT_NR, vl);
+mlkem/src/native/riscv64/src/rv64v_poly.c:376:  mlk_assert_abs_bound_int16m1(t0, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:377:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:383:  mlk_assert_abs_bound_int16m1(t0, vl, 2 * MLKEM_Q);
+
+============================================================
+G4 — NATIVE PROOF / HARNESS OVERLAP
+============================================================
+NATIVE_FQMUL_REFERENCE_COUNT=11
+proofs/cbmc/fqmul/Makefile:7:HARNESS_FILE = fqmul_harness
+proofs/cbmc/fqmul/Makefile:11:PROOF_UID = mlk_fqmul
+proofs/cbmc/fqmul/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_fqmul
+proofs/cbmc/fqmul/Makefile:31:FUNCTION_NAME = mlk_fqmul
+proofs/cbmc/fqmul/fqmul_harness.c:9:int16_t mlk_fqmul(int16_t a, int16_t b);
+proofs/cbmc/fqmul/fqmul_harness.c:15:  r = mlk_fqmul(a, b);
+proofs/cbmc/invntt_layer/Makefile:23:USE_FUNCTION_CONTRACTS = mlk_fqmul
+proofs/cbmc/ntt_butterfly_block/Makefile:23:USE_FUNCTION_CONTRACTS=mlk_fqmul
+proofs/cbmc/poly_invntt_tomont_c/Makefile:23:USE_FUNCTION_CONTRACTS = mlk_fqmul
+proofs/cbmc/poly_mulcache_compute_c/Makefile:23:USE_FUNCTION_CONTRACTS=mlk_fqmul
+proofs/cbmc/poly_tomont_c/Makefile:23:USE_FUNCTION_CONTRACTS=mlk_fqmul
+
+============================================================
+G5 — CBMC BUILD CONTRACT
+============================================================
+MAKEFILE_COMMON=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common
+55:#     in a file with the name <DIR>/<HARNESS_FILE>.c
+59:#     HARNESS_FILE=<HARNESS_FILE>
+537:HARNESS_GOTO ?= $(GOTODIR)/$(HARNESS_FILE)
+700:$(PROJECT_GOTO)0100.goto: $(PROJECT_SOURCES) $(REWRITTEN_SOURCES)
+712:$(PROOF_GOTO)0100.goto: $(PROOF_SOURCES)
+724:$(PROJECT_GOTO)0200.goto: $(PROJECT_GOTO)0100.goto
+736:$(HARNESS_GOTO)0100.goto: $(PROOF_GOTO)0100.goto $(PROJECT_GOTO)0200.goto
+747:$(HARNESS_GOTO)0200.goto: $(HARNESS_GOTO)0100.goto
+759:$(HARNESS_GOTO)0300.goto: $(HARNESS_GOTO)0200.goto
+782:$(HARNESS_GOTO)0400.goto: $(HARNESS_GOTO)0300.goto
+805:$(HARNESS_GOTO)0500.goto: $(HARNESS_GOTO)0400.goto
+838:$(HARNESS_GOTO)0600.goto: $(HARNESS_GOTO)0500.goto
+850:$(HARNESS_GOTO)0700.goto: $(HARNESS_GOTO)0600.goto
+862:$(HARNESS_GOTO)0800.goto: $(HARNESS_GOTO)0700.goto
+874:$(HARNESS_GOTO).goto: $(HARNESS_GOTO)0800.goto
+894:$(LOGDIR)/result.xml: $(HARNESS_GOTO).goto
+911:$(LOGDIR)/result.txt: $(HARNESS_GOTO).goto
+929:$(HARNESS_GOTO).smt2: $(HARNESS_GOTO).goto
+947:$(HARNESS_GOTO).smtz: $(HARNESS_GOTO).goto
+965:$(HARNESS_GOTO).smtb: $(HARNESS_GOTO).goto
+983:$(HARNESS_GOTO).smtc: $(HARNESS_GOTO).goto
+1000:$(LOGDIR)/property.xml: $(HARNESS_GOTO).goto
+1013:$(LOGDIR)/coverage.xml: $(HARNESS_GOTO).goto
+1040:	    --goto $(HARNESS_GOTO).goto \
+1062:_goto: $(HARNESS_GOTO).goto
+1063:goto:
+1082:_smt: $(HARNESS_GOTO).smt2
+1090:	@ echo Generated SMT file for $(PROVER_NAME) in $(HARNESS_GOTO).smt2
+1092:_smtz: $(HARNESS_GOTO).smtz
+1100:	@ echo Generated SMT file for Z3 in $(HARNESS_GOTO).smtz
+1102:_smtb: $(HARNESS_GOTO).smtb
+1110:	@ echo Generated SMT file for Bitwuzla in $(HARNESS_GOTO).smtb
+1112:_smtc: $(HARNESS_GOTO).smtc
+1120:	@ echo Generated SMT file for cvc5 in $(HARNESS_GOTO).smtc
+1122:_smtall: $(HARNESS_GOTO).smtz $(HARNESS_GOTO).smtb $(HARNESS_GOTO).smtc
+1131:	@ echo   $(HARNESS_GOTO).smtz
+1132:	@ echo   $(HARNESS_GOTO).smtb
+1133:	@ echo   $(HARNESS_GOTO).smtc
+
+============================================================
+G6 — TOOL SNAPSHOT
+============================================================
+6.9.0 (cbmc-6.9.0)
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+GNU Make 4.3
+Built for x86_64-pc-linux-gnu
+cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+
+============================================================
+G7 — FROZEN T3 FAMILY
+============================================================
+MONT-T3.TARGET=mlk_fqmul
+MONT-T3.P1=independent_multiplication_semantic_refinement
+MONT-T3.P2=exact_commutativity
+MONT-T3.P3=zero_annihilation_and_zero_product_reflection
+MONT-T3.P4=Montgomery_one_identity_after_normalization
+MONT-T3.P5=distributivity_after_normalization
+MONT-T3.P6=associativity_after_normalization
+MONT-T3.NO_WEAKENING=YES
+MONT-T3.SEPARATE_DETACHED_WORKTREE=REQUIRED
+MONT-T3.NATIVE_SOURCE_MODIFICATION=FORBIDDEN
+MONT03A_CAPTURE_GATE=PASS
+NEXT_GATE=MONT-03B_HARNESS_FREEZE

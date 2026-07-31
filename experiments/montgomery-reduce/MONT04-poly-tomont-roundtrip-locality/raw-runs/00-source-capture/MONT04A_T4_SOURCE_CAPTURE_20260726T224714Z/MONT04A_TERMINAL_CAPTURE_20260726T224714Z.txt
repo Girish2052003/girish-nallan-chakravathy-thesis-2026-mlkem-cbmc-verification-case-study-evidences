@@ -1,0 +1,610 @@
+
+============================================================
+MONT-04A — POLY_TOMONT PORTABLE-C SOURCE / OVERLAP CAPTURE
+============================================================
+UTC_TIME=20260726T224714Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+OUTPUT_DIRECTORY=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT04A_T4_SOURCE_CAPTURE_20260726T224714Z
+
+============================================================
+G0 — AUTHORITATIVE SOURCE BINDING
+============================================================
+AUTHORITATIVE_IS_WORKTREE=true
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_STATUS_BEGIN
+
+AUTHORITATIVE_STATUS_END
+POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+AUTHORITATIVE_SOURCE_GATE=PASS
+SOURCE_HASH_GATE=PASS
+
+============================================================
+G1 — EXACT TARGET DEFINITION AND CONSTANT
+============================================================
+POLY_TOMONT_C_DEFINITION_COUNT=1
+POLY_TOMONT_F1353_COUNT=1
+POLY_TOMONT_COEFFICIENT_FQMUL_COUNT=1
+POLY_TOMONT_C_DEFINITION_LINE=109
+POLY_TOMONT_C_SOURCE_CONTEXT_BEGIN
+    97	
+    98	  /*
+    99	   * t is in -10 .. +10, so we need 32-bit math to
+   100	   * evaluate t * MLKEM_Q and the subsequent subtraction
+   101	   */
+   102	  int16_t res = (int16_t)(a - t * MLKEM_Q);
+   103	
+   104	  mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);
+   105	  return res;
+   106	}
+   107	
+   108	/* Reference: `poly_tomont()` in the reference implementation @[REF]. */
+   109	MLK_STATIC_TESTABLE void mlk_poly_tomont_c(mlk_poly *r)
+   110	__contract__(
+   111	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   112	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   113	  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+   114	)
+   115	{
+   116	  unsigned i;
+   117	  const int16_t f = 1353; /* check-magic: 1353 == signed_mod(2^32, MLKEM_Q) */
+   118	  for (i = 0; i < MLKEM_N; i++)
+   119	  __loop__(
+   120	    invariant(i <= MLKEM_N)
+   121	    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))
+   122	    decreases(MLKEM_N - i))
+   123	  {
+   124	    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);
+   125	  }
+   126	
+   127	  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   128	}
+   129	
+   130	MLK_INTERNAL_API
+   131	void mlk_poly_tomont(mlk_poly *r)
+   132	{
+   133	#if defined(MLK_USE_NATIVE_POLY_TOMONT)
+   134	  int ret;
+   135	  ret = mlk_poly_tomont_native(r->coeffs);
+   136	  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+   137	  {
+   138	    mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   139	    return;
+   140	  }
+   141	#endif /* MLK_USE_NATIVE_POLY_TOMONT */
+   142	
+   143	  mlk_poly_tomont_c(r);
+   144	}
+   145	
+   146	/**
+   147	 * Constant-time conversion of signed representatives modulo MLKEM_Q within
+   148	 * range [-(MLKEM_Q-1), MLKEM_Q-1] into unsigned representatives within
+   149	 * range [0, MLKEM_Q-1].
+   150	 *
+   151	 * @reference{Not present in the reference implementation @[REF]. Used here
+   152	 * to implement different semantics of `poly_reduce()`; see below. In the
+   153	 * reference implementation @[REF] this logic is part of all compression
+   154	 * functions (see `compress.c`).}
+POLY_TOMONT_C_SOURCE_CONTEXT_END
+TARGET_SOURCE_SHAPE_GATE=PASS
+
+============================================================
+G2 — SCALAR COMPANION CONTEXT
+============================================================
+FQMUL_DEFINITION_LINE=43
+FQMUL_SOURCE_CONTEXT_BEGIN
+    31	/**
+    32	 * Montgomery multiplication modulo MLKEM_Q.
+    33	 *
+    34	 * @reference{`fqmul()` in the reference implementation @[REF].}
+    35	 *
+    36	 * @param a First factor. Can be any int16_t.
+    37	 * @param b Second factor. Must be signed canonical
+    38	 *          (abs value < (MLKEM_Q+1)/2).
+    39	 *
+    40	 * @return 16-bit integer congruent to a*b*R^{-1} mod MLKEM_Q, and
+    41	 *         smaller than MLKEM_Q in absolute value.
+    42	 */
+    43	static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b)
+    44	__contract__(
+    45	  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+    46	  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+    47	)
+    48	{
+    49	  int16_t res;
+    50	  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);
+    51	
+    52	  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);
+    53	  /* Bounds:
+    54	   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2
+    55	   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2
+    56	   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2
+    57	   *        < MLKEM_Q
+    58	   */
+    59	
+    60	  mlk_assert_abs_bound(&res, 1, MLKEM_Q);
+    61	  return res;
+    62	}
+    63	
+    64	/**
+    65	 * Barrett reduction; given a 16-bit integer a, computes the centered
+    66	 * representative congruent to a mod MLKEM_Q in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2].
+    67	 *
+    68	 * @reference{`barrett_reduce()` in the reference implementation @[REF].}
+    69	 *
+    70	 * @param a Input integer to be reduced.
+    71	 *
+FQMUL_SOURCE_CONTEXT_END
+MONTGOMERY_REDUCE_DEFINITION_LINE=58
+MONTGOMERY_REDUCE_SOURCE_CONTEXT_BEGIN
+    48	/**
+    49	 * Generic Montgomery reduction; given a 32-bit integer a, computes a 16-bit
+    50	 * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+    51	 *
+    52	 * @param a Input integer to be reduced, of absolute value smaller or equal
+    53	 *          to INT32_MAX - 2^15 * MLKEM_Q.
+    54	 *
+    55	 * @return Integer congruent to a * R^-1 modulo MLKEM_Q, with absolute value
+    56	 *         <= ceil(|a| / 2^16) + (MLKEM_Q + 1)/2.
+    57	 */
+    58	static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a)
+    59	__contract__(
+    60	    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    61	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)))
+    62	    /* We don't attempt to express an input-dependent output bound
+    63	     * as the post-condition here. There are two call-sites for this
+    64	     * function:
+    65	     * - The base multiplication: Here, we need no output bound.
+    66	     * - mlk_fqmul: Here, we inline this function and prove another spec
+    67	     *          for mlk_fqmul which does have a post-condition bound. */
+    68	)
+    69	{
+    70	  /* check-magic: 62209 == unsigned_mod(pow(MLKEM_Q, -1, 2^16), 2^16) */
+    71	  const uint32_t QINV = 62209;
+    72	
+    73	  /* Compute a*q^{-1} mod 2^16 in unsigned representatives. */
+    74	  const uint16_t a_reduced = mlk_cast_int32_to_uint16(a);
+    75	  const uint16_t a_inverted = (a_reduced * QINV) & UINT16_MAX;
+    76	
+    77	  /* Lift to signed canonical representative mod 2^16. */
+    78	  const int16_t t = mlk_cast_uint16_to_int16(a_inverted);
+    79	
+    80	  int32_t r;
+    81	
+    82	  mlk_assert(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+    83	             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)));
+    84	
+    85	  r = a - ((int32_t)t * MLKEM_Q);
+    86	
+    87	  /*
+    88	   * PORTABILITY: Right-shift on a signed integer is, strictly-speaking,
+    89	   * implementation-defined for negative left argument. Here,
+    90	   * we assume it's sign-preserving "arithmetic" shift right. (C99 6.5.7 (5))
+    91	   */
+    92	  r = r >> 16;
+    93	  /* Bounds: |r >> 16| <= ceil(|r| / 2^16)
+    94	   *                   <= ceil(|a| / 2^16 + MLKEM_Q / 2)
+    95	   *                   <= ceil(|a| / 2^16) + (MLKEM_Q + 1) / 2
+    96	   *
+    97	   * (Note that |a >> n| = ceil(|a| / 2^16) for negative a)
+    98	   */
+    99	  return (int16_t)r;
+   100	}
+   101	
+   102	#define mlk_poly_tomont MLK_NAMESPACE(poly_tomont)
+   103	/**
+   104	 * In-place conversion of all coefficients of a polynomial from the normal
+MONTGOMERY_REDUCE_SOURCE_CONTEXT_END
+SCALAR_COMPANION_CAPTURE_GATE=PASS
+
+============================================================
+G3 — EXISTING CBMC HARNESS OVERLAP
+============================================================
+NATIVE_POLY_TOMONT_C_DIRECTORY_PRESENT=YES
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/Makefile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/poly_tomont_c_harness.c
+NATIVE_POLY_TOMONT_C_FILES_END
+NATIVE_FILE_BEGIN=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/poly_tomont_c_harness.c
+// Copyright (c) The mlkem-native project authors
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0 AND Apache-2.0
+
+#include "poly.h"
+
+// Prototype for the function under test
+void mlk_poly_tomont_c(mlk_poly *r);
+
+void harness(void)
+{
+  mlk_poly *a;
+
+  mlk_poly_tomont_c(a);
+}
+NATIVE_FILE_END=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/poly_tomont_c_harness.c
+NATIVE_FILE_SHA256=bd44942ac9f5b7e1dd00577c3a4f66466004d84186bfeb12e8ac03eb7bc8e45b
+NATIVE_FILE_BEGIN=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/Makefile
+# Copyright (c) The mlkem-native project authors
+# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = poly_tomont_c_harness
+
+# This should be a unique identifier for this proof, and will appear on the
+# Litani dashboard. It can be human-readable and contain spaces if you wish.
+PROOF_UID = mlk_poly_tomont_c
+
+DEFINES +=
+INCLUDES +=
+
+REMOVE_FUNCTION_BODY +=
+UNWINDSET +=
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+
+CHECK_FUNCTION_CONTRACTS=mlk_poly_tomont_c
+USE_FUNCTION_CONTRACTS=mlk_fqmul
+APPLY_LOOP_CONTRACTS=on
+USE_DYNAMIC_FRAMES=1
+
+# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+EXTERNAL_SAT_SOLVER=
+CBMCFLAGS=--smt2
+
+FUNCTION_NAME = mlk_poly_tomont_c
+
+# If this proof is found to consume huge amounts of RAM, you can set the
+# EXPENSIVE variable. With new enough versions of the proof tools, this will
+# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+# documentation in Makefile.common under the "Job Pools" heading for details.
+# EXPENSIVE = true
+
+# This function is large enough to need...
+CBMC_OBJECT_BITS = 8
+
+# If you require access to a file-local ("static") function or object to conduct
+# your proof, set the following (and do not include the original source file
+# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+# include ../Makefile.common
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+# be set before including Makefile.common, but any use of variables on the
+# left-hand side requires those variables to be defined. Hence, _SOURCE,
+# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+
+include ../Makefile.common
+NATIVE_FILE_END=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont_c/Makefile
+NATIVE_FILE_SHA256=64fd6c18f4df960ad8ae21e0cb92b5e1d8d246f7cca041be5afca8f8841df725
+NATIVE_POLY_TOMONT_WRAPPER_DIRECTORY_PRESENT=YES
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/Makefile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/poly_tomont_harness.c
+NATIVE_POLY_TOMONT_WRAPPER_FILES_END
+WRAPPER_FILE_BEGIN=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/poly_tomont_harness.c
+// Copyright (c) The mlkem-native project authors
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0 AND Apache-2.0
+
+#include "poly.h"
+
+void harness(void)
+{
+  mlk_poly *a;
+
+  mlk_poly_tomont(a);
+}
+WRAPPER_FILE_END=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/poly_tomont_harness.c
+WRAPPER_FILE_SHA256=67f7036e24743a850c679a25acf1350d832360287eeaa4eb29a2d8b7933744d0
+WRAPPER_FILE_BEGIN=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/Makefile
+# Copyright (c) The mlkem-native project authors
+# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = poly_tomont_harness
+
+# This should be a unique identifier for this proof, and will appear on the
+# Litani dashboard. It can be human-readable and contain spaces if you wish.
+PROOF_UID = mlk_poly_tomont
+
+DEFINES +=
+INCLUDES +=
+
+REMOVE_FUNCTION_BODY +=
+UNWINDSET +=
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+
+CHECK_FUNCTION_CONTRACTS=mlk_poly_tomont
+USE_FUNCTION_CONTRACTS=mlk_poly_tomont_c
+APPLY_LOOP_CONTRACTS=on
+USE_DYNAMIC_FRAMES=1
+
+# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+EXTERNAL_SAT_SOLVER=
+CBMCFLAGS=--smt2
+
+FUNCTION_NAME = mlk_poly_tomont
+
+# If this proof is found to consume huge amounts of RAM, you can set the
+# EXPENSIVE variable. With new enough versions of the proof tools, this will
+# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+# documentation in Makefile.common under the "Job Pools" heading for details.
+# EXPENSIVE = true
+
+# This function is large enough to need...
+CBMC_OBJECT_BITS = 8
+
+# If you require access to a file-local ("static") function or object to conduct
+# your proof, set the following (and do not include the original source file
+# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+# include ../Makefile.common
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+# be set before including Makefile.common, but any use of variables on the
+# left-hand side requires those variables to be defined. Hence, _SOURCE,
+# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+
+include ../Makefile.common
+WRAPPER_FILE_END=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomont/Makefile
+WRAPPER_FILE_SHA256=7c2ddea38e3d6abdfb5659459cf451e673d7e88da417db8491cd90c9b0236890
+EXISTING_TOMONT_EXPLICIT_ASSERTION_COUNT=0
+EXISTING_TOMONT_TARGET_CALL_REFERENCE_COUNT=2
+CBMC_OVERLAP_CAPTURE_GATE=PASS
+
+============================================================
+G4 — HOL LIGHT / NATIVE PROOF OVERLAP
+============================================================
+TOMONT_HOL_REFERENCE_BEGIN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:7:  Name: poly_tomont_aarch64_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:8:  Description: Convert polynomial to Montgomery domain
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:9:  Signature: void mlk_poly_tomont_aarch64_asm(int16_t p[256])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:26: *   dev/aarch64_opt/src/poly_tomont_aarch64_asm.S using scripts/simpasm. Do not modify it directly.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:32:.global _mlk_poly_tomont_aarch64_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:33:_mlk_poly_tomont_aarch64_asm:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:35:.global mlk_poly_tomont_aarch64_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:36:mlk_poly_tomont_aarch64_asm:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:65:Lpoly_tomont_loop:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S:87:        cbnz x1, Lpoly_tomont_loop
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:12:(**** print_literal_from_elf "aarch64/mlkem/poly_tomont_aarch64_asm.o";;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:15:let poly_tomont_asm_mc = define_assert_from_elf
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:16:  "poly_tomont_asm_mc" "aarch64/mlkem/poly_tomont_aarch64_asm.o"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:73:let POLY_TOMONT_EXEC = ARM_MK_EXEC_RULE poly_tomont_asm_mc;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:80:  REWRITE_CONV[poly_tomont_asm_mc] `LENGTH poly_tomont_asm_mc`
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:93:  `MLKEM_POLY_TOMONT_CORE_END = LENGTH poly_tomont_asm_mc - MLKEM_POLY_TOMONT_POSTAMBLE_LENGTH`;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:106:    nonoverlapping (word pc, LENGTH poly_tomont_asm_mc) (ptr, 512)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:109:      (\s. // Assert that poly_tomont is loaded at PC
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:110:           aligned_bytes_loaded s (word pc) poly_tomont_asm_mc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:112:           // poly_tomont takes one argument, the base pointer
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:120:           // Coefficients have changed according to tomont_3329 and
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:123:                         in (ival z_i == (tomont_3329 (ival o x)) i) (mod &3329) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:190:    ASM_REWRITE_TAC [o_THM; tomont_3329] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:220:    nonoverlapping (word pc, LENGTH poly_tomont_asm_mc) (ptr, 512)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:223:      (\s. // Assert that poly_tomont is loaded at PC
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:224:           aligned_bytes_loaded s (word pc) poly_tomont_asm_mc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:228:           // poly_tomont takes one argument, the base pointer
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:238:           // Coefficients have changed according to tomont_3329 and
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:243:                    (ival z_i == (tomont_3329 (ival o x)) i) (mod &3329) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:268:    (assoc "mlkem_tomont" subroutine_signatures)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:275:           nonoverlapping (word pc,LENGTH poly_tomont_asm_mc) (ptr,512)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml:278:                    aligned_bytes_loaded s (word pc) poly_tomont_asm_mc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/dump_bytecode.ml:61:print_string "=== bytecode start: aarch64/mlkem/poly_tomont_aarch64_asm.o ========\n";;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/dump_bytecode.ml:62:print_literal_from_elf "aarch64/mlkem/poly_tomont_aarch64_asm.o";;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/proofs/subroutine_signatures.ml:178:("mlkem_tomont",
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/aarch64/Makefile:57:      mlkem/poly_tomont_aarch64_asm.o \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/README.md:131:  * AArch64 conversion to Montgomery form: [poly_tomont_aarch64_asm.S](aarch64/mlkem/poly_tomont_aarch64_asm.S)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/README.md:154:  * x86_64 conversion to Montgomery form: [tomont_avx2_asm.S](x86_64/mlkem/tomont_avx2_asm.S)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:26:  Name: tomont_avx2_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:27:  Description: x86_64 AVX2 Montgomery conversion
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:28:  Signature: void mlk_tomont_avx2_asm(int16_t *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:44: *   dev/x86_64/src/tomont_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:50:.global _mlk_tomont_avx2_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:51:_mlk_tomont_avx2_asm:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:53:.global mlk_tomont_avx2_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S:54:mlk_tomont_avx2_asm:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/poly_mulcache_compute_avx2_asm.ml:234:  (* Instantiate general congruence and bounds rule for Montgomery multiplication
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/dump_bytecode.ml:53:print_string "=== bytecode start: x86_64/mlkem/tomont_avx2_asm.o ========\n";;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/dump_bytecode.ml:54:print_literal_from_elf "x86_64/mlkem/tomont_avx2_asm.o";;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/subroutine_signatures.ml:188:("mlkem_tomont",
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:15:(* print_literal_from_elf "x86_64/mlkem/tomont_avx2_asm.o";; *)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:17:let mlkem_tomont_mc =
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:18:  define_assert_from_elf "mlkem_tomont_mc" "x86_64/mlkem/tomont_avx2_asm.o"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:183:let mlkem_tomont_tmc = define_trimmed "mlkem_tomont_tmc" mlkem_tomont_mc;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:184:let mlkem_tomont_TMC_EXEC = X86_MK_CORE_EXEC_RULE mlkem_tomont_tmc;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:187:  REWRITE_CONV[mlkem_tomont_tmc] `LENGTH mlkem_tomont_tmc`
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:194:  `MLKEM_TOMONT_CORE_END = LENGTH mlkem_tomont_tmc - MLKEM_TOMONT_POSTAMBLE_LENGTH`;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:205:        nonoverlapping (word pc, LENGTH mlkem_tomont_tmc) (a, 512)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:207:             (\s. bytes_loaded s (word pc) (BUTLAST mlkem_tomont_tmc) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:217:                        (ival z_i == (tomont_3329 (ival o x)) i) (mod &3329) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:225:  REWRITE_TAC[fst mlkem_tomont_TMC_EXEC] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:247:  MAP_EVERY (fun n -> X86_STEPS_TAC mlkem_tomont_TMC_EXEC [n] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:277:  (* Instantiate general congruence and bounds rule for Montgomery multiplication
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:280:  ASM_REWRITE_TAC [o_THM; tomont_3329] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:297:      (* The bound we obtain from the generic theorem about Montgomery
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:309:        nonoverlapping (word pc, LENGTH mlkem_tomont_tmc) (a, 512) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:312:             (\s. bytes_loaded s (word pc) mlkem_tomont_tmc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:325:                        (ival z_i == (tomont_3329 (ival o x)) i) (mod &3329) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:330:  X86_PROMOTE_RETURN_NOSTACK_TAC mlkem_tomont_tmc
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:339:        nonoverlapping (word pc, LENGTH mlkem_tomont_mc) (a, 512) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:342:             (\s. bytes_loaded s (word pc) mlkem_tomont_mc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:355:                        (ival z_i == (tomont_3329 (ival o x)) i) (mod &3329) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:370:    (assoc "mlkem_tomont" subroutine_signatures)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:372:    mlkem_tomont_TMC_EXEC;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:377:           aligned 32 a /\ nonoverlapping (word pc,LENGTH mlkem_tomont_tmc) (a,512)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:380:                    bytes_loaded s (word pc) (BUTLAST mlkem_tomont_tmc) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:399:  PROVE_SAFETY_SPEC_TAC ~public_vars:public_vars mlkem_tomont_TMC_EXEC);;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:405:          nonoverlapping (word pc, LENGTH mlkem_tomont_tmc) (a, 512) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:409:                    bytes_loaded s (word pc) mlkem_tomont_tmc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:423:  X86_PROMOTE_RETURN_NOSTACK_TAC mlkem_tomont_tmc
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:431:          nonoverlapping (word pc, LENGTH mlkem_tomont_mc) (a, 512) /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml:435:                    bytes_loaded s (word pc) mlkem_tomont_mc /\
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/x86_64/Makefile:62:      mlkem/tomont_avx2_asm.o \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:65:(* Conversion of each element of an array to Montgomery form with B = 2^16.  *)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:68:let tomont_3329 = define
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:69: `tomont_3329 (a:num->int) = \i. (&2 pow 16 * a i) rem &3329`;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:71:let tomont_8380417 = define
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:72: `tomont_8380417 (a:num->int) = \i. (&2 pow 32 * a i) rem &8380417`;;
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:131: (`inverse_ntt = tomont_3329 o pure_inverse_ntt o reorder bitreverse_pairs`,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:133:  REWRITE_TAC[inverse_ntt; pure_inverse_ntt; tomont_3329] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:150: (`avx2_inverse_ntt = tomont_3329 o pure_inverse_ntt o reorder avx2_reorder'`,
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:152:  REWRITE_TAC[avx2_inverse_ntt; pure_inverse_ntt; tomont_3329] THEN
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/hol_light/common/mlkem_specs.ml:289:(* Abbreviate the Barrett reduction and multiplication and Montgomery        *)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/meta.h:65:static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/meta.h:68:  mlk_poly_tomont_ppc_asm(data, mlk_ppc_qdata);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/consts.c:31:    /* N^-1 in Montgomery form */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/consts.c:35:    /* 2^16 mod MLKEM_Q (R), Barrett tomont factor */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/consts.c:37:    /* Barrett twist of R for poly_tomont */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:10: * Poly_tomont: Inplace conversion of all coefficients of a polynomial
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:11: *              from normal domain to Montgomery domain
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:20:  Name: poly_tomont_ppc_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:21:  Description: PowerPC64 VSX conversion to Montgomery form
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:22:  Signature: void mlk_poly_tomont_ppc_asm(int16_t *r, const int16_t *qdata)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:43: *   dev/ppc64le/src/poly_tomont_ppc_asm.S using scripts/simpasm. Do not modify it directly.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:48:.global MLK_ASM_NAMESPACE(poly_tomont_ppc_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:49:MLK_ASM_FN_SYMBOL(poly_tomont_ppc_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/poly_tomont_ppc_asm.S:308:MLK_ASM_FN_SIZE(poly_tomont_ppc_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/arith_native_ppc64le.h:21:#define mlk_poly_tomont_ppc_asm MLK_NAMESPACE(poly_tomont_ppc_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/ppc64le/src/arith_native_ppc64le.h:22:void mlk_poly_tomont_ppc_asm(int16_t *, const int16_t *);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/meta.h:52:static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/meta.h:54:  mlk_poly_tomont_aarch64_asm(data);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/arith_native_aarch64.h:78:#define mlk_poly_tomont_aarch64_asm MLK_NAMESPACE(poly_tomont_aarch64_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/arith_native_aarch64.h:79:void mlk_poly_tomont_aarch64_asm(int16_t p[256])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/arith_native_aarch64.h:81: * in proofs/hol_light/aarch64/proofs/poly_tomont_aarch64_asm.ml */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:7:  Name: poly_tomont_aarch64_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:8:  Description: Convert polynomial to Montgomery domain
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:9:  Signature: void mlk_poly_tomont_aarch64_asm(int16_t p[256])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:28: *   dev/aarch64_opt/src/poly_tomont_aarch64_asm.S using scripts/simpasm. Do not modify it directly.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:33:.global MLK_ASM_NAMESPACE(poly_tomont_aarch64_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:34:MLK_ASM_FN_SYMBOL(poly_tomont_aarch64_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:62:Lpoly_tomont_loop:
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:84:        cbnz x1, Lpoly_tomont_loop
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:92:MLK_ASM_FN_SIZE(poly_tomont_aarch64_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/meta.h:96:static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/meta.h:103:  mlk_tomont_avx2_asm(data);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/arith_native_x86_64.h:183:#define mlk_tomont_avx2_asm MLK_NAMESPACE(tomont_avx2_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/arith_native_x86_64.h:185:void mlk_tomont_avx2_asm(int16_t *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/arith_native_x86_64.h:187: * proofs/hol_light/x86_64/proofs/tomont_avx2_asm.ml.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:29:  Name: tomont_avx2_asm
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:30:  Description: x86_64 AVX2 Montgomery conversion
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:31:  Signature: void mlk_tomont_avx2_asm(int16_t *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:47: *   dev/x86_64/src/tomont_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:52:.global MLK_ASM_NAMESPACE(tomont_avx2_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:53:MLK_ASM_FN_SYMBOL(tomont_avx2_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/x86_64/src/tomont_avx2_asm.S:164:MLK_ASM_FN_SIZE(tomont_avx2_asm)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/meta.h:52:  mlk_rv64v_poly_invntt_tomont(data);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/meta.h:57:static MLK_INLINE int mlk_poly_tomont_native(int16_t data[MLKEM_N])
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/meta.h:59:  mlk_rv64v_poly_tomont(data);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:18:/* Montgomery reduction constants */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:25:/* check-magic: 1353 == pow(2, 32, MLKEM_Q) */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:26:#define MLK_RVV_MONT_R2 1353
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:94:/* Montgomery multiply: vector-vector  */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:105:/* Montgomery multiply: vector-scalar  */
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:455:void mlk_rv64v_poly_invntt_tomont(int16_t *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:687: * domain to the Montgomery domain.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/rv64v_poly.c:691:void mlk_rv64v_poly_tomont(int16_t *r)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/arith_native_riscv64.h:13:#define mlk_rv64v_poly_invntt_tomont MLK_NAMESPACE(intt_riscv64)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/arith_native_riscv64.h:14:void mlk_rv64v_poly_invntt_tomont(int16_t *r);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/arith_native_riscv64.h:28:#define mlk_rv64v_poly_tomont MLK_NAMESPACE(tomont_riscv64)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/riscv64/src/arith_native_riscv64.h:29:void mlk_rv64v_poly_tomont(int16_t *r);
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/api.h:197: * domain to the Montgomery domain.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/native/api.h:205:static MLK_INLINE int mlk_poly_tomont_native(int16_t p[MLKEM_N])
+TOMONT_HOL_REFERENCE_END
+HOL_OR_NATIVE_TOMONT_REFERENCE_COUNT=133
+HOL_NATIVE_OVERLAP_CAPTURE_GATE=PASS
+
+============================================================
+G5 — CBMC BUILD CONTRACT
+============================================================
+MAKEFILE_COMMON=/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common
+55:#     in a file with the name <DIR>/<HARNESS_FILE>.c
+59:#     HARNESS_FILE=<HARNESS_FILE>
+450:#    the function implementation, CHECK_FUNCTION_CONTRACTS should be a list of
+451:#    function names. Use CHECK_FUNCTION_CONTRACTS_REC to check contracts on
+454:#    contracts, USE_FUNCTION_CONTRACTS should be a list of function names.
+457:CHECK_FUNCTION_CONTRACTS ?=
+458:CBMC_CHECK_FUNCTION_CONTRACTS := $(patsubst %,--enforce-contract %, $(CHECK_FUNCTION_CONTRACTS))
+460:CHECK_FUNCTION_CONTRACTS_REC ?=
+461:CBMC_CHECK_FUNCTION_CONTRACTS_REC := $(patsubst %,--enforce-contract-rec %, $(CHECK_FUNCTION_CONTRACTS_REC))
+463:USE_FUNCTION_CONTRACTS ?=
+464:CBMC_USE_FUNCTION_CONTRACTS := $(patsubst %,--replace-call-with-contract %, $(USE_FUNCTION_CONTRACTS))
+466:CODE_CONTRACTS := $(CHECK_FUNCTION_CONTRACTS)$(USE_FUNCTION_CONTRACTS)$(APPLY_LOOP_CONTRACTS)
+474:    CBMC_USE_DYNAMIC_FRAMES := $(CBMC_OPT_CONFIG_LIBRARY) --dfcc $(HARNESS_ENTRY) $(CBMC_CHECK_FUNCTION_CONTRACTS_REC)
+537:HARNESS_GOTO ?= $(GOTODIR)/$(HARNESS_FILE)
+736:$(HARNESS_GOTO)0100.goto: $(PROOF_GOTO)0100.goto $(PROJECT_GOTO)0200.goto
+747:$(HARNESS_GOTO)0200.goto: $(HARNESS_GOTO)0100.goto
+759:$(HARNESS_GOTO)0300.goto: $(HARNESS_GOTO)0200.goto
+782:$(HARNESS_GOTO)0400.goto: $(HARNESS_GOTO)0300.goto
+805:$(HARNESS_GOTO)0500.goto: $(HARNESS_GOTO)0400.goto
+838:$(HARNESS_GOTO)0600.goto: $(HARNESS_GOTO)0500.goto
+841:	    '$(GOTO_INSTRUMENT) $(CBMC_USE_DYNAMIC_FRAMES) $(NONDET_STATIC) $(CBMC_VERBOSITY) $(CBMC_CHECK_FUNCTION_CONTRACTS) $(CBMC_USE_FUNCTION_CONTRACTS) $(CBMC_APPLY_LOOP_CONTRACTS) $^ $@' \
+850:$(HARNESS_GOTO)0700.goto: $(HARNESS_GOTO)0600.goto
+862:$(HARNESS_GOTO)0800.goto: $(HARNESS_GOTO)0700.goto
+874:$(HARNESS_GOTO).goto: $(HARNESS_GOTO)0800.goto
+894:$(LOGDIR)/result.xml: $(HARNESS_GOTO).goto
+911:$(LOGDIR)/result.txt: $(HARNESS_GOTO).goto
+929:$(HARNESS_GOTO).smt2: $(HARNESS_GOTO).goto
+947:$(HARNESS_GOTO).smtz: $(HARNESS_GOTO).goto
+965:$(HARNESS_GOTO).smtb: $(HARNESS_GOTO).goto
+983:$(HARNESS_GOTO).smtc: $(HARNESS_GOTO).goto
+1000:$(LOGDIR)/property.xml: $(HARNESS_GOTO).goto
+1013:$(LOGDIR)/coverage.xml: $(HARNESS_GOTO).goto
+1040:	    --goto $(HARNESS_GOTO).goto \
+1062:_goto: $(HARNESS_GOTO).goto
+1063:goto:
+1082:_smt: $(HARNESS_GOTO).smt2
+1090:	@ echo Generated SMT file for $(PROVER_NAME) in $(HARNESS_GOTO).smt2
+1092:_smtz: $(HARNESS_GOTO).smtz
+1100:	@ echo Generated SMT file for Z3 in $(HARNESS_GOTO).smtz
+1102:_smtb: $(HARNESS_GOTO).smtb
+1110:	@ echo Generated SMT file for Bitwuzla in $(HARNESS_GOTO).smtb
+1112:_smtc: $(HARNESS_GOTO).smtc
+1120:	@ echo Generated SMT file for cvc5 in $(HARNESS_GOTO).smtc
+1122:_smtall: $(HARNESS_GOTO).smtz $(HARNESS_GOTO).smtb $(HARNESS_GOTO).smtc
+1131:	@ echo   $(HARNESS_GOTO).smtz
+1132:	@ echo   $(HARNESS_GOTO).smtb
+1133:	@ echo   $(HARNESS_GOTO).smtc
+CBMC_BUILD_CONTRACT_CAPTURE_GATE=PASS
+
+============================================================
+G6 — TOOL SNAPSHOT
+============================================================
+6.9.0 (cbmc-6.9.0)
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+GNU Make 4.3
+Built for x86_64-pc-linux-gnu
+cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+
+============================================================
+G7 — FREEZE EXACT OLD MONT-T4 PROMISE
+============================================================
+MONT04A_T4_REGISTRY_SHA256=ce047652781b05fdb892fd85d30ac7713952374876455eb5bdcff8eee734f4d9
+MONT04A_REGISTRY_MISSING_COUNT=0
+
+============================================================
+G8 — FINAL READ-ONLY INTEGRITY
+============================================================
+FINAL_READ_ONLY_INTEGRITY_GATE=PASS
+MONT_T4_TARGET=mlk_poly_tomont_c
+MONT_T4_PROPERTY_COUNT=5
+MONT_T4_THEOREM_WEAKENED=NO
+MONT_T4_SOURCE_MODIFIED=NO
+MONT04A_CAPTURE_GATE=PASS
+NEXT_GATE=MONT-04B_HARNESS_FREEZE
+MONT04A_CAPTURE_END=YES

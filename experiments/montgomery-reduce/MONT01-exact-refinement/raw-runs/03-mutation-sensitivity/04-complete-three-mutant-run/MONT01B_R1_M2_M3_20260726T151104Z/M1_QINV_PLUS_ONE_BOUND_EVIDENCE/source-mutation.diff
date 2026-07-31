@@ -1,0 +1,13 @@
+diff --git a/mlkem/src/poly.h b/mlkem/src/poly.h
+index 4d9e0f82..025f883d 100644
+--- a/mlkem/src/poly.h
++++ b/mlkem/src/poly.h
+@@ -72,7 +72,7 @@ __contract__(
+ 
+   /* Compute a*q^{-1} mod 2^16 in unsigned representatives. */
+   const uint16_t a_reduced = mlk_cast_int32_to_uint16(a);
+-  const uint16_t a_inverted = (a_reduced * QINV) & UINT16_MAX;
++  const uint16_t a_inverted = (a_reduced * (QINV + 1)) & UINT16_MAX;
+ 
+   /* Lift to signed canonical representative mod 2^16. */
+   const int16_t t = mlk_cast_uint16_to_int16(a_inverted);

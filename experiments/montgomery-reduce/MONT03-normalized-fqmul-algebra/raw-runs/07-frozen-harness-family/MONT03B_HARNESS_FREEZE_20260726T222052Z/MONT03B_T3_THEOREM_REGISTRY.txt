@@ -1,0 +1,75 @@
+MONT-T3 TARGET
+==============
+Target function: mlk_fqmul
+Pinned commit: af4c5abdd5958bdc65a03cd5ee86708264f93304
+Production modification: forbidden
+Native proof duplication: forbidden
+
+COMMON CONSTANTS
+================
+q = 3329
+R = 65536
+signed-canonical domain = -1664 .. 1664
+Montgomery representation of one = R mod q = 2285
+
+P1 — INDEPENDENT MULTIPLICATION SEMANTIC REFINEMENT
+====================================================
+Domain:
+  a: every int16_t
+  b: signed canonical, -1664 <= b <= 1664
+Direct obligations:
+  P1.1 output is strictly between -q and q
+  P1.2 exact implementation-independent decomposition:
+       R * mlk_fqmul(a,b) + q * t_math = a*b
+       where t_math is the signed representative of
+       ((a*b mod R) * q^{-1}) mod R
+No call to mlk_montgomery_reduce is used as the oracle.
+
+P2 — EXACT COMMUTATIVITY
+========================
+Domain:
+  a,b: independently nondeterministic signed-canonical int16_t values
+Direct obligation:
+  mlk_fqmul(a,b) == mlk_fqmul(b,a)
+
+P3 — ZERO ANNIHILATION AND ZERO-PRODUCT REFLECTION
+===================================================
+Domains:
+  left zero law: a is every int16_t
+  right zero law: b is signed canonical
+  reflection: a,b are independently signed canonical
+Direct obligations:
+  mlk_fqmul(a,0) == 0
+  mlk_fqmul(0,b) == 0
+  mlk_fqmul(a,b) == 0 iff a == 0 or b == 0
+
+P4 — MONTGOMERY-ONE IDENTITY AFTER NORMALIZATION
+=================================================
+Domain:
+  x: signed canonical
+Direct obligation:
+  normalize_q(mlk_fqmul(2285,x)) == x
+
+P5 — DISTRIBUTIVITY AFTER NORMALIZATION
+=======================================
+Domain:
+  a,b,c: independently signed canonical
+Direct obligation:
+  normalize_q(mlk_fqmul(a+b,c))
+    ==
+  normalize_q(mlk_fqmul(a,c) + mlk_fqmul(b,c))
+The mathematical sum a+b lies in [-3328,3328] and fits int16_t.
+
+P6 — ASSOCIATIVITY AFTER NORMALIZATION
+======================================
+Domain:
+  a,b,c: independently signed canonical
+Direct obligation:
+  normalize_q(mlk_fqmul(mlk_fqmul(a,b),c))
+    ==
+  normalize_q(mlk_fqmul(a,normalize_q(mlk_fqmul(b,c))))
+
+SOLVER-PACKAGING RULE
+=====================
+P1, P2/P3, P4, P5 and P6 are placed in five separate harnesses.
+This is execution partitioning only. Every frozen property remains mandatory.

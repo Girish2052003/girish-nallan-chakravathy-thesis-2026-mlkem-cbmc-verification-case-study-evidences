@@ -1,0 +1,251 @@
+
+============================================================
+MONT-01B-R1 — CORRECTED M2/M3 MUTATION CONTINUATION
+============================================================
+UTC_TIME=20260726T150507Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+BASE_WORKTREE=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT_WORKTREE_af4c5abd
+PRIOR_M1_PACKAGE=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT01B_MUTATION_PACKAGE_20260726T143223Z
+OUTPUT_DIRECTORY=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/MONT01B_R1_M2_M3_20260726T150507Z
+
+============================================================
+R1 — BIND AUTHORITATIVE SOURCE AND ACCEPTED ARTEFACTS
+============================================================
+AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+BASE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING_GATE=PASS
+AUTHORITATIVE_CLEAN_GATE=PASS
+AUTHORITATIVE_POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+BASE_POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+AUTHORITATIVE_POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+BASE_POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+BASE_HARNESS_SHA256=ba7aa005f34f4cfdead81067223a35b968ed46eca942c350c6ae48bbaa1f341d
+BASE_MAKEFILE_SHA256=404c11722ef402f06973916a4a07b394a456108edb78a75790fca9754d4f577e
+BASE_GOTO_SHA256=4630a866855c0806afb02f62302fa9af3b689e2594c661b4b4d15ecae61749aa
+SOURCE_AND_ARTEFACT_BINDING=PASS
+
+============================================================
+R2 — BIND SUCCESSFUL M1 EVIDENCE
+============================================================
+PRIOR_M1_CAPTURE_SHA256=a3015a57a9a00bd2d23a376d90f5f6915bbe6f540619678b78c2de813f66cc8f
+M1_MARKER_PRESENT=M1_QINV_PLUS_ONE_MUTATION_AUDIT=PASS
+M1_MARKER_PRESENT=M1_QINV_PLUS_ONE_RESULT=EXPECTEDLY_REJECTED
+M1_MARKER_PRESENT=M1_FINAL_RC=0
+M1_MARKER_PRESENT=FINAL_PRODUCTION_SOURCE_INTEGRITY=PASS
+PRIOR_M1_EVIDENCE_GATE=PASS
+PRIOR_M1_EVIDENCE_DIRECTORY_BOUND=YES
+
+============================================================
+R3 — REMOVE ABANDONED M2/M3 WORKTREES
+============================================================
+STALE_MUTANT_WORKTREE_COUNT=0
+
+============================================================
+R4 — PRINT EXACT PINNED SOURCE SHAPES
+============================================================
+PINNED_SOURCE_LINES_BEGIN
+80:  int32_t r;
+92:  r = r >> 16;
+PINNED_SOURCE_LINES_END
+
+============================================================
+R5 — REVALIDATE UNMUTATED BASELINE
+============================================================
+BASELINE_DIRECT_CBMC_RC_RAW=0
+BASELINE_DIRECT_RC=0
+BASELINE_SUCCESS_MARKER=YES
+BASELINE_FAILURE_MARKER=NO
+BASELINE_FAILURE_COUNT=0
+BASELINE_MISSING_REQUIRED_COUNT=0
+BASELINE_AUDIT=PASS
+BASELINE_AUDIT_RC=0
+
+============================================================
+R6 — EXECUTE CORRECTED M2
+============================================================
+
+============================================================
+M2_RECONSTRUCTION_SIGN — ISOLATED WORKTREE
+============================================================
+M2_RECONSTRUCTION_SIGN_DESCRIPTION=Change int32_t r = a - t*q to int32_t r = a + t*q
+M2_RECONSTRUCTION_SIGN_WORKTREE=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/M2_RECONSTRUCTION_SIGN_WORKTREE_R1_20260726T150507Z
+M2_RECONSTRUCTION_SIGN_WORKTREE_ADD_RC=0
+M2_RECONSTRUCTION_SIGN_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+M2_RECONSTRUCTION_SIGN_COMMIT_GATE=PASS
+M2_RECONSTRUCTION_SIGN_COPIED_HARNESS_SHA256=ba7aa005f34f4cfdead81067223a35b968ed46eca942c350c6ae48bbaa1f341d
+M2_RECONSTRUCTION_SIGN_COPIED_MAKEFILE_SHA256=404c11722ef402f06973916a4a07b394a456108edb78a75790fca9754d4f577e
+M2_RECONSTRUCTION_SIGN_PROOF_ARTEFACT_BINDING=PASS
+
+============================================================
+M2_RECONSTRUCTION_SIGN — EXACT SOURCE MUTATION
+============================================================
+M2_RECONSTRUCTION_SIGN_PRE_POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+M2_RECONSTRUCTION_SIGN_PRE_POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+M2_RECONSTRUCTION_SIGN_PRE_MUTATION_SOURCE_BINDING=PASS
+M2_RECONSTRUCTION_SIGN_PATCH_DESCRIPTION=Replace signed reconstruction a - t*q with a + t*q
+M2_RECONSTRUCTION_SIGN_PATCH_MATCH_COUNT=0
+M2_RECONSTRUCTION_SIGN_PATCH_APPLIED=NO
+M2_RECONSTRUCTION_SIGN_SOURCE_DIAGNOSTIC_BEGIN
+80:  int32_t r;
+85:  r = a - ((int32_t)t * MLKEM_Q);
+92:  r = r >> 16;
+93:  /* Bounds: |r >> 16| <= ceil(|r| / 2^16)
+M2_RECONSTRUCTION_SIGN_SOURCE_DIAGNOSTIC_END
+M2_RECONSTRUCTION_SIGN_PATCH_RC=3
+M2_RECONSTRUCTION_SIGN_GATE=FAIL_PATCH
+M2_FINAL_RC=35
+
+============================================================
+R7 — EXECUTE CORRECTED M3
+============================================================
+
+============================================================
+M3_SHIFT_BY_15 — ISOLATED WORKTREE
+============================================================
+M3_SHIFT_BY_15_DESCRIPTION=Change r = r >> 16 to r = r >> 15
+M3_SHIFT_BY_15_WORKTREE=/home/girish/THESIS-2026/mlk_montgomery_cleanroom/M3_SHIFT_BY_15_WORKTREE_R1_20260726T150507Z
+M3_SHIFT_BY_15_WORKTREE_ADD_RC=0
+M3_SHIFT_BY_15_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+M3_SHIFT_BY_15_COMMIT_GATE=PASS
+M3_SHIFT_BY_15_COPIED_HARNESS_SHA256=ba7aa005f34f4cfdead81067223a35b968ed46eca942c350c6ae48bbaa1f341d
+M3_SHIFT_BY_15_COPIED_MAKEFILE_SHA256=404c11722ef402f06973916a4a07b394a456108edb78a75790fca9754d4f577e
+M3_SHIFT_BY_15_PROOF_ARTEFACT_BINDING=PASS
+
+============================================================
+M3_SHIFT_BY_15 — EXACT SOURCE MUTATION
+============================================================
+M3_SHIFT_BY_15_PRE_POLY_H_SHA256=f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef
+M3_SHIFT_BY_15_PRE_POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+M3_SHIFT_BY_15_PRE_MUTATION_SOURCE_BINDING=PASS
+M3_SHIFT_BY_15_PATCH_DESCRIPTION=Replace arithmetic scaling shift r = r >> 16 with r = r >> 15
+M3_SHIFT_BY_15_PATCH_MATCH_COUNT=1
+M3_SHIFT_BY_15_BEFORE_LINE=r = r >> 16;
+M3_SHIFT_BY_15_AFTER_LINE=r = r >> 15;
+M3_SHIFT_BY_15_POST_PATCH_VALIDATION=PASS
+M3_SHIFT_BY_15_PATCH_APPLIED=YES
+M3_SHIFT_BY_15_PATCH_RC=0
+M3_SHIFT_BY_15_POST_POLY_H_SHA256=a26e4ad4397208c1b294461bdfcac5e7225597180166504c1a2f11838ed1e4a1
+M3_SHIFT_BY_15_POST_POLY_C_SHA256=f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722
+M3_SHIFT_BY_15_SOURCE_DIFF_BEGIN
+diff --git a/mlkem/src/poly.h b/mlkem/src/poly.h
+index 4d9e0f82..63708d65 100644
+--- a/mlkem/src/poly.h
++++ b/mlkem/src/poly.h
+@@ -89,7 +89,7 @@ __contract__(
+    * implementation-defined for negative left argument. Here,
+    * we assume it's sign-preserving "arithmetic" shift right. (C99 6.5.7 (5))
+    */
+-  r = r >> 16;
++  r = r >> 15;
+   /* Bounds: |r >> 16| <= ceil(|r| / 2^16)
+    *                   <= ceil(|a| / 2^16 + MLKEM_Q / 2)
+    *                   <= ceil(|a| / 2^16) + (MLKEM_Q + 1) / 2
+M3_SHIFT_BY_15_SOURCE_DIFF_END
+M3_SHIFT_BY_15_MODIFIED_TRACKED_FILE_COUNT=1
+M3_SHIFT_BY_15_MODIFIED_TRACKED_FILE=mlkem/src/poly.h
+M3_SHIFT_BY_15_SINGLE_SOURCE_MUTATION_GATE=PASS
+
+============================================================
+M3_SHIFT_BY_15 — BUILD AND DIRECT CBMC
+============================================================
+M3_SHIFT_BY_15_MAKE_CLEAN_RC=0
+M3_SHIFT_BY_15_MAKE_RC=0
+M3_SHIFT_BY_15_MAKE_KEY_OUTPUT_BEGIN
+[1/16] MONT-T1 full-domain exact refinement: building proof binary             [2/16] MONT-T1 full-domain exact refinement: building project binary           [3/16] MONT-T1 full-domain exact refinement: removing function bodies from p...[4/16] MONT-T1 full-domain exact refinement: linking project to proof          [5/16] MONT-T1 full-domain exact refinement: restricting function pointers i...[6/16] MONT-T1 full-domain exact refinement: not setting static variables to...[7/16] MONT-T1 full-domain exact refinement: linking CPROVER library           [8/16] MONT-T1 full-domain exact refinement: unwinding specified subset of l...[9/16] MONT-T1 full-domain exact refinement: checking function contracts       [10/16] MONT-T1 full-domain exact refinement: slicing global initializations   [11/16] MONT-T1 full-domain exact refinement: dropping unused functions        [12/16] MONT-T1 full-domain exact refinement: copying final goto-binary        [13/16] MONT-T1 full-domain exact refinement: printing safety properties       [14/16] MONT-T1 full-domain exact refinement: calculating coverage             [15/16] MONT-T1 full-domain exact refinement: checking safety properties       [16/16] MONT-T1 full-domain exact refinement: generating report                FAILED: /home/girish/THESIS-2026/mlk_montgomery_cleanroom/M3_SHIFT_BY_15_WORKTREE_R1_20260726T150507Z/proofs/cbmc/mont_t1_exact_refinement/report /tmp/litani/runs/0efa49a6-8ba4-4384-9af9-7a31335ea844/status/85873b34-d232-4bfb-8a7c-69e1d41f6034.json 
+ninja: build stopped: cannot make progress due to previous errors.
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+M3_SHIFT_BY_15_MAKE_KEY_OUTPUT_END
+M3_SHIFT_BY_15_GOTO_PRESENT=YES
+M3_SHIFT_BY_15_GOTO_SHA256=c14813e6231c4be2a340474fc7926dc995ffc3b356ff03214471359f863db1da
+M3_SHIFT_BY_15_DIRECT_CBMC_RC=10
+M3_SHIFT_BY_15_DIRECT_KEY_RESULTS_BEGIN
+[mlk_montgomery_reduce.overflow.5] line 99 arithmetic overflow on signed type conversion in (int16_t)r: FAILURE
+[harness.assertion.1] line 96 MONT-T1.P2.oracle_witness_is_signed16: SUCCESS
+[harness.assertion.2] line 100 MONT-T1.P1.oracle_result_fits_int16: SUCCESS
+[harness.assertion.3] line 104 MONT-T1.P1.full_domain_exact_oracle_equality: FAILURE
+[harness.assertion.4] line 111 MONT-T1.P2.exact_signed_witness_reconstruction: FAILURE
+[harness.assertion.5] line 115 MONT-T1.P2.scaled_modular_congruence_divisibility: FAILURE
+[harness.assertion.6] line 130 MONT-T1.P3.unique_result_in_signed16_decomposition: FAILURE
+[harness.assertion.7] line 134 MONT-T1.P3.unique_witness_in_signed16_decomposition: SUCCESS
+[harness.assertion.8] line 138 MONT-T1.P4.full_contract_domain_sharp_output_bound: FAILURE
+[harness.assertion.9] line 147 MONT-T1.P5.minimum_output_is_attainable: FAILURE
+[harness.assertion.10] line 151 MONT-T1.P5.maximum_output_is_attainable: FAILURE
+[mont_oracle_result.assertion.1] line 65 MONT-T1.P2.oracle_numerator_exactly_divisible_by_R: SUCCESS
+[mont_oracle_t.assertion.1] line 42 MONT-T1.ORACLE.low_word_normalized: SUCCESS
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P2.scaled_modular_congruence_divisibility
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P2.scaled_modular_congruence_divisibility
+  MONT-T1.P3.unique_result_in_signed16_decomposition
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P2.scaled_modular_congruence_divisibility
+  MONT-T1.P3.unique_result_in_signed16_decomposition
+  MONT-T1.P4.full_contract_domain_sharp_output_bound
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P2.scaled_modular_congruence_divisibility
+  MONT-T1.P3.unique_result_in_signed16_decomposition
+  MONT-T1.P5.minimum_output_is_attainable
+  MONT-T1.P1.full_domain_exact_oracle_equality
+  MONT-T1.P2.exact_signed_witness_reconstruction
+  MONT-T1.P2.scaled_modular_congruence_divisibility
+  MONT-T1.P3.unique_result_in_signed16_decomposition
+  MONT-T1.P5.minimum_output_is_attainable
+  MONT-T1.P5.maximum_output_is_attainable
+VERIFICATION FAILED
+M3_SHIFT_BY_15_DIRECT_KEY_RESULTS_END
+M3_SHIFT_BY_15_DIRECT_RC=10
+M3_SHIFT_BY_15_FAILED_MARKER=YES
+M3_SHIFT_BY_15_SUCCESS_MARKER=NO
+M3_SHIFT_BY_15_ERROR_MARKER=NO
+M3_SHIFT_BY_15_FAILURE_COUNT=8
+M3_SHIFT_BY_15_THEOREM_FAILURE_COUNT=7
+M3_SHIFT_BY_15_EXACT_ORACLE_EQUALITY_FAILURE_COUNT=1
+M3_SHIFT_BY_15_FAILURE_1=[mlk_montgomery_reduce.overflow.5] line 99 arithmetic overflow on signed type conversion in (int16_t)r: FAILURE
+M3_SHIFT_BY_15_FAILURE_2=[harness.assertion.3] line 104 MONT-T1.P1.full_domain_exact_oracle_equality: FAILURE
+M3_SHIFT_BY_15_FAILURE_3=[harness.assertion.4] line 111 MONT-T1.P2.exact_signed_witness_reconstruction: FAILURE
+M3_SHIFT_BY_15_FAILURE_4=[harness.assertion.5] line 115 MONT-T1.P2.scaled_modular_congruence_divisibility: FAILURE
+M3_SHIFT_BY_15_FAILURE_5=[harness.assertion.6] line 130 MONT-T1.P3.unique_result_in_signed16_decomposition: FAILURE
+M3_SHIFT_BY_15_FAILURE_6=[harness.assertion.8] line 138 MONT-T1.P4.full_contract_domain_sharp_output_bound: FAILURE
+M3_SHIFT_BY_15_FAILURE_7=[harness.assertion.9] line 147 MONT-T1.P5.minimum_output_is_attainable: FAILURE
+M3_SHIFT_BY_15_FAILURE_8=[harness.assertion.10] line 151 MONT-T1.P5.maximum_output_is_attainable: FAILURE
+M3_SHIFT_BY_15_MUTATION_AUDIT=PASS
+M3_SHIFT_BY_15_AUDIT_RC=0
+
+============================================================
+M3_SHIFT_BY_15 — CLEANUP
+============================================================
+M3_SHIFT_BY_15_WORKTREE_CLEANUP=PASS
+M3_SHIFT_BY_15_RESULT=EXPECTEDLY_REJECTED
+M3_FINAL_RC=0
+
+============================================================
+R8 — FINAL INTEGRITY
+============================================================
+FINAL_AUTHORITATIVE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+FINAL_BASE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+FINAL_COMMIT_AND_CLEAN_GATE=PASS
+FINAL_PRODUCTION_SOURCE_INTEGRITY=PASS
+REMAINING_MONT_MUTANT_WORKTREES_BEGIN
+REMAINING_MONT_MUTANT_WORKTREES_END
+
+============================================================
+R9 — COMBINED THREE-MUTANT VERDICT
+============================================================
+M1_BOUND_RESULT=EXPECTEDLY_REJECTED
+M1_FINAL_RC=0
+M2_FINAL_RC=35
+M3_FINAL_RC=0
+MUTANT_TOTAL_COUNT=3
+MUTANT_EXPECTED_REJECTION_COUNT=2
+MONT01B_R1_MUTATION_GATE=FAIL
+MONT_T1_STATUS=PROVISIONAL_NOT_FINAL
+NEXT_GATE=REVIEW_CORRECTED_MUTATION_OUTPUT
+MONT01B_R1_CAPTURE_END=YES
