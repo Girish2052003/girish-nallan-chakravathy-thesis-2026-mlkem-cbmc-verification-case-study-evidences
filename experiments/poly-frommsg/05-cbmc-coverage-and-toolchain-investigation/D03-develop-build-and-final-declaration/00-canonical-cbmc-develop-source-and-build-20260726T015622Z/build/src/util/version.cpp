@@ -1,0 +1,1 @@
+const char *CBMC_VERSION="6.10.0 ()";

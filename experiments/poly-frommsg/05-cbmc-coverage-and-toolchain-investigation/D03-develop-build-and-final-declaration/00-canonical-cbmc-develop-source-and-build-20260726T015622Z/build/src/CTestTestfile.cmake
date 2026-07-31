@@ -1,0 +1,37 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/src
+# Build directory: /workspace/build/src
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+subdirs("analyses")
+subdirs("ansi-c")
+subdirs("assembler")
+subdirs("big-int")
+subdirs("cpp")
+subdirs("xmllang")
+subdirs("goto-checker")
+subdirs("goto-programs")
+subdirs("goto-symex")
+subdirs("goto-inspect")
+subdirs("json")
+subdirs("json-symtab-language")
+subdirs("langapi")
+subdirs("linking")
+subdirs("pointer-analysis")
+subdirs("solvers")
+subdirs("statement-list")
+subdirs("util")
+subdirs("cbmc")
+subdirs("cprover")
+subdirs("crangler")
+subdirs("goto-cc")
+subdirs("goto-instrument")
+subdirs("goto-analyzer")
+subdirs("goto-diff")
+subdirs("goto-harness")
+subdirs("goto-synthesizer")
+subdirs("symtab2gb")
+subdirs("libcprover-cpp")
+subdirs("goto-bmc")
+subdirs("memory-analyzer")

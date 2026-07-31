@@ -1,0 +1,32 @@
+# FROMMSG-T3 clean-room codec-inversion preflight
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = frommsg_t3_codec_inversion_harness
+PROOF_UID = FROMMSG-T3 codec inversion and codebook fixed point
+
+#
+# mlk_poly_frommsg:
+#   .0 inner loop — 8 iterations
+#   .1 outer loop — 32 iterations
+#
+# mlk_poly_tomsg:
+#   .0 inner loop — 8 iterations
+#   .1 outer loop — 32 iterations
+#
+UNWINDSET += mlk_poly_frommsg.0:9
+UNWINDSET += mlk_poly_frommsg.1:33
+UNWINDSET += mlk_poly_tomsg.0:9
+UNWINDSET += mlk_poly_tomsg.1:33
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS =
+
+CBMC_OBJECT_BITS = 9
+FUNCTION_NAME = harness
+
+include ../Makefile.common

@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/acceleration
+# Build directory: /workspace/build/regression/acceleration
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(acceleration-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../accelerate.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-instrument    /workspace/build/bin/cbmc    false" "-C")
+set_tests_properties(acceleration-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/acceleration" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;50;add_test_pl_profile;/workspace/source/regression/acceleration/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/acceleration/CMakeLists.txt;0;")
+add_test(acceleration-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../accelerate.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-instrument    /workspace/build/bin/cbmc    false" "-T")
+set_tests_properties(acceleration-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/acceleration" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;51;add_test_pl_profile;/workspace/source/regression/acceleration/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/acceleration/CMakeLists.txt;0;")
+add_test(acceleration-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../accelerate.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-instrument    /workspace/build/bin/cbmc    false" "-F")
+set_tests_properties(acceleration-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/acceleration" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;52;add_test_pl_profile;/workspace/source/regression/acceleration/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/acceleration/CMakeLists.txt;0;")
+add_test(acceleration-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../accelerate.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-instrument    /workspace/build/bin/cbmc    false" "-K")
+set_tests_properties(acceleration-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/acceleration" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;53;add_test_pl_profile;/workspace/source/regression/acceleration/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/acceleration/CMakeLists.txt;0;")

@@ -1,0 +1,27 @@
+# FROMMSG-T2 clean-room relational-locality preflight
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = frommsg_t2_relational_harness
+PROOF_UID = FROMMSG-T2 relational single-bit locality
+
+#
+# Real production-loop bodies are retained and explicitly bounded.
+#
+# mlk_poly_frommsg.0 = inner loop: 8 iterations
+# mlk_poly_frommsg.1 = outer loop: 32 iterations
+#
+UNWINDSET += mlk_poly_frommsg.0:9
+UNWINDSET += mlk_poly_frommsg.1:33
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS =
+
+CBMC_OBJECT_BITS = 9
+FUNCTION_NAME = mlk_poly_frommsg
+
+include ../Makefile.common

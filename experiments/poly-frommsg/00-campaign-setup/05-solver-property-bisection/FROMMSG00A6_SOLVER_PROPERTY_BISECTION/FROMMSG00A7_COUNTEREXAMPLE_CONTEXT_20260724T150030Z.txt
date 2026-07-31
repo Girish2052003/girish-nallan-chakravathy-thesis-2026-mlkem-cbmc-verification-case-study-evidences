@@ -1,0 +1,190 @@
+============================================================
+FROMMSG-00A7 — COUNTEREXAMPLE INSPECTION CONTEXT
+============================================================
+UTC_TIME=2026-07-24T15:00:30Z
+WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z
+PROOF=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg
+
+===== ARTEFACT HASHES =====
+1f23e157c50ff1f52e5c1c78aa69fcb2529f6b5761b77927ef3e625b99459601  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.xml
+23ddb82ee5043377116ad4e6f3a1c921bd60d69a075a058d1132c9f8e4cb794f  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.command.txt
+8f51eb8bf4ac19f8fe23c261f2008843bd5f2788e30484cacafde1f99c811a25  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.meta.txt
+60c5e7a0ce1320dacc016a369f924f7de5caf5bcd071d9eed1aadffaa4ee7923  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c
+64dae10011cfde69469954bf21a5c42f80b012e393d93ddde7a4ea27168126fd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/Makefile
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.h
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c
+
+===== WORKTREE STATUS =====
+
+===== EXACT CBMC COMMAND =====
+cbmc --flush --object-bits 9 --slice-formula --conversion-check --float-overflow-check --nan-check --pointer-overflow-check --unsigned-overflow-check --property mlk_poly_frommsg.postcondition.1 --trace --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto 
+
+===== RESULT METADATA =====
+CASE_NAME=POSTCONDITION_DEFAULT_SAT
+BACKEND=default-sat
+PROPERTY_ID=mlk_poly_frommsg.postcondition.1
+RETURN_CODE=10
+RETURN_LABEL=VERIFICATION_UNSAFE
+ELAPSED_SECONDS=3
+XML_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.xml
+STDERR_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.stderr.txt
+COMMAND_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A6_SOLVER_PROPERTY_BISECTION/POSTCONDITION_DEFAULT_SAT.command.txt
+
+===== CONTRACT SOURCE — COMPRESS.H =====
+   545	MLK_INTERNAL_API
+   546	void mlk_poly_frombytes(mlk_poly *r, const uint8_t a[MLKEM_POLYBYTES])
+   547	__contract__(
+   548	  requires(memory_no_alias(a, MLKEM_POLYBYTES))
+   549	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   550	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   551	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_UINT12_LIMIT))
+   552	);
+   553	
+   554	
+   555	#define mlk_poly_frommsg MLK_NAMESPACE(poly_frommsg)
+   556	/**
+   557	 * Convert a 32-byte message to a polynomial.
+   558	 *
+   559	 * @spec{Implements `Decompress_1 (ByteDecode_1 (a))`: ByteDecode_d
+   560	 * @[FIPS203, Algorithm 6], Decompress_d @[FIPS203, Eq (4.8)], extended to
+   561	 * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+   562	 * `Decompress_1 (ByteDecode_1 (w))` appears in @[FIPS203, Algorithm 15
+   563	 * (K-PKE.Encrypt), L20].}
+   564	 *
+   565	 * @param[out] r   Output polynomial.
+   566	 * @param[in]  msg Input message.
+   567	 */
+   568	MLK_INTERNAL_API
+   569	void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+   570	__contract__(
+   571	  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+   572	  requires(memory_no_alias(r, sizeof(mlk_poly)))
+   573	  assigns(memory_slice(r, sizeof(mlk_poly)))
+   574	  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+   575	);
+   576	
+   577	#define mlk_poly_tomsg MLK_NAMESPACE(poly_tomsg)
+   578	/**
+   579	 * Convert a polynomial to a 32-byte message.
+   580	 *
+
+===== PRODUCTION FUNCTION — COMPRESS.C =====
+   675	 *              The reference implementation contains the expression
+   676	 *              `(msg[i] >> j) & 1` which the compiler can reason must
+   677	 *              be either 0 or 1. */
+   678	MLK_INTERNAL_API
+   679	void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+   680	{
+   681	  unsigned i;
+   682	#if (MLKEM_INDCPA_MSGBYTES != MLKEM_N / 8)
+   683	#error "MLKEM_INDCPA_MSGBYTES must be equal to MLKEM_N/8 bytes!"
+   684	#endif
+   685	
+   686	  for (i = 0; i < MLKEM_N / 8; i++)
+   687	  __loop__(
+   688	    invariant(i <= MLKEM_N / 8)
+   689	    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+   690	    decreases(MLKEM_N / 8 - i))
+   691	  {
+   692	    unsigned j;
+   693	    for (j = 0; j < 8; j++)
+   694	    __loop__(
+   695	      invariant(i <  MLKEM_N / 8 && j <= 8)
+   696	      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+   697	      decreases(8 - j))
+   698	    {
+   699	      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+   700	       * as per @[FIPS203, Eq (4.8)]. */
+   701	
+   702	      /* Prevent the compiler from recognizing this as a bit selection */
+   703	      uint8_t mask = mlk_value_barrier_u8((uint8_t)(1u << j));
+   704	      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+   705	    }
+   706	  }
+   707	  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+   708	}
+   709	
+   710	/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+   711	 *            - In contrast to the reference implementation, we assume
+   712	 *              unsigned canonical coefficients here.
+   713	 *              The reference implementation works with coefficients
+   714	 *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+   715	 */
+
+===== NATIVE HARNESS =====
+     1	// Copyright (c) The mlkem-native project authors
+     2	// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     3	// SPDX-License-Identifier: MIT-0
+     4	
+     5	#include "compress.h"
+     6	
+     7	void harness(void)
+     8	{
+     9	  mlk_poly *a;
+    10	  uint8_t *msg;
+    11	
+    12	  mlk_poly_frommsg(a, msg);
+    13	}
+
+===== NATIVE PROOF MAKEFILE =====
+     1	# Copyright (c) The mlkem-native project authors
+     2	# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     3	
+     4	include ../Makefile_params.common
+     5	
+     6	HARNESS_ENTRY = harness
+     7	HARNESS_FILE = poly_frommsg_harness
+     8	
+     9	# This should be a unique identifier for this proof, and will appear on the
+    10	# Litani dashboard. It can be human-readable and contain spaces if you wish.
+    11	PROOF_UID = mlk_poly_frommsg
+    12	
+    13	DEFINES +=
+    14	INCLUDES +=
+    15	
+    16	REMOVE_FUNCTION_BODY +=
+    17	UNWINDSET +=
+    18	
+    19	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    20	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    21	
+    22	CHECK_FUNCTION_CONTRACTS=mlk_poly_frommsg
+    23	USE_FUNCTION_CONTRACTS = mlk_ct_sel_int16
+    24	USE_FUNCTION_CONTRACTS += mlk_value_barrier_u8
+    25	APPLY_LOOP_CONTRACTS=on
+    26	USE_DYNAMIC_FRAMES=1
+    27	
+    28	# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+    29	EXTERNAL_SAT_SOLVER=
+    30	CBMCFLAGS=--bitwuzla
+    31	
+    32	FUNCTION_NAME = mlk_poly_frommsg
+    33	
+    34	# If this proof is found to consume huge amounts of RAM, you can set the
+    35	# EXPENSIVE variable. With new enough versions of the proof tools, this will
+    36	# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+    37	# documentation in Makefile.common under the "Job Pools" heading for details.
+    38	# EXPENSIVE = true
+    39	
+    40	# This function is large enough to need...
+    41	CBMC_OBJECT_BITS = 9
+    42	
+    43	# If you require access to a file-local ("static") function or object to conduct
+    44	# your proof, set the following (and do not include the original source file
+    45	# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+    46	# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+    47	# include ../Makefile.common
+    48	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+    49	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+    50	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+    51	# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+    52	# be set before including Makefile.common, but any use of variables on the
+    53	# left-hand side requires those variables to be defined. Hence, _SOURCE,
+    54	# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+    55	
+    56	include ../Makefile.common
+
+============================================================
+SOURCE_MODIFIED=NO
+CBMC_SOLVING_PERFORMED=NO
+============================================================

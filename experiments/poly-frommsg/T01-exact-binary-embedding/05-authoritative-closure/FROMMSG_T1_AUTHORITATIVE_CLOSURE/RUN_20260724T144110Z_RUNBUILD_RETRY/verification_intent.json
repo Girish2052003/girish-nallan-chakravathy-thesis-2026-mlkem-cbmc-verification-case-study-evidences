@@ -1,0 +1,38 @@
+{
+  "campaign": "FROMMSG-T1",
+  "target_function": "mlk_poly_frommsg",
+  "repository_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "parameter_set": "ML-KEM-768",
+  "implementation_path": "mlkem/src/compress.c",
+  "theorem": "For every 32-byte message and every coordinate k in [0,255], the production function outputs MLKEM_Q_HALF exactly when the corresponding LSB-first message bit is one, and outputs zero otherwise.",
+  "positive_properties": [
+    "FROMMSG_T1_P1_EXACT_COORDINATE_EQUATION",
+    "FROMMSG_T1_P2_EXACT_BINARY_OUTPUT_ALPHABET",
+    "FROMMSG_T1_P3_ONE_BIT_SUPPORT_EQUIVALENCE",
+    "FROMMSG_T1_P4_ZERO_BIT_SUPPORT_EQUIVALENCE"
+  ],
+  "permitted_assumptions": [
+    "k < MLKEM_N",
+    "the message is a valid 32-byte local object",
+    "the output is a valid local mlk_poly object",
+    "input and output do not alias by construction",
+    "MLK_CONFIG_PARAMETER_SET is 768"
+  ],
+  "execution_model": {
+    "target_body_retained": true,
+    "helper_bodies_retained": true,
+    "target_loop_contracts_applied": false,
+    "helper_function_contracts_substituted": false,
+    "inner_loop_unwind": 9,
+    "outer_loop_unwind": 33,
+    "unwinding_assertions_required": true,
+    "solver": "CBMC default SAT backend",
+    "cbmc_version": "6.9.0"
+  },
+  "excluded_claims": [
+    "constant-time execution",
+    "binary-level timing security",
+    "complete ML-KEM correctness",
+    "global first-ever mathematical novelty"
+  ]
+}

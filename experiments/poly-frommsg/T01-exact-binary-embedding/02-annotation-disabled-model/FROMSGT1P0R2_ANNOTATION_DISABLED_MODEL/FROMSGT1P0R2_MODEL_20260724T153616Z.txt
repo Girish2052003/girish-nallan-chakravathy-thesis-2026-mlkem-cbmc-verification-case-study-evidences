@@ -1,0 +1,450 @@
+============================================================
+FROMMSG-T1-P0R2 — ANNOTATION-DISABLED DIRECT MODEL
+============================================================
+UTC_TIME=2026-07-24T15:36:16Z
+WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z
+SOURCE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c
+HEADER=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.h
+HARNESS=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c
+STAGE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL
+
+===== TOOL IDENTITY =====
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26  /usr/bin/gcc
+a06fe9002795381c7213f474065bbae7150e5e556fc5a45bc317249177759c71  /usr/bin/goto-cc
+b6deeb37fe2112504c064ff260231a209b4211bc6e998de85972570a8b7d22ad  /usr/bin/goto-instrument
+1dd8e1f7c1621c7e6e305f98222da0372a1b42e65d597d1941847a052e7ef6a1  /usr/bin/cbmc
+
+===== FROZEN INPUT BINDING =====
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+ACTUAL_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_HARNESS_SHA256=657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266
+ACTUAL_HARNESS_SHA256=657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266
+INITIAL_WORKTREE_STATUS_BEGIN
+
+INITIAL_WORKTREE_STATUS_END
+
+===== CONFIRM CBMC PREPROCESSOR MACRO IS UNDEFINED =====
+CBMC_DEFINE_COUNT=0
+
+===== PREPROCESS ANNOTATION-DISABLED SOURCE =====
+PREPROCESSED_SOURCE_SIZE=42703
+PREPROCESSED_CONTRACT_MARKER_COUNT=0
+PREPROCESSED_TARGET_DEFINITION_COUNT=2
+PREPROCESSED_TARGET_ASSIGNMENT_COUNT=1
+
+===== PREPROCESSED TARGET EXCERPT =====
+915-;
+916-
+917-void mlk_poly_frombytes(mlk_poly *r, const uint8_t a[384])
+918-;
+919-
+920:void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[(32)])
+921-;
+922-
+923-void mlk_poly_tomsg(uint8_t msg[(32)], const mlk_poly *r)
+924-;
+925- void mlk_poly_compress_d4_c(
+926-    uint8_t r[128], const mlk_poly *a)
+927-
+928-{
+929-  unsigned i;
+930-  do { } while (0);
+931-  for (i = 0; i < 256 / 8; i++)
+932- 
+933-  {
+934-    unsigned j;
+935-    uint8_t t[8] = {0};
+936-    for (j = 0; j < 8; j++)
+937-   
+938-    {
+939-      t[j] = mlk_scalar_compress_d4(a->coeffs[8 * i + j]);
+940-    }
+941-    r[i * 4] = (uint8_t)(t[0] | (t[1] << 4));
+942-    r[i * 4 + 1] = (uint8_t)(t[2] | (t[3] << 4));
+943-    r[i * 4 + 2] = (uint8_t)(t[4] | (t[5] << 4));
+944-    r[i * 4 + 3] = (uint8_t)(t[6] | (t[7] << 4));
+945-  }
+946-}
+947-
+948-void mlk_poly_compress_d4(uint8_t r[128],
+949-                          const mlk_poly *a)
+950-
+951-{
+952-  mlk_poly_compress_d4_c(r, a);
+953-}
+954- void mlk_poly_compress_d10_c(
+955-    uint8_t r[320], const mlk_poly *a)
+--
+1072-void mlk_poly_frombytes(mlk_poly *r, const uint8_t a[384])
+1073-{
+1074-  mlk_poly_frombytes_c(r, a);
+1075-}
+1076-
+1077:void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[(32)])
+1078-{
+1079-  unsigned i;
+1080-  for (i = 0; i < 256 / 8; i++)
+1081- 
+1082-  {
+1083-    unsigned j;
+1084-    for (j = 0; j < 8; j++)
+1085-   
+1086-    {
+1087-      uint8_t mask = mlk_value_barrier_u8((uint8_t)(1u << j));
+1088-      r->coeffs[8 * i + j] = mlk_ct_sel_int16(((3329 + 1) / 2), 0, msg[i] & mask);
+1089-    }
+1090-  }
+1091-  do { } while (0);
+1092-}
+1093-
+1094-void mlk_poly_tomsg(uint8_t msg[(32)], const mlk_poly *r)
+1095-{
+1096-  unsigned i;
+1097-  do { } while (0);
+1098-  for (i = 0; i < 256 / 8; i++)
+1099- 
+1100-  {
+1101-    unsigned j;
+1102-    msg[i] = 0;
+1103-    for (j = 0; j < 8; j++)
+1104-   
+1105-    {
+1106-      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+1107-      msg[i] |= (uint8_t)(t << j);
+1108-    }
+1109-  }
+1110-}
+
+===== COMPILE CLEAN-ROOM HARNESS =====
+HARNESS_COMPILE_RETURN_CODE=0
+
+===== COMPILE FROZEN PRODUCTION SOURCE =====
+SOURCE_COMPILE_RETURN_CODE=0
+
+===== LINK REAL TARGET BODY =====
+LINK_RETURN_CODE=0
+
+===== PRUNE UNREACHABLE FUNCTIONS =====
+PRUNE_RETURN_CODE=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_linked.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Removing unused functions
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto'
+
+===== VALIDATE DIRECT GOTO MODEL =====
+VALIDATION_RETURN_CODE=0
+----- VALIDATION STDOUT -----
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Starting Bounded Model Checking
+Passing problem to propositional reduction
+converting SSA
+Running propositional reduction
+SAT checker: instance is UNSATISFIABLE
+
+** Results:
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c function mlk_poly_frommsg
+[mlk_poly_frommsg.undefined-shift.1] line 703 shift distance too large in 1u << j: SUCCESS
+[mlk_poly_frommsg.array_bounds.1] line 704 array.coeffs dynamic object upper bound in r->coeffs[(signed long int)((unsigned int)8 * i + j)]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.1] line 704 dereference failure: pointer NULL in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.2] line 704 dereference failure: pointer invalid in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.3] line 704 dereference failure: deallocated dynamic object in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.4] line 704 dereference failure: dead object in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.5] line 704 dereference failure: pointer outside object bounds in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.6] line 704 dereference failure: invalid integer address in msg[(signed long int)i]: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.7] line 704 dereference failure: pointer NULL in r->coeffs: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.8] line 704 dereference failure: pointer invalid in r->coeffs: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.9] line 704 dereference failure: deallocated dynamic object in r->coeffs: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.10] line 704 dereference failure: dead object in r->coeffs: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.11] line 704 dereference failure: pointer outside object bounds in r->coeffs: SUCCESS
+[mlk_poly_frommsg.pointer_dereference.12] line 704 dereference failure: invalid integer address in r->coeffs: SUCCESS
+
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h function mlk_ct_cmask_nonzero_u16
+[mlk_ct_cmask_nonzero_u16.overflow.1] line 232 arithmetic overflow on signed unary minus in -((int32_t)x): SUCCESS
+
+/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c function harness
+[harness.array_bounds.1] line 34 array 'msg' upper bound in msg[(signed long int)((unsigned int)k / 8u)]: SUCCESS
+[harness.undefined-shift.1] line 34 shift distance too large in (signed int)msg[(signed long int)((unsigned int)k / 8u)] >> (unsigned int)k % 8u: SUCCESS
+[harness.array_bounds.2] line 38 array 'r'.coeffs upper bound in r.coeffs[(signed long int)(unsigned int)k]: SUCCESS
+[harness.assertion.1] line 38 assertion r.coeffs[(unsigned)k] == (bit != 0u ? MLKEM_Q_HALF : 0): SUCCESS
+
+** 0 of 19 failed (1 iterations)
+VERIFICATION SUCCESSFUL
+----- VALIDATION STDERR -----
+GOTO_MODEL_VALIDATION=PASS
+
+===== FUNCTION AND SYMBOL INVENTORY =====
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+harness /* harness */
+mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+mlk_poly_frommsg /* mlk_poly_frommsg */
+mlk_value_barrier_u8 /* mlk_value_barrier_u8 */
+TARGET_FUNCTION_COUNT=2
+DANGLING_CONTRACT_SYMBOL_COUNT=0
+
+===== DIRECT TARGET BODY =====
+2:Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+13:        // 1 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 25
+38:        // 9 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 27 function harness
+40:        // 10 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 28 function harness
+42:        // 11 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 29 function harness
+44:        // 12 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 30 function harness
+46:        // 13 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 32 function harness
+47:        CALL mlk_poly_frommsg(address_of(harness::1::r), address_of(harness::1::msg[0]))
+48:        // 14 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 34 function harness
+50:        // 15 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 34 function harness
+52:        // 16 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 34 function harness
+54:        // 17 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 38 function harness
+56:        // 18 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 38 function harness
+57:        ASSERT cast(harness::1::r.coeffs[cast(cast(harness::1::k, unsignedbv[32]), signedbv[64])], signedbv[32]) = (cast(harness::1::bit, unsignedbv[32]) ≠ 0 ? (3329 + 1) / 2 : 0) // assertion r.coeffs[(unsigned)k] == (bit != 0u ? MLKEM_Q_HALF : 0)
+58:        // 19 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+60:        // 20 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+62:        // 21 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+64:        // 22 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+66:        // 23 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+68:        // 24 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+70:        // 25 file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 41 function harness
+135:mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+136:        // 48 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+137:        DECL mlk_ct_sel_int16::1::au : unsignedbv[16]
+138:        // 49 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+139:        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 : unsignedbv[16]
+140:        // 50 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+141:        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::a, signedbv[32]))
+142:        // 51 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+143:        ASSIGN mlk_ct_sel_int16::1::au := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+144:        // 52 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+145:        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+146:        // 53 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+147:        DECL mlk_ct_sel_int16::1::bu : unsignedbv[16]
+148:        // 54 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+149:        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 : unsignedbv[16]
+150:        // 55 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+151:        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::b, signedbv[32]))
+152:        // 56 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+153:        ASSIGN mlk_ct_sel_int16::1::bu := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+154:        // 57 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+155:        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+156:        // 58 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+157:        DECL mlk_ct_sel_int16::1::res : unsignedbv[16]
+158:        // 59 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+159:        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 : unsignedbv[16]
+160:        // 60 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+161:        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 := mlk_ct_cmask_nonzero_u16(mlk_ct_sel_int16::cond)
+162:        // 61 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+163:        ASSIGN mlk_ct_sel_int16::1::res := cast(bitxor(cast(mlk_ct_sel_int16::1::bu, signedbv[32]), bitand(cast(mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16, signedbv[32]), bitxor(cast(mlk_ct_sel_int16::1::au, signedbv[32]), cast(mlk_ct_sel_int16::1::bu, signedbv[32])))), unsignedbv[16])
+164:        // 62 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+165:        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16
+166:        // 63 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+167:        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 : signedbv[16]
+168:        // 64 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+169:        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 := mlk_cast_uint16_to_int16(mlk_ct_sel_int16::1::res)
+170:        // 65 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+171:        SET RETURN VALUE mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+172:        // 66 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+173:        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+174:        // 67 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+175:        DEAD mlk_ct_sel_int16::1::res
+176:        // 68 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+177:        DEAD mlk_ct_sel_int16::1::bu
+178:        // 69 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+179:        DEAD mlk_ct_sel_int16::1::au
+180:        // 70 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 296 function mlk_ct_sel_int16
+185:mlk_poly_frommsg /* mlk_poly_frommsg */
+186:        // 71 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 681 function mlk_poly_frommsg
+187:        DECL mlk_poly_frommsg::1::i : unsignedbv[32]
+188:        // 72 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+189:        ASSIGN mlk_poly_frommsg::1::i := cast(0, unsignedbv[32])
+190:        // 73 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+191:     1: IF ¬(mlk_poly_frommsg::1::i < cast(256 / 8, unsignedbv[32])) THEN GOTO 4
+192:        // 74 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 692 function mlk_poly_frommsg
+193:        DECL mlk_poly_frommsg::1::1::1::j : unsignedbv[32]
+194:        // 75 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+195:        ASSIGN mlk_poly_frommsg::1::1::1::j := cast(0, unsignedbv[32])
+196:        // 76 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+197:     2: IF ¬(mlk_poly_frommsg::1::1::1::j < cast(8, unsignedbv[32])) THEN GOTO 3
+198:        // 77 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+199:        DECL mlk_poly_frommsg::1::1::1::1::1::mask : unsignedbv[8]
+200:        // 78 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+201:        DECL mlk_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8 : unsignedbv[8]
+202:        // 79 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+203:        ASSERT ¬(mlk_poly_frommsg::1::1::1::j ≥ 32) // shift distance too large in 1u << j
+204:        // 80 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+205:        CALL mlk_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8 := mlk_value_barrier_u8(cast(shl(1, mlk_poly_frommsg::1::1::1::j), unsignedbv[8]))
+206:        // 81 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+207:        ASSIGN mlk_poly_frommsg::1::1::1::1::1::mask := mlk_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8
+208:        // 82 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+209:        DEAD mlk_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8
+210:        // 83 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+211:        DECL mlk_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16 : signedbv[16]
+212:        // 84 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+213:        ASSERT ¬(pointer_object(NULL) = pointer_object(mlk_poly_frommsg::msg)) // dereference failure: pointer NULL in msg[(signed long int)i]
+214:        // 85 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+215:        ASSERT ¬(is_invalid_pointer(mlk_poly_frommsg::msg)) // dereference failure: pointer invalid in msg[(signed long int)i]
+216:        // 86 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+217:        ASSERT ¬(pointer_object(mlk_poly_frommsg::msg) = pointer_object(__CPROVER_deallocated)) // dereference failure: deallocated dynamic object in msg[(signed long int)i]
+218:        // 87 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+219:        ASSERT ¬(pointer_object(mlk_poly_frommsg::msg) = pointer_object(__CPROVER_dead_object)) // dereference failure: dead object in msg[(signed long int)i]
+220:        // 88 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+221:        ASSERT cast(object_size(mlk_poly_frommsg::msg), unsignedbv[65]) ≥ cast(pointer_offset(mlk_poly_frommsg::msg) + cast(cast(mlk_poly_frommsg::1::i, signedbv[64]), unsignedbv[64]), unsignedbv[65]) + 1 // dereference failure: pointer outside object bounds in msg[(signed long int)i]
+222:        // 89 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+223:        ASSERT ¬(pointer_object(NULL) = pointer_object(mlk_poly_frommsg::msg)) ∨ mlk_poly_frommsg::msg + cast(mlk_poly_frommsg::1::i, signedbv[64]) = NULL // dereference failure: invalid integer address in msg[(signed long int)i]
+224:        // 90 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+225:        CALL mlk_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16 := mlk_ct_sel_int16(cast((3329 + 1) / 2, signedbv[16]), cast(0, signedbv[16]), cast(bitand(cast(*(mlk_poly_frommsg::msg + cast(mlk_poly_frommsg::1::i, signedbv[64])), signedbv[32]), cast(mlk_poly_frommsg::1::1::1::1::1::mask, signedbv[32])), unsignedbv[16]))
+226:        // 91 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+227:        ASSERT ¬(pointer_object(NULL) = pointer_object(mlk_poly_frommsg::r)) // dereference failure: pointer NULL in r->coeffs
+228:        // 92 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+229:        ASSERT ¬(is_invalid_pointer(mlk_poly_frommsg::r)) // dereference failure: pointer invalid in r->coeffs
+230:        // 93 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+231:        ASSERT ¬(pointer_object(mlk_poly_frommsg::r) = pointer_object(__CPROVER_deallocated)) // dereference failure: deallocated dynamic object in r->coeffs
+232:        // 94 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+233:        ASSERT ¬(pointer_object(mlk_poly_frommsg::r) = pointer_object(__CPROVER_dead_object)) // dereference failure: dead object in r->coeffs
+234:        // 95 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+235:        ASSERT cast(object_size(mlk_poly_frommsg::r), unsignedbv[65]) ≥ cast(pointer_offset(mlk_poly_frommsg::r), unsignedbv[65]) + 512 // dereference failure: pointer outside object bounds in r->coeffs
+236:        // 96 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+237:        ASSERT ¬(pointer_object(NULL) = pointer_object(mlk_poly_frommsg::r)) ∨ mlk_poly_frommsg::r = NULL // dereference failure: invalid integer address in r->coeffs
+238:        // 97 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+239:        ASSERT ¬(cast(8 * mlk_poly_frommsg::1::i + mlk_poly_frommsg::1::1::1::j, signedbv[64]) * 2 + cast(pointer_offset(mlk_poly_frommsg::r), signedbv[64]) ≥ cast(object_size(mlk_poly_frommsg::r), signedbv[64])) // array.coeffs dynamic object upper bound in r->coeffs[(signed long int)((unsigned int)8 * i + j)]
+240:        // 98 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+241:        ASSIGN *mlk_poly_frommsg::r.coeffs[cast(cast(8, unsignedbv[32]) * mlk_poly_frommsg::1::i + mlk_poly_frommsg::1::1::1::j, signedbv[64])] := mlk_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16
+242:        // 99 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+243:        DEAD mlk_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16
+244:        // 100 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 705 function mlk_poly_frommsg
+245:        DEAD mlk_poly_frommsg::1::1::1::1::1::mask
+246:        // 101 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+247:        ASSIGN mlk_poly_frommsg::1::1::1::j := mlk_poly_frommsg::1::1::1::j + 1
+248:        // 102 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+250:        // 103 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 706 function mlk_poly_frommsg
+251:     3: DEAD mlk_poly_frommsg::1::1::1::j
+252:        // 104 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+253:        ASSIGN mlk_poly_frommsg::1::i := mlk_poly_frommsg::1::i + 1
+254:        // 105 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+256:        // 106 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+258:        // 107 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 708 function mlk_poly_frommsg
+259:        DEAD mlk_poly_frommsg::1::i
+260:        // 108 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 708 function mlk_poly_frommsg
+273:mlk_value_barrier_u8 /* mlk_value_barrier_u8 */
+274:        // 111 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 131 function mlk_value_barrier_u8
+275:        SET RETURN VALUE mlk_value_barrier_u8::b
+276:        // 112 file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/verify.h line 132 function mlk_value_barrier_u8
+CONTRACT_HAVOC_MARKER_COUNT=0
+
+===== LOOP MAP =====
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.2:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+
+TARGET_LOOP_COUNT=3
+
+===== PROPERTY MAP =====
+2:Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+5:Removal of function pointers and virtual functions
+7:Property harness.array_bounds.1:
+8:  file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 34 function harness
+12:Property harness.undefined-shift.1:
+13:  file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 34 function harness
+14:  shift distance too large in (signed int)msg[(signed long int)((unsigned int)k / 8u)] >> (unsigned int)k % 8u
+17:Property harness.array_bounds.2:
+18:  file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 38 function harness
+22:Property harness.assertion.1:
+23:  file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c line 38 function harness
+24:  assertion r.coeffs[(unsigned)k] == (bit != 0u ? MLKEM_Q_HALF : 0)
+27:Property mlk_ct_cmask_nonzero_u16.overflow.1:
+29:  arithmetic overflow on signed unary minus in -((int32_t)x)
+32:Property mlk_poly_frommsg.undefined-shift.1:
+33:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 703 function mlk_poly_frommsg
+34:  shift distance too large in 1u << j
+37:Property mlk_poly_frommsg.pointer_dereference.1:
+38:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+39:  dereference failure: pointer NULL in msg[(signed long int)i]
+42:Property mlk_poly_frommsg.pointer_dereference.2:
+43:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+44:  dereference failure: pointer invalid in msg[(signed long int)i]
+47:Property mlk_poly_frommsg.pointer_dereference.3:
+48:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+52:Property mlk_poly_frommsg.pointer_dereference.4:
+53:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+57:Property mlk_poly_frommsg.pointer_dereference.5:
+58:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+59:  dereference failure: pointer outside object bounds in msg[(signed long int)i]
+62:Property mlk_poly_frommsg.pointer_dereference.6:
+63:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+67:Property mlk_poly_frommsg.pointer_dereference.7:
+68:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+69:  dereference failure: pointer NULL in r->coeffs
+72:Property mlk_poly_frommsg.pointer_dereference.8:
+73:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+74:  dereference failure: pointer invalid in r->coeffs
+77:Property mlk_poly_frommsg.pointer_dereference.9:
+78:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+82:Property mlk_poly_frommsg.pointer_dereference.10:
+83:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+87:Property mlk_poly_frommsg.pointer_dereference.11:
+88:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+89:  dereference failure: pointer outside object bounds in r->coeffs
+92:Property mlk_poly_frommsg.pointer_dereference.12:
+93:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+97:Property mlk_poly_frommsg.array_bounds.1:
+98:  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c line 704 function mlk_poly_frommsg
+HARNESS_ASSERTION_COUNT=1
+
+===== WORKTREE IMMUTABILITY =====
+FINAL_WORKTREE_STATUS_BEGIN
+
+FINAL_WORKTREE_STATUS_END
+
+===== FROZEN OUTPUT HASHES =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.h
+657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c
+ac78ec657df46fc7a9234c4abbab87df84945058f43b44f96cb773d90e7e81b3  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/compress_annotation_disabled.i
+c98f7d37d07f0c8b65a6dfbff4d1aa7aeb270e4b28979dbb77b978901092f968  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_harness.goto
+80fa8ed5df96a8df6dc9ae5cc1d47ca62993eb45b206e5b3cf371fc36ff7dd15  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_source.goto
+d9387d75bfa081c3d7779e0d76d5adf6332e10df17c8d05b9abe92fe7689406a  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_linked.goto
+7c2de4baa9e780e1c438fb2fd7931299d430fdbad9d4a92e2f8eaffc3e4d6b52  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/frommsg_t1_direct_body.goto
+7fa737a7c146a4b375a03e89911c563d4cd67c0b513a0a4e892f929970880e4b  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/functions.txt
+71015c3ec84efb6401455a065ebeb6122d776d162b541bb6caba1cefdfca4f7e  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/symbols.txt
+026340efba4a4243017ca270512647cc6eff81a71d01a1ac62ab4639f442eb5e  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/goto_body.txt
+87647aa5d9d291c6bd8a43d7356b60f94ba6d9a697582bb0401ad63937991b9f  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/loops.txt
+d5bdfd36260ade257cbc05389d459b09e0acd2ca239276f42c8066c920331fe6  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R2_ANNOTATION_DISABLED_MODEL/properties.txt
+
+============================================================
+FROMMSG-T1-P0R2 COMPLETE
+ANNOTATIONS_ACTIVE=NO
+CBMC_MACRO_ACTIVE=NO
+REAL_PRODUCTION_BODY_LINKED=YES
+CONTRACT_HAVOC_PRESENT=NO
+CBMC_SOLVING_PERFORMED=NO
+PRODUCTION_SOURCE_MODIFIED=NO
+============================================================

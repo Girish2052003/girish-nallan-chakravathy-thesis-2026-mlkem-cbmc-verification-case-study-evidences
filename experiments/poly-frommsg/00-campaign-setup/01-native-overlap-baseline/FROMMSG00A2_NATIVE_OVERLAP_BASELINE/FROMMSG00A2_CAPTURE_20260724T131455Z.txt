@@ -1,0 +1,1099 @@
+============================================================
+FROMMSG-00A2 — NATIVE OVERLAP AND CBMC BASELINE
+============================================================
+UTC_TIME=2026-07-24T13:14:55Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_VERIFICATION_CLONE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z
+
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_MATCH=YES
+
+===== AUTHORITATIVE WORKTREE PRE-STATUS =====
+AUTHORITATIVE_TRACKED_STATE=CLEAN
+
+===== NATIVE PROOF OBJECTS =====
+-rw-rw-r-- 1 girish girish 261 Jul 19 12:42 /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c
+60c5e7a0ce1320dacc016a369f924f7de5caf5bcd071d9eed1aadffaa4ee7923  /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c
+-rw-rw-r-- 1 girish girish 2067 Jul 19 12:42 /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile
+64dae10011cfde69469954bf21a5c42f80b012e393d93ddde7a4ea27168126fd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile
+
+===== COMPLETE NATIVE POLY_FROMMSG HARNESS =====
+     1	// Copyright (c) The mlkem-native project authors
+     2	// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     3	// SPDX-License-Identifier: MIT-0
+     4	
+     5	#include "compress.h"
+     6	
+     7	void harness(void)
+     8	{
+     9	  mlk_poly *a;
+    10	  uint8_t *msg;
+    11	
+    12	  mlk_poly_frommsg(a, msg);
+    13	}
+
+===== COMPLETE NATIVE POLY_FROMMSG MAKEFILE =====
+     1	# Copyright (c) The mlkem-native project authors
+     2	# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     3	
+     4	include ../Makefile_params.common
+     5	
+     6	HARNESS_ENTRY = harness
+     7	HARNESS_FILE = poly_frommsg_harness
+     8	
+     9	# This should be a unique identifier for this proof, and will appear on the
+    10	# Litani dashboard. It can be human-readable and contain spaces if you wish.
+    11	PROOF_UID = mlk_poly_frommsg
+    12	
+    13	DEFINES +=
+    14	INCLUDES +=
+    15	
+    16	REMOVE_FUNCTION_BODY +=
+    17	UNWINDSET +=
+    18	
+    19	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    20	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    21	
+    22	CHECK_FUNCTION_CONTRACTS=mlk_poly_frommsg
+    23	USE_FUNCTION_CONTRACTS = mlk_ct_sel_int16
+    24	USE_FUNCTION_CONTRACTS += mlk_value_barrier_u8
+    25	APPLY_LOOP_CONTRACTS=on
+    26	USE_DYNAMIC_FRAMES=1
+    27	
+    28	# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+    29	EXTERNAL_SAT_SOLVER=
+    30	CBMCFLAGS=--bitwuzla
+    31	
+    32	FUNCTION_NAME = mlk_poly_frommsg
+    33	
+    34	# If this proof is found to consume huge amounts of RAM, you can set the
+    35	# EXPENSIVE variable. With new enough versions of the proof tools, this will
+    36	# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+    37	# documentation in Makefile.common under the "Job Pools" heading for details.
+    38	# EXPENSIVE = true
+    39	
+    40	# This function is large enough to need...
+    41	CBMC_OBJECT_BITS = 9
+    42	
+    43	# If you require access to a file-local ("static") function or object to conduct
+    44	# your proof, set the following (and do not include the original source file
+    45	# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+    46	# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+    47	# include ../Makefile.common
+    48	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+    49	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+    50	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+    51	# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+    52	# be set before including Makefile.common, but any use of variables on the
+    53	# left-hand side requires those variables to be defined. Hence, _SOURCE,
+    54	# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+    55	
+    56	include ../Makefile.common
+
+===== NATIVE HARNESS SEMANTIC-CLAIM SCAN =====
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:53:# left-hand side requires those variables to be defined. Hence, _SOURCE,
+
+===== INCLUDED MAKEFILE REFERENCES =====
+4:include ../Makefile_params.common
+56:include ../Makefile.common
+
+===== RELEVANT CBMC BUILD VARIABLES =====
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:7:HARNESS_FILE = poly_frommsg_harness
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:11:PROOF_UID = mlk_poly_frommsg
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:17:UNWINDSET +=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:19:PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_frommsg
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:23:USE_FUNCTION_CONTRACTS = mlk_ct_sel_int16
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:24:USE_FUNCTION_CONTRACTS += mlk_value_barrier_u8
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:30:CBMCFLAGS=--bitwuzla
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_frommsg/Makefile:32:FUNCTION_NAME = mlk_poly_frommsg
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:25:#     unwinding, etc), and
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:55:#     in a file with the name <DIR>/<HARNESS_FILE>.c
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:59:#     HARNESS_FILE=<HARNESS_FILE>
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:61:#     PROOF_UID=<PROOF_UID>
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:70:#     UNWINDSET += foo.0:3
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:71:#     UNWINDSET += bar.1:6
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:152:# Flag to pass to goto-cc to make all static symbols globally visible. Leave it
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:262:CBMC_FLAG_UNWINDING_ASSERTIONS ?= # set to --no-unwinding-assertions to disable
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:263:CBMC_DEFAULT_UNWIND ?= --unwind 1
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:267:ifeq ($(findstring --smt2,$(CBMCFLAGS)),--smt2) # User has chosen SMT2 (which defaults to Z3)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:268:CBMCFLAGS := $(subst --smt2,,$(CBMCFLAGS)) # Remove --smt2 from CBMCFLAGS
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:272:else ifeq ($(findstring --bitwuzla,$(CBMCFLAGS)),--bitwuzla) # User has chosen Bitwuzla
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:273:CBMCFLAGS := $(subst --bitwuzla,,$(CBMCFLAGS)) # Remove --bitwuzla from CBMCFLAGS
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:277:else ifeq ($(findstring --cvc5,$(CBMCFLAGS)),--cvc5) # User has chosen cvc5
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:278:CBMCFLAGS := $(subst --cvc5,,$(CBMCFLAGS)) # Remove --cvc5 from CBMCFLAGS
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:328:# Flags to pass to goto-cc for compilation and linking
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:330:# Note that we always use gcc for pre-processing with goto-cc
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:364:# CBMC loop unwinding (Normally set in the proof Makefile)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:366:# UNWINDSET is a list of pairs of the form foo.1:4 meaning that
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:367:# CBMC should unwind loop 1 in function foo no more than 4 times.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:369:# of times CBMC actually unwinds the loop.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:370:UNWINDSET ?=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:372:# CBMC early loop unwinding (Normally set in the proof Makefile)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:382:# unwind some loops before the function contract and loop invariant
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:384:# CPROVER_LIBRARY_UNWINDSET is identical to UNWINDSET, and we assume that the
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:385:# loops mentioned in CPROVER_LIBRARY_UNWINDSET and UNWINDSET are disjoint.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:386:CPROVER_LIBRARY_UNWINDSET ?=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:450:#    the function implementation, CHECK_FUNCTION_CONTRACTS should be a list of
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:451:#    function names. Use CHECK_FUNCTION_CONTRACTS_REC to check contracts on
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:454:#    contracts, USE_FUNCTION_CONTRACTS should be a list of function names.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:457:CHECK_FUNCTION_CONTRACTS ?=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:458:CBMC_CHECK_FUNCTION_CONTRACTS := $(patsubst %,--enforce-contract %, $(CHECK_FUNCTION_CONTRACTS))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:460:CHECK_FUNCTION_CONTRACTS_REC ?=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:461:CBMC_CHECK_FUNCTION_CONTRACTS_REC := $(patsubst %,--enforce-contract-rec %, $(CHECK_FUNCTION_CONTRACTS_REC))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:463:USE_FUNCTION_CONTRACTS ?=
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:464:CBMC_USE_FUNCTION_CONTRACTS := $(patsubst %,--replace-call-with-contract %, $(USE_FUNCTION_CONTRACTS))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:466:CODE_CONTRACTS := $(CHECK_FUNCTION_CONTRACTS)$(USE_FUNCTION_CONTRACTS)$(APPLY_LOOP_CONTRACTS)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:474:    CBMC_USE_DYNAMIC_FRAMES := $(CBMC_OPT_CONFIG_LIBRARY) --dfcc $(HARNESS_ENTRY) $(CBMC_CHECK_FUNCTION_CONTRACTS_REC)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:490:# The default unwind should only be used in DFCC mode without loop contracts.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:491:# When loop contracts are applied, we only unwind specified loops.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:493:# to unwind the program indefinitely, because we do not pass default unwind
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:494:# (i.e., --unwind 1) to CBMC when in DFCC mode.
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:495:# We must not use a default unwind command in DFCC mode, because contract instrumentation
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:500:  UNWIND_0500_FLAGS=$(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_FLAG_UNWINDING_ASSERTIONS)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:501:  UNWIND_0500_DESC="$(PROOF_UID): unwinding specified subset of loops"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:503:  UNWIND_0500_FLAGS=$(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_DEFAULT_UNWIND) $(CBMC_FLAG_UNWINDING_ASSERTIONS)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:504:  UNWIND_0500_DESC="$(PROOF_UID): unwinding all loops"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:524:GOTO_CC ?= goto-cc
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:525:GOTO_INSTRUMENT ?= goto-instrument
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:537:HARNESS_GOTO ?= $(GOTODIR)/$(HARNESS_FILE)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:549:ifeq ($(findstring --no-array-field-sensitivity,$(CBMCFLAGS)),--no-array-field-sensitivity)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:556:ifeq ($(findstring --slice-formula,$(CBMCFLAGS)),--slice-formula)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:562:CBMCFLAGS += $(CBMC_FLAG_FLUSH)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:563:CBMCFLAGS += --object-bits $(CBMC_OBJECT_BITS)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:564:CBMCFLAGS += --slice-formula
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:573:ifndef MLKEM_K
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:574:    $(error MLKEM_K not set)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:577:ifeq ($(MLKEM_K),2)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:578:MLK_CONFIG_PARAMETER_SET=512
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:579:else ifeq ($(MLKEM_K),3)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:580:MLK_CONFIG_PARAMETER_SET=768
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:581:else ifeq ($(MLKEM_K),4)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:582:MLK_CONFIG_PARAMETER_SET=1024
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:584:$(error Invalid value for MLKEM_K)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:588:DEFINES += -DMLK_CONFIG_PARAMETER_SET=$(MLK_CONFIG_PARAMETER_SET)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:594:# CI currently assumes cbmc invocation has at most one --unwindset
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:596:# UNWINDSET is designed for user code (i.e., proof and project code)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:597:ifdef UNWINDSET
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:598:  ifneq ($(strip $(UNWINDSET)),)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:599:    CBMC_UNWINDSET := --unwindset $(subst $(SPACE),$(COMMA),$(strip $(UNWINDSET)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:603:# CPROVER_LIBRARY_UNWINDSET is designed for CPROVER library functions
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:604:ifdef CPROVER_LIBRARY_UNWINDSET
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:605:  ifneq ($(strip $(CPROVER_LIBRARY_UNWINDSET)),)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:606:    CBMC_CPROVER_LIBRARY_UNWINDSET := --unwindset $(subst $(SPACE),$(COMMA),$(strip $(CPROVER_LIBRARY_UNWINDSET)))
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:634:#     "functions": [ {"function_name": ["remove static"]} ],
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:638:# to remove the static attribute from function_name and variable_name
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:650:#   $(PROOFDIR)/code.i_FUNCTIONS = function_name
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:692:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:694:	  --description "$(PROOF_UID): removing static"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:707:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:709:	  --description "$(PROOF_UID): building project binary"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:719:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:721:	  --description "$(PROOF_UID): building proof binary"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:731:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:733:	  --description "$(PROOF_UID): removing function bodies from project sources"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:742:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:744:	  --description "$(PROOF_UID): linking project to proof"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:754:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:756:	  --description "$(PROOF_UID): restricting function pointers in project sources"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:766:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:768:	  --description "$(PROOF_UID): not setting static variables to nondet (will do during contract instrumentation)"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:776:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:778:	  --description "$(PROOF_UID): setting static variables to nondet"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:790:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:792:	  --description "$(PROOF_UID): linking CPROVER library"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:799:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:801:	  --description "$(PROOF_UID): not linking CPROVER library"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:804:# Early unwind all loops on DFCC mode; otherwise, only unwind loops in proof and project code
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:809:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(UNWIND_0500_FLAGS) $^ $@' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:812:	  --stdout-file $(LOGDIR)/unwind_loops-log.txt \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:813:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:815:	  --description $(UNWIND_0500_DESC)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:819:		'$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(CBMC_UNWINDSET) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $^ $@' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:822:	  --stdout-file $(LOGDIR)/unwind_loops-log.txt \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:823:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:825:	  --description "$(PROOF_UID): unwinding loops in proof and project code"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:831:	  --stdout-file $(LOGDIR)/unwind_loops-log.txt \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:832:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:834:	  --description "$(PROOF_UID): not unwinding loops"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:841:	    '$(GOTO_INSTRUMENT) $(CBMC_USE_DYNAMIC_FRAMES) $(NONDET_STATIC) $(CBMC_VERBOSITY) $(CBMC_CHECK_FUNCTION_CONTRACTS) $(CBMC_USE_FUNCTION_CONTRACTS) $(CBMC_APPLY_LOOP_CONTRACTS) $^ $@' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:844:	  --stdout-file $(LOGDIR)/check_function_contracts-log.txt \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:845:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:847:	  --description "$(PROOF_UID): checking function contracts"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:857:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:859:	  --description "$(PROOF_UID): slicing global initializations"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:869:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:871:	  --description "$(PROOF_UID): dropping unused functions"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:879:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:881:	  --description "$(PROOF_UID): copying final goto-binary"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:886:ifdef CBMCFLAGS
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:888:    CBMCFLAGS += $(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_DEFAULT_UNWIND) $(CBMC_OPT_CONFIG_LIBRARY)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:890:    CBMCFLAGS += $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_OPT_CONFIG_LIBRARY)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:898:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --trace --xml-ui $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:906:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:909:	  --description "$(PROOF_UID): checking safety properties"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:915:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --trace $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:923:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:926:	  --description "$(PROOF_UID): checking safety properties"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:933:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ $(SMT_FORMAT) $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:941:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:944:	  --description "$(PROOF_UID): checking safety properties (SMT to file only)"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:951:	    '$(CBMC) $(CBMC_VERBOSITY) --smt2 $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --z3 $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:959:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:962:	  --description "$(PROOF_UID): checking safety properties (SMT for Z3 only)"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:969:	    '$(CBMC) $(CBMC_VERBOSITY) --bitwuzla $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --bitwuzla $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:977:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:980:	  --description "$(PROOF_UID): checking safety properties (SMT for Bitwuzla only)"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:987:	    '$(CBMC) $(CBMC_VERBOSITY) --cvc5 $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --cvc5 $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:995:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:998:	  --description "$(PROOF_UID): checking safety properties (SMT for cvc5 only)"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1003:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --show-properties --xml-ui $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1009:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1011:	  --description "$(PROOF_UID): printing safety properties"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1017:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(COVERFLAGS) --cover location --xml-ui $<' \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1025:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1028:	  --description "$(PROOF_UID): calculating coverage"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1045:	  --pipeline-name "$(PROOF_UID)" \
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1048:	  --description "$(PROOF_UID): generating report"
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile.common:1206:	@echo $(PROOF_UID)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile_params.common:4:ifndef MLKEM_K
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile_params.common:5:       $(warning MLKEM_K not set -- defaulting to MLKEM_K=3)
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/Makefile_params.common:8:MLKEM_K ?= 3
+
+===== ACTUAL MLK_POLY REPRESENTATION SEARCH =====
+mlkem/src/fips202/fips202.h:18:typedef struct
+mlkem/src/fips202/fips202x4.h:16:typedef struct
+mlkem/src/poly.h:34:typedef struct
+mlkem/src/poly.h:36:  int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */
+mlkem/src/poly.h:37:} MLK_ALIGN mlk_poly;
+mlkem/src/poly.h:43:typedef struct
+mlkem/src/poly_k.h:32:typedef struct
+mlkem/src/poly_k.h:38:typedef struct
+mlkem/src/poly_k.h:44:typedef struct
+POLY_TYPE_FILE=mlkem/src/poly.h
+
+===== POLYNOMIAL TYPE CONTEXT =====
+21-#include "debug.h"
+22-#include "verify.h"
+23-
+24-/* Absolute exclusive upper bound for the output of the inverse NTT */
+25-#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+26-
+27-/* Absolute exclusive upper bound for the output of the forward NTT */
+28-#define MLK_NTT_BOUND (8 * MLKEM_Q)
+29-
+30-/**
+31- * Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial
+32- * coeffs[0] + X*coeffs[1] + X^2*coeffs[2] + ... + X^{n-1}*coeffs[n-1].
+33- */
+34-typedef struct
+35-{
+36:  int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */
+37-} MLK_ALIGN mlk_poly;
+38-
+39-/**
+40- * INTERNAL representation of precomputed data speeding up
+41- * the base multiplication of two polynomials in NTT domain.
+42- */
+43-typedef struct
+44-{
+45-  int16_t coeffs[MLKEM_N >> 1]; /**< Cached coefficients. */
+46-} MLK_ALIGN mlk_poly_mulcache;
+47-
+48-/**
+49- * Generic Montgomery reduction; given a 32-bit integer a, computes a 16-bit
+50- * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+51- *
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/poly.h
+
+===== PROOF CONFIGURATION SEARCH =====
+.github/actions/cbmc/action.yml:4:name: CBMC
+.github/actions/cbmc/action.yml:5:description: Run CBMC proofs for mlkem-native
+.github/actions/cbmc/action.yml:51:      - name: Run CBMC proofs (MLKEM_K=${{ inputs.mlkem_k }})
+.github/actions/cbmc/report.py:5:"""CBMC proof results reporter for GitHub Actions."""
+.github/actions/cbmc/report.py:33:    parser = argparse.ArgumentParser(description="CBMC proof results reporter")
+.github/actions/cbmc/report.py:157:        f"## CBMC Results (ML-KEM-{cfg.param_set})",
+.github/actions/cbmc/report.py:264:        f"message=Update CBMC results for ML-KEM-{cfg.param_set} ({GITHUB_SHA})",
+proofs/cbmc/.gitignore:3:# Emitted when running CBMC proofs
+proofs/cbmc/.gitignore:10:# Emitted by CBMC Viewer
+proofs/cbmc/Makefile.common:8:CBMC_STARTER_KIT_VERSION = CBMC starter kit 2.11
+proofs/cbmc/Makefile.common:11:# The CBMC Starter Kit depends on the files Makefile.common and
+proofs/cbmc/Makefile.common:82:# The proof setup script cbmc-starter-kit-setup-proof from the CBMC
+proofs/cbmc/Makefile.common:114:#   CBMC_ROOT = /srcdir/cbmc
+proofs/cbmc/Makefile.common:124:# that directory.  The value of CBMC_ROOT becomes the absolute path to
+proofs/cbmc/Makefile.common:147:CBMC_ROOT = $(shell dirname $(PROOF_ROOT))
+proofs/cbmc/Makefile.common:148:PROOF_SOURCE = $(CBMC_ROOT)/sources
+proofs/cbmc/Makefile.common:149:PROOF_INCLUDE = $(CBMC_ROOT)/include
+proofs/cbmc/Makefile.common:150:PROOF_STUB = $(CBMC_ROOT)/stubs
+proofs/cbmc/Makefile.common:170:# Define how to run CBMC
+proofs/cbmc/Makefile.common:196:# full parallelism as usual, even for expensive proofs. The CBMC jobs for
+proofs/cbmc/Makefile.common:198:# CBMC safety checks and coverage checks for expensive proofs are run with a
+proofs/cbmc/Makefile.common:203:# For example, to only run two CBMC safety/coverage jobs at a time from amongst
+proofs/cbmc/Makefile.common:227:# profiling CBMC's memory use.
+proofs/cbmc/Makefile.common:237:# within CBMC. If desired, a property flag can be disabled within
+proofs/cbmc/Makefile.common:238:# a particular proof by nulling the corresponding variable when CBMC's default
+proofs/cbmc/Makefile.common:239:# is not to perform such checks, or setting to --no-<CHECK>-check when CBMC's
+proofs/cbmc/Makefile.common:242:#     CBMC_FLAG_POINTER_CHECK = --no-pointer-check
+proofs/cbmc/Makefile.common:243:#     CBMC_FLAG_UNSIGNED_OVERFLOW_CHECK =
+proofs/cbmc/Makefile.common:245:# would disable pointer checks and unsigned overflow checks with CBMC flag
+proofs/cbmc/Makefile.common:250:CBMC_FLAG_MALLOC_MAY_FAIL ?= --malloc-may-fail --malloc-fail-null # alloc may fail with returning NULL
+proofs/cbmc/Makefile.common:251:CBMC_FLAG_BOUNDS_CHECK ?= # set to --no-bounds-check to disable
+proofs/cbmc/Makefile.common:252:CBMC_FLAG_CONVERSION_CHECK ?= --conversion-check
+proofs/cbmc/Makefile.common:253:CBMC_FLAG_DIV_BY_ZERO_CHECK ?= # set to --no-div-by-zero-check to disable
+proofs/cbmc/Makefile.common:254:CBMC_FLAG_FLOAT_OVERFLOW_CHECK ?= --float-overflow-check
+proofs/cbmc/Makefile.common:255:CBMC_FLAG_NAN_CHECK ?= --nan-check
+proofs/cbmc/Makefile.common:256:CBMC_FLAG_POINTER_CHECK ?= #set to --no-pointer-check to disable
+proofs/cbmc/Makefile.common:257:CBMC_FLAG_POINTER_OVERFLOW_CHECK ?= --pointer-overflow-check
+proofs/cbmc/Makefile.common:258:CBMC_FLAG_POINTER_PRIMITIVE_CHECK ?= # set to --no-pointer-primitive-check to disable
+proofs/cbmc/Makefile.common:259:CBMC_FLAG_SIGNED_OVERFLOW_CHECK ?= # set to --no-signed-overflow-check to disable
+proofs/cbmc/Makefile.common:260:CBMC_FLAG_UNDEFINED_SHIFT_CHECK ?= # set to --no-undefined-shift-check to disable
+proofs/cbmc/Makefile.common:261:CBMC_FLAG_UNSIGNED_OVERFLOW_CHECK ?= --unsigned-overflow-check
+proofs/cbmc/Makefile.common:262:CBMC_FLAG_UNWINDING_ASSERTIONS ?= # set to --no-unwinding-assertions to disable
+proofs/cbmc/Makefile.common:263:CBMC_DEFAULT_UNWIND ?= --unwind 1
+proofs/cbmc/Makefile.common:264:CBMC_FLAG_FLUSH ?= --flush
+proofs/cbmc/Makefile.common:267:ifeq ($(findstring --smt2,$(CBMCFLAGS)),--smt2) # User has chosen SMT2 (which defaults to Z3)
+proofs/cbmc/Makefile.common:268:CBMCFLAGS := $(subst --smt2,,$(CBMCFLAGS)) # Remove --smt2 from CBMCFLAGS
+proofs/cbmc/Makefile.common:272:else ifeq ($(findstring --bitwuzla,$(CBMCFLAGS)),--bitwuzla) # User has chosen Bitwuzla
+proofs/cbmc/Makefile.common:273:CBMCFLAGS := $(subst --bitwuzla,,$(CBMCFLAGS)) # Remove --bitwuzla from CBMCFLAGS
+proofs/cbmc/Makefile.common:277:else ifeq ($(findstring --cvc5,$(CBMCFLAGS)),--cvc5) # User has chosen cvc5
+proofs/cbmc/Makefile.common:278:CBMCFLAGS := $(subst --cvc5,,$(CBMCFLAGS)) # Remove --cvc5 from CBMCFLAGS
+proofs/cbmc/Makefile.common:284:# CBMC 6.0.0 enables all standard checks by default, which can make coverage analysis
+proofs/cbmc/Makefile.common:289:# CBMC flags used for property checking
+proofs/cbmc/Makefile.common:291:CHECKFLAGS += $(CBMC_FLAG_BOUNDS_CHECK)
+proofs/cbmc/Makefile.common:292:CHECKFLAGS += $(CBMC_FLAG_CONVERSION_CHECK)
+proofs/cbmc/Makefile.common:293:CHECKFLAGS += $(CBMC_FLAG_DIV_BY_ZERO_CHECK)
+proofs/cbmc/Makefile.common:294:CHECKFLAGS += $(CBMC_FLAG_FLOAT_OVERFLOW_CHECK)
+proofs/cbmc/Makefile.common:295:CHECKFLAGS += $(CBMC_FLAG_NAN_CHECK)
+proofs/cbmc/Makefile.common:296:CHECKFLAGS += $(CBMC_FLAG_POINTER_CHECK)
+proofs/cbmc/Makefile.common:297:CHECKFLAGS += $(CBMC_FLAG_POINTER_OVERFLOW_CHECK)
+proofs/cbmc/Makefile.common:298:CHECKFLAGS += $(CBMC_FLAG_POINTER_PRIMITIVE_CHECK)
+proofs/cbmc/Makefile.common:299:CHECKFLAGS += $(CBMC_FLAG_SIGNED_OVERFLOW_CHECK)
+proofs/cbmc/Makefile.common:300:CHECKFLAGS += $(CBMC_FLAG_UNDEFINED_SHIFT_CHECK)
+proofs/cbmc/Makefile.common:301:CHECKFLAGS += $(CBMC_FLAG_UNSIGNED_OVERFLOW_CHECK)
+proofs/cbmc/Makefile.common:303:# Additional CBMC flag to CBMC control verbosity.
+proofs/cbmc/Makefile.common:316:# CBMC_VERBOSITY ?= --verbosity 4
+proofs/cbmc/Makefile.common:318:# Additional CBMC flag to control how CBMC treats static variables.
+proofs/cbmc/Makefile.common:322:# CBMC to initialize static variables with unconstrained value
+proofs/cbmc/Makefile.common:352:# CBMC object model
+proofs/cbmc/Makefile.common:354:# CBMC_OBJECT_BITS is the number of bits in a pointer CBMC uses for
+proofs/cbmc/Makefile.common:355:# the id of the object to which a pointer is pointing.  CBMC uses 8
+proofs/cbmc/Makefile.common:358:# objects that CBMC can model.  This Makefile defines this bound on
+proofs/cbmc/Makefile.common:359:# object size to be CBMC_MAX_OBJECT_SIZE.  You are likely to get
+proofs/cbmc/Makefile.common:362:CBMC_OBJECT_BITS ?= 8
+proofs/cbmc/Makefile.common:364:# CBMC loop unwinding (Normally set in the proof Makefile)
+proofs/cbmc/Makefile.common:367:# CBMC should unwind loop 1 in function foo no more than 4 times.
+proofs/cbmc/Makefile.common:369:# of times CBMC actually unwinds the loop.
+proofs/cbmc/Makefile.common:372:# CBMC early loop unwinding (Normally set in the proof Makefile)
+proofs/cbmc/Makefile.common:377:# contracts, two features under development for CBMC.  Checking the
+proofs/cbmc/Makefile.common:388:# CBMC function removal (Normally set set in the proof Makefile)
+proofs/cbmc/Makefile.common:390:# REMOVE_FUNCTION_BODY is a list of function names.  CBMC will "undefine"
+proofs/cbmc/Makefile.common:391:# the function, and CBMC will treat the function as having no side effects
+proofs/cbmc/Makefile.common:396:# CBMC function pointer restriction (Normally set in the proof Makefile)
+proofs/cbmc/Makefile.common:406:# example trace will be found by CBMC, i.e. the transformation is sound.
+proofs/cbmc/Makefile.common:423:# The number of seconds that CBMC should be allowed to run for before
+proofs/cbmc/Makefile.common:429:CBMC_TIMEOUT ?= 21600
+proofs/cbmc/Makefile.common:431:# CBMC string abstraction
+proofs/cbmc/Makefile.common:438:    CBMC_STRING_ABSTRACTION := --string-abstraction
+proofs/cbmc/Makefile.common:444:CBMC_OPT_CONFIG_LIBRARY := $(CBMC_FLAG_MALLOC_MAY_FAIL) $(CBMC_STRING_ABSTRACTION)
+proofs/cbmc/Makefile.common:458:CBMC_CHECK_FUNCTION_CONTRACTS := $(patsubst %,--enforce-contract %, $(CHECK_FUNCTION_CONTRACTS))
+proofs/cbmc/Makefile.common:461:CBMC_CHECK_FUNCTION_CONTRACTS_REC := $(patsubst %,--enforce-contract-rec %, $(CHECK_FUNCTION_CONTRACTS_REC))
+proofs/cbmc/Makefile.common:464:CBMC_USE_FUNCTION_CONTRACTS := $(patsubst %,--replace-call-with-contract %, $(USE_FUNCTION_CONTRACTS))
+proofs/cbmc/Makefile.common:474:    CBMC_USE_DYNAMIC_FRAMES := $(CBMC_OPT_CONFIG_LIBRARY) --dfcc $(HARNESS_ENTRY) $(CBMC_CHECK_FUNCTION_CONTRACTS_REC)
+proofs/cbmc/Makefile.common:486:    CBMC_APPLY_LOOP_CONTRACTS := --apply-loop-contracts
+proofs/cbmc/Makefile.common:492:# If any loops remain after loop contracts have been applied, CBMC might try
+proofs/cbmc/Makefile.common:494:# (i.e., --unwind 1) to CBMC when in DFCC mode.
+proofs/cbmc/Makefile.common:500:  UNWIND_0500_FLAGS=$(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_FLAG_UNWINDING_ASSERTIONS)
+proofs/cbmc/Makefile.common:503:  UNWIND_0500_FLAGS=$(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_DEFAULT_UNWIND) $(CBMC_FLAG_UNWINDING_ASSERTIONS)
+proofs/cbmc/Makefile.common:522:CBMC ?= cbmc
+proofs/cbmc/Makefile.common:547:# CBMC team recommend that --no-array-field-sensitivity should never be used
+proofs/cbmc/Makefile.common:548:# with CBMC 6.9.0 and above when --slice-formula has been specified
+proofs/cbmc/Makefile.common:549:ifeq ($(findstring --no-array-field-sensitivity,$(CBMCFLAGS)),--no-array-field-sensitivity)
+proofs/cbmc/Makefile.common:550:$(error CBMC option --no-array-field-sensitivity is believed to be detrimental to performance in CBMC v6.9.0 and has been removed from the CBMC Makefiles -- do you really want this?)
+proofs/cbmc/Makefile.common:554:# CBMC team recommend that --slice-formula should _always_ be used
+proofs/cbmc/Makefile.common:556:ifeq ($(findstring --slice-formula,$(CBMCFLAGS)),--slice-formula)
+proofs/cbmc/Makefile.common:557:$(error CBMC option --slice-formula is set by default in Makefile.common, so should not be specified in a function-specific Makefile)
+proofs/cbmc/Makefile.common:561:# CBMC flags common to all proofs
+proofs/cbmc/Makefile.common:562:CBMCFLAGS += $(CBMC_FLAG_FLUSH)
+proofs/cbmc/Makefile.common:563:CBMCFLAGS += --object-bits $(CBMC_OBJECT_BITS)
+proofs/cbmc/Makefile.common:564:CBMCFLAGS += --slice-formula
+proofs/cbmc/Makefile.common:568:DEFINES += -DCBMC=1
+proofs/cbmc/Makefile.common:569:DEFINES += -DCBMC_OBJECT_BITS=$(CBMC_OBJECT_BITS)
+proofs/cbmc/Makefile.common:570:DEFINES += -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))"
+proofs/cbmc/Makefile.common:573:ifndef MLKEM_K
+proofs/cbmc/Makefile.common:574:    $(error MLKEM_K not set)
+proofs/cbmc/Makefile.common:577:ifeq ($(MLKEM_K),2)
+proofs/cbmc/Makefile.common:578:MLK_CONFIG_PARAMETER_SET=512
+proofs/cbmc/Makefile.common:579:else ifeq ($(MLKEM_K),3)
+proofs/cbmc/Makefile.common:580:MLK_CONFIG_PARAMETER_SET=768
+proofs/cbmc/Makefile.common:581:else ifeq ($(MLKEM_K),4)
+proofs/cbmc/Makefile.common:582:MLK_CONFIG_PARAMETER_SET=1024
+proofs/cbmc/Makefile.common:584:$(error Invalid value for MLKEM_K)
+proofs/cbmc/Makefile.common:588:DEFINES += -DMLK_CONFIG_PARAMETER_SET=$(MLK_CONFIG_PARAMETER_SET)
+proofs/cbmc/Makefile.common:599:    CBMC_UNWINDSET := --unwindset $(subst $(SPACE),$(COMMA),$(strip $(UNWINDSET)))
+proofs/cbmc/Makefile.common:606:    CBMC_CPROVER_LIBRARY_UNWINDSET := --unwindset $(subst $(SPACE),$(COMMA),$(strip $(CPROVER_LIBRARY_UNWINDSET)))
+proofs/cbmc/Makefile.common:610:CBMC_REMOVE_FUNCTION_BODY := $(patsubst %,--remove-function-body %, $(REMOVE_FUNCTION_BODY))
+proofs/cbmc/Makefile.common:614:    CBMC_RESTRICT_FUNCTION_POINTER := $(patsubst %,--restrict-function-pointer %, $(RESTRICT_FUNCTION_POINTER))
+proofs/cbmc/Makefile.common:703:	    '$(GOTO_CC) $(CBMC_VERBOSITY) $(COMPILE_FLAGS) $(EXPORT_FILE_LOCAL_SYMBOLS) $(INCLUDES) $(DEFINES) $^ -o $@' \
+proofs/cbmc/Makefile.common:715:	    '$(GOTO_CC) $(CBMC_VERBOSITY) $(COMPILE_FLAGS) $(EXPORT_FILE_LOCAL_SYMBOLS) $(INCLUDES) $(DEFINES) $^ -o $@' \
+proofs/cbmc/Makefile.common:727:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(CBMC_REMOVE_FUNCTION_BODY) $^ $@' \
+proofs/cbmc/Makefile.common:738:	  --command '$(GOTO_CC) $(CBMC_VERBOSITY) --function $(HARNESS_ENTRY) $^ $(LINK_FLAGS) -o $@' \
+proofs/cbmc/Makefile.common:750:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(CBMC_RESTRICT_FUNCTION_POINTER) --remove-function-pointers $^ $@' \
+proofs/cbmc/Makefile.common:772:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(NONDET_STATIC) $^ $@' \
+proofs/cbmc/Makefile.common:786:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(ADD_LIBRARY_FLAG) $(CBMC_OPT_CONFIG_LIBRARY) $^ $@' \
+proofs/cbmc/Makefile.common:809:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(UNWIND_0500_FLAGS) $^ $@' \
+proofs/cbmc/Makefile.common:819:		'$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) $(CBMC_UNWINDSET) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $^ $@' \
+proofs/cbmc/Makefile.common:841:	    '$(GOTO_INSTRUMENT) $(CBMC_USE_DYNAMIC_FRAMES) $(NONDET_STATIC) $(CBMC_VERBOSITY) $(CBMC_CHECK_FUNCTION_CONTRACTS) $(CBMC_USE_FUNCTION_CONTRACTS) $(CBMC_APPLY_LOOP_CONTRACTS) $^ $@' \
+proofs/cbmc/Makefile.common:853:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) --slice-global-inits $^ $@' \
+proofs/cbmc/Makefile.common:865:	    '$(GOTO_INSTRUMENT) $(CBMC_VERBOSITY) --drop-unused-functions $^ $@' \
+proofs/cbmc/Makefile.common:886:ifdef CBMCFLAGS
+proofs/cbmc/Makefile.common:888:    CBMCFLAGS += $(CBMC_UNWINDSET) $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_DEFAULT_UNWIND) $(CBMC_OPT_CONFIG_LIBRARY)
+proofs/cbmc/Makefile.common:890:    CBMCFLAGS += $(CBMC_CPROVER_LIBRARY_UNWINDSET) $(CBMC_OPT_CONFIG_LIBRARY)
+proofs/cbmc/Makefile.common:898:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --trace --xml-ui $<' \
+proofs/cbmc/Makefile.common:905:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:915:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --trace $<' \
+proofs/cbmc/Makefile.common:922:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:933:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ $(SMT_FORMAT) $<' \
+proofs/cbmc/Makefile.common:940:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:951:	    '$(CBMC) $(CBMC_VERBOSITY) --smt2 $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --z3 $<' \
+proofs/cbmc/Makefile.common:958:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:969:	    '$(CBMC) $(CBMC_VERBOSITY) --bitwuzla $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --bitwuzla $<' \
+proofs/cbmc/Makefile.common:976:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:987:	    '$(CBMC) $(CBMC_VERBOSITY) --cvc5 $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --outfile $@ --cvc5 $<' \
+proofs/cbmc/Makefile.common:994:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile.common:1003:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(CBMC_FLAG_UNWINDING_ASSERTIONS) $(CHECKFLAGS) --show-properties --xml-ui $<' \
+proofs/cbmc/Makefile.common:1017:	    '$(CBMC) $(CBMC_VERBOSITY) $(BACKEND_OPTION) $(CBMCFLAGS) $(COVERFLAGS) --cover location --xml-ui $<' \
+proofs/cbmc/Makefile.common:1024:	  --timeout $(CBMC_TIMEOUT) \
+proofs/cbmc/Makefile_params.common:4:ifndef MLKEM_K
+proofs/cbmc/Makefile_params.common:5:       $(warning MLKEM_K not set -- defaulting to MLKEM_K=3)
+proofs/cbmc/Makefile_params.common:8:MLKEM_K ?= 3
+proofs/cbmc/README.md:3:CBMC proofs
+proofs/cbmc/README.md:6:This directory contains the infrastructure for running [CBMC](https://github.com/diffblue/cbmc) proofs
+proofs/cbmc/README.md:13:the CBMC harnesses are boilerplate only and don't add to the specification.
+proofs/cbmc/README.md:43:See the [Proof Guide](proof_guide.md) for a walkthrough of how to use CBMC and develop new proofs.
+proofs/cbmc/README.md:47:To reproduce the CBMC proofs, you will require several tools ([CBMC](https://github.com/diffblue/cbmc), [z3](https://github.com/Z3Prover/z3), [bitwuzla](https://github.com/bitwuzla/bitwuzla), [litani](https://github.com/awslabs/aws-build-accumulator), [cbmc-viewer](https://github.com/model-checking/cbmc-viewer)) installed.
+proofs/cbmc/README.md:63:MLKEM_K={2,3,4} run-cbmc-proofs.py --summarize
+proofs/cbmc/README.md:78:The classes of undefined behavior covered by CBMC are documented [here](https://github.com/diffblue/cbmc/blob/develop/doc/C/c11-undefined-behavior.html).
+proofs/cbmc/barrett_reduce/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/barrett_reduce/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/barrett_reduce/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/check_pct/Makefile:31:CBMCFLAGS=--bitwuzla
+proofs/cbmc/check_pct/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/check_pct/Makefile:42:CBMC_OBJECT_BITS = 8
+proofs/cbmc/check_pct/check_pct_harness.c:14:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/ct_cmask_neg_i16/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/ct_cmask_neg_i16/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_cmask_neg_i16/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_cmask_nonzero_u16/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/ct_cmask_nonzero_u16/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_cmask_nonzero_u16/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_cmask_nonzero_u8/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/ct_cmask_nonzero_u8/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_cmask_nonzero_u8/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_cmov_zero/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ct_cmov_zero/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_cmov_zero/Makefile:40:CBMC_OBJECT_BITS = 10
+proofs/cbmc/ct_get_optblocker_i32/Makefile:13:DEFINES += -DMLK_CONFIG_NO_ASM_VALUE_BARRIER
+proofs/cbmc/ct_get_optblocker_i32/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ct_get_optblocker_i32/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_get_optblocker_i32/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_get_optblocker_u32/Makefile:13:DEFINES += -DMLK_CONFIG_NO_ASM_VALUE_BARRIER
+proofs/cbmc/ct_get_optblocker_u32/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ct_get_optblocker_u32/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_get_optblocker_u32/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_get_optblocker_u8/Makefile:13:DEFINES += -DMLK_CONFIG_NO_ASM_VALUE_BARRIER
+proofs/cbmc/ct_get_optblocker_u8/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ct_get_optblocker_u8/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_get_optblocker_u8/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_memcmp/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ct_memcmp/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_memcmp/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_sel_int16/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/ct_sel_int16/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_sel_int16/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ct_sel_uint8/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/ct_sel_uint8/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ct_sel_uint8/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:25:ifeq ($(MLKEM_K),2)
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:28:else ifeq ($(MLKEM_K),3)
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:30:else # MLKEM_K must be 4
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:40:CBMCFLAGS=--smt2
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:46:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/enc_getnoise_eta1_eta2/Makefile:51:CBMC_OBJECT_BITS = 10
+proofs/cbmc/enc_getnoise_eta1_eta2/enc_getnoise_eta1_eta2_harness.c:18:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/fqmul/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/fqmul/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/fqmul/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/gen_matrix/Makefile:32:CBMCFLAGS=--smt2
+proofs/cbmc/gen_matrix/Makefile:38:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/gen_matrix/Makefile:43:CBMC_OBJECT_BITS = 10
+proofs/cbmc/gen_matrix_serial/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/gen_matrix_serial/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/gen_matrix_serial/Makefile:42:CBMC_OBJECT_BITS = 10
+proofs/cbmc/gen_matrix_serial/gen_matrix_serial_harness.c:11:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/indcpa_dec/Makefile:40:CBMCFLAGS=--smt2
+proofs/cbmc/indcpa_dec/Makefile:46:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/indcpa_dec/Makefile:51:CBMC_OBJECT_BITS = 10
+proofs/cbmc/indcpa_enc/Makefile:46:CBMCFLAGS=--external-smt2-solver $(PROOF_ROOT)/lib/z3_smt_only --z3
+proofs/cbmc/indcpa_enc/Makefile:52:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/indcpa_enc/Makefile:57:CBMC_OBJECT_BITS = 10
+proofs/cbmc/indcpa_keypair_derand/Makefile:39:CBMCFLAGS=--smt2
+proofs/cbmc/indcpa_keypair_derand/Makefile:45:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/indcpa_keypair_derand/Makefile:50:CBMC_OBJECT_BITS = 10
+proofs/cbmc/intt_native_aarch64/Makefile:14:# included, which contains the CBMC specifications.
+proofs/cbmc/intt_native_aarch64/Makefile:32:CBMCFLAGS=--smt2
+proofs/cbmc/intt_native_aarch64/Makefile:38:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/intt_native_aarch64/Makefile:43:CBMC_OBJECT_BITS = 8
+proofs/cbmc/intt_native_x86_64/Makefile:14:# included, which contains the CBMC specifications.
+proofs/cbmc/intt_native_x86_64/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/intt_native_x86_64/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/intt_native_x86_64/Makefile:42:CBMC_OBJECT_BITS = 8
+proofs/cbmc/invntt_layer/Makefile:30:CBMCFLAGS=--smt2
+proofs/cbmc/invntt_layer/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/invntt_layer/Makefile:41:CBMC_OBJECT_BITS = 10
+proofs/cbmc/keccak_absorb_once/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_absorb_once/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_absorb_once/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_absorb_once_x4/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_absorb_once_x4/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_absorb_once_x4/Makefile:41:CBMC_OBJECT_BITS = 9
+proofs/cbmc/keccak_f1600_x1_native_aarch64/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x1_native_aarch64/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x1_native_aarch64/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_f1600_x1_native_aarch64_v84a/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x1_native_aarch64_v84a/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x1_native_aarch64_v84a/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v84a/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v84a/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v84a/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_scalar_hybrid/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_scalar_hybrid/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_scalar_hybrid/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_v84a_scalar_hybrid/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_v84a_scalar_hybrid/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x4_native_aarch64_v8a_v84a_scalar_hybrid/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_f1600_x4_native_avx2/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_f1600_x4_native_avx2/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_f1600_x4_native_avx2/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_squeeze_once/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_squeeze_once/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_squeeze_once/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_squeezeblocks/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_squeezeblocks/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_squeezeblocks/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccak_squeezeblocks_x4/Makefile:30:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccak_squeezeblocks_x4/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccak_squeezeblocks_x4/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_extract_bytes/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600_extract_bytes/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_extract_bytes/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_extract_bytes_BE/Makefile:29:CBMCFLAGS=--bitwuzla --big-endian
+proofs/cbmc/keccakf1600_extract_bytes_BE/Makefile:36:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_extract_bytes_BE/Makefile:41:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_permute/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/keccakf1600_permute/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_permute/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_permute_c/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/keccakf1600_permute_c/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_permute_c/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_permute_native/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600_permute_native/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_permute_native/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_xor_bytes/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600_xor_bytes/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_xor_bytes/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600_xor_bytes_BE/Makefile:29:CBMCFLAGS=--bitwuzla --big-endian
+proofs/cbmc/keccakf1600_xor_bytes_BE/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600_xor_bytes_BE/Makefile:42:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_extract_bytes/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600x4_extract_bytes/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_extract_bytes/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_extract_bytes_c/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/keccakf1600x4_extract_bytes_c/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_extract_bytes_c/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_extract_bytes_native/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600x4_extract_bytes_native/Makefile:34:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_permute/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/keccakf1600x4_permute/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_permute/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_permute_native_x4/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600x4_permute_native_x4/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_permute_native_x4/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_xor_bytes/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600x4_xor_bytes/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_xor_bytes/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_xor_bytes_c/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/keccakf1600x4_xor_bytes_c/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keccakf1600x4_xor_bytes_c/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/keccakf1600x4_xor_bytes_native/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/keccakf1600x4_xor_bytes_native/Makefile:34:CBMC_OBJECT_BITS = 8
+proofs/cbmc/kem_check_pk/Makefile:33:CBMCFLAGS=--smt2
+proofs/cbmc/kem_check_pk/Makefile:39:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_check_pk/Makefile:44:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_check_sk/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/kem_check_sk/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_check_sk/Makefile:42:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_dec/Makefile:37:CBMCFLAGS=--smt2
+proofs/cbmc/kem_dec/Makefile:43:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_dec/Makefile:48:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_enc/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/kem_enc/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_enc/Makefile:42:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_enc_derand/Makefile:36:CBMCFLAGS=--smt2
+proofs/cbmc/kem_enc_derand/Makefile:42:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_enc_derand/Makefile:47:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_keypair/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/kem_keypair/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_keypair/Makefile:42:CBMC_OBJECT_BITS = 10
+proofs/cbmc/kem_keypair_derand/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/kem_keypair_derand/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/kem_keypair_derand/Makefile:42:CBMC_OBJECT_BITS = 10
+proofs/cbmc/keypair_getnoise_eta1/Makefile:28:CBMCFLAGS=--smt2
+proofs/cbmc/keypair_getnoise_eta1/Makefile:34:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/keypair_getnoise_eta1/Makefile:39:CBMC_OBJECT_BITS = 10
+proofs/cbmc/keypair_getnoise_eta1/keypair_getnoise_eta1_harness.c:17:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/lib/summarize.py:12:an execution of CBMC proofs."""
+proofs/cbmc/lib/summarize.py:157:        "mlkem_k": os.getenv("MLKEM_K", "unknown"),
+proofs/cbmc/lib/summarize.py:177:    output = "## Summary of CBMC proof results\n\n"
+proofs/cbmc/matvec_mul/Makefile:28:CBMCFLAGS=--smt2
+proofs/cbmc/matvec_mul/Makefile:34:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/matvec_mul/Makefile:39:CBMC_OBJECT_BITS = 12
+proofs/cbmc/matvec_mul/matvec_mul_harness.c:15:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/mlkem_native_config_cbmc.h:28: * Test configuration: mlkem-native configuration used for CBMC proofs, using
+proofs/cbmc/mlkem_native_config_cbmc.h:44: *  - MLK_CONFIG_PARAMETER_SET=512 corresponds to ML-KEM-512
+proofs/cbmc/mlkem_native_config_cbmc.h:45: *  - MLK_CONFIG_PARAMETER_SET=768 corresponds to ML-KEM-768
+proofs/cbmc/mlkem_native_config_cbmc.h:46: *  - MLK_CONFIG_PARAMETER_SET=1024 corresponds to ML-KEM-1024
+proofs/cbmc/mlkem_native_config_cbmc.h:54:#ifndef MLK_CONFIG_PARAMETER_SET
+proofs/cbmc/mlkem_native_config_cbmc.h:55:#define MLK_CONFIG_PARAMETER_SET \
+proofs/cbmc/mlkem_native_config_cbmc.h:172: * If this is set, all MLK_CONFIG_PARAMETER_SET-independent code will be
+proofs/cbmc/mlkem_native_config_cbmc.h:176: * Example: mlk_poly_cbd3 is only needed for MLK_CONFIG_PARAMETER_SET == 512.
+proofs/cbmc/mlkem_native_config_cbmc.h:178: * MLK_CONFIG_PARAMETER_SET == 768/1024, it would be included.
+proofs/cbmc/mlkem_native_config_cbmc.h:198: * If this is set, no MLK_CONFIG_PARAMETER_SET-independent code will be
+proofs/cbmc/mlkem_native_config_cbmc.h:527: * MLK_CONFIG_NO_ASM
+proofs/cbmc/mlkem_native_config_cbmc.h:545:/* #define MLK_CONFIG_NO_ASM */
+proofs/cbmc/mlkem_native_config_cbmc.h:548: * MLK_CONFIG_NO_ASM_VALUE_BARRIER
+proofs/cbmc/mlkem_native_config_cbmc.h:557:/* #define MLK_CONFIG_NO_ASM_VALUE_BARRIER */
+proofs/cbmc/mlkem_native_config_cbmc.h:652:#if MLK_CONFIG_PARAMETER_SET == 512
+proofs/cbmc/mlkem_native_config_cbmc.h:654:#elif MLK_CONFIG_PARAMETER_SET == 768
+proofs/cbmc/mlkem_native_config_cbmc.h:656:#elif MLK_CONFIG_PARAMETER_SET == 1024
+proofs/cbmc/montgomery_reduce/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/montgomery_reduce/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/montgomery_reduce/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ntt_butterfly_block/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ntt_butterfly_block/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ntt_butterfly_block/Makefile:40:CBMC_OBJECT_BITS = 9
+proofs/cbmc/ntt_layer/Makefile:29:CBMCFLAGS=--bitwuzla
+proofs/cbmc/ntt_layer/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ntt_layer/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ntt_native_aarch64/Makefile:14:# included, which contains the CBMC specifications.
+proofs/cbmc/ntt_native_aarch64/Makefile:32:CBMCFLAGS=--smt2
+proofs/cbmc/ntt_native_aarch64/Makefile:38:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ntt_native_aarch64/Makefile:43:CBMC_OBJECT_BITS = 8
+proofs/cbmc/ntt_native_x86_64/Makefile:14:# included, which contains the CBMC specifications.
+proofs/cbmc/ntt_native_x86_64/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/ntt_native_x86_64/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/ntt_native_x86_64/Makefile:42:CBMC_OBJECT_BITS = 8
+proofs/cbmc/nttunpack_native_x86_64/Makefile:14:# included, which contains the CBMC specifications.
+proofs/cbmc/nttunpack_native_x86_64/Makefile:31:CBMCFLAGS=--smt2
+proofs/cbmc/nttunpack_native_x86_64/Makefile:37:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/nttunpack_native_x86_64/Makefile:42:CBMC_OBJECT_BITS = 8
+proofs/cbmc/nttunpack_native_x86_64/nttunpack_native_x86_64_harness.c:15:    /* Dummy use of `free` to work around CBMC issue #8814. */
+proofs/cbmc/poly_add/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/poly_add/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_add/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_cbd_eta1/Makefile:29:CBMCFLAGS=--smt2
+proofs/cbmc/poly_cbd_eta1/Makefile:35:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_cbd_eta1/Makefile:40:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_cbd_eta2/Makefile:23:ifeq ($(MLKEM_K),2)
+proofs/cbmc/poly_cbd_eta2/Makefile:25:else ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_cbd_eta2/Makefile:37:CBMCFLAGS=--smt2
+proofs/cbmc/poly_cbd_eta2/Makefile:43:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_cbd_eta2/Makefile:48:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_cbd_eta2/poly_cbd_eta2_harness.c:13:  /* mlk_poly_cbd_eta2() is only defined for MLKEM_K == 2 or 4 */
+proofs/cbmc/poly_cbd_eta2/poly_cbd_eta2_harness.c:14:#if MLKEM_K == 2 || MLKEM_K == 4
+proofs/cbmc/poly_cbd_eta2/poly_cbd_eta2_harness.c:19:#endif /* MLKEM_K == 2 || MLKEM_K == 4 */
+proofs/cbmc/poly_compress_d10/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d10/Makefile:34:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d10/Makefile:40:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d10/Makefile:45:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d10/poly_compress_d10_harness.c:9:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d10_c/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d10_c/Makefile:33:CBMCFLAGS=--smt2
+proofs/cbmc/poly_compress_d10_c/Makefile:39:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d10_c/Makefile:44:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d10_c/poly_compress_d10_c_harness.c:12:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d10_native/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d10_native/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d10_native/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d10_native/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d10_native/poly_compress_d10_native_harness.c:9:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d10_native_x86_64/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d10_native_x86_64/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d10_native_x86_64/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d10_native_x86_64/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d10_native_x86_64/poly_compress_d10_native_x86_64_harness.c:12:  /* mlk_poly_compress_d10 is only defined for MLKEM_K != 4 */
+proofs/cbmc/poly_compress_d10_native_x86_64/poly_compress_d10_native_x86_64_harness.c:13:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d10_native_x86_64/poly_compress_d10_native_x86_64_harness.c:18:#endif /* MLKEM_K != 4 */
+proofs/cbmc/poly_compress_d11/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d11/Makefile:34:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d11/Makefile:40:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d11/Makefile:45:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d11/poly_compress_d11_harness.c:9:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d11_c/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d11_c/Makefile:33:CBMCFLAGS=--smt2
+proofs/cbmc/poly_compress_d11_c/Makefile:39:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d11_c/Makefile:44:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d11_c/poly_compress_d11_c_harness.c:12:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d11_native/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d11_native/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d11_native/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d11_native/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d11_native/poly_compress_d11_native_harness.c:9:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d11_native_x86_64/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d11_native_x86_64/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d11_native_x86_64/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d11_native_x86_64/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d11_native_x86_64/poly_compress_d11_native_x86_64_harness.c:12:  /* mlk_poly_compress_d11 is only defined for MLKEM_K == 4 */
+proofs/cbmc/poly_compress_d11_native_x86_64/poly_compress_d11_native_x86_64_harness.c:13:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d11_native_x86_64/poly_compress_d11_native_x86_64_harness.c:18:#endif /* MLKEM_K == 4 */
+proofs/cbmc/poly_compress_d4/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d4/Makefile:34:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d4/Makefile:40:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d4/Makefile:45:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d4/poly_compress_d4_harness.c:9:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d4_c/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d4_c/Makefile:33:CBMCFLAGS=--smt2
+proofs/cbmc/poly_compress_d4_c/Makefile:39:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d4_c/Makefile:44:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d4_c/poly_compress_d4_c_harness.c:12:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d4_native/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d4_native/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d4_native/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d4_native/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d4_native/poly_compress_d4_native_harness.c:9:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d4_native_x86_64/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d4_native_x86_64/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d4_native_x86_64/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d4_native_x86_64/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d4_native_x86_64/poly_compress_d4_native_x86_64_harness.c:12:  /* mlk_poly_compress_d4 is only defined for MLKEM_K != 4 */
+proofs/cbmc/poly_compress_d4_native_x86_64/poly_compress_d4_native_x86_64_harness.c:13:#if MLKEM_K != 4
+proofs/cbmc/poly_compress_d4_native_x86_64/poly_compress_d4_native_x86_64_harness.c:18:#endif /* MLKEM_K != 4 */
+proofs/cbmc/poly_compress_d5/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d5/Makefile:34:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d5/Makefile:40:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d5/Makefile:45:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d5/poly_compress_d5_harness.c:9:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d5_c/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d5_c/Makefile:33:CBMCFLAGS=--smt2
+proofs/cbmc/poly_compress_d5_c/Makefile:39:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d5_c/Makefile:44:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d5_c/poly_compress_d5_c_harness.c:12:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d5_native/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d5_native/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d5_native/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d5_native/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d5_native/poly_compress_d5_native_harness.c:9:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d5_native_x86_64/Makefile:22:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_d5_native_x86_64/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_d5_native_x86_64/Makefile:41:# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+proofs/cbmc/poly_compress_d5_native_x86_64/Makefile:46:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_d5_native_x86_64/poly_compress_d5_native_x86_64_harness.c:12:  /* mlk_poly_compress_d5 is only defined for MLKEM_K == 4 */
+proofs/cbmc/poly_compress_d5_native_x86_64/poly_compress_d5_native_x86_64_harness.c:13:#if MLKEM_K == 4
+proofs/cbmc/poly_compress_d5_native_x86_64/poly_compress_d5_native_x86_64_harness.c:18:#endif /* MLKEM_K == 4 */
+proofs/cbmc/poly_compress_du/Makefile:24:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_du/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_du/Makefile:39:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_compress_dv/Makefile:24:ifeq ($(MLKEM_K),4)
+proofs/cbmc/poly_compress_dv/Makefile:35:CBMCFLAGS=--bitwuzla
+proofs/cbmc/poly_compress_dv/Makefile:39:CBMC_OBJECT_BITS = 8
+proofs/cbmc/poly_decompress_d10/Makefile:22:ifneq ($(MLKEM_K),4)
+proofs/cbmc/poly_decompress_d10/Makefile:34:CBMCFLAGS=--bitwuzla
+
+===== COPY NATIVE PROOF INPUTS INTO CAMPAIGN EVIDENCE =====
+60c5e7a0ce1320dacc016a369f924f7de5caf5bcd071d9eed1aadffaa4ee7923  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A2_NATIVE_OVERLAP_BASELINE/native_poly_frommsg_harness_20260724T131455Z.c
+64dae10011cfde69469954bf21a5c42f80b012e393d93ddde7a4ea27168126fd  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A2_NATIVE_OVERLAP_BASELINE/native_poly_frommsg_Makefile_20260724T131455Z.txt
+
+===== CREATE ISOLATED EXACT-COMMIT CLONE =====
+Cloning into '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z'...
+done.
+HEAD is now at af4c5abd Wycheproof: Check K value and reject unrecognized vector fields
+ISOLATED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_COMMIT_MATCH=YES
+INITIALIZING_SUBMODULES=NO
+
+===== ML-KEM-768 NATIVE MAKE DRY RUN =====
+make: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+echo Running 'litani init'
+litani init  --project "mlkem-native"
+echo Running 'litani add-job'
+make -B _report
+make[1]: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/ -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/proof0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/proof0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/proof_sources-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: building proof binary"
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/ -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/project_sources-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: building project binary"
+litani add-job \
+  --command \
+    'goto-instrument   /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0200.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0100.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0200.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/remove_function_body-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: removing function bodies from project sources"
+litani add-job \
+  --command 'goto-cc  --function harness /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/proof0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0200.goto -Wall -Werror -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/proof0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0200.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/link_proof_project-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: linking project to proof"
+litani add-job \
+  --command \
+    'goto-instrument   --remove-function-pointers /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0200.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0100.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0200.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/restrict_function_pointer-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: restricting function pointers in project sources"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0200.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0300.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0200.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0300.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/nondet_static-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: not setting static variables to nondet (will do during contract instrumentation)"
+litani add-job \
+  --command \
+    'goto-instrument  --add-library --malloc-may-fail --malloc-fail-null   /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0300.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0400.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0300.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0400.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/linking-library-models-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: linking CPROVER library"
+litani add-job \
+  --command \
+    'goto-instrument     /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0400.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0500.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0400.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0500.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/unwind_loops-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: unwinding specified subset of loops"
+litani add-job \
+  --command \
+    'goto-instrument --malloc-may-fail --malloc-fail-null   --dfcc harness    --enforce-contract mlk_poly_frommsg --replace-call-with-contract mlk_ct_sel_int16 --replace-call-with-contract mlk_value_barrier_u8 --apply-loop-contracts /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0500.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0600.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0500.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0600.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/check_function_contracts-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: checking function contracts"
+litani add-job \
+  --command \
+    'goto-instrument  --slice-global-inits /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0600.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0700.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0600.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0700.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/slice_global_inits-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: slicing global initializations"
+litani add-job \
+  --command \
+    'goto-instrument  --drop-unused-functions /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0700.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0800.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0700.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0800.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/drop_unused_functions-log.txt \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: dropping unused functions"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0800.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0800.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto \
+  --pipeline-name "mlk_poly_frommsg" \
+  --ci-stage build \
+  --description "mlk_poly_frommsg: copying final goto-binary"
+litani add-job \
+   \
+  --command \
+    'cbmc  --bitwuzla   --flush --object-bits 9 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "mlk_poly_frommsg" \
+  --tags "stats-group:safety checks" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result-err-log.txt \
+  --description "mlk_poly_frommsg: checking safety properties"
+litani add-job \
+  --command \
+    'cbmc  --bitwuzla   --flush --object-bits 9 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --show-properties --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property.xml \
+  --ignore-returns 10 \
+  --pipeline-name "mlk_poly_frommsg" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property-err-log.txt \
+  --description "mlk_poly_frommsg: printing safety properties"
+litani add-job \
+   \
+  --command \
+    'cbmc  --bitwuzla   --flush --object-bits 9 --slice-formula --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "mlk_poly_frommsg" \
+  --tags "stats-group:coverage computation" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage-err-log.txt \
+  --description "mlk_poly_frommsg: calculating coverage"
+litani add-job \
+  --command " cbmc-viewer \
+    --result /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml \
+    --coverage /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage.xml \
+    --property /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property.xml \
+    --srcdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z \
+    --goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto \
+    --reportdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/report \
+    --config /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/cbmc-viewer.json" \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage.xml \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/report \
+  --pipeline-name "mlk_poly_frommsg" \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/viewer-log.txt \
+  --ci-stage report \
+  --description "mlk_poly_frommsg: generating report"
+make[1]: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+echo Running 'litani build'
+litani run-build
+make: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+MAKE_DRYRUN_EXIT=0
+d018dd0db9b42b27aea5d3a67a2fa2c175c5f8bcb20693199a90863e9ea07003  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A2_NATIVE_OVERLAP_BASELINE/FROMMSG00A2_MAKE_DRYRUN_20260724T131455Z.txt
+
+===== ML-KEM-768 NATIVE CBMC BASELINE =====
+make: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+Running litani init
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+Running litani add-job
+make[1]: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+make[1]: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+Running litani build
+[1/16] mlk_poly_frommsg: building proof binary                                  [2/16] mlk_poly_frommsg: building project binary                                [3/16] mlk_poly_frommsg: removing function bodies from project sources          [4/16] mlk_poly_frommsg: linking project to proof                               [5/16] mlk_poly_frommsg: restricting function pointers in project sources       [6/16] mlk_poly_frommsg: not setting static variables to nondet (will do duri...[7/16] mlk_poly_frommsg: linking CPROVER library                                [8/16] mlk_poly_frommsg: unwinding specified subset of loops                    [9/16] mlk_poly_frommsg: checking function contracts                            [10/16] mlk_poly_frommsg: slicing global initializations                        [11/16] mlk_poly_frommsg: dropping unused functions                             [12/16] mlk_poly_frommsg: copying final goto-binary                             [13/16] mlk_poly_frommsg: printing safety properties                            [14/16] mlk_poly_frommsg: calculating coverage                                  [15/16] mlk_poly_frommsg: checking safety properties                            FAILED: /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml /tmp/litani/runs/395a5686-2675-43ac-b34d-24ce65b1336c/status/e4199049-f8cb-4e39-bbc0-419f402e2e84.json 
+
+/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc  --bitwuzla   --flush --object-bits 9 --slice-formula    --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto' --pipeline-name mlk_poly_frommsg --ci-stage test --job-id e4199049-f8cb-4e39-bbc0-419f402e2e84 --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result-err-log.txt --description 'mlk_poly_frommsg: checking safety properties' --timeout 21600 --status-file /tmp/litani/runs/395a5686-2675-43ac-b34d-24ce65b1336c/status/e4199049-f8cb-4e39-bbc0-419f402e2e84.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml --ignore-returns 10 --tags 'stats-group:safety checks'
+
+ninja: build stopped: cannot make progress due to previous errors.
+
+
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+make: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg'
+
+NATIVE_MAKE_EXIT=0
+d7faaaba3cea30e13f89ee788355ac76b144d43de05bb2756917b12db80f7b7c  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG00A2_NATIVE_OVERLAP_BASELINE/FROMMSG00A2_NATIVE_CBMC_20260724T131455Z.txt
+
+===== GENERATED NATIVE-PROOF FILES =====
+gotos/poly_frommsg_harness0100.goto	111105 bytes
+gotos/poly_frommsg_harness0200.goto	111557 bytes
+gotos/poly_frommsg_harness0300.goto	111557 bytes
+gotos/poly_frommsg_harness0400.goto	110653 bytes
+gotos/poly_frommsg_harness0500.goto	111673 bytes
+gotos/poly_frommsg_harness0600.goto	225623 bytes
+gotos/poly_frommsg_harness0700.goto	225336 bytes
+gotos/poly_frommsg_harness0800.goto	223183 bytes
+gotos/poly_frommsg_harness.goto	223183 bytes
+gotos/project0100.goto	100124 bytes
+gotos/project0200.goto	103328 bytes
+gotos/proof0100.goto	56267 bytes
+.litani_cache_dir	54 bytes
+logs/check_function_contracts-log.txt	1233 bytes
+logs/coverage-err-log.txt	1 bytes
+logs/coverage.xml	200058 bytes
+logs/drop_unused_functions-log.txt	452 bytes
+logs/linking-library-models-log.txt	371 bytes
+logs/link_proof_project-log.txt	1 bytes
+logs/nondet_static-log.txt	1 bytes
+logs/project_sources-log.txt	1 bytes
+logs/proof_sources-log.txt	1 bytes
+logs/property-err-log.txt	1 bytes
+logs/property.xml	278872 bytes
+logs/remove_function_body-log.txt	313 bytes
+logs/restrict_function_pointer-log.txt	426 bytes
+logs/result-err-log.txt	1 bytes
+logs/result.xml	156420 bytes
+logs/slice_global_inits-log.txt	482 bytes
+logs/unwind_loops-log.txt	339 bytes
+Makefile	2067 bytes
+.ninja_log	4644 bytes
+poly_frommsg_harness.c	261 bytes
+
+===== GENERATED FILE HASHES =====
+d47858c26d8b556a69b8d8e75b3e61620f96682440ec06e28970f796885980b1  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0100.goto
+46ec6f3083852fbcaa2999fa359d6b2c11e9b401972ed011d8da05e5d5888e4c  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0200.goto
+46ec6f3083852fbcaa2999fa359d6b2c11e9b401972ed011d8da05e5d5888e4c  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0300.goto
+ada92a3f335991d48359b4935a98afd9e96cb4126696545fcf4fbc7433603f21  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0400.goto
+9c9754398fcb08c7a6f4741a40053572e9a3c4332824ed9fb72007ef4f982722  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0500.goto
+84c401de8c2a70cd09a709265dfc175810fc3bc7c406d8a505147c700e7bf34d  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0600.goto
+617ff331f1ab5b761d391429f22ad4118025135b2c011a8e93890f4b566b5bf6  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0700.goto
+2016fc60b967dc092648f67dc63473ff7002a0672e21ac958ceb4a1e8bb5aea9  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness0800.goto
+2016fc60b967dc092648f67dc63473ff7002a0672e21ac958ceb4a1e8bb5aea9  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/poly_frommsg_harness.goto
+6e368b7a44c0c0f750dcf2478093697caa944efcdd6fb554301863ba17ead727  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0100.goto
+b5b8cb33ebad7b8d76e325ba3d3e98c2db55470da231586c423c019656ddd004  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/project0200.goto
+f5dd4f85268f0053026bf26db1c5b1db5cec201a969971d4f5027ad7f5d5d416  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/gotos/proof0100.goto
+37939af34371eea9e20e04921b48dce5088e78548bc92108ab2c16992d474d73  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/.litani_cache_dir
+908a23b244665b26ca3b9b9db7e6300af6b3ebaa20ba7779dc11c6671b54b9e2  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/check_function_contracts-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage-err-log.txt
+7e7770af539f40381198df21fb9551f28e84b35b4ad37cd5c0ac455bdb41b660  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/coverage.xml
+efbbd46fd9fb67d24b7e850c27394aa76b9a856cdb133356ba2bb28bbfdab0a6  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/drop_unused_functions-log.txt
+dc27a1eed88c412fb12d1435b07081b64ba7d7ff4a918ae5eaa804ae5ed9cf3f  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/linking-library-models-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/link_proof_project-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/nondet_static-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/project_sources-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/proof_sources-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property-err-log.txt
+9e51e9a022a524d07aab5297da9c819585c6f7677251534c54b804bb772c47e9  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/property.xml
+17202e38e7cedbe2f2f672a8222a753d023f86625f60be04a7a8d3bd9e14dd5e  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/remove_function_body-log.txt
+4faad2c3343f9a953b079b86a1a76370706dc60a9b64be662c9ee70da7ac5c1e  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/restrict_function_pointer-log.txt
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result-err-log.txt
+ef33e1032d52a41cc06809b7777090297b823a4c3af885ba617fb680043c0736  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/result.xml
+d1e9203576cac3267218c2f29a87fa4a6d5919a9e6aed09b92e7381621cd8c62  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/slice_global_inits-log.txt
+7df4798f7989a1e05e602355a2d7413f33594ca5b5830e8d16a38f1b3b132f92  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/logs/unwind_loops-log.txt
+64dae10011cfde69469954bf21a5c42f80b012e393d93ddde7a4ea27168126fd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/Makefile
+143fbb20dabb494af6f535186befd8e9d9153d4ad82f9ea79d33f047ef32e9b2  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/.ninja_log
+60c5e7a0ce1320dacc016a369f924f7de5caf5bcd071d9eed1aadffaa4ee7923  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg/poly_frommsg_harness.c
+
+===== ISOLATED CLONE POST-STATUS =====
+
+===== AUTHORITATIVE WORKTREE POST-STATUS =====
+AUTHORITATIVE_TRACKED_STATE_AFTER=UNCHANGED
+
+============================================================
+FROMMSG-00A2 COMPLETE
+CUSTOM HARNESS GENERATED=NO
+NATIVE CBMC BASELINE ATTEMPTED=YES
+AUTHORITATIVE PRODUCTION FILES MODIFIED=NO
+============================================================

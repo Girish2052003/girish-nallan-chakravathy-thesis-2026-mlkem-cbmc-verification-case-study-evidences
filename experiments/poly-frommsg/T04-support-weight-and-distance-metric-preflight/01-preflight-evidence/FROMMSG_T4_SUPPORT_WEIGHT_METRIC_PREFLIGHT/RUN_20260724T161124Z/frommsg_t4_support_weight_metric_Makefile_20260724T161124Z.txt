@@ -1,0 +1,21 @@
+# FROMMSG-T4 integrated clean-room positive preflight
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = frommsg_t4_support_weight_metric_harness
+PROOF_UID = FROMMSG-T4 support weight and metric preservation
+
+UNWINDSET += mlk_poly_frommsg.0:9
+UNWINDSET += mlk_poly_frommsg.1:33
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS =
+
+CBMC_OBJECT_BITS = 9
+FUNCTION_NAME = harness
+
+include ../Makefile.common

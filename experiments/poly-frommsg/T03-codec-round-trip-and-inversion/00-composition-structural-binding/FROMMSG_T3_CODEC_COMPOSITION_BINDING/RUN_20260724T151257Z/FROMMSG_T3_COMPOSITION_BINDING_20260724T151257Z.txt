@@ -1,0 +1,181 @@
+============================================================
+FROMMSG-T3 — CODEC COMPOSITION BINDING
+============================================================
+UTC_TIME=2026-07-24T15:12:57Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z
+
+===== AUTHORITATIVE SOURCE BINDING =====
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING=PASS
+AUTHORITATIVE_TRACKED_STATE=CLEAN
+
+===== CREATE FRESH EXACT-COMMIT CLONE =====
+Cloning into '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z'...
+done.
+HEAD is now at af4c5abd Wycheproof: Check K value and reject unrecognized vector fields
+WORKTREE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+===== PRODUCTION DECLARATIONS =====
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.h:569:void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.h:591:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c:679:void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c:717:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/verify.h:267: * `Decompress_1` @[FIPS203, Eq (4.8)] in `mlk_poly_frommsg()`. With
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/indcpa.c:547:  mlk_poly_frommsg(k, m);
+/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/indcpa.c:628:  mlk_poly_tomsg(m, v);
+
+===== PRODUCTION FUNCTION BODIES =====
+void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+{
+  unsigned i;
+  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+
+  for (i = 0; i < MLKEM_N / 8; i++)
+  __loop__(invariant(i <= MLKEM_N / 8)
+           decreases(MLKEM_N / 8 - i))
+  {
+    unsigned j;
+    msg[i] = 0;
+    for (j = 0; j < 8; j++)
+    __loop__(
+      invariant(i <= MLKEM_N / 8 && j <= 8)
+      decreases(8 - j))
+    {
+      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+      msg[i] |= (uint8_t)(t << j);
+    }
+  }
+}
+void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+{
+  unsigned i;
+#if (MLKEM_INDCPA_MSGBYTES != MLKEM_N / 8)
+#error "MLKEM_INDCPA_MSGBYTES must be equal to MLKEM_N/8 bytes!"
+#endif
+
+  for (i = 0; i < MLKEM_N / 8; i++)
+  __loop__(
+    invariant(i <= MLKEM_N / 8)
+    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+    decreases(MLKEM_N / 8 - i))
+  {
+    unsigned j;
+    for (j = 0; j < 8; j++)
+    __loop__(
+      invariant(i <  MLKEM_N / 8 && j <= 8)
+      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+      decreases(8 - j))
+    {
+      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+       * as per @[FIPS203, Eq (4.8)]. */
+
+      /* Prevent the compiler from recognizing this as a bit selection */
+      uint8_t mask = mlk_value_barrier_u8((uint8_t)(1u << j));
+      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+    }
+  }
+  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+}
+
+===== CREATE COMPOSITION-BINDING HARNESS =====
+HARNESS=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/frommsg_t3_binding_harness.c
+MAKEFILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/Makefile
+     1	#include <stdint.h>
+     2	
+     3	#include "compress.h"
+     4	
+     5	void harness(void)
+     6	{
+     7	  mlk_poly encoded;
+     8	  uint8_t input[MLKEM_INDCPA_MSGBYTES];
+     9	  uint8_t decoded[MLKEM_INDCPA_MSGBYTES];
+    10	
+    11	  mlk_poly_frommsg(&encoded, input);
+    12	  mlk_poly_tomsg(decoded, &encoded);
+    13	}
+     1	include ../Makefile_params.common
+     2	
+     3	HARNESS_ENTRY = harness
+     4	HARNESS_FILE = frommsg_t3_binding_harness
+     5	PROOF_UID = FROMMSG-T3 codec-composition binding
+     6	
+     7	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+     8	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+     9	
+    10	EXTERNAL_SAT_SOLVER =
+    11	CBMCFLAGS =
+    12	
+    13	CBMC_OBJECT_BITS = 9
+    14	FUNCTION_NAME = harness
+    15	
+    16	include ../Makefile.common
+
+===== STATIC COMPOSITION FIREWALL =====
+FROMMSG_REAL_CALL_COUNT=1
+TOMSG_REAL_CALL_COUNT=1
+TARGET_REIMPLEMENTATION_PRESENT=NO
+COMPOSITION_BINDING_ASSUME_COUNT=0
+
+===== FREEZE BINDING INPUTS =====
+f54e9677507191cd2e8a27705211aa3dea4e2e1b421d0b993fef9d210d12c21a  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/frommsg_t3_binding_harness.c
+d2acf854ce274c8b29e6a0c8294b70f6ae5c311221ca1f1f338db15baf157e93  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/Makefile
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.h
+450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/params.h
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/poly.h
+
+===== LITANI INITIALIZATION =====
+LITANI_INIT_EXIT=0
+e4887c457e2e56424f8b80f1c9c434674865b5d3961ebcf22d663d3dad53cbdf  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING/RUN_20260724T151257Z/FROMMSG_T3_LITANI_INIT_20260724T151257Z.txt
+
+===== REGISTER FINAL-GOTO JOBS =====
+JOB_REGISTRATION_EXIT=0
+0e2c2f51f5f2573a52c2ac22c66010d5f9671540ee7370fd3fa8e6c023e72bae  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING/RUN_20260724T151257Z/FROMMSG_T3_JOB_REGISTRATION_20260724T151257Z.txt
+
+===== EXECUTE BUILD JOBS =====
+LITANI_RUN_BUILD_EXIT=0
+ff44c04f02756518db3474c47935a7be26461b51a12b9b42958f1d00dc4cedec  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING/RUN_20260724T151257Z/FROMMSG_T3_LITANI_RUN_BUILD_20260724T151257Z.txt
+[1/12] FROMMSG-T3 codec-composition binding: building proof binary            [2/12] FROMMSG-T3 codec-composition binding: building project binary          [3/12] FROMMSG-T3 codec-composition binding: removing function bodies from ...[4/12] FROMMSG-T3 codec-composition binding: linking project to proof         [5/12] FROMMSG-T3 codec-composition binding: restricting function pointers ...[6/12] FROMMSG-T3 codec-composition binding: setting static variables to no...[7/12] FROMMSG-T3 codec-composition binding: not linking CPROVER library      [8/12] FROMMSG-T3 codec-composition binding: not unwinding loops              [9/12] FROMMSG-T3 codec-composition binding: checking function contracts      [10/12] FROMMSG-T3 codec-composition binding: slicing global initializations  [11/12] FROMMSG-T3 codec-composition binding: dropping unused functions       [12/12] FROMMSG-T3 codec-composition binding: copying final goto-binary       
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+FINAL_GOTO_PRESENT=YES
+FINAL_GOTO=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/gotos/frommsg_t3_binding_harness.goto
+52fe25499d23f558a3e1e365de79f931df6dda2f7506d7f233bbec80e5b0bd25  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/gotos/frommsg_t3_binding_harness.goto
+
+===== EXACT LOOP IDENTIFIERS =====
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/gotos/frommsg_t3_binding_harness.goto'
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+Loop mlk_poly_tomsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 728 function mlk_poly_tomsg
+
+Loop mlk_poly_tomsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 722 function mlk_poly_tomsg
+
+
+===== CODEC LOOP SUMMARY =====
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/proofs/cbmc/frommsg_t3_binding/gotos/frommsg_t3_binding_harness.goto'
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+Loop mlk_poly_tomsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 728 function mlk_poly_tomsg
+
+Loop mlk_poly_tomsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_binding_20260724T151257Z/mlkem/src/compress.c line 722 function mlk_poly_tomsg
+
+FROMMSG_LOOP_COUNT=2
+TOMSG_LOOP_COUNT=2
+
+===== FUNCTION PRESENCE =====
+FROMMSG_FUNCTION_PRESENT_COUNT=0
+TOMSG_FUNCTION_PRESENT_COUNT=0
+T3_COMPOSITION_BINDING=NOT_PASS

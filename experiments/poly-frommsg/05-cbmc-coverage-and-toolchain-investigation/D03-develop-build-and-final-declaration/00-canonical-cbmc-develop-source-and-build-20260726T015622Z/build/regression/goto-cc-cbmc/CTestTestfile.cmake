@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/goto-cc-cbmc
+# Build directory: /workspace/build/regression/goto-cc-cbmc
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(goto-cc-cbmc-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/source/regression/goto-cc-cbmc/chain.sh /workspace/build/bin/goto-cc /workspace/build/bin/cbmc false" "-C")
+set_tests_properties(goto-cc-cbmc-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-cc-cbmc" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;50;add_test_pl_profile;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;0;")
+add_test(goto-cc-cbmc-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/source/regression/goto-cc-cbmc/chain.sh /workspace/build/bin/goto-cc /workspace/build/bin/cbmc false" "-T")
+set_tests_properties(goto-cc-cbmc-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-cc-cbmc" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;51;add_test_pl_profile;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;0;")
+add_test(goto-cc-cbmc-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/source/regression/goto-cc-cbmc/chain.sh /workspace/build/bin/goto-cc /workspace/build/bin/cbmc false" "-F")
+set_tests_properties(goto-cc-cbmc-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-cc-cbmc" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;52;add_test_pl_profile;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;0;")
+add_test(goto-cc-cbmc-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/source/regression/goto-cc-cbmc/chain.sh /workspace/build/bin/goto-cc /workspace/build/bin/cbmc false" "-K")
+set_tests_properties(goto-cc-cbmc-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-cc-cbmc" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;53;add_test_pl_profile;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-cc-cbmc/CMakeLists.txt;0;")

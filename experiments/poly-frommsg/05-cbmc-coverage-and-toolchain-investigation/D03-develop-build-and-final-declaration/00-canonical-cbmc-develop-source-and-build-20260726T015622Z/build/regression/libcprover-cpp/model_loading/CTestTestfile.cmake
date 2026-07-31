@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/libcprover-cpp/model_loading
+# Build directory: /workspace/build/regression/libcprover-cpp/model_loading
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(model_loading-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/api-binary-driver" "-C")
+set_tests_properties(model_loading-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/libcprover-cpp/model_loading" _BACKTRACE_TRIPLES "/workspace/source/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/workspace/source/regression/libcprover-cpp/CMakeLists.txt;42;add_test_pl_profile;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;1;add_test_pl_tests;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;0;")
+add_test(model_loading-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/api-binary-driver" "-T")
+set_tests_properties(model_loading-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/libcprover-cpp/model_loading" _BACKTRACE_TRIPLES "/workspace/source/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/workspace/source/regression/libcprover-cpp/CMakeLists.txt;43;add_test_pl_profile;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;1;add_test_pl_tests;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;0;")
+add_test(model_loading-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/api-binary-driver" "-F")
+set_tests_properties(model_loading-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/libcprover-cpp/model_loading" _BACKTRACE_TRIPLES "/workspace/source/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/workspace/source/regression/libcprover-cpp/CMakeLists.txt;44;add_test_pl_profile;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;1;add_test_pl_tests;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;0;")
+add_test(model_loading-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/api-binary-driver" "-K")
+set_tests_properties(model_loading-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/libcprover-cpp/model_loading" _BACKTRACE_TRIPLES "/workspace/source/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/workspace/source/regression/libcprover-cpp/CMakeLists.txt;45;add_test_pl_profile;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;1;add_test_pl_tests;/workspace/source/regression/libcprover-cpp/model_loading/CMakeLists.txt;0;")

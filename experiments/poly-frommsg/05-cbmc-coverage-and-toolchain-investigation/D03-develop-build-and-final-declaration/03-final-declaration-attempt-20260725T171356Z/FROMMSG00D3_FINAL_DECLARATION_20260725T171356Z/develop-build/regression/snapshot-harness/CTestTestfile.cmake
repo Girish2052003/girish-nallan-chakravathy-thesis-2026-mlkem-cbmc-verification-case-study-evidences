@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /src/regression/snapshot-harness
+# Build directory: /build/regression/snapshot-harness
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(snapshot-harness-CORE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /build/bin/goto-cc    /build/bin/goto-harness    /build/bin/memory-analyzer    /build/bin/cbmc    ../../../build/bin/goto-gcc" "-C")
+set_tests_properties(snapshot-harness-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/snapshot-harness" _BACKTRACE_TRIPLES "/src/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/src/regression/libcprover-cpp/CMakeLists.txt;42;add_test_pl_profile;/src/regression/snapshot-harness/CMakeLists.txt;1;add_test_pl_tests;/src/regression/snapshot-harness/CMakeLists.txt;0;")
+add_test(snapshot-harness-THOROUGH "perl" "/src/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /build/bin/goto-cc    /build/bin/goto-harness    /build/bin/memory-analyzer    /build/bin/cbmc    ../../../build/bin/goto-gcc" "-T")
+set_tests_properties(snapshot-harness-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/snapshot-harness" _BACKTRACE_TRIPLES "/src/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/src/regression/libcprover-cpp/CMakeLists.txt;43;add_test_pl_profile;/src/regression/snapshot-harness/CMakeLists.txt;1;add_test_pl_tests;/src/regression/snapshot-harness/CMakeLists.txt;0;")
+add_test(snapshot-harness-FUTURE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /build/bin/goto-cc    /build/bin/goto-harness    /build/bin/memory-analyzer    /build/bin/cbmc    ../../../build/bin/goto-gcc" "-F")
+set_tests_properties(snapshot-harness-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/snapshot-harness" _BACKTRACE_TRIPLES "/src/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/src/regression/libcprover-cpp/CMakeLists.txt;44;add_test_pl_profile;/src/regression/snapshot-harness/CMakeLists.txt;1;add_test_pl_tests;/src/regression/snapshot-harness/CMakeLists.txt;0;")
+add_test(snapshot-harness-KNOWNBUG "perl" "/src/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /build/bin/goto-cc    /build/bin/goto-harness    /build/bin/memory-analyzer    /build/bin/cbmc    ../../../build/bin/goto-gcc" "-K")
+set_tests_properties(snapshot-harness-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/snapshot-harness" _BACKTRACE_TRIPLES "/src/regression/libcprover-cpp/CMakeLists.txt;16;add_test;/src/regression/libcprover-cpp/CMakeLists.txt;45;add_test_pl_profile;/src/regression/snapshot-harness/CMakeLists.txt;1;add_test_pl_tests;/src/regression/snapshot-harness/CMakeLists.txt;0;")

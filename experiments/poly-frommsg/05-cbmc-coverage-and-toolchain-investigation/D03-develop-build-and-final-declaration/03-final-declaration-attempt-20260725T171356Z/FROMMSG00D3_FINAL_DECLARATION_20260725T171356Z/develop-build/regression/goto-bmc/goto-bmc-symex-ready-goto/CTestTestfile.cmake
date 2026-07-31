@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /src/regression/goto-bmc/goto-bmc-symex-ready-goto
+# Build directory: /build/regression/goto-bmc/goto-bmc-symex-ready-goto
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(goto-bmc-symex-ready-goto-CORE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-bmc/goto-bmc-symex-ready-goto/chain.sh /build/bin/cbmc /build/bin/goto-bmc" "-C")
+set_tests_properties(goto-bmc-symex-ready-goto-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-bmc/goto-bmc-symex-ready-goto" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;50;add_test_pl_profile;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;0;")
+add_test(goto-bmc-symex-ready-goto-THOROUGH "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-bmc/goto-bmc-symex-ready-goto/chain.sh /build/bin/cbmc /build/bin/goto-bmc" "-T")
+set_tests_properties(goto-bmc-symex-ready-goto-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-bmc/goto-bmc-symex-ready-goto" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;51;add_test_pl_profile;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;0;")
+add_test(goto-bmc-symex-ready-goto-FUTURE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-bmc/goto-bmc-symex-ready-goto/chain.sh /build/bin/cbmc /build/bin/goto-bmc" "-F")
+set_tests_properties(goto-bmc-symex-ready-goto-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-bmc/goto-bmc-symex-ready-goto" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;52;add_test_pl_profile;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;0;")
+add_test(goto-bmc-symex-ready-goto-KNOWNBUG "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-bmc/goto-bmc-symex-ready-goto/chain.sh /build/bin/cbmc /build/bin/goto-bmc" "-K")
+set_tests_properties(goto-bmc-symex-ready-goto-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-bmc/goto-bmc-symex-ready-goto" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;53;add_test_pl_profile;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-bmc/goto-bmc-symex-ready-goto/CMakeLists.txt;0;")

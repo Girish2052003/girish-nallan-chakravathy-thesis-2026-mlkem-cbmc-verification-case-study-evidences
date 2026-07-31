@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/goto-harness
+# Build directory: /workspace/build/regression/goto-harness
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(goto-harness-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-harness    /workspace/build/bin/cbmc    false" "-C")
+set_tests_properties(goto-harness-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-harness" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;50;add_test_pl_profile;/workspace/source/regression/goto-harness/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-harness/CMakeLists.txt;0;")
+add_test(goto-harness-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-harness    /workspace/build/bin/cbmc    false" "-T")
+set_tests_properties(goto-harness-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-harness" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;51;add_test_pl_profile;/workspace/source/regression/goto-harness/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-harness/CMakeLists.txt;0;")
+add_test(goto-harness-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-harness    /workspace/build/bin/cbmc    false" "-F")
+set_tests_properties(goto-harness-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-harness" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;52;add_test_pl_profile;/workspace/source/regression/goto-harness/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-harness/CMakeLists.txt;0;")
+add_test(goto-harness-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/goto-harness    /workspace/build/bin/cbmc    false" "-K")
+set_tests_properties(goto-harness-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/goto-harness" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;53;add_test_pl_profile;/workspace/source/regression/goto-harness/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/goto-harness/CMakeLists.txt;0;")

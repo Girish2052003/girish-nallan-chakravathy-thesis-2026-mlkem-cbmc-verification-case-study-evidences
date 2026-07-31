@@ -1,0 +1,61 @@
+inline bool can_cast_expr<xnor_exprt>(const exprt &base)
+{
+  return base.id() == ID_xnor;
+}
+
+/// \brief Cast an exprt to a \ref xnor_exprt
+///
+/// \a expr must be known to be \ref xnor_exprt.
+///
+/// \param expr: Source expression
+/// \return Object of type \ref xnor_exprt
+inline const xnor_exprt &to_xnor_expr(const exprt &expr)
+{
+  PRECONDITION(expr.id() == ID_xnor);
+  xnor_exprt::check(expr);
+  return static_cast<const xnor_exprt &>(expr);
+}
+
+/// \copydoc to_xnor_expr(const exprt &)
+inline xnor_exprt &to_xnor_expr(exprt &expr)
+{
+  PRECONDITION(expr.id() == ID_xnor);
+  xnor_exprt::check(expr);
+  return static_cast<xnor_exprt &>(expr);
+}
+
+/// \brief Boolean negation
+class not_exprt:public unary_exprt
+{
+public:
+  explicit not_exprt(exprt _op) : unary_exprt(ID_not, std::move(_op))
+  {
+    PRECONDITION(as_const(*this).op().is_boolean());
+  }
+};
+
+template <>
+inline bool can_cast_expr<not_exprt>(const exprt &base)
+{
+  return base.id() == ID_not;
+}
+
+/// \brief Cast an exprt to an \ref not_exprt
+///
+/// \a expr must be known to be \ref not_exprt.
+///
+/// \param expr: Source expression
+/// \return Object of type \ref not_exprt
+inline const not_exprt &to_not_expr(const exprt &expr)
+{
+  PRECONDITION(expr.id()==ID_not);
+  not_exprt::check(expr);
+  return static_cast<const not_exprt &>(expr);
+}
+
+/// \copydoc to_not_expr(const exprt &)
+inline not_exprt &to_not_expr(exprt &expr)
+{
+  PRECONDITION(expr.id()==ID_not);
+  not_exprt::check(expr);
+  return static_cast<not_exprt &>(expr);

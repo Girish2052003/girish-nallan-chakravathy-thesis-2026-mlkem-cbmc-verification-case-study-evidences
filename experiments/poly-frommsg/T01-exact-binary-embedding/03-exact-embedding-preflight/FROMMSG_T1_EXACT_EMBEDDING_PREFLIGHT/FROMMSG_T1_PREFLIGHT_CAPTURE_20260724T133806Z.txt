@@ -1,0 +1,419 @@
+============================================================
+FROMMSG-T1 — EXACT BINARY EMBEDDING PREFLIGHT
+============================================================
+UTC_TIME=2026-07-24T13:38:06Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z
+
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_MATCH=YES
+
+===== AUTHORITATIVE SOURCE PRE-STATUS =====
+AUTHORITATIVE_TRACKED_STATE=CLEAN
+
+===== CREATE EXACT-COMMIT ISOLATED WORKTREE =====
+Cloning into '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z'...
+done.
+HEAD is now at af4c5abd Wycheproof: Check K value and reject unrecognized vector fields
+WORKTREE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_COMMIT_MATCH=YES
+
+===== CREATE CLEAN-ROOM T1 HARNESS =====
+HARNESS=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c
+MAKEFILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/Makefile
+
+===== HARNESS CONTENT =====
+     1	/*
+     2	 * FROMMSG-T1 — Exact binary embedding and coordinate semantics.
+     3	 *
+     4	 * Clean-room candidate harness.
+     5	 *
+     6	 * This harness does not reproduce the native poly_frommsg harness.
+     7	 * It supplies concrete, separate input/output objects and asserts an
+     8	 * exact semantic relationship absent from the native broad contract.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	void harness(void)
+    16	{
+    17	  mlk_poly r;
+    18	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    19	  unsigned k;
+    20	
+    21	  /*
+    22	   * k is otherwise unconstrained. This single symbolic coordinate
+    23	   * represents every coefficient index from 0 through 255.
+    24	   */
+    25	  __CPROVER_assume(k < MLKEM_N);
+    26	
+    27	  /*
+    28	   * Exercise the real production implementation.
+    29	   */
+    30	  mlk_poly_frommsg(&r, msg);
+    31	
+    32	  {
+    33	    const unsigned byte_index = k >> 3;
+    34	    const unsigned bit_index = k & 7u;
+    35	
+    36	    const uint8_t selected_bit =
+    37	        (uint8_t)((msg[byte_index] >> bit_index) & 1u);
+    38	
+    39	    const int16_t expected =
+    40	        (selected_bit != 0u) ? MLKEM_Q_HALF : 0;
+    41	
+    42	    __CPROVER_assert(
+    43	        r.coeffs[k] == expected,
+    44	        "FROMMSG_T1_P1_EXACT_COORDINATE_EQUATION");
+    45	
+    46	    __CPROVER_assert(
+    47	        r.coeffs[k] == 0 ||
+    48	        r.coeffs[k] == MLKEM_Q_HALF,
+    49	        "FROMMSG_T1_P2_EXACT_BINARY_OUTPUT_ALPHABET");
+    50	
+    51	    __CPROVER_assert(
+    52	        (r.coeffs[k] == MLKEM_Q_HALF) ==
+    53	        (selected_bit == 1u),
+    54	        "FROMMSG_T1_P3_ONE_BIT_SUPPORT_EQUIVALENCE");
+    55	
+    56	    __CPROVER_assert(
+    57	        (r.coeffs[k] == 0) ==
+    58	        (selected_bit == 0u),
+    59	        "FROMMSG_T1_P4_ZERO_BIT_SUPPORT_EQUIVALENCE");
+    60	  }
+    61	}
+
+===== MAKEFILE CONTENT =====
+     1	# FROMMSG-T1 clean-room exact-semantic preflight
+     2	
+     3	include ../Makefile_params.common
+     4	
+     5	HARNESS_ENTRY = harness
+     6	HARNESS_FILE = frommsg_t1_exact_harness
+     7	PROOF_UID = FROMMSG-T1 exact binary embedding
+     8	
+     9	DEFINES +=
+    10	INCLUDES +=
+    11	
+    12	REMOVE_FUNCTION_BODY +=
+    13	
+    14	#
+    15	# Real production-loop bodies are retained and completely unwound.
+    16	#
+    17	# mlk_poly_frommsg.0 = inner j loop: 8 iterations
+    18	# mlk_poly_frommsg.1 = outer i loop: 32 iterations
+    19	#
+    20	UNWINDSET += mlk_poly_frommsg.0:9
+    21	UNWINDSET += mlk_poly_frommsg.1:33
+    22	
+    23	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    24	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    25	
+    26	#
+    27	# Deliberately absent:
+    28	#
+    29	# CHECK_FUNCTION_CONTRACTS
+    30	# USE_FUNCTION_CONTRACTS
+    31	# APPLY_LOOP_CONTRACTS
+    32	# USE_DYNAMIC_FRAMES
+    33	#
+    34	# The target and helper production bodies therefore remain available
+    35	# to the exact-semantic analysis.
+    36	#
+    37	
+    38	EXTERNAL_SAT_SOLVER =
+    39	CBMCFLAGS =
+    40	
+    41	CBMC_OBJECT_BITS = 9
+    42	FUNCTION_NAME = mlk_poly_frommsg
+    43	
+    44	include ../Makefile.common
+
+===== INPUT HASHES =====
+7a9cce12f267c0af4c25da6564bcb57169d7b47d5d4b322a7d2853bfa1d01ec7  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c
+91dae7d167e333cd775f6d532a29734e08bcede91d233d24d34f4a17e352035e  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/Makefile
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.h
+450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/params.h
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/poly.h
+7a9cce12f267c0af4c25da6564bcb57169d7b47d5d4b322a7d2853bfa1d01ec7  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T1_EXACT_EMBEDDING_PREFLIGHT/frommsg_t1_exact_harness_20260724T133806Z.c
+91dae7d167e333cd775f6d532a29734e08bcede91d233d24d34f4a17e352035e  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T1_EXACT_EMBEDDING_PREFLIGHT/frommsg_t1_exact_Makefile_20260724T133806Z.txt
+
+===== STATIC ANTI-COPY AND INTENT CHECK =====
+HARNESS_BYTE_IDENTICAL_TO_NATIVE=NO
+REAL_TARGET_CALL_PRESENT=YES
+CUSTOM_ASSERTION_COUNT=4
+CUSTOM_ASSUME_COUNT=1
+CONTRADICTORY_ASSUME_FALSE_PRESENT=NO
+TARGET_REIMPLEMENTATION_PRESENT=NO
+
+===== MAKE DRY RUN =====
+make: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+echo Running 'litani init'
+litani init  --project "mlkem-native"
+echo Running 'litani add-job'
+make -B _report
+make[1]: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/ -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/proof0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/proof0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/proof_sources-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: building proof binary"
+litani add-job \
+  --command \
+    'goto-cc  -Wall -Werror --native-compiler gcc  -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/ -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE="(SIZE_MAX>>(CBMC_OBJECT_BITS+1))" -DMLK_CONFIG_FILE="\"mlkem_native_config_cbmc.h\"" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/project_sources-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: building project binary"
+litani add-job \
+  --command \
+    'goto-instrument   /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0200.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0100.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0200.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/remove_function_body-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: removing function bodies from project sources"
+litani add-job \
+  --command 'goto-cc  --function harness /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/proof0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0200.goto -Wall -Werror -o /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0100.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/proof0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/project0200.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0100.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/link_proof_project-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: linking project to proof"
+litani add-job \
+  --command \
+    'goto-instrument   --remove-function-pointers /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0100.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0200.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0100.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0200.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/restrict_function_pointer-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: restricting function pointers in project sources"
+litani add-job \
+  --command \
+    'goto-instrument   /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0200.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0300.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0200.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0300.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/nondet_static-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: setting static variables to nondet"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0300.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0400.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0300.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0400.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/linking-library-models-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: not linking CPROVER library"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0400.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0500.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0400.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0500.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/unwind_loops-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: not unwinding loops"
+litani add-job \
+  --command \
+    'goto-instrument       /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0500.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0600.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0500.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0600.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/check_function_contracts-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: checking function contracts"
+litani add-job \
+  --command \
+    'goto-instrument  --slice-global-inits /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0600.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0700.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0600.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0700.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/slice_global_inits-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: slicing global initializations"
+litani add-job \
+  --command \
+    'goto-instrument  --drop-unused-functions /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0700.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0800.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0700.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0800.goto \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/drop_unused_functions-log.txt \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: dropping unused functions"
+litani add-job \
+  --command 'cp /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0800.goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness0800.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --ci-stage build \
+  --description "FROMMSG-T1 exact binary embedding: copying final goto-binary"
+litani add-job \
+   \
+  --command \
+    'cbmc   --flush --object-bits 9 --slice-formula --unwindset mlk_poly_frommsg.0:9,mlk_poly_frommsg.1:33  --unwind 1 --malloc-may-fail --malloc-fail-null      --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --trace --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --tags "stats-group:safety checks" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result-err-log.txt \
+  --description "FROMMSG-T1 exact binary embedding: checking safety properties"
+litani add-job \
+  --command \
+    'cbmc   --flush --object-bits 9 --slice-formula --unwindset mlk_poly_frommsg.0:9,mlk_poly_frommsg.1:33  --unwind 1 --malloc-may-fail --malloc-fail-null      --conversion-check  --float-overflow-check --nan-check  --pointer-overflow-check    --unsigned-overflow-check --show-properties --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml \
+  --ignore-returns 10 \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property-err-log.txt \
+  --description "FROMMSG-T1 exact binary embedding: printing safety properties"
+litani add-job \
+   \
+  --command \
+    'cbmc   --flush --object-bits 9 --slice-formula --unwindset mlk_poly_frommsg.0:9,mlk_poly_frommsg.1:33  --unwind 1 --malloc-may-fail --malloc-fail-null   --no-standard-checks --malloc-may-fail --malloc-fail-null --cover location --xml-ui /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto' \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml \
+  --ci-stage test \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml \
+   \
+  --ignore-returns 10 \
+  --timeout 21600 \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --tags "stats-group:coverage computation" \
+  --stderr-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage-err-log.txt \
+  --description "FROMMSG-T1 exact binary embedding: calculating coverage"
+litani add-job \
+  --command " cbmc-viewer \
+    --result /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml \
+    --coverage /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml \
+    --property /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml \
+    --srcdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z \
+    --goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto \
+    --reportdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report \
+    --config /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/cbmc-viewer.json" \
+  --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml \
+  --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report \
+  --pipeline-name "FROMMSG-T1 exact binary embedding" \
+  --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/viewer-log.txt \
+  --ci-stage report \
+  --description "FROMMSG-T1 exact binary embedding: generating report"
+make[1]: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+echo Running 'litani build'
+litani run-build
+make: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+MAKE_DRYRUN_EXIT=0
+c227ce30b0a8506e9c87a0f3a8160e7ae1ff2cf799100af82d35b086f8a08265  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T1_EXACT_EMBEDDING_PREFLIGHT/FROMMSG_T1_PREFLIGHT_DRYRUN_20260724T133806Z.txt
+
+===== RUN T1 PREFLIGHT WITH DEFAULT SAT BACKEND =====
+make: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+Running litani init
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+Running litani add-job
+make[1]: Entering directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+make[1]: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+Running litani build
+[1/16] FROMMSG-T1 exact binary embedding: building proof binary               [2/16] FROMMSG-T1 exact binary embedding: building project binary             [3/16] FROMMSG-T1 exact binary embedding: removing function bodies from pro...[4/16] FROMMSG-T1 exact binary embedding: linking project to proof            [5/16] FROMMSG-T1 exact binary embedding: restricting function pointers in ...[6/16] FROMMSG-T1 exact binary embedding: setting static variables to nondet  [7/16] FROMMSG-T1 exact binary embedding: not linking CPROVER library         [8/16] FROMMSG-T1 exact binary embedding: not unwinding loops                 [9/16] FROMMSG-T1 exact binary embedding: checking function contracts         [10/16] FROMMSG-T1 exact binary embedding: slicing global initializations     [11/16] FROMMSG-T1 exact binary embedding: dropping unused functions          [12/16] FROMMSG-T1 exact binary embedding: copying final goto-binary          [13/16] FROMMSG-T1 exact binary embedding: printing safety properties         [14/16] FROMMSG-T1 exact binary embedding: calculating coverage               [15/16] FROMMSG-T1 exact binary embedding: checking safety properties         [16/16] FROMMSG-T1 exact binary embedding: generating report                  FAILED: /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report /tmp/litani/runs/63cd97ef-59b5-41a7-8b39-24c1bc640a2c/status/28d82f68-1cb1-472f-9895-01938df09a71.json 
+
+/home/girish/.local/opt/litani-1.29.0/litani exec --command 'cbmc-viewer     --result /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml --coverage /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml --property /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml --srcdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z --goto /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto --reportdir /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report --config /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/cbmc-viewer.json' --pipeline-name 'FROMMSG-T1 exact binary embedding' --ci-stage report --job-id 28d82f68-1cb1-472f-9895-01938df09a71 --stdout-file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/viewer-log.txt --description 'FROMMSG-T1 exact binary embedding: generating report' --status-file /tmp/litani/runs/63cd97ef-59b5-41a7-8b39-24c1bc640a2c/status/28d82f68-1cb1-472f-9895-01938df09a71.json --profile-memory-interval 10 --inputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/coverage.xml --outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report
+
+/bin/sh: 1: cbmc-viewer: not found
+
+litani: Output file '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report' of pipeline 'FROMMSG-T1 exact binary embedding' did not exist upon job completion. Not copying to artifacts directory. If this job is not supposed to emit the file, pass `--phony-outputs /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/report` to suppress this warning
+
+ninja: build stopped: cannot make progress due to previous errors.
+
+
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+make: Leaving directory '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact'
+OUTER_MAKE_EXIT=0
+756a19e466892e6e18a3dabc89493b0e3b63febf98aac21184d90aaf4a98a6ed  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T1_EXACT_EMBEDDING_PREFLIGHT/FROMMSG_T1_PREFLIGHT_MAKE_20260724T133806Z.txt
+
+===== REQUIRED OUTPUT EXISTENCE =====
+OUTPUT_PRESENT=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml
+-rw-rw-r-- 1 girish girish 26233 Jul 24 16:38 /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml
+56efd03ba2b795fc2de137a519ad356d837355d6ef17e90df421870eea83d964  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/result.xml
+OUTPUT_PRESENT=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml
+-rw-rw-r-- 1 girish girish 45758 Jul 24 16:38 /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml
+acf6d3ba2daaa9b83fed4f25de83b2f3d8f2c463d1efb0e1b3b7038f631d1cac  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/logs/property.xml
+OUTPUT_PRESENT=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto
+-rw-rw-r-- 1 girish girish 79318 Jul 24 16:38 /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto
+41b8058b4ac6225dfbb9aff0d53dfcc4e3a6a3b50f2b99cd161d2ddc89aab941  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto
+
+===== AUTHORITATIVE RESULT PARSE =====
+RESULT_XML_PARSE=PASS
+CPROVER_STATUS=SUCCESS
+TOTAL_RESULT_RECORDS=67
+RESULT_STATUS_SUCCESS=67
+FROMMSG_T1_P1_EXACT_COORDINATE_EQUATION=NOT_FOUND
+FROMMSG_T1_P2_EXACT_BINARY_OUTPUT_ALPHABET=NOT_FOUND
+FROMMSG_T1_P3_ONE_BIT_SUPPORT_EQUIVALENCE=NOT_FOUND
+FROMMSG_T1_P4_ZERO_BIT_SUPPORT_EQUIVALENCE=NOT_FOUND
+T1_PREFLIGHT_CLASSIFICATION=NOT_PASS
+
+===== T1 PROPERTY DISPLAY =====
+Property harness.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c line 42 function harness
+  FROMMSG_T1_P1_EXACT_COORDINATE_EQUATION
+  r.coeffs[(signed long int)k] == expected
+
+Property harness.assertion.2:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c line 46 function harness
+  FROMMSG_T1_P2_EXACT_BINARY_OUTPUT_ALPHABET
+  (signed int)r.coeffs[(signed long int)k] == 0 || (signed int)r.coeffs[(signed long int)k] == (3329 + 1) / 2
+
+Property harness.assertion.3:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c line 51 function harness
+  FROMMSG_T1_P3_ONE_BIT_SUPPORT_EQUIVALENCE
+  ((signed int)r.coeffs[(signed long int)k] == (3329 + 1) / 2) == ((unsigned int)selected_bit == 1u)
+
+Property harness.assertion.4:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c line 56 function harness
+  FROMMSG_T1_P4_ZERO_BIT_SUPPORT_EQUIVALENCE
+  ((signed int)r.coeffs[(signed long int)k] == 0) == ((unsigned int)selected_bit == 0u)
+
+Property mlk_poly_frommsg.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+
+===== FINAL LOOP CHECK =====
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/proofs/cbmc/frommsg_t1_exact/gotos/frommsg_t1_exact_harness.goto'
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t1_20260724T133806Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+
+===== ISOLATED WORKTREE TRACKED STATUS =====
+?? proofs/cbmc/frommsg_t1_exact/Makefile
+?? proofs/cbmc/frommsg_t1_exact/frommsg_t1_exact_harness.c
+ISOLATED_TRACKED_PRODUCTION_STATE=UNCHANGED
+
+===== AUTHORITATIVE SOURCE POST-STATUS =====
+AUTHORITATIVE_TRACKED_STATE_AFTER=UNCHANGED
+
+============================================================
+FROMMSG-T1 PREFLIGHT COMPLETE
+PRODUCTION SOURCE MODIFIED=NO
+NATIVE HARNESS COPIED=NO
+TARGET LOOP CONTRACTS APPLIED=NO
+BITWUZLA USED=NO
+============================================================

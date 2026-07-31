@@ -1,0 +1,38 @@
+{
+  "campaign": "FROMMSG-T3",
+  "target_functions": [
+    "mlk_poly_frommsg",
+    "mlk_poly_tomsg"
+  ],
+  "repository_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "parameter_set": "ML-KEM-768",
+  "implementation_path": "mlkem/src/compress.c",
+  "central_theorem": "For every symbolic 32-byte message m, mlk_poly_tomsg(mlk_poly_frommsg(m)) equals m.",
+  "secondary_theorem": "Re-encoding the decoded message reproduces every coefficient of the original frommsg codeword.",
+  "positive_properties": [
+    "FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP",
+    "FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP",
+    "FROMMSG_T3_P3_CODEBOOK_FIXED_POINT",
+    "FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING"
+  ],
+  "reachability_witnesses": 6,
+  "semantic_mutations": 5,
+  "execution_model": {
+    "production_bodies_retained": true,
+    "function_contract_substitution": false,
+    "loop_contract_substitution": false,
+    "frommsg_inner_unwind": 9,
+    "frommsg_outer_unwind": 33,
+    "tomsg_inner_unwind": 9,
+    "tomsg_outer_unwind": 33,
+    "unwinding_assertions": true,
+    "cbmc_version": "6.9.0"
+  },
+  "excluded_claims": [
+    "complete ML-KEM correctness",
+    "constant-time behaviour",
+    "binary-level equivalence",
+    "correctness for arbitrary non-codebook polynomials",
+    "global first-ever novelty"
+  ]
+}

@@ -1,0 +1,21 @@
+void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+{
+  unsigned i;
+  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+
+  for (i = 0; i < MLKEM_N / 8; i++)
+  __loop__(invariant(i <= MLKEM_N / 8)
+           decreases(MLKEM_N / 8 - i))
+  {
+    unsigned j;
+    msg[i] = 0;
+    for (j = 0; j < 8; j++)
+    __loop__(
+      invariant(i <= MLKEM_N / 8 && j <= 8)
+      decreases(8 - j))
+    {
+      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+      msg[i] |= (uint8_t)(t << j);
+    }
+  }
+}

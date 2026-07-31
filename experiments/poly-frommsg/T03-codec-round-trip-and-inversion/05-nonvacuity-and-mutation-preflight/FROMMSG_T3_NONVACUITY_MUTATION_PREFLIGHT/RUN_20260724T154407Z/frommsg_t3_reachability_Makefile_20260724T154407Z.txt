@@ -1,0 +1,21 @@
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = frommsg_t3_reachability_harness
+PROOF_UID = FROMMSG-T3 codec-composition reachability
+
+UNWINDSET += mlk_poly_frommsg.0:9
+UNWINDSET += mlk_poly_frommsg.1:33
+UNWINDSET += mlk_poly_tomsg.0:9
+UNWINDSET += mlk_poly_tomsg.1:33
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+
+EXTERNAL_SAT_SOLVER =
+CBMCFLAGS =
+
+CBMC_OBJECT_BITS = 9
+FUNCTION_NAME = harness
+
+include ../Makefile.common

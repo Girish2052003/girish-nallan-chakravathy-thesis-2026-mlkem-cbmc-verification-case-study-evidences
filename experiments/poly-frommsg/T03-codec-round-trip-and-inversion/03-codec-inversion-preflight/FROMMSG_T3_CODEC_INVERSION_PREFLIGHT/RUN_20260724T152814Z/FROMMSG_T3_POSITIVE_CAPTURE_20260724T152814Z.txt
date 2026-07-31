@@ -1,0 +1,312 @@
+============================================================
+FROMMSG-T3 — CODEC INVERSION AND CODEBOOK FIXED POINT
+============================================================
+UTC_TIME=2026-07-24T15:28:14Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACCEPTED_BINDING_RUN=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING_FINAL_CLASSIFICATION/RUN_20260724T152416Z
+ISOLATED_WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z
+RUN_DIRECTORY=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z
+
+===== AUTHORITATIVE SOURCE BINDING =====
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING=PASS
+AUTHORITATIVE_TRACKED_STATE=CLEAN
+
+===== VERIFY ACCEPTED T3 BINDING LINEAGE =====
+BINDING_CAPTURE_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING_FINAL_CLASSIFICATION/RUN_20260724T152416Z/FROMMSG_T3_FINAL_BINDING_CLASSIFICATION_20260724T152416Z.txt
+BINDING_CAPTURE_EXPECTED_HASH=5e0755372a4d18a71283c930ea08455ba6649b276f529c903ce3da52b7532cd2
+BINDING_CAPTURE_ACTUAL_HASH=5e0755372a4d18a71283c930ea08455ba6649b276f529c903ce3da52b7532cd2
+BINDING_CAPTURE_HASH_MATCH=YES
+BINDING_HARNESS_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING_FINAL_CLASSIFICATION/RUN_20260724T152416Z/frommsg_t3_binding_harness.c
+BINDING_HARNESS_EXPECTED_HASH=f54e9677507191cd2e8a27705211aa3dea4e2e1b421d0b993fef9d210d12c21a
+BINDING_HARNESS_ACTUAL_HASH=f54e9677507191cd2e8a27705211aa3dea4e2e1b421d0b993fef9d210d12c21a
+BINDING_HARNESS_HASH_MATCH=YES
+BINDING_GOTO_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING_FINAL_CLASSIFICATION/RUN_20260724T152416Z/frommsg_t3_binding_harness.goto
+BINDING_GOTO_EXPECTED_HASH=52fe25499d23f558a3e1e365de79f931df6dda2f7506d7f233bbec80e5b0bd25
+BINDING_GOTO_ACTUAL_HASH=52fe25499d23f558a3e1e365de79f931df6dda2f7506d7f233bbec80e5b0bd25
+BINDING_GOTO_HASH_MATCH=YES
+BINDING_LOOP_LIST_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_COMPOSITION_BINDING_FINAL_CLASSIFICATION/RUN_20260724T152416Z/FROMMSG_T3_FINAL_LOOP_LIST_20260724T152416Z.txt
+BINDING_LOOP_LIST_EXPECTED_HASH=e3efa1bce9fc0145c957a361ab3669315681014195c81028f03e9fee23832831
+BINDING_LOOP_LIST_ACTUAL_HASH=e3efa1bce9fc0145c957a361ab3669315681014195c81028f03e9fee23832831
+BINDING_LOOP_LIST_HASH_MATCH=YES
+BINDING_PASS_COUNT=1
+T3_COMPOSITION_BINDING_LINEAGE=PASS
+
+===== CREATE FRESH EXACT-COMMIT CLONE =====
+Cloning into '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z'...
+done.
+HEAD is now at af4c5abd Wycheproof: Check K value and reject unrecognized vector fields
+WORKTREE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_COMMIT_MATCH=YES
+
+===== CREATE CLEAN-ROOM T3 POSITIVE HARNESS =====
+HARNESS=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c
+MAKEFILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/Makefile
+
+===== HARNESS CONTENT =====
+     1	/*
+     2	 * FROMMSG-T3 — Codec inversion and codebook fixed point.
+     3	 *
+     4	 * The harness composes the real production implementations:
+     5	 *
+     6	 *   input -> mlk_poly_frommsg -> encoded1
+     7	 *   encoded1 -> mlk_poly_tomsg -> decoded
+     8	 *   decoded -> mlk_poly_frommsg -> encoded2
+     9	 *
+    10	 * No implementation logic is reproduced in the harness.
+    11	 */
+    12	
+    13	#include <stdint.h>
+    14	
+    15	#include "compress.h"
+    16	
+    17	void harness(void)
+    18	{
+    19	  mlk_poly encoded1;
+    20	  mlk_poly encoded2;
+    21	
+    22	  uint8_t input[MLKEM_INDCPA_MSGBYTES];
+    23	  uint8_t decoded[MLKEM_INDCPA_MSGBYTES];
+    24	
+    25	  unsigned byte_index;
+    26	  unsigned bit_index;
+    27	  unsigned coefficient_index;
+    28	  unsigned selected_coefficient;
+    29	
+    30	  uint8_t input_bit;
+    31	  uint8_t decoded_bit;
+    32	
+    33	  __CPROVER_assume(
+    34	      byte_index < MLKEM_INDCPA_MSGBYTES);
+    35	
+    36	  __CPROVER_assume(
+    37	      bit_index < 8u);
+    38	
+    39	  __CPROVER_assume(
+    40	      coefficient_index < MLKEM_N);
+    41	
+    42	  selected_coefficient =
+    43	      8u * byte_index + bit_index;
+    44	
+    45	  mlk_poly_frommsg(&encoded1, input);
+    46	  mlk_poly_tomsg(decoded, &encoded1);
+    47	  mlk_poly_frommsg(&encoded2, decoded);
+    48	
+    49	  input_bit =
+    50	      (uint8_t)(
+    51	          (input[byte_index] >> bit_index) & 1u);
+    52	
+    53	  decoded_bit =
+    54	      (uint8_t)(
+    55	          (decoded[byte_index] >> bit_index) & 1u);
+    56	
+    57	  /*
+    58	   * Central round-trip theorem. Since byte_index is arbitrary and
+    59	   * constrained to all 32 message positions, this proves equality
+    60	   * for every message byte.
+    61	   */
+    62	  __CPROVER_assert(
+    63	      decoded[byte_index] == input[byte_index],
+    64	      "FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP");
+    65	
+    66	  /*
+    67	   * Diagnostic bit-level projection of the byte theorem.
+    68	   */
+    69	  __CPROVER_assert(
+    70	      decoded_bit == input_bit,
+    71	      "FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP");
+    72	
+    73	  /*
+    74	   * Codebook fixed point. Re-encoding the decoded message must
+    75	   * reproduce every coefficient of the first encoding.
+    76	   */
+    77	  __CPROVER_assert(
+    78	      encoded2.coeffs[coefficient_index] ==
+    79	      encoded1.coeffs[coefficient_index],
+    80	      "FROMMSG_T3_P3_CODEBOOK_FIXED_POINT");
+    81	
+    82	  /*
+    83	   * Exact decoding relation on the frommsg codebook.
+    84	   */
+    85	  __CPROVER_assert(
+    86	      (decoded_bit == 1u) ==
+    87	      (
+    88	        encoded1.coeffs[selected_coefficient] ==
+    89	        MLKEM_Q_HALF
+    90	      ),
+    91	      "FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING");
+    92	}
+
+===== MAKEFILE CONTENT =====
+     1	# FROMMSG-T3 clean-room codec-inversion preflight
+     2	
+     3	include ../Makefile_params.common
+     4	
+     5	HARNESS_ENTRY = harness
+     6	HARNESS_FILE = frommsg_t3_codec_inversion_harness
+     7	PROOF_UID = FROMMSG-T3 codec inversion and codebook fixed point
+     8	
+     9	#
+    10	# mlk_poly_frommsg:
+    11	#   .0 inner loop — 8 iterations
+    12	#   .1 outer loop — 32 iterations
+    13	#
+    14	# mlk_poly_tomsg:
+    15	#   .0 inner loop — 8 iterations
+    16	#   .1 outer loop — 32 iterations
+    17	#
+    18	UNWINDSET += mlk_poly_frommsg.0:9
+    19	UNWINDSET += mlk_poly_frommsg.1:33
+    20	UNWINDSET += mlk_poly_tomsg.0:9
+    21	UNWINDSET += mlk_poly_tomsg.1:33
+    22	
+    23	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    24	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    25	
+    26	EXTERNAL_SAT_SOLVER =
+    27	CBMCFLAGS =
+    28	
+    29	CBMC_OBJECT_BITS = 9
+    30	FUNCTION_NAME = harness
+    31	
+    32	include ../Makefile.common
+
+===== FREEZE T3 POSITIVE INPUTS =====
+89311dbccb474c7d3e9ef66520ec0da702e85074c26c3de4774a3cd7ee9a82fe  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c
+5388cce713e8aa0a89241e25efba680e853e4b387dbcd5c4c0beae4db2c17660  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/Makefile
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.h
+450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/params.h
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/poly.h
+
+===== STATIC INTEGRITY FIREWALL =====
+FROMMSG_FIRST_REAL_CALL_COUNT=1
+TOMSG_REAL_CALL_COUNT=1
+FROMMSG_SECOND_REAL_CALL_COUNT=1
+TOTAL_REAL_PRODUCTION_CALLS=3
+CUSTOM_ASSERTION_COUNT=4
+CUSTOM_ASSUME_COUNT=3
+CONTRADICTORY_ASSUME_FALSE_PRESENT=NO
+TARGET_REIMPLEMENTATION_PRESENT=NO
+TARGET_OR_HELPER_CONTRACT_SUBSTITUTION=NO
+HARNESS_IDENTICAL_TO_NATIVE_FROMMSG=NO
+HARNESS_IDENTICAL_TO_NATIVE_TOMSG=NO
+
+===== CLEAN GENERATED BUILD STATE =====
+
+===== LITANI INITIALIZATION =====
+LITANI_INIT_EXIT=0
+e4887c457e2e56424f8b80f1c9c434674865b5d3961ebcf22d663d3dad53cbdf  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z/FROMMSG_T3_LITANI_INIT_20260724T152814Z.txt
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+LITANI_CACHE_POINTER_PRESENT=YES
+
+===== REGISTER FINAL-GOTO JOBS =====
+JOB_REGISTRATION_EXIT=0
+950716310e0aed226f672284e58df8052fbe7f5698c5580d1c425da83dfb96a6  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z/FROMMSG_T3_JOB_REGISTRATION_20260724T152814Z.txt
+
+===== EXECUTE REGISTERED BUILD JOBS =====
+LITANI_RUN_BUILD_EXIT=0
+7d5a3300271bd34733e9c45b12595aa3517d6c8b5b6ba049817acc383f7cac1c  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z/FROMMSG_T3_LITANI_RUN_BUILD_20260724T152814Z.txt
+[1/12] FROMMSG-T3 codec inversion and codebook fixed point: building proof bi...[2/12] FROMMSG-T3 codec inversion and codebook fixed point: building project ...[3/12] FROMMSG-T3 codec inversion and codebook fixed point: removing function...[4/12] FROMMSG-T3 codec inversion and codebook fixed point: linking project t...[5/12] FROMMSG-T3 codec inversion and codebook fixed point: restricting funct...[6/12] FROMMSG-T3 codec inversion and codebook fixed point: setting static va...[7/12] FROMMSG-T3 codec inversion and codebook fixed point: not linking CPROV...[8/12] FROMMSG-T3 codec inversion and codebook fixed point: not unwinding loops [9/12] FROMMSG-T3 codec inversion and codebook fixed point: checking function...[10/12] FROMMSG-T3 codec inversion and codebook fixed point: slicing global i...[11/12] FROMMSG-T3 codec inversion and codebook fixed point: dropping unused ...[12/12] FROMMSG-T3 codec inversion and codebook fixed point: copying final go...
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+FINAL_GOTO_PRESENT=YES
+FINAL_GOTO=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/gotos/frommsg_t3_codec_inversion_harness.goto
+-rw-rw-r-- 1 girish girish 83701 Jul 24 18:28 /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/gotos/frommsg_t3_codec_inversion_harness.goto
+a39827b899b3d454e4518cabf31e80935ec8dea87e2cc252f961246deff83270  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/gotos/frommsg_t3_codec_inversion_harness.goto
+
+===== PROPERTY BINDING =====
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 62 function harness
+  FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP
+  decoded[(signed long int)byte_index] == input[(signed long int)byte_index]
+
+Property harness.assertion.2:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 69 function harness
+  FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP
+  decoded_bit == input_bit
+
+Property harness.assertion.3:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 77 function harness
+  FROMMSG_T3_P3_CODEBOOK_FIXED_POINT
+  encoded2.coeffs[(signed long int)coefficient_index] == encoded1.coeffs[(signed long int)coefficient_index]
+
+Property harness.assertion.4:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 85 function harness
+  FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING
+  ((unsigned int)decoded_bit == 1u) == ((signed int)encoded1.coeffs[(signed long int)selected_coefficient] == (3329 + 1) / 2)
+
+Property mlk_poly_frommsg.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+PROPERTY_BINDING_EXIT=0
+
+===== LOOP BINDING =====
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/proofs/cbmc/frommsg_t3_codec_inversion/gotos/frommsg_t3_codec_inversion_harness.goto'
+Loop mlk_poly_tomsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c line 728 function mlk_poly_tomsg
+
+Loop mlk_poly_tomsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c line 722 function mlk_poly_tomsg
+
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_positive_20260724T152814Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+LOOP_BINDING_EXIT=0
+REQUIRED_LOOP_PRESENT=Loop mlk_poly_frommsg.0:
+REQUIRED_LOOP_PASS_COUNT: command not found
+REQUIRED_LOOP_PRESENT=Loop mlk_poly_frommsg.1:
+REQUIRED_LOOP_PASS_COUNT: command not found
+REQUIRED_LOOP_PRESENT=Loop mlk_poly_tomsg.0:
+REQUIRED_LOOP_PASS_COUNT: command not found
+REQUIRED_LOOP_PRESENT=Loop mlk_poly_tomsg.1:
+REQUIRED_LOOP_PASS_COUNT: command not found
+REQUIRED_LOOP_PASS_COUNT=
+REQUIRED_LOOP_EXPECTED_COUNT=4
+bash: [: : integer expression expected
+
+===== RUN POSITIVE T3 PREFLIGHT =====
+CBMC_EXIT=0
+884bbfd4055e99e6bc7e0e06912265a30d75c0c3565c66e1548ce60d0d922e68  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z/FROMMSG_T3_POSITIVE_20260724T152814Z.xml
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T3_CODEC_INVERSION_PREFLIGHT/RUN_20260724T152814Z/FROMMSG_T3_POSITIVE_20260724T152814Z.err.txt
+RESULT_XML_PARSE=PASS
+CPROVER_STATUS=SUCCESS
+TOTAL_RESULT_RECORDS=140
+RESULT_STATUS_SUCCESS=140
+FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP_PROPERTY_ID=harness.assertion.1
+FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP_STATUS=SUCCESS
+FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP_PROPERTY_ID=harness.assertion.2
+FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP_STATUS=SUCCESS
+FROMMSG_T3_P3_CODEBOOK_FIXED_POINT_PROPERTY_ID=harness.assertion.3
+FROMMSG_T3_P3_CODEBOOK_FIXED_POINT_STATUS=SUCCESS
+FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING_PROPERTY_ID=harness.assertion.4
+FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING_STATUS=SUCCESS
+FROMMSG_T3_POSITIVE_CLASSIFICATION=PASS
+PARSE_EXIT=0
+FROMMSG_T3_POSITIVE_PREFLIGHT_GATE=PASS
+
+===== FINAL SOURCE-INTEGRITY CHECK =====
+ISOLATED_TRACKED_PRODUCTION_STATE=UNCHANGED
+AUTHORITATIVE_TRACKED_STATE_AFTER=UNCHANGED
+
+===== TOOL ENVIRONMENT =====
+6.9.0 (cbmc-6.9.0)
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+6.9.0 (cbmc-6.9.0)
+cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+Linux girish-VirtualBox 7.0.0-28-generic #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+============================================================
+FROMMSG-T3 POSITIVE PREFLIGHT COMPLETE
+REAL PRODUCTION CALLS=3
+POSITIVE COMPOSITION PROPERTIES=4
+TARGET PRODUCTION BODIES RETAINED=YES
+TARGET LOOP CONTRACTS APPLIED=NO
+PRODUCTION SOURCE MODIFIED=NO
+============================================================

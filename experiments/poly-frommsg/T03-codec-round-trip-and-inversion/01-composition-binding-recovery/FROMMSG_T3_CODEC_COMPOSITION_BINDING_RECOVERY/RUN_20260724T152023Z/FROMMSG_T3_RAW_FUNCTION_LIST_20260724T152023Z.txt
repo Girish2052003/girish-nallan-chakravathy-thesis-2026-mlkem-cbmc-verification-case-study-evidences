@@ -1,0 +1,323 @@
+Usage error!
+
+
+* *        Goto-Instrument 6.9.0 (cbmc-6.9.0) 64-bit        * *
+* *                 Copyright (C) 2008-2013                 * *
+* *                     Daniel Kroening                     * *
+* *                  kroening@kroening.com                  * *
+
+Usage:                       Purpose:
+
+ goto-instrument [-?] [-h] [--help]  show this help
+ goto-instrument --version    show version and exit
+ goto-instrument [options] in [out]  perform analysis or instrumentation
+
+Dump Source:
+ --dump-c                     generate C source
+ --dump-c-type-header m       generate a C header for types local in m
+ --dump-cpp                   generate C++ source
+ --no-system-headers          generate C source expanding libc includes
+ --use-all-headers            generate C source with all includes
+ --harness                    include input generator in output
+ --horn                       print program as constrained horn clauses
+
+Diagnosis:
+ --show-properties            show the properties, but don't run analysis
+ --document-properties-html   generate HTML property documentation
+ --document-properties-latex  generate LaTeX property documentation
+ --show-symbol-table          show loaded symbol table
+ --list-symbols               list symbols with type information
+ --show-goto-functions        show loaded goto program
+ --list-goto-functions        list loaded goto functions
+ --count-eloc                 count effective lines of code
+ --list-eloc                  list full path names of lines containing code
+ --print-global-state-size    count the total number of bits of global objects
+ --print-path-lengths         print statistics about control-flow graph paths
+ --show-locations             show all source locations
+ --dot                        generate CFG graph in DOT format
+ --print-internal-representation  show verbose internal representation of the 
+                              program
+ --list-undefined-functions   list functions without body
+ --list-calls-args            list all function calls with their arguments
+ --call-graph                 show graph of function calls
+ --reachable-call-graph       show graph of function calls potentially 
+                              reachable from main function
+ --show-class-hierarchy       show the class hierarchy
+ --validate-goto-model        enable additional well-formedness checks on the 
+                              goto program
+ --validate-ssa-equation      enable additional well-formedness checks on the 
+                              SSA representation
+ --validate-goto-binary       check the well-formedness of the passed in goto 
+                              binary and then exit
+ --interpreter                do concrete execution
+
+Data-flow analyses:
+ --show-struct-alignment      show struct members that might be concurrently 
+                              accessed
+ --show-threaded              show instructions that may be executed by more 
+                              than one thread
+ --show-local-safe-pointers   show pointer expressions that are trivially 
+                              dominated by a not-null check
+ --show-safe-dereferences     show pointer expressions that are trivially 
+                              dominated by a not-null check *and* used as a 
+                              dereference operand
+ --show-value-sets            show points-to information (using value sets)
+ --show-global-may-alias      show may-alias information over globals
+ --show-local-bitvector-analysis  show procedure-local pointer analysis
+ --escape-analysis            perform escape analysis
+ --show-escape-analysis       show results of escape analysis
+ --custom-bitvector-analysis  perform configurable bitvector analysis
+ --show-custom-bitvector-analysis  show results of configurable bitvector 
+                              analysis
+ --interval-analysis          perform interval analysis
+ --show-intervals             show results of interval analysis
+ --show-uninitialized         show maybe-uninitialized variables
+ --show-points-to             show points-to information
+ --show-rw-set                show read-write sets
+ --show-call-sequences        show function call sequences
+ --show-reaching-definitions  show reaching definitions
+ --show-dependence-graph      show program-dependence graph
+ --show-sese-regions          show single-entry-single-exit regions
+
+Safety checks:
+ --no-assertions              ignore user assertions
+ --no-standard-checks         disable default checks (more information in 
+                              manpage)
+ --bounds-check               enable array bounds checks (default on)
+ --no-bounds-check            disable array bounds checks
+ --pointer-check              enable pointer checks (default on)
+ --no-pointer-check           disable pointer checks
+ --memory-leak-check          enable memory leak checks
+ --memory-cleanup-check       enable memory cleanup checks
+ --div-by-zero-check          enable division by zero checks on integers 
+                              (default on)
+ --float-div-by-zero-check    enable division by zero checks on floating-point 
+                              numbers (default off)
+ --no-div-by-zero-check       disable division by zero checks
+ --signed-overflow-check      enable signed arithmetic over- and underflow 
+                              checks (default on)
+ --no-signed-overflow-check   disable signed arithmetic over- and underflow 
+                              checks
+ --unsigned-overflow-check    enable arithmetic over- and underflow checks
+ --pointer-overflow-check     enable pointer arithmetic over- and underflow 
+                              checks
+ --conversion-check           check whether values can be represented after 
+                              type cast
+ --undefined-shift-check      check shift greater than bit-width (default on)
+ --no-undefined-shift-check   disable check for shift greater than bit-width
+ --float-overflow-check       check floating-point for +/-Inf
+ --nan-check                  check floating-point for NaN
+ --enum-range-check           checks that all enum type expressions have values 
+                              in the enum range
+ --pointer-primitive-check    checks that all pointers in pointer primitives 
+                              are valid or null (default on)
+ --no-pointer-primitive-check  disable checks that all pointers in pointer 
+                              primitives are valid or null
+ --retain-trivial-checks      include checks that are trivially true
+ --error-label label          check that label label is unreachable
+ --no-built-in-assertions     ignore assertions in built-in library
+ --no-assertions              ignore user assertions
+ --no-assumptions             ignore user assumptions
+ --assert-to-assume           convert user assertions to assumptions
+ --uninitialized-check        add checks for uninitialized locals (experimental)
+ --stack-depth n              add check that call stack size of non-inlined 
+                              functions never exceeds n
+ --race-check                 add floating-point data race checks
+
+Semantic transformations:
+ --nondet-volatile            makes reads from volatile variables 
+                              non-deterministic
+ --nondet-volatile-variable variable  makes reads from given volatile variable 
+                              non-deterministic
+ --nondet-volatile-model variable:model  models reads from given volatile 
+                              variable by a call to the given model
+ --isr function               instruments an interrupt service routine
+ --mmio                       instruments memory-mapped I/O
+ --nondet-static              add nondeterministic initialization of variables 
+                              with static lifetime
+ --nondet-static-exclude e    same as nondet-static except for the variable e 
+                              (use multiple times if required)
+ --nondet-static-matching r   add nondeterministic initialization of variables 
+                              with static lifetime matching regex r
+ --function-enter f, --function-exit f, --branch f  instruments a call to f at 
+                              the beginning, the exit, or a branch point, 
+                              respectively
+ --splice-call caller,callee  prepends a call to callee in the body of caller
+ --check-call-sequence seq    instruments checks to assert that all call 
+                              sequences match seq
+ --undefined-function-is-assume-false  convert each call to an undefined 
+                              function to assume(false)
+ --insert-final-assert-false function  generate assert(false) at end of 
+                              function function
+ --generate-function-body regex  generate bodies for functions matching regex 
+                              that do not already have bodies
+ --generate-havocing-body <option> fun_name,params:p1;p2;..  generate havocing 
+                              body
+ --generate-havocing-body <option> fun_name[,call-site-id,params:p1;p2;..]+  
+                              generate havocing body
+ --generate-function-body-options option  One of assert-false, assume-false, 
+                              nondet-return, assert-false-assume-false and havoc
+                              [,params:regex][,globals:regex][,params:p1;p2;..] 
+                              (default: nondet-return)
+ --restrict-function-pointer pointer_name/target[,targets]*  restrict a 
+                              function pointer to a set of possible targets; 
+                              targets must all exist in the symbol table with a 
+                              matching type; works for globals and function 
+                              parameters right now
+ --function-pointer-restrictions-file file_name  add function pointer 
+                              restrictions from file file_name
+ --restrict-function-pointer-by-name symbol_name/target[targets]*  restrict a 
+                              function pointer where symbol_name is the 
+                              unmangled name, before labelling function pointers
+ --remove-calls-no-body       remove calls to functions without a body
+ --add-library                add models of C library functions
+ --malloc-may-fail            allow malloc calls to return a null pointer
+ --no-malloc-may-fail         disable potential malloc failure
+ --malloc-fail-assert         set malloc failure mode to assert-then-assume
+ --malloc-fail-null           set malloc failure mode to return null
+ --string-abstraction         track C string lengths and zero-termination
+ --dfcc-debug-lib             enable debug assertions in the cprover contracts 
+                              library
+ --dfcc-simple-invalid-pointer-model  use simplified invalid pointer model in 
+                              the cprover contracts library (faster, unsound)
+ --model-argc-argv n          model up to n command line arguments
+ --remove-function-body f     remove the implementation of function f (may be 
+                              repeated)
+ --remove-function-body-regex regex  remove the implementation of functions 
+                              matching regular expression regex
+ --replace-calls f:g          replace calls to f with calls to g
+ --max-nondet-tree-depth N    limit size of nondet (e.g. input) object tree; at 
+                              level N pointers are set to null
+ --min-null-tree-depth N      minimum level at which a pointer can first be 
+                              NULL in a recursively nondet initialized struct
+
+Semantics-preserving transformations:
+ --ensure-one-backedge-per-target  transform loop bodies such that there is a 
+                              single edge back to the loop head
+ --drop-unused-functions      drop functions trivially unreachable from main 
+                              function
+ --remove-pointers            converts pointer arithmetic to base+offset 
+                              expressions
+ --constant-propagator        propagate constants and simplify expressions
+ --inline                     perform full inlining
+ --partial-inline             perform partial inlining
+ --function-inline function   transitively inline all calls function makes
+ --no-caching                 disable caching of intermediate results during 
+                              transitive function inlining
+ --log file                   log in JSON format which code segments were 
+                              inlined, use with --function-inline
+ --remove-function-pointers   replace function pointers by case statement over 
+                              function calls
+ --remove-const-function-pointers  remove function pointers that are constant 
+                              or constant part of an array
+ --value-set-fi-fp-removal    build flow-insensitive value set and replace 
+                              function pointers by a case statement over the 
+                              possible assignments. If the set of possible 
+                              assignments is empty the function pointer is 
+                              removed using the standard 
+                              remove-function-pointers pass.
+
+Loop information and transformations:
+ --show-loops                 show the loops in the program
+ --unwind nr                  unwind loops nr times
+ --unwindset [T:]L:B,...      unwind loop L with a bound of B (optionally 
+                              restricted to thread T) (use --show-loops to get 
+                              the loop IDs)
+ --unwindset-file_<file>      read unwindset from file
+ --partial-loops              permit paths with partial loops
+ --unwinding-assertions       generate unwinding assertions (enabled by default)
+ --no-unwinding-assertions    do not generate unwinding assertions
+ --continue-as-loops          add loop for remaining iterations after unwound 
+                              part
+ --k-induction k              check loops with k-induction
+ --step-case                  k-induction: do step-case
+ --base-case                  k-induction: do base-case
+ --havoc-loops                over-approximate all loops
+ --accelerate                 add loop accelerators
+ --z3                         use Z3 when computing loop accelerators
+ --skip-loops {uloop-ids      add gotos to skip selected loops during execution
+ --show-lexical-loops         show single-entry-single-back-edge loops
+ --show-natural-loops         show natural loop heads
+
+Memory model instrumentations:
+ --mm [tso|pso|rmo|power]     instruments a weak memory model
+ --scc                        detects critical cycles per SCC (one thread per 
+                              SCC)
+ --one-event-per-cycle        only instruments one event per cycle
+ --minimum-interference       instruments an optimal number of events
+ --my-events                  only instruments events whose ids appear in 
+                              inst.evt
+ --read-first, --write-first  only instrument cycles where a read or write 
+                              occurs as first event, respectively
+ --max-var N                  limit cycles to N variables read/written
+ --max-po-trans N             limit cycles to N program-order edges
+ --ignore-arrays              instrument arrays as a single object
+ --cav11                      always instrument shared variables, even when 
+                              they are not part of any cycle
+ --force-loop-duplication, --no-loop-duplication  optional program 
+                              transformation to construct cycles in program 
+                              loops
+ --cfg-kill                   enables symbolic execution used to reduce 
+                              spurious cycles
+ --no-dependencies            no dependency analysis
+ --no-po-rendering            no representation of the threads in the dot
+ --hide-internals             do not include thread-internal (Rfi) events in 
+                              dot output
+ --render-cluster-file        clusterises the dot by files
+ --render-cluster-function    clusterises the dot by functions
+
+Slicing:
+ --reachability-slice-fb      remove instructions that cannot appear on a trace 
+                              from entry point through a property
+ --fp-reachability-slice f    remove instructions that cannot appear on a trace 
+                              that visits all given functions. The list of 
+                              functions has to be given as a comma separated 
+                              list f.
+ --reachability-slice         remove instructions that cannot appear on a trace 
+                              from entry point to a property
+ --full-slice                 slice away instructions that don't affect 
+                              assertions
+ --property id                slice with respect to specific property only
+ --slice-global-inits         slice away initializations of unused global 
+                              variables
+ --aggressive-slice           remove bodies of any functions not on the 
+                              shortest path between the start function and the 
+                              function containing the property/properties
+ --aggressive-slice-call-depth n  used with aggressive-slice, preserves all 
+                              functions within n function calls of the 
+                              functions on the shortest path
+ --aggressive-slice-preserve-function f  force the aggressive slicer to 
+                              preserve function f
+ --aggressive-slice-preserve-functions-containing f  force the aggressive 
+                              slicer to preserve all functions with names 
+                              containing f
+ --aggressive-slice-preserve-all-direct-paths  force aggressive slicer to 
+                              preserve all direct paths
+
+Code contracts:
+ --dfcc harness               activate dynamic frame condition checking for 
+                              contracts using the given harness as entry point
+ --apply-loop-contracts       check and use loop contracts when provided
+ --disable-loop-contracts-side-effect-check  UNSOUND OPTION.  disable the check 
+                              of side-effect of loop contracts
+ --loop-contracts-no-unwind   do not unwind transformed loops
+ --loop-contracts-file file   parse and annotate loop contracts from files
+ --replace-call-with-contract function[/contract]  replace calls to function 
+                              with contract
+ --enforce-contract function[/contract]  wrap function with an assertion of 
+                              contract
+ --enforce-contract-rec function[/contract]  wrap function with an assertion of 
+                              the contract and assume recursive calls to 
+                              function satisfy the contract
+
+User-interface options:
+ --flush                      flush every line of output
+ --xml                        output files in XML where supported
+ --xml-ui                     use XML-formatted output
+ --json-ui                    use JSON-formatted output
+ --verbosity #                verbosity level
+ --timestamp [monotonic|wall]  print microsecond-precision timestamps. monotonic
+                              : stamps increase monotonically. wall: ISO-8601 
+                              wall clock timestamps.
+
+Unknown option: --list-functions

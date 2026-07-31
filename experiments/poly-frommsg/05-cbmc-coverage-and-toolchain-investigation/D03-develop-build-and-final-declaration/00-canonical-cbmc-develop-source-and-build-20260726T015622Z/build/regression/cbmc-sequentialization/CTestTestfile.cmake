@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/cbmc-sequentialization
+# Build directory: /workspace/build/regression/cbmc-sequentialization
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(cbmc-sequentialization-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/cbmc --validate-goto-model --validate-ssa-equation" "-C")
+set_tests_properties(cbmc-sequentialization-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/cbmc-sequentialization" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;50;add_test_pl_profile;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;2;add_test_pl_tests;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;0;")
+add_test(cbmc-sequentialization-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/cbmc --validate-goto-model --validate-ssa-equation" "-T")
+set_tests_properties(cbmc-sequentialization-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/cbmc-sequentialization" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;51;add_test_pl_profile;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;2;add_test_pl_tests;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;0;")
+add_test(cbmc-sequentialization-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/cbmc --validate-goto-model --validate-ssa-equation" "-F")
+set_tests_properties(cbmc-sequentialization-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/cbmc-sequentialization" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;52;add_test_pl_profile;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;2;add_test_pl_tests;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;0;")
+add_test(cbmc-sequentialization-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "/workspace/build/bin/cbmc --validate-goto-model --validate-ssa-equation" "-K")
+set_tests_properties(cbmc-sequentialization-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/cbmc-sequentialization" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;53;add_test_pl_profile;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;2;add_test_pl_tests;/workspace/source/regression/cbmc-sequentialization/CMakeLists.txt;0;")

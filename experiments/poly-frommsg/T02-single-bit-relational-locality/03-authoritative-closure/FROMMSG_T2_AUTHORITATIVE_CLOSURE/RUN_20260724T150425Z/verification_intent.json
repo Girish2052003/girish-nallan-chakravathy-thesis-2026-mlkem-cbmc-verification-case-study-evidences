@@ -1,0 +1,37 @@
+{
+  "campaign": "FROMMSG-T2",
+  "target_function": "mlk_poly_frommsg",
+  "repository_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "parameter_set": "ML-KEM-768",
+  "implementation_path": "mlkem/src/compress.c",
+  "central_theorem": "When exactly one LSB-first message bit k is flipped, the two output polynomials differ at coordinate j exactly when j equals k.",
+  "positive_properties": [
+    "FROMMSG_T2_P1_EXACT_TARGET_TOGGLE_PAIR",
+    "FROMMSG_T2_P2_TARGET_TOGGLE_SUM",
+    "FROMMSG_T2_P3_DIFFERENCE_IFF_FLIPPED_COORDINATE",
+    "FROMMSG_T2_P4_BOOLEAN_COMPLEMENT_PRESERVATION"
+  ],
+  "reachability_witnesses": 5,
+  "semantic_mutations": 4,
+  "permitted_assumptions": [
+    "k < MLKEM_N",
+    "j < MLKEM_N",
+    "all message and polynomial objects are valid local objects",
+    "MLK_CONFIG_PARAMETER_SET is 768"
+  ],
+  "execution_model": {
+    "production_target_body_retained": true,
+    "target_loop_contracts_applied": false,
+    "helper_contract_substitution": false,
+    "inner_loop_unwind": 9,
+    "outer_loop_unwind": 33,
+    "unwinding_assertions": true,
+    "cbmc_version": "6.9.0"
+  },
+  "excluded_claims": [
+    "complete ML-KEM correctness",
+    "constant-time behaviour",
+    "binary-level equivalence",
+    "global first-ever novelty"
+  ]
+}

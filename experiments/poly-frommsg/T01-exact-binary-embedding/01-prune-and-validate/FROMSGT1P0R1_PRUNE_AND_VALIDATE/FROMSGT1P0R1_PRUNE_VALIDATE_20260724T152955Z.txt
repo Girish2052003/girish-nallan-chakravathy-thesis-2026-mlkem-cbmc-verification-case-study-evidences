@@ -1,0 +1,85 @@
+============================================================
+FROMMSG-T1-P0R1 — PRUNE UNREACHABLE FUNCTIONS AND VALIDATE
+============================================================
+UTC_TIME=2026-07-24T15:29:55Z
+WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z
+SOURCE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c
+HEADER=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.h
+HARNESS=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c
+ORIGINAL_GOTO=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto
+PRUNED_GOTO=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R1_PRUNE_AND_VALIDATE/frommsg_t1_direct_body_pruned.goto
+
+===== TOOL IDENTITY =====
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+1dd8e1f7c1621c7e6e305f98222da0372a1b42e65d597d1941847a052e7ef6a1  /usr/bin/cbmc
+b6deeb37fe2112504c064ff260231a209b4211bc6e998de85972570a8b7d22ad  /usr/bin/goto-instrument
+
+===== INPUT BINDING =====
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+ACTUAL_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_HARNESS_SHA256=657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266
+ACTUAL_HARNESS_SHA256=657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266
+EXPECTED_ORIGINAL_GOTO_SHA256=7890586d3cbf2379fe8a28501792ee9e9a9915c113025074b79fd752816ffd7f
+ACTUAL_ORIGINAL_GOTO_SHA256=7890586d3cbf2379fe8a28501792ee9e9a9915c113025074b79fd752816ffd7f
+INITIAL_WORKTREE_STATUS_BEGIN
+
+INITIAL_WORKTREE_STATUS_END
+
+===== PRUNE UNREACHABLE FUNCTIONS =====
+PRUNE_COMMAND=goto-instrument --drop-unused-functions /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R1_PRUNE_AND_VALIDATE/frommsg_t1_direct_body_pruned.goto
+PRUNE_RETURN_CODE=0
+PRUNE_STDOUT_SIZE=406
+PRUNE_STDERR_SIZE=0
+
+----- PRUNE STDOUT -----
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Removing unused functions
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R1_PRUNE_AND_VALIDATE/frommsg_t1_direct_body_pruned.goto'
+
+----- PRUNE STDERR -----
+
+PRUNED_GOTO_SHA256=659a56f989281af25e1f760518a4c349626593f5f84671d2dfa6550a7d8a0de4
+PRUNED_GOTO_SIZE=78086
+
+===== VALIDATE PRUNED GOTO MODEL =====
+VALIDATION_RETURN_CODE=134
+VALIDATION_STDOUT_SIZE=226
+VALIDATION_STDERR_SIZE=825
+
+----- VALIDATION STDOUT -----
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0R1_PRUNE_AND_VALIDATE/frommsg_t1_direct_body_pruned.goto
+Generating GOTO Program
+
+----- VALIDATION STDERR -----
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_invntt_tomont::r was not found
+Backtrace:
+cbmc(+0xb93ca3) [0x598789c89ca3]
+cbmc(+0xb94dc3) [0x598789c8adc3]
+cbmc(+0x18d2d2) [0x5987892832d2]
+cbmc(+0x1a2b6c) [0x598789298b6c]
+cbmc(+0x685eeb) [0x59878977beeb]
+cbmc(+0x6abf57) [0x5987897a1f57]
+cbmc(+0x19015d) [0x59878928615d]
+cbmc(+0x1936ed) [0x5987892896ed]
+cbmc(+0x18b4eb) [0x5987892814eb]
+cbmc(+0x17cf98) [0x598789272f98]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7d6422c2a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7d6422c2a28b]
+cbmc(+0x18c7b5) [0x5987892827b5]
+
+
+--- end invariant violation report ---
+GOTO_MODEL_VALIDATION=FAIL

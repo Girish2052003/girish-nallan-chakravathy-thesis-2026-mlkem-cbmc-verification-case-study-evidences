@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /src/regression/goto-cc-regression-gh-issue-5380
+# Build directory: /build/regression/goto-cc-regression-gh-issue-5380
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(goto-cc-regression-gh-issue-5380-CORE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-cc-regression-gh-issue-5380/chain.sh /build/bin/goto-cc false" "-C")
+set_tests_properties(goto-cc-regression-gh-issue-5380-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-cc-regression-gh-issue-5380" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;50;add_test_pl_profile;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;0;")
+add_test(goto-cc-regression-gh-issue-5380-THOROUGH "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-cc-regression-gh-issue-5380/chain.sh /build/bin/goto-cc false" "-T")
+set_tests_properties(goto-cc-regression-gh-issue-5380-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-cc-regression-gh-issue-5380" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;51;add_test_pl_profile;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;0;")
+add_test(goto-cc-regression-gh-issue-5380-FUTURE "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-cc-regression-gh-issue-5380/chain.sh /build/bin/goto-cc false" "-F")
+set_tests_properties(goto-cc-regression-gh-issue-5380-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-cc-regression-gh-issue-5380" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;52;add_test_pl_profile;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;0;")
+add_test(goto-cc-regression-gh-issue-5380-KNOWNBUG "perl" "/src/regression/test.pl" "-e" "-p" "-c" "/src/regression/goto-cc-regression-gh-issue-5380/chain.sh /build/bin/goto-cc false" "-K")
+set_tests_properties(goto-cc-regression-gh-issue-5380-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/src/regression/goto-cc-regression-gh-issue-5380" _BACKTRACE_TRIPLES "/src/regression/CMakeLists.txt;4;add_test;/src/regression/CMakeLists.txt;53;add_test_pl_profile;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;7;add_test_pl_tests;/src/regression/goto-cc-regression-gh-issue-5380/CMakeLists.txt;0;")

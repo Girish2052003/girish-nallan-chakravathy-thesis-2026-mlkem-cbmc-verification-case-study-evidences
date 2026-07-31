@@ -1,0 +1,31 @@
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/frommsg_t3_codec_inversion/gotos/frommsg_t3_codec_inversion_harness.goto'
+Property harness.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 62 function harness
+  FROMMSG_T3_P1_EXACT_BYTE_ROUND_TRIP
+  decoded[(signed long int)byte_index] == input[(signed long int)byte_index]
+
+Property harness.assertion.2:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 69 function harness
+  FROMMSG_T3_P2_EXACT_BIT_ROUND_TRIP
+  decoded_bit == input_bit
+
+Property harness.assertion.3:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 77 function harness
+  FROMMSG_T3_P3_CODEBOOK_FIXED_POINT
+  encoded2.coeffs[(signed long int)coefficient_index] == encoded1.coeffs[(signed long int)coefficient_index]
+
+Property harness.assertion.4:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/proofs/cbmc/frommsg_t3_codec_inversion/frommsg_t3_codec_inversion_harness.c line 85 function harness
+  FROMMSG_T3_P4_EXACT_CODEBOOK_DECODING
+  ((unsigned int)decoded_bit == 1u) == ((signed int)encoded1.coeffs[(signed long int)selected_coefficient] == (3329 + 1) / 2)
+
+Property mlk_poly_frommsg.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+  cbmc assertion failed
+  forall { uint32_t _cbmc_idx32; (uint32_t)0 <= _cbmc_idx32 && _cbmc_idx32 < (uint32_t)256 ==> (signed int)(-((signed int)3329) + 1) <= (signed int)((int16_t *)r)[(signed long int)_cbmc_idx32] && (signed int)((int16_t *)r)[(signed long int)_cbmc_idx32] < (signed int)3329 }
+
+Property mlk_poly_tomsg.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t3_authoritative_20260724T154928Z/mlkem/src/compress.c line 720 function mlk_poly_tomsg
+  cbmc assertion failed
+  forall { uint32_t _cbmc_idx33; (uint32_t)0 <= _cbmc_idx33 && _cbmc_idx33 < (uint32_t)256 ==> (signed int)0 <= (signed int)((int16_t *)r)[(signed long int)_cbmc_idx33] && (signed int)((int16_t *)r)[(signed long int)_cbmc_idx33] < (signed int)3329 }
+

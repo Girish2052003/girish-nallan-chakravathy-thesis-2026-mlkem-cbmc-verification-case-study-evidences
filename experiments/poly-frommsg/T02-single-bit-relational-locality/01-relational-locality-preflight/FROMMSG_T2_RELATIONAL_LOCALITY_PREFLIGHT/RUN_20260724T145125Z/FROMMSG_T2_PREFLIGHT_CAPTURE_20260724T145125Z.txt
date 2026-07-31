@@ -1,0 +1,280 @@
+============================================================
+FROMMSG-T2 — RELATIONAL SINGLE-BIT LOCALITY PREFLIGHT
+============================================================
+UTC_TIME=2026-07-24T14:51:25Z
+AUTHORITATIVE_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ISOLATED_WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z
+RUN_DIRECTORY=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z
+
+===== AUTHORITATIVE SOURCE BINDING =====
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_MATCH=YES
+AUTHORITATIVE_TRACKED_STATE=CLEAN
+
+===== CREATE FRESH EXACT-COMMIT CLONE =====
+Cloning into '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z'...
+done.
+HEAD is now at af4c5abd Wycheproof: Check K value and reject unrecognized vector fields
+WORKTREE_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+WORKTREE_COMMIT_MATCH=YES
+
+===== CREATE CLEAN-ROOM T2 HARNESS =====
+HARNESS=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c
+MAKEFILE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/Makefile
+
+===== HARNESS CONTENT =====
+     1	/*
+     2	 * FROMMSG-T2 — Relational single-bit locality.
+     3	 *
+     4	 * Two real executions of mlk_poly_frommsg are compared.
+     5	 *
+     6	 * The second message is obtained from the first by flipping exactly
+     7	 * one symbolic input bit k. A second symbolic index j represents every
+     8	 * possible output coordinate.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	typedef struct
+    16	{
+    17	  uint8_t bytes[MLKEM_INDCPA_MSGBYTES];
+    18	} frommsg_message_box;
+    19	
+    20	void harness(void)
+    21	{
+    22	  mlk_poly r1;
+    23	  mlk_poly r2;
+    24	
+    25	  frommsg_message_box m1;
+    26	  frommsg_message_box m2;
+    27	
+    28	  unsigned k;
+    29	  unsigned j;
+    30	  unsigned byte_index;
+    31	  unsigned bit_index;
+    32	
+    33	  uint8_t mask;
+    34	  uint8_t original_bit;
+    35	
+    36	  __CPROVER_assume(k < MLKEM_N);
+    37	  __CPROVER_assume(j < MLKEM_N);
+    38	
+    39	  /*
+    40	   * Struct assignment copies every byte. Therefore m1 and m2 are
+    41	   * initially identical without introducing a harness loop.
+    42	   */
+    43	  m2 = m1;
+    44	
+    45	  byte_index = k >> 3;
+    46	  bit_index = k & 7u;
+    47	  mask = (uint8_t)(1u << bit_index);
+    48	
+    49	  original_bit =
+    50	      (uint8_t)((m1.bytes[byte_index] >> bit_index) & 1u);
+    51	
+    52	  /*
+    53	   * Flip exactly the selected LSB-first input bit.
+    54	   */
+    55	  m2.bytes[byte_index] =
+    56	      (uint8_t)(m2.bytes[byte_index] ^ mask);
+    57	
+    58	  /*
+    59	   * Exercise the real production implementation twice.
+    60	   */
+    61	  mlk_poly_frommsg(&r1, m1.bytes);
+    62	  mlk_poly_frommsg(&r2, m2.bytes);
+    63	
+    64	  __CPROVER_assert(
+    65	      (
+    66	        original_bit == 0u &&
+    67	        r1.coeffs[k] == 0 &&
+    68	        r2.coeffs[k] == MLKEM_Q_HALF
+    69	      ) ||
+    70	      (
+    71	        original_bit == 1u &&
+    72	        r1.coeffs[k] == MLKEM_Q_HALF &&
+    73	        r2.coeffs[k] == 0
+    74	      ),
+    75	      "FROMMSG_T2_P1_EXACT_TARGET_TOGGLE_PAIR");
+    76	
+    77	  __CPROVER_assert(
+    78	      (int32_t)r1.coeffs[k] +
+    79	      (int32_t)r2.coeffs[k] ==
+    80	      (int32_t)MLKEM_Q_HALF,
+    81	      "FROMMSG_T2_P2_TARGET_TOGGLE_SUM");
+    82	
+    83	  /*
+    84	   * Central T2 locality theorem:
+    85	   *
+    86	   * The two output polynomials differ at coordinate j exactly when
+    87	   * j is the coefficient corresponding to the flipped input bit.
+    88	   */
+    89	  __CPROVER_assert(
+    90	      (r1.coeffs[j] != r2.coeffs[j]) ==
+    91	      (j == k),
+    92	      "FROMMSG_T2_P3_DIFFERENCE_IFF_FLIPPED_COORDINATE");
+    93	
+    94	  __CPROVER_assert(
+    95	      (
+    96	        (r1.coeffs[k] == MLKEM_Q_HALF) ==
+    97	        (original_bit == 1u)
+    98	      ) &&
+    99	      (
+   100	        (r2.coeffs[k] == MLKEM_Q_HALF) ==
+   101	        (original_bit == 0u)
+   102	      ),
+   103	      "FROMMSG_T2_P4_BOOLEAN_COMPLEMENT_PRESERVATION");
+   104	}
+
+===== MAKEFILE CONTENT =====
+     1	# FROMMSG-T2 clean-room relational-locality preflight
+     2	
+     3	include ../Makefile_params.common
+     4	
+     5	HARNESS_ENTRY = harness
+     6	HARNESS_FILE = frommsg_t2_relational_harness
+     7	PROOF_UID = FROMMSG-T2 relational single-bit locality
+     8	
+     9	#
+    10	# Real production-loop bodies are retained and explicitly bounded.
+    11	#
+    12	# mlk_poly_frommsg.0 = inner loop: 8 iterations
+    13	# mlk_poly_frommsg.1 = outer loop: 32 iterations
+    14	#
+    15	UNWINDSET += mlk_poly_frommsg.0:9
+    16	UNWINDSET += mlk_poly_frommsg.1:33
+    17	
+    18	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    19	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    20	
+    21	EXTERNAL_SAT_SOLVER =
+    22	CBMCFLAGS =
+    23	
+    24	CBMC_OBJECT_BITS = 9
+    25	FUNCTION_NAME = mlk_poly_frommsg
+    26	
+    27	include ../Makefile.common
+
+===== FREEZE INPUT COPIES =====
+d737862668ee87ce13e566157ee3dc9ecc89eaa1fadded0f9370dbf1cd3fa532  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c
+4c02baaaaf152ad9417ab5d8ba27324bc9a94eb6cf12fd3d222e24127d5b35cd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/Makefile
+d737862668ee87ce13e566157ee3dc9ecc89eaa1fadded0f9370dbf1cd3fa532  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/frommsg_t2_relational_harness_20260724T145125Z.c
+4c02baaaaf152ad9417ab5d8ba27324bc9a94eb6cf12fd3d222e24127d5b35cd  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/frommsg_t2_relational_Makefile_20260724T145125Z.txt
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/compress.h
+450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/params.h
+f24f980110953c1d361e04137e13e2f85f76db776903f85c98f24900e85f7aef  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/poly.h
+
+===== STATIC FIREWALL CHECKS =====
+HARNESS_BYTE_IDENTICAL_TO_NATIVE=NO
+REAL_TARGET_CALL_COUNT=2
+REAL_TARGET_CALLS_PRESENT=YES
+CUSTOM_ASSERTION_COUNT=4
+CUSTOM_ASSUME_COUNT=2
+CONTRADICTORY_ASSUME_FALSE_PRESENT=NO
+TARGET_REIMPLEMENTATION_PRESENT=NO
+TARGET_OR_HELPER_CONTRACT_SUBSTITUTION=NO
+SINGLE_BIT_PERTURBATION_CONSTRUCTION_PRESENT=YES
+
+===== CLEAN GENERATED BUILD STATE =====
+
+===== LITANI INITIALIZATION =====
+LITANI_INIT_EXIT=0
+e4887c457e2e56424f8b80f1c9c434674865b5d3961ebcf22d663d3dad53cbdf  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/FROMMSG_T2_LITANI_INIT_20260724T145125Z.txt
+Report will be rendered at file:///tmp/litani/runs/latest/html/index.html
+LITANI_CACHE_POINTER_PRESENT=YES
+
+===== REGISTER FINAL-GOTO JOBS =====
+JOB_REGISTRATION_EXIT=0
+da573017a0ddc667c4915f2348a8f4fef9aba449d01bdd031a68c3ac2bb393fd  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/FROMMSG_T2_JOB_REGISTRATION_20260724T145125Z.txt
+
+===== EXECUTE REGISTERED BUILD JOBS =====
+LITANI_RUN_BUILD_EXIT=0
+871f02f58a8696250fa6848255ef3c85f126cba3abb2184eb70a931ead801c56  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/FROMMSG_T2_LITANI_RUN_BUILD_20260724T145125Z.txt
+[1/12] FROMMSG-T2 relational single-bit locality: building proof binary       [2/12] FROMMSG-T2 relational single-bit locality: building project binary     [3/12] FROMMSG-T2 relational single-bit locality: removing function bodies ...[4/12] FROMMSG-T2 relational single-bit locality: linking project to proof    [5/12] FROMMSG-T2 relational single-bit locality: restricting function poin...[6/12] FROMMSG-T2 relational single-bit locality: setting static variables ...[7/12] FROMMSG-T2 relational single-bit locality: not linking CPROVER library [8/12] FROMMSG-T2 relational single-bit locality: not unwinding loops         [9/12] FROMMSG-T2 relational single-bit locality: checking function contracts [10/12] FROMMSG-T2 relational single-bit locality: slicing global initializ...[11/12] FROMMSG-T2 relational single-bit locality: dropping unused functions  [12/12] FROMMSG-T2 relational single-bit locality: copying final goto-binary  
+Report was rendered at file:///tmp/litani/runs/latest/html/index.html
+FINAL_GOTO_PRESENT=YES
+FINAL_GOTO=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/gotos/frommsg_t2_relational_harness.goto
+-rw-rw-r-- 1 girish girish 82317 Jul 24 17:51 /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/gotos/frommsg_t2_relational_harness.goto
+f6341f11064dc2272584ae8868640c54da1d53b1da3190035d7f7ae105219fb2  /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/gotos/frommsg_t2_relational_harness.goto
+
+===== PROPERTY BINDING =====
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c line 64 function harness
+  FROMMSG_T2_P1_EXACT_TARGET_TOGGLE_PAIR
+  (unsigned int)original_bit == 0u && (signed int)r1.coeffs[(signed long int)k] == 0 && (signed int)r2.coeffs[(signed long int)k] == (3329 + 1) / 2 || (unsigned int)original_bit == 1u && (signed int)r1.coeffs[(signed long int)k] == (3329 + 1) / 2 && (signed int)r2.coeffs[(signed long int)k] == 0
+
+Property harness.assertion.2:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c line 77 function harness
+  FROMMSG_T2_P2_TARGET_TOGGLE_SUM
+  (int32_t)r1.coeffs[(signed long int)k] + (int32_t)r2.coeffs[(signed long int)k] == (int32_t)((3329 + 1) / 2)
+
+Property harness.assertion.3:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c line 89 function harness
+  FROMMSG_T2_P3_DIFFERENCE_IFF_FLIPPED_COORDINATE
+  (r1.coeffs[(signed long int)j] != r2.coeffs[(signed long int)j]) == (j == k)
+
+Property harness.assertion.4:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/frommsg_t2_relational_harness.c line 94 function harness
+  FROMMSG_T2_P4_BOOLEAN_COMPLEMENT_PRESERVATION
+  ((signed int)r1.coeffs[(signed long int)k] == (3329 + 1) / 2) == ((unsigned int)original_bit == 1u) && ((signed int)r2.coeffs[(signed long int)k] == (3329 + 1) / 2) == ((unsigned int)original_bit == 0u)
+
+Property mlk_poly_frommsg.assertion.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/compress.c line 707 function mlk_poly_frommsg
+
+===== LOOP BINDING =====
+Reading GOTO program from '/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/proofs/cbmc/frommsg_t2_relational/gotos/frommsg_t2_relational_harness.goto'
+Loop mlk_poly_frommsg.0:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/compress.c line 693 function mlk_poly_frommsg
+
+Loop mlk_poly_frommsg.1:
+  file /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_t2_20260724T145125Z/mlkem/src/compress.c line 686 function mlk_poly_frommsg
+
+
+===== RUN POSITIVE T2 PREFLIGHT =====
+CBMC_EXIT=0
+f165f6bd3c2586e7d955c2296565c4440a7220a93666960a9152df710952be3e  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/FROMMSG_T2_POSITIVE_20260724T145125Z.xml
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMMSG_T2_RELATIONAL_LOCALITY_PREFLIGHT/RUN_20260724T145125Z/FROMMSG_T2_POSITIVE_20260724T145125Z.err.txt
+RESULT_XML_PARSE=PASS
+CPROVER_STATUS=SUCCESS
+TOTAL_RESULT_RECORDS=79
+RESULT_STATUS_SUCCESS=79
+FROMMSG_T2_P1_EXACT_TARGET_TOGGLE_PAIR_PROPERTY_ID=harness.assertion.1
+FROMMSG_T2_P1_EXACT_TARGET_TOGGLE_PAIR_STATUS=SUCCESS
+FROMMSG_T2_P2_TARGET_TOGGLE_SUM_PROPERTY_ID=harness.assertion.2
+FROMMSG_T2_P2_TARGET_TOGGLE_SUM_STATUS=SUCCESS
+FROMMSG_T2_P3_DIFFERENCE_IFF_FLIPPED_COORDINATE_PROPERTY_ID=harness.assertion.3
+FROMMSG_T2_P3_DIFFERENCE_IFF_FLIPPED_COORDINATE_STATUS=SUCCESS
+FROMMSG_T2_P4_BOOLEAN_COMPLEMENT_PRESERVATION_PROPERTY_ID=harness.assertion.4
+FROMMSG_T2_P4_BOOLEAN_COMPLEMENT_PRESERVATION_STATUS=SUCCESS
+FROMMSG_T2_POSITIVE_CLASSIFICATION=PASS
+PARSE_EXIT=0
+FROMMSG_T2_PREFLIGHT_GATE=PASS
+
+===== FINAL SOURCE-INTEGRITY CHECK =====
+ISOLATED_TRACKED_PRODUCTION_STATE=UNCHANGED
+AUTHORITATIVE_TRACKED_STATE_AFTER=UNCHANGED
+
+===== TOOL ENVIRONMENT =====
+6.9.0 (cbmc-6.9.0)
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+6.9.0 (cbmc-6.9.0)
+cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+Linux girish-VirtualBox 7.0.0-28-generic #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+============================================================
+FROMMSG-T2 RELATIONAL LOCALITY PREFLIGHT COMPLETE
+PRODUCTION EXECUTIONS=2
+RELATIONAL PROPERTIES=4
+TARGET PRODUCTION BODY RETAINED=YES
+TARGET LOOP CONTRACTS APPLIED=NO
+HELPER CONTRACT SUBSTITUTION=NO
+PRODUCTION SOURCE MODIFIED=NO
+============================================================

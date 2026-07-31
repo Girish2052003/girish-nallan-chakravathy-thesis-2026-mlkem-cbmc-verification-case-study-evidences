@@ -1,0 +1,14 @@
+# CMake generated Testfile for 
+# Source directory: /workspace/source/regression/linking-goto-binaries
+# Build directory: /workspace/build/regression/linking-goto-binaries
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(linking-goto-binaries-CORE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/cbmc    false" "-C")
+set_tests_properties(linking-goto-binaries-CORE PROPERTIES  LABELS "CORE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/linking-goto-binaries" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;50;add_test_pl_profile;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;0;")
+add_test(linking-goto-binaries-THOROUGH "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/cbmc    false" "-T")
+set_tests_properties(linking-goto-binaries-THOROUGH PROPERTIES  LABELS "THOROUGH;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/linking-goto-binaries" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;51;add_test_pl_profile;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;0;")
+add_test(linking-goto-binaries-FUTURE "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/cbmc    false" "-F")
+set_tests_properties(linking-goto-binaries-FUTURE PROPERTIES  LABELS "FUTURE;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/linking-goto-binaries" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;52;add_test_pl_profile;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;0;")
+add_test(linking-goto-binaries-KNOWNBUG "perl" "/workspace/source/regression/test.pl" "-e" "-p" "-c" "../chain.sh    /workspace/build/bin/goto-cc    /workspace/build/bin/cbmc    false" "-K")
+set_tests_properties(linking-goto-binaries-KNOWNBUG PROPERTIES  LABELS "KNOWNBUG;CBMC" TIMEOUT "1200" WORKING_DIRECTORY "/workspace/source/regression/linking-goto-binaries" _BACKTRACE_TRIPLES "/workspace/source/regression/CMakeLists.txt;4;add_test;/workspace/source/regression/CMakeLists.txt;53;add_test_pl_profile;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;7;add_test_pl_tests;/workspace/source/regression/linking-goto-binaries/CMakeLists.txt;0;")

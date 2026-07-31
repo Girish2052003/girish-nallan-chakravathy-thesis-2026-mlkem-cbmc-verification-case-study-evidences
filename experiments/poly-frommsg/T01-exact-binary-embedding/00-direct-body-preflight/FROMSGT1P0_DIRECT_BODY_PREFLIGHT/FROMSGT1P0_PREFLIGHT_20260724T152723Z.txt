@@ -1,0 +1,121 @@
+============================================================
+FROMMSG-T1-P0 — DIRECT-BODY HARNESS AND BUILD PREFLIGHT
+============================================================
+UTC_TIME=2026-07-24T15:27:23Z
+WORKTREE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z
+SOURCE=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c
+HEADER=/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.h
+STAGE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT
+
+===== TOOL IDENTITY =====
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+a06fe9002795381c7213f474065bbae7150e5e556fc5a45bc317249177759c71  /usr/bin/goto-cc
+b6deeb37fe2112504c064ff260231a209b4211bc6e998de85972570a8b7d22ad  /usr/bin/goto-instrument
+1dd8e1f7c1621c7e6e305f98222da0372a1b42e65d597d1941847a052e7ef6a1  /usr/bin/cbmc
+
+===== SOURCE / COMMIT BINDING =====
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_SOURCE_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+ACTUAL_HEADER_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+INITIAL_WORKTREE_STATUS_BEGIN
+
+INITIAL_WORKTREE_STATUS_END
+
+===== GENERATE CLEAN-ROOM T1 HARNESS =====
+HARNESS_FILE=/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c
+657afc885742ee6bbef421dbf336c07ed0b40f95a92ff251ffb56122dc285266  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c
+
+===== EXACT HARNESS =====
+     1	/*
+     2	 * Clean-room CBMC harness for mlk_poly_frommsg.
+     3	 *
+     4	 * Theorem FROMMSG-T1:
+     5	 * For every message and every coefficient index k in [0, 255],
+     6	 * the output coefficient is exactly MLKEM_Q_HALF when message bit k
+     7	 * is one, and exactly zero when message bit k is zero.
+     8	 *
+     9	 * This harness was not copied from the native poly_frommsg harness.
+    10	 */
+    11	
+    12	#include <assert.h>
+    13	#include <stdint.h>
+    14	
+    15	#include "compress.h"
+    16	
+    17	#if MLKEM_N != 256
+    18	#error "FROMMSG-T1 requires MLKEM_N == 256"
+    19	#endif
+    20	
+    21	#if MLKEM_INDCPA_MSGBYTES != 32
+    22	#error "FROMMSG-T1 requires a 32-byte message"
+    23	#endif
+    24	
+    25	void harness(void)
+    26	{
+    27	  mlk_poly r;
+    28	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    29	  uint8_t k;
+    30	  uint8_t bit;
+    31	
+    32	  mlk_poly_frommsg(&r, msg);
+    33	
+    34	  bit = (uint8_t)((msg[(unsigned)k / 8u] >>
+    35	                   ((unsigned)k % 8u)) &
+    36	                  1u);
+    37	
+    38	  assert(
+    39	    r.coeffs[(unsigned)k] ==
+    40	    (bit != 0u ? MLKEM_Q_HALF : 0));
+    41	}
+
+===== COMPILE CLEAN-ROOM HARNESS =====
+HARNESS_COMPILE_COMMAND=goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_exact_binary_embedding_harness.c -o /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_harness.goto 
+
+===== COMPILE FROZEN PRODUCTION SOURCE =====
+SOURCE_COMPILE_COMMAND=goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc/poly_frommsg -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/proofs/cbmc -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src -I/home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=9 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/_cbmc_work/mlkem-native_frommsg_native_20260724T131455Z/mlkem/src/compress.c -o /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_source.goto 
+
+===== LINK HARNESS TO REAL PRODUCTION BODY =====
+LINK_COMMAND=goto-cc --function harness /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_harness.goto /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_source.goto -Wall -Werror -o /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto 
+
+===== GENERATED GOTO HASHES =====
+b4d6afcf164ef32a8c3b13c179d7218343f5967ecaea603773d813e2dccb568e  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_harness.goto
+485de0b8cc80640cf79996f69ed565a18ce5cadae49290f1264288ee6b3c6783  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_source.goto
+7890586d3cbf2379fe8a28501792ee9e9a9915c113025074b79fd752816ffd7f  /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto
+
+===== VALIDATE LINKED GOTO MODEL =====
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom/FROMSGT1P0_DIRECT_BODY_PREFLIGHT/frommsg_t1_linked_direct_body.goto
+Generating GOTO Program
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_reduce::r was not found
+Backtrace:
+cbmc(+0xb93ca3) [0x6454d8c09ca3]
+cbmc(+0xb94dc3) [0x6454d8c0adc3]
+cbmc(+0x18d2d2) [0x6454d82032d2]
+cbmc(+0x1a2b6c) [0x6454d8218b6c]
+cbmc(+0x685eeb) [0x6454d86fbeeb]
+cbmc(+0x6abf57) [0x6454d8721f57]
+cbmc(+0x19015d) [0x6454d820615d]
+cbmc(+0x1936ed) [0x6454d82096ed]
+cbmc(+0x18b4eb) [0x6454d82014eb]
+cbmc(+0x17cf98) [0x6454d81f2f98]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x71374062a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x71374062a28b]
+cbmc(+0x18c7b5) [0x6454d82027b5]
+
+
+--- end invariant violation report ---
