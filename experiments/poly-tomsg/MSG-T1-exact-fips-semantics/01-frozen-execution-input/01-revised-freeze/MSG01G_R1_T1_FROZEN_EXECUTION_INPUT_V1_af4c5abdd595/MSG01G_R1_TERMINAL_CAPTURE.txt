@@ -1,0 +1,249 @@
+============================================================
+MSG-01G-R1 — CORRECTED MSG-T1 EXECUTION-INPUT FREEZE
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:47:07Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+FAILED_MSG01G=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595
+FROZEN=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1
+
+============================================================
+A. AUTHORITATIVE INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+ZEROIZE_SHA256=b71285ddfe229382a0402461f023defcf80a4941aaf35c3db732086ff312779a
+VERIFY_SCOPE_SHA256=0aacacb9a12ef28be9044ee3593930e69e67fcf1b107ed81ccbde9f047edb489
+DIRECT_WRAP_SHA256=7820ea424366906c1a10271579500c2eee94372c03e589560f82a046d545c42b
+OPTBLOCKER_SHA256=3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN=PASS
+PRODUCTION_SOURCE_BINDING=PASS
+HARNESS_BINDING=PASS
+GOTO_BINDING=PASS
+SUPPORT_BINDING=PASS
+
+============================================================
+B. PRESERVE FAILED MSG-01G AND COPY ACCEPTED INPUTS
+============================================================
+FAILED_MSG01G_PRESERVED=YES
+FROZEN_COPY_HASH_BINDING=PASS
+
+============================================================
+C. VALIDATE AND INVENTORY FROZEN GOTO
+============================================================
+FROZEN_GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+FROZEN_GOTO_VALIDATION=PASS
+--- Reachable call graph ---
+5:main -> msg_t1_threshold_oracle
+6:main -> msg_t1_threshold_oracle
+7:main -> msg_t1_threshold_oracle
+8:main -> msg_t1_threshold_oracle
+9:main -> mlk_msg01f_poly_tomsg
+10:main -> msg_t1_threshold_oracle
+11:mlk_msg01f_poly_tomsg -> mlk_scalar_compress_d1
+13:__CPROVER__start -> main
+
+============================================================
+D. DERIVE REACHABLE FUNCTIONS AND FROZEN UNWINDSET
+============================================================
+REACHABILITY_PARSER_EXIT=0
+REACHABLE_FUNCTION_COUNT=4
+REACHABLE_LOOP_COUNT=5
+UNEXPECTED_UNDEFINED_FUNCTION_COUNT=0
+FORBIDDEN_REACHABLE_HELPER_COUNT=0
+UNWINDSET=main.0:257,main.1:257,mlk_msg01f_poly_tomsg.0:257,mlk_msg01f_poly_tomsg.1:257,mlk_msg01f_poly_tomsg.2:257
+
+--- Reachable functions ---
+main
+mlk_msg01f_poly_tomsg
+mlk_scalar_compress_d1
+msg_t1_threshold_oracle
+
+--- Reachable loops ---
+LOOP_ID	OWNER_FUNCTION
+main.0	main
+main.1	main
+mlk_msg01f_poly_tomsg.0	mlk_msg01f_poly_tomsg
+mlk_msg01f_poly_tomsg.1	mlk_msg01f_poly_tomsg
+mlk_msg01f_poly_tomsg.2	mlk_msg01f_poly_tomsg
+
+--- Frozen unwindset ---
+main.0:257,main.1:257,mlk_msg01f_poly_tomsg.0:257,mlk_msg01f_poly_tomsg.1:257,mlk_msg01f_poly_tomsg.2:257
+REACHABILITY_AND_UNWIND_DERIVATION=PASS
+
+============================================================
+E. CBMC PROPERTY INVENTORY — NO PROPERTY SOLVING
+============================================================
+--- Exact property-inventory command ---
+cbmc /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,mlk_msg01f_poly_tomsg.0:257\,mlk_msg01f_poly_tomsg.1:257\,mlk_msg01f_poly_tomsg.2:257 --show-properties 
+CBMC_SHOW_PROPERTIES_EXIT=0
+EXPECTED_MARKER_PRESENT=MSG_T1_MODEL: polynomial degree must be 256
+EXPECTED_MARKER_PRESENT=MSG_T1_MODEL: message size must be 32 bytes
+EXPECTED_MARKER_PRESENT=MSG_T1_ORACLE: lower-zero boundary
+EXPECTED_MARKER_PRESENT=MSG_T1_ORACLE: lower-one boundary
+EXPECTED_MARKER_PRESENT=MSG_T1_ORACLE: upper-one boundary
+EXPECTED_MARKER_PRESENT=MSG_T1_ORACLE: upper-zero boundary
+EXPECTED_MARKER_PRESENT=MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+Property mlk_scalar_compress_d1.overflow.1:
+Property mlk_scalar_compress_d1.overflow.2:
+D1_CONVERSION_PROPERTY_1_PRESENT=PASS
+D1_CONVERSION_PROPERTY_2_PRESENT=PASS
+D1_INTENDED_ADDITION_WRAP_PROPERTY_ABSENT=PASS
+D1_OVERFLOW_PROPERTY_COUNT=2
+D1_OVERFLOW_PROPERTY_COUNT_GATE=PASS
+EXPECTED_MARKER_COUNT=7
+FOUND_MARKER_COUNT=7
+CBMC_PROPERTY_INVENTORY=PASS
+CBMC_PROPERTY_SOLVING_EXECUTED=NO
+
+============================================================
+F. WRITE CORRECTION AND FREEZE RECORDS
+============================================================
+     1	# MSG-01G-R1 — Property-Inventory Audit Correction
+     2	
+     3	## Failed MSG-01G classification
+     4	
+     5	The first MSG-01G attempt successfully:
+     6	
+     7	- bound the frozen source, harness, support files and GOTO;
+     8	- validated the frozen GOTO;
+     9	- derived four reachable functions;
+    10	- derived five reachable loops;
+    11	- produced the expected unwindset;
+    12	- completed CBMC property inventory;
+    13	- found all seven MSG-T1 markers.
+    14	
+    15	It then falsely rejected every property whose name matched
+    16	`mlk_scalar_compress_d1.*overflow`.
+    17	
+    18	The legitimate conversion properties are:
+    19	
+    20	```text
+    21	mlk_scalar_compress_d1.overflow.1
+    22	mlk_scalar_compress_d1.overflow.2
+    23	```
+    24	
+    25	The intended addition-wrap property suppressed by the direct pragma adapter is:
+    26	
+    27	```text
+    28	mlk_scalar_compress_d1.overflow.3
+    29	```
+    30	
+    31	MSG-01G-R1 requires properties 1 and 2 and forbids only property 3.
+    32	
+    33	```text
+    34	FAILED_MSG01G_CLASSIFICATION=PROPERTY_INVENTORY_AUDIT_FALSE_REJECTION
+    35	FUNCTIONAL_COUNTEREXAMPLE=NO
+    36	CBMC_PROPERTY_SOLVING_EXECUTED=NO
+    37	```
+     1	# MSG-01G-R1 — MSG-T1 Candidate Freeze Record
+     2	
+     3	Status: **FROZEN BEFORE CBMC PROPERTY SOLVING**
+     4	
+     5	## Frozen theorem candidate
+     6	
+     7	For every 256-coefficient polynomial satisfying:
+     8	
+     9	```text
+    10	0 <= a[k] < 3329
+    11	```
+    12	
+    13	every flat output bit produced by the actual frozen
+    14	`mlk_msg01f_poly_tomsg` body equals the independently registered canonical
+    15	Compress1 threshold oracle.
+    16	
+    17	## Frozen reachable path
+    18	
+    19	```text
+    20	main
+    21	 ├── msg_t1_threshold_oracle
+    22	 └── mlk_msg01f_poly_tomsg
+    23	      └── mlk_scalar_compress_d1
+    24	```
+    25	
+    26	## Frozen unwindset
+    27	
+    28	```text
+    29	main.0:257,main.1:257,mlk_msg01f_poly_tomsg.0:257,mlk_msg01f_poly_tomsg.1:257,mlk_msg01f_poly_tomsg.2:257
+    30	```
+    31	
+    32	## Boundaries
+    33	
+    34	- Canonical coefficients only.
+    35	- All 256 coefficients and all 32 output bytes.
+    36	- Actual production target and compression-helper bodies.
+    37	- No target or helper contract substitution.
+    38	- No complete-decryption correctness claim.
+    39	- No constant-time, leakage or side-channel claim.
+    40	
+    41	## Execution status
+    42	
+    43	```text
+    44	CBMC_PROPERTY_INVENTORY_EXECUTED=YES
+    45	CBMC_PROPERTY_SOLVING_EXECUTED=NO
+    46	```
+     1	# MSG-01G-R1 — Frozen Positive-Execution Plan
+     2	
+     3	The next stage may execute only:
+     4	
+     5	- frozen GOTO SHA-256: `51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d`;
+     6	- entry function: `main`;
+     7	- object bits: 8;
+     8	- frozen unwindset: `main.0:257,main.1:257,mlk_msg01f_poly_tomsg.0:257,mlk_msg01f_poly_tomsg.1:257,mlk_msg01f_poly_tomsg.2:257`;
+     9	- bounds and pointer checks;
+    10	- signed and unsigned overflow checks;
+    11	- conversion and undefined-shift checks;
+    12	- division-by-zero checks;
+    13	- unwinding assertions;
+    14	- formula slicing;
+    15	- MiniSat2;
+    16	- JSON result capture.
+    17	
+    18	No source, harness, adapter, GOTO or unwindset modification is permitted after
+    19	this freeze.
+
+============================================================
+G. FINAL INTEGRITY AND SUMMARY
+============================================================
+FINAL_INTEGRITY=PASS
+MSG-01G-R1 CORRECTED FREEZE SUMMARY
+
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN=PASS
+PRODUCTION_SOURCE_BINDING=PASS
+HARNESS_BINDING=PASS
+GOTO_BINDING=PASS
+SUPPORT_BINDING=PASS
+
+FAILED_MSG01G_CLASSIFICATION=PROPERTY_INVENTORY_AUDIT_FALSE_REJECTION
+FAILED_MSG01G_PRESERVED=YES
+
+FROZEN_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/harness/msg_t1_exact_fips_candidate_v4.c
+FROZEN_HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+FROZEN_GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto
+FROZEN_GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+
+FROZEN_GOTO_VALIDATE_EXIT=0
+FROZEN_GOTO_VALIDATION=PASS
+REACHABLE_FUNCTION_COUNT=4
+REACHABLE_LOOP_COUNT=5
+FROZEN_UNWINDSET=main.0:257,main.1:257,mlk_msg01f_poly_tomsg.0:257,mlk_msg01f_poly_tomsg.1:257,mlk_msg01f_poly_tomsg.2:257
+
+EXPECTED_MARKER_COUNT=7
+FOUND_MARKER_COUNT=7
+D1_CONVERSION_PROPERTY_1_PRESENT=PASS
+D1_CONVERSION_PROPERTY_2_PRESENT=PASS
+D1_INTENDED_ADDITION_WRAP_PROPERTY_ABSENT=PASS
+D1_OVERFLOW_PROPERTY_COUNT=2
+CBMC_PROPERTY_INVENTORY=PASS
+
+FINAL_INTEGRITY=PASS
+CANDIDATE_STATUS=FROZEN_READY_FOR_POSITIVE_EXECUTION
+CBMC_PROPERTY_SOLVING_EXECUTED=NO
+
+MSG01G_R1_COMPLETE

@@ -1,0 +1,21 @@
+STATUS88_CLASSIFICATION=PRE_COVERAGE_INSTRUMENTATION_COUNTING_ERROR
+
+RAW_COVERAGE_GOTO_BUILD_FAILED=NO
+RAW_COVERAGE_GOTO_VALIDATION_FAILED=NO
+MAIN_PRODUCTION_CALL_COUNT=2
+SOURCE_COVER_STATEMENT_COUNT=11
+
+COVERAGE_EXECUTED_BEFORE_REPAIR=NO
+FUNCTIONAL_COUNTEREXAMPLE=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+ROOT_CAUSE:
+The audit ran goto-instrument --show-properties on the raw GOTO model before
+applying the cover criterion. __CPROVER_cover statements had not yet been
+transformed into coverage properties, so the ordinary property listing
+correctly contained zero main.coverage properties.
+
+REPAIR:
+Create a separate coverage-instrumented GOTO copy using --cover cover, count
+the generated coverage properties there, and execute CBMC coverage on the
+unchanged raw coverage GOTO model.

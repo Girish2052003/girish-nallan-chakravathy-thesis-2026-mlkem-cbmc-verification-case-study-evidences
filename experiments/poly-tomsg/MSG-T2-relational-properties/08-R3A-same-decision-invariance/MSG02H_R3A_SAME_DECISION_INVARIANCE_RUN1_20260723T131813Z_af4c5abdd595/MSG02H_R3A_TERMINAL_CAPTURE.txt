@@ -1,0 +1,271 @@
+============================================================
+MSG02H-R3A — SAME-DECISION INVARIANCE
+============================================================
+
+CAPTURE_UTC=2026-07-23T13:18:13Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 3. ACCEPTED R2-FAMILY BINDING =====
+R2A_FAILURES=0
+R2A_UNKNOWNS=0
+R2B_FAILURES=0
+R2B_UNKNOWNS=0
+R2A_COVERED=6
+R2B_COVERED=6
+R2A_MUT_FAILURES=1
+R2A_MUT_UNKNOWNS=0
+R2B_MUT_FAILURES=1
+R2B_MUT_UNKNOWNS=0
+R2_LOCALITY_FAMILY_BINDING=PASS
+BYTE_CONFINEMENT_BOUND_TO_STRONGER_ACCEPTED_R2B=YES
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+c38f6ce6c994376e2725f076d116f7fea4a166b39a8f7bdbffccce3d0d3b0fec  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_cross_bit_preservation_result.json
+72b27f2dd398263e47b7a3660c6d885d734d14512e873c7c76707889960477b5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2a_reachability_result.txt
+2081773a41f90b36987c73305ebfda343922552a18cc1786ee0f4b975c40ae94  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2b_reachability_result.txt
+279bd741b615243626f2a8dadf515be84eead715843f48ba502eb0c609180ab9  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/05_results/msg_t2_r2a_remove_selected_equality_mutation.json
+f1fa08efd5569b607048f877fd9fa9a67ed5211c72469073b21f7fa1fbdb67dc  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_B_R2B_SECOND_COEFFICIENT_MUTATION_RUN1_20260723T131317Z_af4c5abdd595/05_results/msg_t2_r2b_second_coefficient_leak_mutation.json
+
+===== 4. WRITE SAME-DECISION INVARIANCE HARNESS =====
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=93
+HARNESS_BYTE_COUNT=2117
+     1	/*
+     2	 * MSG-T2-R3A — same-decision invariance.
+     3	 *
+     4	 * For arbitrary canonical polynomials A and B and arbitrary k:
+     5	 *
+     6	 *   Compress1(A[k]) == Compress1(B[k])
+     7	 *
+     8	 * implies:
+     9	 *
+    10	 *   bit_k(tomsg(A)) == bit_k(tomsg(B)).
+    11	 *
+    12	 * A[k] and B[k] need not be numerically equal. Every coefficient outside k
+    13	 * also remains unrestricted between A and B.
+    14	 *
+    15	 * The decision predicate is expressed independently as the exact canonical
+    16	 * interval established for Compress1:
+    17	 *
+    18	 *   decision(u) = 1 iff 833 <= u <= 2496.
+    19	 *
+    20	 * This is a functional invariance theorem. It is not a timing,
+    21	 * microarchitectural, leakage, or constant-time claim.
+    22	 */
+    23	
+    24	#include <stdint.h>
+    25	#include "compress.h"
+    26	
+    27	uint8_t msg_t2_r3a_decision_oracle(int16_t u)
+    28	{
+    29	  return (uint8_t)((u >= 833) && (u <= 2496));
+    30	}
+    31	
+    32	int main(void)
+    33	{
+    34	  mlk_poly a;
+    35	  mlk_poly b;
+    36	
+    37	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    38	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    39	
+    40	  unsigned i;
+    41	  unsigned k;
+    42	
+    43	  uint8_t decision_a;
+    44	  uint8_t decision_b;
+    45	  uint8_t bit_a;
+    46	  uint8_t bit_b;
+    47	
+    48	  __CPROVER_assert(
+    49	      MLKEM_N == 256,
+    50	      "MSG_T2_R3A_MODEL: polynomial degree must be 256");
+    51	
+    52	  __CPROVER_assert(
+    53	      MLKEM_INDCPA_MSGBYTES == 32,
+    54	      "MSG_T2_R3A_MODEL: message size must be 32 bytes");
+    55	
+    56	  __CPROVER_assume(k < MLKEM_N);
+    57	
+    58	  for (i = 0u; i < MLKEM_N; i++)
+    59	  {
+    60	    __CPROVER_assume(a.coeffs[i] >= 0);
+    61	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    62	
+    63	    __CPROVER_assume(b.coeffs[i] >= 0);
+    64	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    65	  }
+    66	
+    67	  decision_a =
+    68	      msg_t2_r3a_decision_oracle(a.coeffs[k]);
+    69	
+    70	  decision_b =
+    71	      msg_t2_r3a_decision_oracle(b.coeffs[k]);
+    72	
+    73	  /*
+    74	   * Only the independent Compress1 decisions are equated. The selected
+    75	   * coefficient values themselves remain unrestricted.
+    76	   */
+    77	  __CPROVER_assume(decision_a == decision_b);
+    78	
+    79	  mlk_poly_tomsg(msg_a, &a);
+    80	  mlk_poly_tomsg(msg_b, &b);
+    81	
+    82	  bit_a =
+    83	      (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    84	
+    85	  bit_b =
+    86	      (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    87	
+    88	  __CPROVER_assert(
+    89	      bit_a == bit_b,
+    90	      "MSG_T2_R3A_SAME_DECISION: equal Compress1 decisions must produce equal output bit k");
+    91	
+    92	  return 0;
+    93	}
+1d4a28ae6855617872039e3102dbbafc5a13739301c1d9a71416db1ef823f851  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c
+
+===== 5. STATIC HARNESS AND ORACLE AUDIT =====
+TARGET_CALL_COUNT=2
+ORACLE_DEFINITION_COUNT=1
+DECISION_EQUALITY_COUNT=1
+SELECTED_COEFFICIENT_EQUALITY_COUNT=0
+OTHER_COEFFICIENT_EQUALITY_COUNT=0
+THEOREM_ASSERTION_COUNT=1
+ORACLE_HELPER_CALLS=0
+ORACLE_TARGET_CALLS=0
+SELECTED_COEFFICIENT_VALUES_REMAIN_UNRESTRICTED=YES
+ALL_OTHER_COEFFICIENT_PAIRS_REMAIN_UNRESTRICTED=YES
+INDEPENDENT_ORACLE_SEPARATION=PASS
+STATIC_R3A_HARNESS_AUDIT=PASS
+
+===== 6. BUILD R3A GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02h_r3ainv -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 49K Jul 23 16:18 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto
+3cd67ea9e795280cdb9ed3e42e438857c7a7ce2fc96044e203bb7d9091bd52c8  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto
+
+===== 7. VALIDATE AND INSPECT R3A MODEL =====
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto'
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+50-        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 77 function main
+51-        ASSUME main::1::decision_a = main::1::decision_b
+52-        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 79 function main
+53:        CALL mlk_msg02h_r3ainv_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::a))
+54-        // 39 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 80 function main
+55:        CALL mlk_msg02h_r3ainv_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::b))
+56-        // 40 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 82 function main
+57-        ASSIGN main::1::bit_a := cast(bitand(cast(ashr(cast(main::1::msg_a[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+58-        // 41 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 85 function main
+--- Registered loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c line 58 function main
+
+--
+Loop mlk_msg02h_r3ainv_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02h_r3ainv_poly_tomsg
+
+Loop mlk_msg02h_r3ainv_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02h_r3ainv_poly_tomsg
+
+Loop mlk_msg02h_r3ainv_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02h_r3ainv_poly_tomsg
+
+THEOREM_PROPERTY_ID=main.assertion.3
+GOTO_BINARY_VALIDATION=PASS
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+R3A_PROPERTY_REGISTRATION=PASS
+
+===== 8. WRITE AUTHORITATIVE R3A COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto" --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,mlk_msg02h_r3ainv_poly_tomsg.0:257,mlk_msg02h_r3ainv_poly_tomsg.1:257,mlk_msg02h_r3ainv_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --all-properties --trace --json-ui
+R3A_CBMC_COMMAND_STATIC_AUDIT=PASS
+
+===== 9. EXECUTE AUTHORITATIVE R3A PROOF =====
+CBMC_EXIT=0
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/05_results/msg_t2_r3a_same_decision_invariance_result.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/06_logs/msg_t2_r3a_same_decision_invariance_stderr.txt
+--- CBMC stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=522
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+CBMC_EXIT=0
+THEOREM_PROPERTY_ID=main.assertion.3
+SUCCESS_COUNT=522
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 3.37
+	System time (seconds): 0.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.54
+	Maximum resident set size (kbytes): 270504
+	Exit status: 0
+
+===== 10. POSITIVE-PROOF ACCEPTANCE GATE =====
+R3A_POSITIVE_CBMC_RESULT=SUCCESS
+SAME_DECISION_INVARIANCE=PROVISIONALLY_PROVED
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+1d4a28ae6855617872039e3102dbbafc5a13739301c1d9a71416db1ef823f851  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/01_harness/msg_t2_r3a_same_decision_invariance_harness.c
+3cd67ea9e795280cdb9ed3e42e438857c7a7ce2fc96044e203bb7d9091bd52c8  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/02_build/msg_t2_r3a_same_decision_invariance.goto
+c91b985b3de62795484d0f23756b39c212b3da513f7f862c8ea20df89f4fdb14  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/04_commands/r3a_goto_build_command.txt
+800b01a7a05406d3b68ce58edd196d3153324225a046d72789dc19217051fab6  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/04_commands/r3a_cbmc_command.txt
+5e5fb1973a9a2548e8e307d3d6fcbcd60457e0173f12d7b3270342e62828d92a  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/05_results/msg_t2_r3a_same_decision_invariance_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/06_logs/msg_t2_r3a_same_decision_invariance_stderr.txt
+a50fd6108a43b368a126182346760e51df1da790e8b1dee60ccf94bb1954cec6  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595/05_results/r3a_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02H_R3A_SOURCE_BINDING=PASS
+MSG02H_R3A_ACCEPTED_R2_FAMILY_BINDING=PASS
+MSG02H_R3A_SELECTED_VALUES_UNRESTRICTED=PASS
+MSG02H_R3A_OTHER_COEFFICIENTS_UNRESTRICTED=PASS
+MSG02H_R3A_TWO_PRODUCTION_EXECUTIONS=PASS
+MSG02H_R3A_INDEPENDENT_ORACLE=PASS
+MSG02H_R3A_POSITIVE_CBMC_RESULT=SUCCESS
+MSG_T2_3A_SAME_DECISION_INVARIANCE=PROVISIONALLY_PROVED
+MSG_T2_3_BYTE_CONFINEMENT_EVIDENCE=BOUND_TO_ACCEPTED_R2B
+NEXT_STAGE=MSG02I_R3B_DETERMINISM
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02H_R3A_SAME_DECISION_INVARIANCE_RUN1_20260723T131813Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

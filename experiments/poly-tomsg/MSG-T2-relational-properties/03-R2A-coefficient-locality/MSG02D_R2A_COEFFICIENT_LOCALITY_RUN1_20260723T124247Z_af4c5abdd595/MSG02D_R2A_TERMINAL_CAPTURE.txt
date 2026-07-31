@@ -1,0 +1,248 @@
+============================================================
+MSG02D-R2A — SYMBOLIC COEFFICIENT LOCALITY
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:42:47Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE BINDING =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 3. PRIOR MSG-T2.1 ACCEPTANCE BINDING =====
+R1_FAILURE_COUNT=0
+R1_UNKNOWN_COUNT=0
+R1_COVERAGE_SATISFIED=11
+R1_COVERAGE_FAILED=0
+R1_MUTATION_FAILURE_COUNT=1
+R1_MUTATION_UNKNOWN_COUNT=0
+MSG_T2_1_PRIOR_ACCEPTANCE_BINDING=PASS
+c87eea9d7dcd04741ced27bf5c8f996296243d73f4f9dddee3fdaeb8054dd606  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/06_results/msg_t2_r1_cbmc_result.json
+754bd235de56eab8a02a7a2fd6b36b56a37b62bd54ae6859c9d432dbc64428f2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/03_coverage_results/msg_t2_r1_coverage_status139_repair.txt
+1e5b94fffdda1dccaac5bf78f2269ffaf3a6769c8afa9b74022869b3e57248bf  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/06_mutation_results/msg_t2_r1_drop_b_mutation_result.json
+
+===== 4. WRITE R2A COEFFICIENT-LOCALITY HARNESS =====
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=82
+HARNESS_BYTE_COUNT=1920
+     1	/*
+     2	 * MSG-T2-R2A — symbolic coefficient locality.
+     3	 *
+     4	 * For arbitrary canonical polynomials A and B and arbitrary k:
+     5	 *
+     6	 *   A[k] == B[k]
+     7	 *
+     8	 * implies:
+     9	 *
+    10	 *   bit_k(tomsg(A)) == bit_k(tomsg(B)).
+    11	 *
+    12	 * All coefficients other than k remain mutually unrestricted. Therefore the
+    13	 * output bit at position k is proved to depend only on coefficient k, not on
+    14	 * any other polynomial coefficient.
+    15	 *
+    16	 * This is functional non-interference/locality. It is not a timing,
+    17	 * microarchitectural, leakage, or constant-time claim.
+    18	 */
+    19	
+    20	#include <stdint.h>
+    21	#include "compress.h"
+    22	
+    23	int main(void)
+    24	{
+    25	  mlk_poly a;
+    26	  mlk_poly b;
+    27	
+    28	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    29	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    30	
+    31	  unsigned i;
+    32	  unsigned k;
+    33	
+    34	  uint8_t bit_a;
+    35	  uint8_t bit_b;
+    36	
+    37	  __CPROVER_assert(
+    38	      MLKEM_N == 256,
+    39	      "MSG_T2_R2A_MODEL: polynomial degree must be 256");
+    40	
+    41	  __CPROVER_assert(
+    42	      MLKEM_INDCPA_MSGBYTES == 32,
+    43	      "MSG_T2_R2A_MODEL: message size must be 32 bytes");
+    44	
+    45	  /*
+    46	   * Both input polynomials range independently over the complete canonical
+    47	   * domain.
+    48	   */
+    49	  for (i = 0u; i < MLKEM_N; i++)
+    50	  {
+    51	    __CPROVER_assume(a.coeffs[i] >= 0);
+    52	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    53	
+    54	    __CPROVER_assume(b.coeffs[i] >= 0);
+    55	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    56	  }
+    57	
+    58	  /*
+    59	   * Select an arbitrary coefficient position and equate only that
+    60	   * coefficient. All other A/B coefficient pairs remain unrestricted.
+    61	   */
+    62	  __CPROVER_assume(k < MLKEM_N);
+    63	  __CPROVER_assume(a.coeffs[k] == b.coeffs[k]);
+    64	
+    65	  /*
+    66	   * Two executions of the real frozen production implementation.
+    67	   */
+    68	  mlk_poly_tomsg(msg_a, &a);
+    69	  mlk_poly_tomsg(msg_b, &b);
+    70	
+    71	  bit_a =
+    72	      (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    73	
+    74	  bit_b =
+    75	      (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    76	
+    77	  __CPROVER_assert(
+    78	      bit_a == bit_b,
+    79	      "MSG_T2_R2A_LOCALITY: equal coefficient k must produce equal output bit k");
+    80	
+    81	  return 0;
+    82	}
+279dfc12c981a62335ccbe135ab87672320971d52dfb29ffcadfbff4041d490f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c
+
+===== 5. STATIC HARNESS AUDIT =====
+TARGET_CALL_COUNT=2
+SELECTED_EQUALITY_ASSUME_COUNT=1
+LOOP_INDEX_EQUALITY_ASSUME_COUNT=0
+LOCALITY_ASSERTION_COUNT=1
+OTHER_COEFFICIENTS_REMAIN_UNRESTRICTED=YES
+STATIC_LOCALITY_HARNESS_AUDIT=PASS
+
+===== 6. BUILD FRESH R2A GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02d_loc -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 48K Jul 23 15:42 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto
+998bdb7f2df9e2f2a50fc6e99accf16790f299aa812cbee4e2db274356cead86  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto
+
+===== 7. VALIDATE MODEL AND PRODUCTION BINDING =====
+GOTO_VALIDATE_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto'
+--- Validation stderr ---
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+42-        // 33 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 63 function main
+43-        ASSUME main::1::a.coeffs[cast(main::1::k, signedbv[64])] = main::1::b.coeffs[cast(main::1::k, signedbv[64])]
+44-        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 68 function main
+45:        CALL mlk_msg02d_loc_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::a))
+46-        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 69 function main
+47:        CALL mlk_msg02d_loc_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::b))
+48-        // 36 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 71 function main
+49-        ASSIGN main::1::bit_a := cast(bitand(cast(ashr(cast(main::1::msg_a[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+50-        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 74 function main
+--- Registered loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c line 49 function main
+
+--
+Loop mlk_msg02d_loc_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02d_loc_poly_tomsg
+
+Loop mlk_msg02d_loc_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02d_loc_poly_tomsg
+
+Loop mlk_msg02d_loc_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02d_loc_poly_tomsg
+
+LOCALITY_PROPERTY_ID=main.assertion.3
+GOTO_BINARY_VALIDATION=PASS
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+LOCALITY_PROPERTY_REGISTRATION=PASS
+
+===== 8. WRITE AUTHORITATIVE R2A CBMC COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto" --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,mlk_msg02d_loc_poly_tomsg.0:257,mlk_msg02d_loc_poly_tomsg.1:257,mlk_msg02d_loc_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --all-properties --trace --json-ui
+R2A_CBMC_COMMAND_STATIC_AUDIT=PASS
+
+===== 9. EXECUTE AUTHORITATIVE R2A PROOF =====
+CBMC_EXIT=0
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/06_logs/msg_t2_r2a_coefficient_locality_stderr.txt
+--- CBMC stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=522
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+CBMC_EXIT=0
+LOCALITY_PROPERTY_ID=main.assertion.3
+SUCCESS_COUNT=522
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 4.77
+	System time (seconds): 0.15
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.92
+	Maximum resident set size (kbytes): 270496
+	Exit status: 0
+
+===== 10. POSITIVE-PROOF ACCEPTANCE GATE =====
+R2A_POSITIVE_CBMC_RESULT=SUCCESS
+COEFFICIENT_LOCALITY=PROVISIONALLY_PROVED
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+279dfc12c981a62335ccbe135ab87672320971d52dfb29ffcadfbff4041d490f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c
+998bdb7f2df9e2f2a50fc6e99accf16790f299aa812cbee4e2db274356cead86  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto
+8961957ecb3f92767f4caadfb91e2ee07064435b4ff3e5bc77cf9021515a14c9  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/04_commands/msg_t2_r2a_goto_build_command.txt
+c6e3a2f286ecc64a31be3fa394b87027ee4adb5661b55bc99283c6573efbf10d  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/04_commands/msg_t2_r2a_cbmc_command.txt
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/06_logs/msg_t2_r2a_coefficient_locality_stderr.txt
+ee8bf3d61d3dae9981bb41618bdcad58b5a3f6cb6b5ee11565412f7b659625c7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02D_R2A_SOURCE_BINDING=PASS
+MSG02D_R2A_OTHER_COEFFICIENTS_UNRESTRICTED=PASS
+MSG02D_R2A_TWO_PRODUCTION_EXECUTIONS=PASS
+MSG02D_R2A_PRODUCTION_BODY_BINDING=PASS
+MSG02D_R2A_LOCALITY_PROPERTY_REGISTERED=PASS
+MSG02D_R2A_POSITIVE_CBMC_RESULT=SUCCESS
+MSG_T2_2A_COEFFICIENT_LOCALITY=PROVISIONALLY_PROVED
+NEXT_STAGE=MSG02E_T2_R2B_CROSS_BIT_PRESERVATION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

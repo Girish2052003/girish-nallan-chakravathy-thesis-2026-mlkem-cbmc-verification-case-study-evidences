@@ -1,0 +1,322 @@
+============================================================
+MSG-01F — V4 DIRECT-PRAGMA ADAPTER RECOVERY
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:38:29Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+V4_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595
+
+============================================================
+A. FROZEN INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+V4_HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+OPTBLOCKER_SHA256=3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+COMPRESS_C_BINDING=PASS
+COMPRESS_H_BINDING=PASS
+V4_HARNESS_BINDING=PASS
+OPTBLOCKER_BINDING=PASS
+
+============================================================
+B. WRITE EXACT SUPPORT ARCHITECTURE
+============================================================
+OPTBLOCKER_BYTE_COPY=PASS
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h
+b71285ddfe229382a0402461f023defcf80a4941aaf35c3db732086ff312779a  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h
+     1	#ifndef MSG01F_FAIL_CLOSED_ZEROIZE_H
+     2	#define MSG01F_FAIL_CLOSED_ZEROIZE_H
+     3	
+     4	#include <stddef.h>
+     5	
+     6	static void mlk_zeroize(void *ptr, size_t len)
+     7	{
+     8	  (void)ptr;
+     9	  (void)len;
+    10	
+    11	  __CPROVER_assert(
+    12	      0,
+    13	      "MSG_T1_ADAPTER: mlk_zeroize must be unreachable");
+    14	}
+    15	
+    16	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h
+0aacacb9a12ef28be9044ee3593930e69e67fcf1b107ed81ccbde9f047edb489  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h
+     1	#ifndef MSG01F_VERIFY_PRAGMA_SCOPE_H
+     2	#define MSG01F_VERIFY_PRAGMA_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01F requires CBMC to be initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * Load annotations with CBMC undefined.
+    10	 * Production contracts and loop contracts remain erased.
+    11	 */
+    12	#include "common.h"
+    13	#include "cbmc.h"
+    14	
+    15	/*
+    16	 * Retain verification pragmas and portable verification utilities.
+    17	 * CBMC is undefined again before compress.h is parsed.
+    18	 */
+    19	#define CBMC 1
+    20	#include "verify.h"
+    21	#undef CBMC
+    22	
+    23	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h
+7820ea424366906c1a10271579500c2eee94372c03e589560f82a046d545c42b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h
+     1	#ifndef MSG01F_COMPRESS_DIRECT_WRAP_SCOPE_H
+     2	#define MSG01F_COMPRESS_DIRECT_WRAP_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01F direct-wrap adapter requires CBMC initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * Exact inherited successful adapter pattern:
+    10	 *
+    11	 * - compress.h is parsed while CBMC is undefined;
+    12	 * - __contract__ and __loop__ material remain erased;
+    13	 * - the inline compression definitions are parsed inside a direct
+    14	 *   unsigned-overflow disable scope;
+    15	 * - no production helper or production function is replaced.
+    16	 *
+    17	 * The structural audit requires mlk_scalar_compress_d1 to be the only
+    18	 * reachable scalar-compression helper.
+    19	 */
+    20	#pragma CPROVER check push
+    21	#pragma CPROVER check disable "unsigned-overflow"
+    22	#include "compress.h"
+    23	#pragma CPROVER check pop
+    24	
+    25	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c
+3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c
+     1	/*
+     2	 * Zero-valued environment definition required by verify.h's portable value
+     3	 * barrier. This does not replace or modify production mlk_poly_sub.
+     4	 */
+     5	#include <stdint.h>
+     6	#include "common.h"
+     7	
+     8	volatile uint64_t MLK_NAMESPACE(ct_opt_blocker_u64) = (uint64_t)0;
+
+============================================================
+C. STATIC ADAPTER AUDIT
+============================================================
+COMPRESS_HEADER_PARSED_WITH_CBMC_UNDEFINED=PASS
+DIRECT_PRAGMA_SCOPE_STATIC_AUDIT=PASS
+
+============================================================
+D. BUILD FRESH V4 GOTO
+============================================================
+--- Exact build command ---
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01f -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto 
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+GOTO_BUILD_EXIT=0
+
+--- Build stdout ---
+
+--- Build stderr ---
+GOTO_BUILD=PASS
+GOTO_SIZE_BYTES=49251
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+
+============================================================
+E. VALIDATE FRESH GOTO
+============================================================
+GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+GOTO_BINARY_VALIDATION=PASS
+
+============================================================
+F. STRUCTURAL INVENTORY
+============================================================
+FUNCTION_LIST_EXIT=0
+SYMBOL_LIST_EXIT=0
+UNDEFINED_LIST_EXIT=0
+CALL_GRAPH_EXIT=0
+LOOP_LIST_EXIT=0
+PROPERTY_LIST_EXIT=0
+FUNCTION_BODY_EXIT=0
+
+--- Relevant functions ---
+25:main /* main */
+57:mlk_msg01f_poly_tomsg /* mlk_msg01f_poly_tomsg */
+71:mlk_scalar_compress_d1 /* mlk_scalar_compress_d1 */
+73:mlk_scalar_compress_d10 /* mlk_scalar_compress_d10 */
+85:msg_t1_threshold_oracle /* msg_t1_threshold_oracle */
+
+--- Reachable call graph ---
+5:main -> msg_t1_threshold_oracle
+6:main -> msg_t1_threshold_oracle
+7:main -> msg_t1_threshold_oracle
+8:main -> msg_t1_threshold_oracle
+9:main -> mlk_msg01f_poly_tomsg
+10:main -> msg_t1_threshold_oracle
+11:mlk_msg01f_poly_tomsg -> mlk_scalar_compress_d1
+13:__CPROVER__start -> main
+
+--- Reachable scalar compression helpers ---
+mlk_scalar_compress_d1
+
+--- Undefined functions ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+__CPROVER_assume
+__CPROVER_assert
+__CPROVER_object_from
+__CPROVER_was_freed
+__CPROVER_assignable
+__CPROVER_object_whole
+__CPROVER_freeable
+__CPROVER_is_freeable
+__CPROVER_object_upto
+
+--- Loop inventory ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+
+Loop mlk_poly_decompress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 236 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 221 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 246 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_decompress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 183 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_compress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 110 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 117 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 111 function mlk_poly_compress_d10_c
+
+Loop mlk_msg01f_poly_frommsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 693 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 686 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 707 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg01f_poly_tomsg
+
+Loop mlk_poly_frombytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+
+Loop mlk_poly_frombytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 654 function mlk_poly_frombytes_c
+
+Loop mlk_poly_tobytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 574 function mlk_poly_tobytes_c
+
+Loop mlk_poly_tobytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 576 function mlk_poly_tobytes_c
+
+Loop mlk_poly_compress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 46 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 54 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 48 function mlk_poly_compress_d4_c
+
+
+--- MSG-T1 properties ---
+4:  MSG_T1_MODEL: polynomial degree must be 256
+9:  MSG_T1_MODEL: message size must be 32 bytes
+14:  MSG_T1_ORACLE: lower-zero boundary
+19:  MSG_T1_ORACLE: lower-one boundary
+24:  MSG_T1_ORACLE: upper-one boundary
+29:  MSG_T1_ORACLE: upper-zero boundary
+34:  MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+
+============================================================
+G. PRODUCTION, ORACLE AND ADAPTER AUDIT
+============================================================
+TARGET_FUNCTION_COUNT=1
+ORACLE_FUNCTION_COUNT=1
+TARGET_CALL_COUNT=1
+DIRECT_D1_CALL_COUNT=1
+REACHABLE_SCALAR_HELPER_COUNT=1
+REACHABLE_D1_COUNT=1
+TARGET_BODY_COUNT=22
+HELPER_BODY_COUNT=5
+HELPER_MAGIC_COUNT=1
+MSG_T1_EXACT_PROPERTY_COUNT=1
+D1_OVERFLOW_PROPERTY_COUNT=0
+BAD_HELPER_CALL_COUNT=0
+BAD_HELPER_UNDEFINED_COUNT=0
+BAD_CONTRACT_SYMBOL_COUNT=0
+CONTRACT_REPLACEMENT_COUNT=0
+ORACLE_TO_D1_COUNT=0
+
+PRODUCTION_BODY_BINDING=PASS
+ORACLE_GOTO_SEPARATION=PASS
+CONTRACT_AND_DEBUG_HELPER_ERASURE=PASS
+DIRECT_PRAGMA_ADAPTER=PASS
+MSG01F_STRUCTURAL_GATE=PASS
+
+============================================================
+H. POST-INTEGRITY GATE
+============================================================
+POST_INTEGRITY=PASS
+
+============================================================
+I. WRITE MSG-01F SUMMARY
+============================================================
+MSG-01F V4 DIRECT-PRAGMA PREFLIGHT SUMMARY
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+V4_HARNESS_BINDING=PASS
+V4_HARNESS_MODIFIED=NO
+COMPRESS_HEADER_PARSED_WITH_CBMC_UNDEFINED=PASS
+DIRECT_PRAGMA_SCOPE_STATIC_AUDIT=PASS
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+GOTO_BUILD_EXIT=0
+GOTO_BUILD=PASS
+GOTO_VALIDATE_EXIT=0
+GOTO_BINARY_VALIDATION=PASS
+PRODUCTION_BODY_BINDING=PASS
+ORACLE_GOTO_SEPARATION=PASS
+CONTRACT_AND_DEBUG_HELPER_ERASURE=PASS
+DIRECT_PRAGMA_ADAPTER=PASS
+POST_INTEGRITY=PASS
+CANDIDATE_STATUS=VALIDATED_NOT_YET_FROZEN
+CBMC_PROPERTY_SOLVING_EXECUTED=NO
+
+MSG01F_COMPLETE

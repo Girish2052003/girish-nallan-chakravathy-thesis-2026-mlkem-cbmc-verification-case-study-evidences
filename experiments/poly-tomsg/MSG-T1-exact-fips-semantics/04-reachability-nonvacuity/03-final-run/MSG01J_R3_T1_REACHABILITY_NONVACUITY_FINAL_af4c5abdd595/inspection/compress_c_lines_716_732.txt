@@ -1,0 +1,17 @@
+   716	MLK_INTERNAL_API
+   717	void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+   718	{
+   719	  unsigned i;
+   720	  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+   721	
+   722	  for (i = 0; i < MLKEM_N / 8; i++)
+   723	  __loop__(invariant(i <= MLKEM_N / 8)
+   724	           decreases(MLKEM_N / 8 - i))
+   725	  {
+   726	    unsigned j;
+   727	    msg[i] = 0;
+   728	    for (j = 0; j < 8; j++)
+   729	    __loop__(
+   730	      invariant(i <= MLKEM_N / 8 && j <= 8)
+   731	      decreases(8 - j))
+   732	    {

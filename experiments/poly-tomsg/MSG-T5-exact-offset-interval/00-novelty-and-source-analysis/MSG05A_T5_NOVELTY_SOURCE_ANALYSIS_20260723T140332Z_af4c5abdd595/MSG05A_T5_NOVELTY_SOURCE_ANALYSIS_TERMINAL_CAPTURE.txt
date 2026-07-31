@@ -1,0 +1,1605 @@
+============================================================
+MSG05A — T5 NOVELTY AND SOURCE-ARITHMETIC GATE
+============================================================
+
+CAPTURE_UTC=2026-07-23T14:03:32Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05A_T5_NOVELTY_SOURCE_ANALYSIS_20260723T140332Z_af4c5abdd595
+
+===== 1. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+COMMIT_BINDING=PASS
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+
+===== 2. TOOLCHAIN CAPTURE =====
+CBMC_BIN=/usr/bin/cbmc
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+6.9.0 (cbmc-6.9.0)
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+git version 2.43.0
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Linux girish-VirtualBox 7.0.0-28-generic #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+TOOLCHAIN_CAPTURE=PASS
+
+===== 3. LOCATE PRODUCTION DEFINITIONS =====
+mlkem/mlkem_native.c:308:#undef mlk_poly_tomsg
+mlkem/mlkem_native_asm.S:332:#undef mlk_poly_tomsg
+mlkem/src/compress.c:123:      t[k] = mlk_scalar_compress_d10(a->coeffs[4 * j + k]);
+mlkem/src/compress.c:368:      t[k] = mlk_scalar_compress_d11(a->coeffs[8 * j + k]);
+mlkem/src/compress.c:717:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+mlkem/src/compress.c:733:      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+mlkem/src/compress.h:50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+mlkem/src/compress.h:225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+mlkem/src/compress.h:291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+mlkem/src/compress.h:577:#define mlk_poly_tomsg MLK_NAMESPACE(poly_tomsg)
+mlkem/src/compress.h:591:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+mlkem/src/indcpa.c:628:  mlk_poly_tomsg(m, v);
+SCALAR_COMPRESS_D1_SYMBOL_MATCHES=6
+POLY_TOMSG_SYMBOL_MATCHES=6
+PRODUCTION_SYMBOL_LOCATION=PASS
+
+===== 4. EXTRACT SCALAR COMPRESS-D1 CONTEXT =====
+===== compress.c matches =====
+98- *              The reference implementation works with coefficients
+99- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+100-MLK_STATIC_TESTABLE void mlk_poly_compress_d10_c(
+101-    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10], const mlk_poly *a)
+102-__contract__(
+103-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+104-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+105-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+106-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+107-)
+108-{
+109-  unsigned j;
+110-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+111-  for (j = 0; j < MLKEM_N / 4; j++)
+112-  __loop__(invariant(j <= MLKEM_N / 4)
+113-           decreases(MLKEM_N / 4 - j))
+114-  {
+115-    unsigned k;
+116-    uint16_t t[4];
+117-    for (k = 0; k < 4; k++)
+118-    __loop__(
+119-      invariant(k <= 4)
+120-      invariant(forall(r, 0, k, t[r] < (1u << 10)))
+121-      decreases(4 - k))
+122-    {
+123:      t[k] = mlk_scalar_compress_d10(a->coeffs[4 * j + k]);
+124-    }
+125-
+126-    /*
+127-     * Make all implicit truncation explicit. No data is being
+128-     * truncated for the LHS's since each t[i] is 10-bit in size.
+129-     */
+130-    r[5 * j + 0] = (uint8_t)((t[0] >> 0) & 0xFF);
+131-    r[5 * j + 1] = (uint8_t)((t[0] >> 8) | ((t[1] << 2) & 0xFF));
+132-    r[5 * j + 2] = (uint8_t)((t[1] >> 6) | ((t[2] << 4) & 0xFF));
+133-    r[5 * j + 3] = (uint8_t)((t[2] >> 4) | ((t[3] << 6) & 0xFF));
+134-    r[5 * j + 4] = (uint8_t)(t[3] >> 2);
+135-  }
+136-}
+137-
+138-MLK_INTERNAL_API
+139-void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+140-                           const mlk_poly *a)
+141-__contract__(
+142-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+143-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+144-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+145-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+146-)
+147-{
+148-#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D10)
+149-  int ret;
+150-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+151-  ret = mlk_poly_compress_d10_native(r, a->coeffs);
+152-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+153-  {
+154-    return;
+155-  }
+156-#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D10 */
+157-
+158-  mlk_poly_compress_d10_c(r, a);
+159-}
+160-
+161-/* Reference: `poly_decompress()` in the reference implementation @[REF],
+162- *            for ML-KEM-{512,768}. */
+163-MLK_STATIC_TESTABLE void mlk_poly_decompress_d4_c(
+164-    mlk_poly *r, const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+165-__contract__(
+166-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+167-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+168-  assigns(memory_slice(r, sizeof(mlk_poly)))
+169-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+170-)
+171-{
+172-  unsigned i;
+173-  for (i = 0; i < MLKEM_N / 2; i++)
+174-  __loop__(
+175-    invariant(i <= MLKEM_N / 2)
+176-    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+177-    decreases(MLKEM_N / 2 - i))
+178-  {
+179-    r->coeffs[2 * i + 0] = mlk_scalar_decompress_d4((a[i] >> 0) & 0xF);
+180-    r->coeffs[2 * i + 1] = mlk_scalar_decompress_d4((a[i] >> 4) & 0xF);
+181-  }
+182-
+183-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+184-}
+185-
+186-MLK_INTERNAL_API
+187-void mlk_poly_decompress_d4(mlk_poly *r,
+188-                            const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+189-__contract__(
+190-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+191-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+192-  assigns(memory_slice(r, sizeof(mlk_poly)))
+193-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+194-)
+195-{
+196-#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D4)
+197-  int ret;
+198-  ret = mlk_poly_decompress_d4_native(r->coeffs, a);
+199-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+200-  {
+201-    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+202-    return;
+203-  }
+--
+343- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+344-MLK_STATIC_TESTABLE void mlk_poly_compress_d11_c(
+345-    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11], const mlk_poly *a)
+346-__contract__(
+347-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+348-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+349-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+350-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+351-)
+352-{
+353-  unsigned j;
+354-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+355-
+356-  for (j = 0; j < MLKEM_N / 8; j++)
+357-  __loop__(invariant(j <= MLKEM_N / 8)
+358-           decreases(MLKEM_N / 8 - j))
+359-  {
+360-    unsigned k;
+361-    uint16_t t[8];
+362-    for (k = 0; k < 8; k++)
+363-    __loop__(
+364-      invariant(k <= 8)
+365-      invariant(forall(r, 0, k, t[r] < (1u << 11)))
+366-      decreases(8 - k))
+367-    {
+368:      t[k] = mlk_scalar_compress_d11(a->coeffs[8 * j + k]);
+369-    }
+370-
+371-    /*
+372-     * Make all implicit truncation explicit. No data is being
+373-     * truncated for the LHS's since each t[i] is 11-bit in size.
+374-     */
+375-    r[11 * j + 0] = (uint8_t)((t[0] >> 0) & 0xFF);
+376-    r[11 * j + 1] = (uint8_t)((t[0] >> 8) | ((t[1] << 3) & 0xFF));
+377-    r[11 * j + 2] = (uint8_t)((t[1] >> 5) | ((t[2] << 6) & 0xFF));
+378-    r[11 * j + 3] = (uint8_t)((t[2] >> 2) & 0xFF);
+379-    r[11 * j + 4] = (uint8_t)((t[2] >> 10) | ((t[3] << 1) & 0xFF));
+380-    r[11 * j + 5] = (uint8_t)((t[3] >> 7) | ((t[4] << 4) & 0xFF));
+381-    r[11 * j + 6] = (uint8_t)((t[4] >> 4) | ((t[5] << 7) & 0xFF));
+382-    r[11 * j + 7] = (uint8_t)((t[5] >> 1) & 0xFF);
+383-    r[11 * j + 8] = (uint8_t)((t[5] >> 9) | ((t[6] << 2) & 0xFF));
+384-    r[11 * j + 9] = (uint8_t)((t[6] >> 6) | ((t[7] << 5) & 0xFF));
+385-    r[11 * j + 10] = (uint8_t)(t[7] >> 3);
+386-  }
+387-}
+388-
+389-MLK_INTERNAL_API
+390-void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+391-                           const mlk_poly *a)
+392-__contract__(
+393-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+394-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+395-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+396-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+397-)
+398-{
+399-#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D11)
+400-  int ret;
+401-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+402-  ret = mlk_poly_compress_d11_native(r, a->coeffs);
+403-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+404-  {
+405-    return;
+406-  }
+407-#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D11 */
+408-
+409-  mlk_poly_compress_d11_c(r, a);
+410-}
+411-
+412-/* Reference: `poly_decompress()` in the reference implementation @[REF],
+413- *            for ML-KEM-1024. */
+414-MLK_STATIC_TESTABLE void mlk_poly_decompress_d5_c(
+415-    mlk_poly *r, const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D5])
+416-__contract__(
+417-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+418-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D5))
+419-  assigns(memory_slice(r, sizeof(mlk_poly)))
+420-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+421-)
+422-{
+423-  unsigned i;
+424-  for (i = 0; i < MLKEM_N / 8; i++)
+425-  __loop__(
+426-    invariant(i <= MLKEM_N / 8)
+427-    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+428-    decreases(MLKEM_N / 8 - i))
+429-  {
+430-    unsigned j;
+431-    uint8_t t[8];
+432-    const unsigned offset = i * 5;
+433-    /*
+434-     * Explicitly truncate to avoid warning about
+435-     * implicit truncation in CBMC and unwind loop for ease
+436-     * of proof.
+437-     */
+438-
+439-    /*
+440-     * Decompress 5 8-bit bytes (so 40 bits) into
+441-     * 8 5-bit values stored in t[]
+442-     */
+443-    t[0] = 0x1F & (a[offset + 0] >> 0);
+444-    t[1] = 0x1F & ((a[offset + 0] >> 5) | (a[offset + 1] << 3));
+445-    t[2] = 0x1F & (a[offset + 1] >> 2);
+446-    t[3] = 0x1F & ((a[offset + 1] >> 7) | (a[offset + 2] << 1));
+447-    t[4] = 0x1F & ((a[offset + 2] >> 4) | (a[offset + 3] << 4));
+448-    t[5] = 0x1F & (a[offset + 3] >> 1);
+--
+708-}
+709-
+710-/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+711- *            - In contrast to the reference implementation, we assume
+712- *              unsigned canonical coefficients here.
+713- *              The reference implementation works with coefficients
+714- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+715- */
+716-MLK_INTERNAL_API
+717-void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+718-{
+719-  unsigned i;
+720-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+721-
+722-  for (i = 0; i < MLKEM_N / 8; i++)
+723-  __loop__(invariant(i <= MLKEM_N / 8)
+724-           decreases(MLKEM_N / 8 - i))
+725-  {
+726-    unsigned j;
+727-    msg[i] = 0;
+728-    for (j = 0; j < 8; j++)
+729-    __loop__(
+730-      invariant(i <= MLKEM_N / 8 && j <= 8)
+731-      decreases(8 - j))
+732-    {
+733:      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+734-      msg[i] |= (uint8_t)(t << j);
+735-    }
+736-  }
+737-}
+738-
+739-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+740-
+741-MLK_EMPTY_CU(compress)
+742-
+743-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+===== compress.h matches =====
+25-#include "common.h"
+26-#include "debug.h"
+27-#include "poly.h"
+28-#include "verify.h"
+29-
+30-/*
+31- * The multiplication in this routine will exceed UINT32_MAX
+32- * and wrap around for large values of u. This is expected and required.
+33- */
+34-#ifdef CBMC
+35-#pragma CPROVER check push
+36-#pragma CPROVER check disable "unsigned-overflow"
+37-#endif
+38-
+39-/**
+40- * Compute round(u * 2 / MLKEM_Q).
+41- *
+42- * @spec{Compress_1 from @[FIPS203, Eq (4.7)].}
+43- *
+44- * @reference{Part of poly_tomsg() in the reference implementation @[REF].}
+45- *
+46- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+47- *
+48- * @return Compressed value.
+49- */
+50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+51-__contract__(
+52-  requires(0 <= u && u <= MLKEM_Q - 1)
+53-  ensures(return_value < 2)
+54-  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+55-{
+56-  /* Compute as follows:
+57-   * ```
+58-   * round(u * 2 / MLKEM_Q)
+59-   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+60-   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+61-   * ```
+62-   */
+63-  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+64-  uint32_t d0 = (uint32_t)u * 1290168;
+65-  /* Unsigned shifting by 31 positions leaves only the top bit. */
+66-  return (uint8_t)((d0 + ((uint32_t)1u << 30)) >> 31);
+67-}
+68-#ifdef CBMC
+69-#pragma CPROVER check pop
+70-#endif
+71-
+72-/*
+73- * The multiplication in this routine will exceed UINT32_MAX
+74- * and wrap around for large values of u. This is expected and required.
+75- */
+76-#ifdef CBMC
+77-#pragma CPROVER check push
+78-#pragma CPROVER check disable "unsigned-overflow"
+79-#endif
+80-
+81-/**
+82- * Compute round(u * 16 / MLKEM_Q) % 16.
+83- *
+84- * @spec{Compress_4 from @[FIPS203, Eq (4.7)].}
+85- *
+86- * @reference{Embedded into `poly_compress()` in the reference
+87- * implementation @[REF].}
+88- *
+89- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+90- *
+91- * @return Compressed value.
+92- */
+93-static MLK_INLINE uint8_t mlk_scalar_compress_d4(int16_t u)
+94-__contract__(
+95-  requires(0 <= u && u <= MLKEM_Q - 1)
+96-  ensures(return_value < 16)
+97-  ensures(return_value == (((uint32_t)u * 16 + MLKEM_Q / 2) / MLKEM_Q) % 16))
+98-{
+99-  /* Compute as follows:
+100-   * ```
+101-   * round(u * 16 / MLKEM_Q)
+102-   *   = round(u * 16 * (2^28 / MLKEM_Q) / 2^28)
+103-   *  ~= round(u * 16 * round(2^28 / MLKEM_Q) / 2^28)
+104-   * ```
+105-   */
+106-  /* check-magic: 1290160 == 16 * round(2^28 / MLKEM_Q) */
+107-  uint32_t d0 = (uint32_t)u * 1290160;
+108-  /* The return value is < 16, so not altered by the conversion to uint8_t. */
+109-  return (uint8_t)((d0 + ((uint32_t)1u << 27)) >> 28); /* round(d0/2^28) */
+110-}
+111-#ifdef CBMC
+112-#pragma CPROVER check pop
+113-#endif
+114-
+115-/**
+116- * Compute round(u * MLKEM_Q / 16).
+117- *
+118- * @spec{Decompress_4 from @[FIPS203, Eq (4.8)].}
+119- *
+120- * @reference{Embedded into `poly_decompress()` in the reference
+121- * implementation @[REF].}
+122- *
+123- * @param u Unsigned canonical modulus modulo 16 to be decompressed.
+124- *
+125- * @return Decompressed value.
+126- */
+127-static MLK_INLINE int16_t mlk_scalar_decompress_d4(uint8_t u)
+128-__contract__(
+129-  requires(0 <= u && u < 16)
+130-  ensures(return_value <= (MLKEM_Q - 1))
+--
+200-   * conversion to int16_t. */
+201-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 16) >> 5);
+202-}
+203-
+204-/*
+205- * The multiplication in this routine will exceed UINT32_MAX
+206- * and wrap around for large values of u. This is expected and required.
+207- */
+208-#ifdef CBMC
+209-#pragma CPROVER check push
+210-#pragma CPROVER check disable "unsigned-overflow"
+211-#endif
+212-
+213-/**
+214- * Compute round(u * 2**10 / MLKEM_Q) % 2**10.
+215- *
+216- * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+217- *
+218- * @reference{Embedded into `polyvec_compress()` in the reference
+219- * implementation @[REF].}
+220- *
+221- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+222- *
+223- * @return Compressed value.
+224- */
+225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+226-__contract__(
+227-  requires(0 <= u && u <= MLKEM_Q - 1)
+228-  ensures(return_value < (1u << 10))
+229-  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+230-{
+231-  /* Compute as follows:
+232-   * ```
+233-   * round(u * 1024 / MLKEM_Q)
+234-   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+235-   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+236-   * ```
+237-   */
+238-  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+239-  uint64_t d0 = (uint64_t)u * 2642263040;
+240-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+241-  return (d0 & 0x3FF);
+242-}
+243-#ifdef CBMC
+244-#pragma CPROVER check pop
+245-#endif
+246-
+247-/**
+248- * Compute round(u * MLKEM_Q / 1024).
+249- *
+250- * @spec{Decompress_10 from @[FIPS203, Eq (4.8)].}
+251- *
+252- * @reference{Embedded into `polyvec_decompress()` in the reference
+253- * implementation @[REF].}
+254- *
+255- * @param u Unsigned canonical modulus modulo 1024 to be decompressed.
+256- *
+257- * @return Decompressed value.
+258- */
+259-static MLK_INLINE int16_t mlk_scalar_decompress_d10(uint16_t u)
+260-__contract__(
+261-  requires(0 <= u && u < 1024)
+262-  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+263-)
+264-{
+265-  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+266-   * conversion to int16_t. */
+267-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 512) >> 10);
+268-}
+269-
+270-/*
+271- * The multiplication in this routine will exceed UINT32_MAX
+272- * and wrap around for large values of u. This is expected and required.
+273- */
+274-#ifdef CBMC
+275-#pragma CPROVER check push
+276-#pragma CPROVER check disable "unsigned-overflow"
+277-#endif
+278-
+279-/**
+280- * Compute round(u * 2**11 / MLKEM_Q) % 2**11.
+281- *
+282- * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+283- *
+284- * @reference{Embedded into `polyvec_compress()` in the reference
+285- * implementation @[REF].}
+286- *
+287- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+288- *
+289- * @return Compressed value.
+290- */
+291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+292-__contract__(
+293-  requires(0 <= u && u <= MLKEM_Q - 1)
+294-  ensures(return_value < (1u << 11))
+295-  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+296-{
+297-  /* Compute as follows:
+298-   * ```
+299-   * round(u * 2048 / MLKEM_Q)
+300-   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+301-   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+302-   * ```
+303-   */
+304-  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+305-  uint64_t d0 = (uint64_t)u * 5284526080;
+306-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+307-  return (d0 & 0x7FF);
+308-}
+309-#ifdef CBMC
+310-#pragma CPROVER check pop
+311-#endif
+312-
+313-/**
+314- * Compute round(u * MLKEM_Q / 2048).
+315- *
+316- * @spec{Decompress_11 from @[FIPS203, Eq (4.8)].}
+317- *
+318- * @reference{Embedded into `polyvec_decompress()` in the reference
+319- * implementation @[REF].}
+320- *
+321- * @param u Unsigned canonical modulus modulo 2048 to be decompressed.
+322- *
+323- * @return Decompressed value.
+324- */
+325-static MLK_INLINE int16_t mlk_scalar_decompress_d11(uint16_t u)
+326-__contract__(
+327-  requires(0 <= u && u < 2048)
+328-  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+329-)
+330-{
+331-  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+332-   * conversion to int16_t. */
+333-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 1024) >> 11);
+334-}
+335-
+336-#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || (MLKEM_K == 2 || MLKEM_K == 3)
+337-#define mlk_poly_compress_d4 MLK_NAMESPACE(poly_compress_d4)
+338-/**
+339- * Compression (4 bits) and subsequent serialization of a polynomial.
+340- *
+341- * @spec{Implements `ByteEncode_4 (Compress_4 (a))`: ByteEncode_d
+342- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+343- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+344- * `ByteEncode_{d_v} (Compress_{d_v} (v))` appears in @[FIPS203, Algorithm
+345- * 14 (K-PKE.Encrypt), L23], where `d_v=4` for ML-KEM-{512,768} @[FIPS203,
+346- * Table 2].}
+347- *
+348- * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D4
+349- *               bytes).
+350- * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+351- *               i.e. in [0,1,..,MLKEM_Q-1].
+352- */
+353-MLK_INTERNAL_API
+354-void mlk_poly_compress_d4(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D4],
+355-                          const mlk_poly *a);
+356-
+357-#define mlk_poly_compress_d10 MLK_NAMESPACE(poly_compress_d10)
+358-/**
+359- * Compression (10 bits) and subsequent serialization of a polynomial.
+360- *
+361- * @spec{Implements `ByteEncode_10 (Compress_10 (a))`: ByteEncode_d
+362- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+363- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+364- * `ByteEncode_{d_u} (Compress_{d_u} (u))` appears in @[FIPS203, Algorithm
+365- * 14 (K-PKE.Encrypt), L22], where `d_u=10` for ML-KEM-{512,768} @[FIPS203,
+366- * Table 2].}
+367- *
+368- * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D10
+369- *               bytes).
+370- * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+371- *               i.e. in [0,1,..,MLKEM_Q-1].
+SCALAR_COMPRESS_D1_CONTEXT_CAPTURE=PASS
+
+===== 5. EXTRACT MLK_POLY_TOMSG CONTEXT =====
+===== compress.c matches =====
+687-  __loop__(
+688-    invariant(i <= MLKEM_N / 8)
+689-    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+690-    decreases(MLKEM_N / 8 - i))
+691-  {
+692-    unsigned j;
+693-    for (j = 0; j < 8; j++)
+694-    __loop__(
+695-      invariant(i <  MLKEM_N / 8 && j <= 8)
+696-      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+697-      decreases(8 - j))
+698-    {
+699-      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+700-       * as per @[FIPS203, Eq (4.8)]. */
+701-
+702-      /* Prevent the compiler from recognizing this as a bit selection */
+703-      uint8_t mask = mlk_value_barrier_u8((uint8_t)(1u << j));
+704-      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+705-    }
+706-  }
+707-  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+708-}
+709-
+710-/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+711- *            - In contrast to the reference implementation, we assume
+712- *              unsigned canonical coefficients here.
+713- *              The reference implementation works with coefficients
+714- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+715- */
+716-MLK_INTERNAL_API
+717:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+718-{
+719-  unsigned i;
+720-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+721-
+722-  for (i = 0; i < MLKEM_N / 8; i++)
+723-  __loop__(invariant(i <= MLKEM_N / 8)
+724-           decreases(MLKEM_N / 8 - i))
+725-  {
+726-    unsigned j;
+727-    msg[i] = 0;
+728-    for (j = 0; j < 8; j++)
+729-    __loop__(
+730-      invariant(i <= MLKEM_N / 8 && j <= 8)
+731-      decreases(8 - j))
+732-    {
+733-      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+734-      msg[i] |= (uint8_t)(t << j);
+735-    }
+736-  }
+737-}
+738-
+739-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+740-
+741-MLK_EMPTY_CU(compress)
+742-
+743-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+===== compress.h matches =====
+552-);
+553-
+554-
+555-#define mlk_poly_frommsg MLK_NAMESPACE(poly_frommsg)
+556-/**
+557- * Convert a 32-byte message to a polynomial.
+558- *
+559- * @spec{Implements `Decompress_1 (ByteDecode_1 (a))`: ByteDecode_d
+560- * @[FIPS203, Algorithm 6], Decompress_d @[FIPS203, Eq (4.8)], extended to
+561- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+562- * `Decompress_1 (ByteDecode_1 (w))` appears in @[FIPS203, Algorithm 15
+563- * (K-PKE.Encrypt), L20].}
+564- *
+565- * @param[out] r   Output polynomial.
+566- * @param[in]  msg Input message.
+567- */
+568-MLK_INTERNAL_API
+569-void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+570-__contract__(
+571-  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+572-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+573-  assigns(memory_slice(r, sizeof(mlk_poly)))
+574-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+575-);
+576-
+577:#define mlk_poly_tomsg MLK_NAMESPACE(poly_tomsg)
+578-/**
+579- * Convert a polynomial to a 32-byte message.
+580- *
+581- * @spec{Implements `ByteEncode_1 (Compress_1 (a))`: ByteEncode_d
+582- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+583- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+584- * `ByteEncode_1 (Compress_1 (w))` appears in @[FIPS203, Algorithm 14
+585- * (K-PKE.Decrypt), L7].}
+586- *
+587- * @param[out] msg Output message.
+588- * @param[in]  r   Input polynomial. Coefficients must be unsigned canonical.
+589- */
+590-MLK_INTERNAL_API
+591:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+592-__contract__(
+593-  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+594-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+595-  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+596-  assigns(memory_slice(msg, MLKEM_INDCPA_MSGBYTES))
+597-);
+598-
+599-#endif /* !MLK_COMPRESS_H */
+POLY_TOMSG_CONTEXT_CAPTURE=PASS
+
+===== 6. SEARCH ROUNDING, OFFSET AND CONSTANT ARITHMETIC =====
+MLKEM_ARITHMETIC_MATCH_COUNT=897
+mlkem/mlkem_native.c:98:#include "src/fips202/native/aarch64/src/keccakf1600_round_constants.c"
+mlkem/mlkem_native.c:105:#include "src/fips202/native/armv81m/src/keccakf1600_round_constants.c"
+mlkem/mlkem_native.c:260:#undef MLKEM_Q
+mlkem/mlkem_native.c:261:#undef MLKEM_Q_HALF
+mlkem/mlkem_native.c:297:#undef mlk_poly_compress_d10
+mlkem/mlkem_native.c:298:#undef mlk_poly_compress_d11
+mlkem/mlkem_native.c:301:#undef mlk_poly_decompress_d10
+mlkem/mlkem_native.c:302:#undef mlk_poly_decompress_d11
+mlkem/mlkem_native.c:464:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:499:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:518:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:598:#undef mlk_poly_compress_d10_avx2_asm
+mlkem/mlkem_native.c:599:#undef mlk_poly_compress_d11_avx2_asm
+mlkem/mlkem_native.c:602:#undef mlk_poly_decompress_d10_avx2_asm
+mlkem/mlkem_native.c:603:#undef mlk_poly_decompress_d11_avx2_asm
+mlkem/mlkem_native.c:616:#undef mlk_compress_d10_data
+mlkem/mlkem_native.c:617:#undef mlk_compress_d11_data
+mlkem/mlkem_native.c:620:#undef mlk_decompress_d10_data
+mlkem/mlkem_native.c:621:#undef mlk_decompress_d11_data
+mlkem/mlkem_native_asm.S:80:#include "src/native/x86_64/src/poly_compress_d10_avx2_asm.S"
+mlkem/mlkem_native_asm.S:81:#include "src/native/x86_64/src/poly_compress_d11_avx2_asm.S"
+mlkem/mlkem_native_asm.S:84:#include "src/native/x86_64/src/poly_decompress_d10_avx2_asm.S"
+mlkem/mlkem_native_asm.S:85:#include "src/native/x86_64/src/poly_decompress_d11_avx2_asm.S"
+mlkem/mlkem_native_asm.S:284:#undef MLKEM_Q
+mlkem/mlkem_native_asm.S:285:#undef MLKEM_Q_HALF
+mlkem/mlkem_native_asm.S:321:#undef mlk_poly_compress_d10
+mlkem/mlkem_native_asm.S:322:#undef mlk_poly_compress_d11
+mlkem/mlkem_native_asm.S:325:#undef mlk_poly_decompress_d10
+mlkem/mlkem_native_asm.S:326:#undef mlk_poly_decompress_d11
+mlkem/mlkem_native_asm.S:488:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:523:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:542:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:622:#undef mlk_poly_compress_d10_avx2_asm
+mlkem/mlkem_native_asm.S:623:#undef mlk_poly_compress_d11_avx2_asm
+mlkem/mlkem_native_asm.S:626:#undef mlk_poly_decompress_d10_avx2_asm
+mlkem/mlkem_native_asm.S:627:#undef mlk_poly_decompress_d11_avx2_asm
+mlkem/mlkem_native_asm.S:640:#undef mlk_compress_d10_data
+mlkem/mlkem_native_asm.S:641:#undef mlk_compress_d11_data
+mlkem/mlkem_native_asm.S:644:#undef mlk_decompress_d10_data
+mlkem/mlkem_native_asm.S:645:#undef mlk_decompress_d11_data
+mlkem/src/cbmc.h:135: *  array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q)
+mlkem/src/cbmc.h:138: *  0 <= a->coeffs[k]) && a->coeffs[k] < MLKEM_Q)) }
+mlkem/src/cbmc.h:185:/* Wrapper around array_bound operating on absolute values.
+mlkem/src/compress.c:35: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:41:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:46:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:77:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:83:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:99: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:100:MLK_STATIC_TESTABLE void mlk_poly_compress_d10_c(
+mlkem/src/compress.c:105:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:110:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:123:      t[k] = mlk_scalar_compress_d10(a->coeffs[4 * j + k]);
+mlkem/src/compress.c:139:void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+mlkem/src/compress.c:144:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:150:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:151:  ret = mlk_poly_compress_d10_native(r, a->coeffs);
+mlkem/src/compress.c:158:  mlk_poly_compress_d10_c(r, a);
+mlkem/src/compress.c:169:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:176:    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:183:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:193:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:201:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:211:MLK_STATIC_TESTABLE void mlk_poly_decompress_d10_c(
+mlkem/src/compress.c:217:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:224:    invariant(array_bound(r->coeffs, 0, 4 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:239:      invariant(array_bound(r->coeffs, 0, 4 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:242:      r->coeffs[4 * j + k] = mlk_scalar_decompress_d10(t[k]);
+mlkem/src/compress.c:246:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:250:void mlk_poly_decompress_d10(mlk_poly *r,
+mlkem/src/compress.c:256:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:261:  ret = mlk_poly_decompress_d10_native(r->coeffs, a);
+mlkem/src/compress.c:264:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:269:  mlk_poly_decompress_d10_c(r, a);
+mlkem/src/compress.c:279: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:285:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:290:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:321:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:327:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:343: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:344:MLK_STATIC_TESTABLE void mlk_poly_compress_d11_c(
+mlkem/src/compress.c:349:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:354:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:368:      t[k] = mlk_scalar_compress_d11(a->coeffs[8 * j + k]);
+mlkem/src/compress.c:390:void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+mlkem/src/compress.c:395:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:401:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:402:  ret = mlk_poly_compress_d11_native(r, a->coeffs);
+mlkem/src/compress.c:409:  mlk_poly_compress_d11_c(r, a);
+mlkem/src/compress.c:420:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:427:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:432:    const unsigned offset = i * 5;
+mlkem/src/compress.c:443:    t[0] = 0x1F & (a[offset + 0] >> 0);
+mlkem/src/compress.c:444:    t[1] = 0x1F & ((a[offset + 0] >> 5) | (a[offset + 1] << 3));
+mlkem/src/compress.c:445:    t[2] = 0x1F & (a[offset + 1] >> 2);
+mlkem/src/compress.c:446:    t[3] = 0x1F & ((a[offset + 1] >> 7) | (a[offset + 2] << 1));
+mlkem/src/compress.c:447:    t[4] = 0x1F & ((a[offset + 2] >> 4) | (a[offset + 3] << 4));
+mlkem/src/compress.c:448:    t[5] = 0x1F & (a[offset + 3] >> 1);
+mlkem/src/compress.c:449:    t[6] = 0x1F & ((a[offset + 3] >> 6) | (a[offset + 4] << 2));
+mlkem/src/compress.c:450:    t[7] = 0x1F & (a[offset + 4] >> 3);
+mlkem/src/compress.c:456:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:463:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:473:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:481:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:491:MLK_STATIC_TESTABLE void mlk_poly_decompress_d11_c(
+mlkem/src/compress.c:497:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:504:    invariant(array_bound(r->coeffs, 0, 8 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:524:      invariant(array_bound(r->coeffs, 0, 8 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:527:      r->coeffs[8 * j + k] = mlk_scalar_decompress_d11(t[k]);
+mlkem/src/compress.c:531:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:535:void mlk_poly_decompress_d11(mlk_poly *r,
+mlkem/src/compress.c:541:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:546:  ret = mlk_poly_decompress_d11_native(r->coeffs, a);
+mlkem/src/compress.c:549:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:554:  mlk_poly_decompress_d11_c(r, a);
+mlkem/src/compress.c:563: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:569:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:574:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:585:     * t0 and t1 are both < MLKEM_Q, so contain at most 12 bits each of
+mlkem/src/compress.c:613:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:673: *            - We use a value barrier around the bit-selection mask to
+mlkem/src/compress.c:689:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:696:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:699:      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+mlkem/src/compress.c:704:      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+mlkem/src/compress.c:707:  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/compress.c:714: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+mlkem/src/compress.c:720:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:733:      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+mlkem/src/compress.h:32: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:40: * Compute round(u * 2 / MLKEM_Q).
+mlkem/src/compress.h:46: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+mlkem/src/compress.h:52:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:54:  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+mlkem/src/compress.h:58:   * round(u * 2 / MLKEM_Q)
+mlkem/src/compress.h:59:   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:60:   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:63:  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+mlkem/src/compress.h:74: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:82: * Compute round(u * 16 / MLKEM_Q) % 16.
+mlkem/src/compress.h:89: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:95:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:97:  ensures(return_value == (((uint32_t)u * 16 + MLKEM_Q / 2) / MLKEM_Q) % 16))
+mlkem/src/compress.h:101:   * round(u * 16 / MLKEM_Q)
+mlkem/src/compress.h:102:   *   = round(u * 16 * (2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:103:   *  ~= round(u * 16 * round(2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:106:  /* check-magic: 1290160 == 16 * round(2^28 / MLKEM_Q) */
+mlkem/src/compress.h:109:  return (uint8_t)((d0 + ((uint32_t)1u << 27)) >> 28); /* round(d0/2^28) */
+mlkem/src/compress.h:116: * Compute round(u * MLKEM_Q / 16).
+mlkem/src/compress.h:130:  ensures(return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:133:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:135:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 8) >> 4);
+mlkem/src/compress.h:140: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:148: * Compute round(u * 32 / MLKEM_Q) % 32.
+mlkem/src/compress.h:155: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:161:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:163:  ensures(return_value == (((uint32_t)u * 32 + MLKEM_Q / 2) / MLKEM_Q) % 32)  )
+mlkem/src/compress.h:167:   * round(u * 32 / MLKEM_Q)
+mlkem/src/compress.h:168:   *   = round(u * 32 * (2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:169:   *  ~= round(u * 32 * round(2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:172:  /* check-magic: 1290176 == 2^5 * round(2^27 / MLKEM_Q) */
+mlkem/src/compress.h:175:  return (uint8_t)((d0 + ((uint32_t)1u << 26)) >> 27); /* round(d0/2^27) */
+mlkem/src/compress.h:182: * Compute round(u * MLKEM_Q / 32).
+mlkem/src/compress.h:196:  ensures(0 <= return_value && return_value <= MLKEM_Q - 1)
+mlkem/src/compress.h:199:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:201:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 16) >> 5);
+mlkem/src/compress.h:206: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:214: * Compute round(u * 2**10 / MLKEM_Q) % 2**10.
+mlkem/src/compress.h:221: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+mlkem/src/compress.h:227:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:229:  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+mlkem/src/compress.h:233:   * round(u * 1024 / MLKEM_Q)
+mlkem/src/compress.h:234:   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:235:   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:238:  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:240:  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+mlkem/src/compress.h:248: * Compute round(u * MLKEM_Q / 1024).
+mlkem/src/compress.h:259:static MLK_INLINE int16_t mlk_scalar_decompress_d10(uint16_t u)
+mlkem/src/compress.h:262:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:265:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:267:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 512) >> 10);
+mlkem/src/compress.h:272: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:280: * Compute round(u * 2**11 / MLKEM_Q) % 2**11.
+mlkem/src/compress.h:287: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+mlkem/src/compress.h:293:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:295:  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+mlkem/src/compress.h:299:   * round(u * 2048 / MLKEM_Q)
+mlkem/src/compress.h:300:   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:301:   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:304:  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:306:  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+mlkem/src/compress.h:314: * Compute round(u * MLKEM_Q / 2048).
+mlkem/src/compress.h:325:static MLK_INLINE int16_t mlk_scalar_decompress_d11(uint16_t u)
+mlkem/src/compress.h:328:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:331:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:333:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 1024) >> 11);
+mlkem/src/compress.h:351: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:357:#define mlk_poly_compress_d10 MLK_NAMESPACE(poly_compress_d10)
+mlkem/src/compress.h:371: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:374:void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+mlkem/src/compress.h:383: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:400:#define mlk_poly_decompress_d10 MLK_NAMESPACE(poly_decompress_d10)
+mlkem/src/compress.h:403: * approximate inverse of mlk_poly_compress_d10.
+mlkem/src/compress.h:406: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:420:void mlk_poly_decompress_d10(mlk_poly *r,
+mlkem/src/compress.h:439: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:445:#define mlk_poly_compress_d11 MLK_NAMESPACE(poly_compress_d11)
+mlkem/src/compress.h:459: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:462:void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+mlkem/src/compress.h:471: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:488:#define mlk_poly_decompress_d11 MLK_NAMESPACE(poly_decompress_d11)
+mlkem/src/compress.h:491: * approximate inverse of mlk_poly_compress_d11.
+mlkem/src/compress.h:494: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:508:void mlk_poly_decompress_d11(mlk_poly *r,
+mlkem/src/compress.h:522: *               [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:529:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:574:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:595:  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/fips202/fips202x4.c:98:  size_t current_offset = 0;
+mlkem/src/fips202/fips202x4.c:101:    assigns(nblocks, current_offset,
+mlkem/src/fips202/fips202x4.c:108:    invariant(current_offset == (loop_entry(nblocks) - nblocks) * r)
+mlkem/src/fips202/fips202x4.c:113:        s, &out0[current_offset], &out1[current_offset], &out2[current_offset],
+mlkem/src/fips202/fips202x4.c:114:        &out3[current_offset], 0, r);
+mlkem/src/fips202/fips202x4.c:115:    current_offset += r;
+mlkem/src/fips202/keccakf1600.c:34:#define MLK_KECCAK_ROL(a, offset) (((a) << (offset)) ^ ((a) >> (64 - (offset))))
+mlkem/src/fips202/keccakf1600.c:37:                                   unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:41:  uint8_t *state_ptr = (uint8_t *)state + offset;
+mlkem/src/fips202/keccakf1600.c:54:    data[i] = (state[(offset + i) >> 3] >> (8 * ((offset + i) & 0x07))) & 0xFF;
+mlkem/src/fips202/keccakf1600.c:60:                               unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:64:  uint8_t *state_ptr = (uint8_t *)state + offset;
+mlkem/src/fips202/keccakf1600.c:77:    state[(offset + i) >> 3] ^= (uint64_t)data[i]
+mlkem/src/fips202/keccakf1600.c:78:                                << (8 * ((offset + i) & 0x07));
+mlkem/src/fips202/keccakf1600.c:88:                                              unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:90:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.c:91:         0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.c:103:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 0, data0, offset,
+mlkem/src/fips202/keccakf1600.c:105:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 1, data1, offset,
+mlkem/src/fips202/keccakf1600.c:107:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 2, data2, offset,
+mlkem/src/fips202/keccakf1600.c:109:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 3, data3, offset,
+mlkem/src/fips202/keccakf1600.c:115:                                     unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.c:120:                                              offset, length) ==
+mlkem/src/fips202/keccakf1600.c:126:  mlk_keccakf1600x4_extract_bytes_c(state, data0, data1, data2, data3, offset,
+mlkem/src/fips202/keccakf1600.c:135:                                          unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:137:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.c:138:         0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.c:151:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 0, data0, offset,
+mlkem/src/fips202/keccakf1600.c:153:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 1, data1, offset,
+mlkem/src/fips202/keccakf1600.c:155:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 2, data2, offset,
+mlkem/src/fips202/keccakf1600.c:157:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 3, data3, offset,
+mlkem/src/fips202/keccakf1600.c:164:                                 const unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.c:169:                                          offset,
+mlkem/src/fips202/keccakf1600.c:175:  mlk_keccakf1600x4_xor_bytes_c(state, data0, data1, data2, data3, offset,
+mlkem/src/fips202/keccakf1600.c:214:  unsigned round;
+mlkem/src/fips202/keccakf1600.c:256:  for (round = 0; round < MLK_KECCAK_NROUNDS; round += 2)
+mlkem/src/fips202/keccakf1600.c:257:  __loop__(invariant(round <= MLK_KECCAK_NROUNDS && round % 2 == 0)
+mlkem/src/fips202/keccakf1600.c:258:           decreases(MLK_KECCAK_NROUNDS - round))
+mlkem/src/fips202/keccakf1600.c:267:    /* thetaRhoPiChiIotaPrepareTheta(round, A, E) */
+mlkem/src/fips202/keccakf1600.c:285:    Eba ^= (uint64_t)mlk_KeccakF_RoundConstants[round];
+mlkem/src/fips202/keccakf1600.c:362:    /* thetaRhoPiChiIotaPrepareTheta(round+1, E, A) */
+mlkem/src/fips202/keccakf1600.c:380:    Aba ^= (uint64_t)mlk_KeccakF_RoundConstants[round + 1];
+mlkem/src/fips202/keccakf1600.h:22:                                   unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.h:24:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:25:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:33:                               unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.h:35:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:36:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:46:                                     unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.h:49:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:50:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:66:                                 const unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.h:69:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:70:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:11:#define mlk_keccakf1600_round_constants \
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:12:  MLK_NAMESPACE(keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:14:    mlk_keccakf1600_round_constants[24];
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:24:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:36:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:48:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:62:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:76:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:51:        .cfi_adjust_cfa_offset 0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:53:        .cfi_rel_offset x19, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:54:        .cfi_rel_offset x20, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:56:        .cfi_rel_offset x21, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:57:        .cfi_rel_offset x22, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:59:        .cfi_rel_offset x23, 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:60:        .cfi_rel_offset x24, 0x48
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:62:        .cfi_rel_offset x25, 0x50
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:63:        .cfi_rel_offset x26, 0x58
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:65:        .cfi_rel_offset x27, 0x60
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:66:        .cfi_rel_offset x28, 0x68
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:68:        .cfi_rel_offset x29, 0x70
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:69:        .cfi_rel_offset x30, 0x78
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:366:        .cfi_adjust_cfa_offset -0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:69:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:71:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:72:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:74:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:75:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:77:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:78:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:80:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:81:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:193:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:69:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:71:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:72:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:74:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:75:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:77:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:78:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:80:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:81:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:248:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:51:        .cfi_adjust_cfa_offset 0xe0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:53:        .cfi_rel_offset x19, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:54:        .cfi_rel_offset x20, 0x38
+MLKEM_ARITHMETIC_SEARCH=PASS
+
+===== 7. SEARCH NATIVE PROOFS, CONTRACTS AND HARNESSES =====
+proofs
+test
+examples
+NATIVE_RELEVANT_MATCH_COUNT=934
+examples/basic/README.md:10:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/basic/main.c:11: * This requires specifying the parameter set and namespace prefix
+examples/basic_deterministic/main.c:11: * This requires specifying the parameter set and namespace prefix
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:42: * Specifies the parameter set for ML-KEM:
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:47: * If you want to support multiple parameter sets, build the library multiple
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:79: * prefixed with the parameter set (512/768/1024).
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:89: * parameter sets.
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:91: * If you need only a single parameter set, keep this unset.
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:93: * To build mlkem-native with support for all parameter sets, build it three
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:94: * times -- once per parameter set -- and set the option
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:140: *       does not disambiguate between the parameter sets.
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:169: * single parameter set, keep this unset.
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:172: * included in the build, including code needed only for other parameter
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:179: * To build mlkem-native with support for all parameter sets, build it three
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:180: * times -- once per parameter set -- and set the option
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:195: * single parameter set, keep this unset.
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:200: * To build mlkem-native with support for all parameter sets, build it three
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:201: * times -- once per parameter set -- and set the option
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:217: * parameter-set-independent headers should be #undef'ined or not at the
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:619: * Set this to add a context parameter that is provided to public API
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:622: * The type of the context parameter is configured via
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h:630: * Set this to define the type for the context parameter used by
+examples/bring_your_own_fips202/README.md:11:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/bring_your_own_fips202/main.c:11: * This requires specifying the parameter set and namespace prefix
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:42: * Specifies the parameter set for ML-KEM:
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:47: * If you want to support multiple parameter sets, build the library multiple
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:79: * prefixed with the parameter set (512/768/1024).
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:89: * parameter sets.
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:91: * If you need only a single parameter set, keep this unset.
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:93: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:94: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:140: *       does not disambiguate between the parameter sets.
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:169: * single parameter set, keep this unset.
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:172: * included in the build, including code needed only for other parameter
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:179: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:180: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:195: * single parameter set, keep this unset.
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:200: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:201: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:217: * parameter-set-independent headers should be #undef'ined or not at the
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:619: * Set this to add a context parameter that is provided to public API
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:622: * The type of the context parameter is configured via
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h:630: * Set this to define the type for the context parameter used by
+examples/bring_your_own_fips202_static/README.md:12:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/bring_your_own_fips202_static/main.c:11: * This requires specifying the parameter set and namespace prefix
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:43: * Specifies the parameter set for ML-KEM:
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:48: * If you want to support multiple parameter sets, build the library multiple
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:80: * prefixed with the parameter set (512/768/1024).
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:90: * parameter sets.
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:92: * If you need only a single parameter set, keep this unset.
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:94: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:95: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:141: *       does not disambiguate between the parameter sets.
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:170: * single parameter set, keep this unset.
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:173: * included in the build, including code needed only for other parameter
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:180: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:181: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:196: * single parameter set, keep this unset.
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:201: * To build mlkem-native with support for all parameter sets, build it three
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:202: * times -- once per parameter set -- and set the option
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:218: * parameter-set-independent headers should be #undef'ined or not at the
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:620: * Set this to add a context parameter that is provided to public API
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:623: * The type of the context parameter is configured via
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h:631: * Set this to define the type for the context parameter used by
+examples/custom_backend/README.md:11:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/custom_backend/main.c:11: * This requires specifying the parameter set and namespace prefix
+examples/custom_backend/mlkem_native/mlkem_native_config.h:43: * Specifies the parameter set for ML-KEM:
+examples/custom_backend/mlkem_native/mlkem_native_config.h:48: * If you want to support multiple parameter sets, build the library multiple
+examples/custom_backend/mlkem_native/mlkem_native_config.h:81: * prefixed with the parameter set (512/768/1024).
+examples/custom_backend/mlkem_native/mlkem_native_config.h:91: * parameter sets.
+examples/custom_backend/mlkem_native/mlkem_native_config.h:93: * If you need only a single parameter set, keep this unset.
+examples/custom_backend/mlkem_native/mlkem_native_config.h:95: * To build mlkem-native with support for all parameter sets, build it three
+examples/custom_backend/mlkem_native/mlkem_native_config.h:96: * times -- once per parameter set -- and set the option
+examples/custom_backend/mlkem_native/mlkem_native_config.h:142: *       does not disambiguate between the parameter sets.
+examples/custom_backend/mlkem_native/mlkem_native_config.h:171: * single parameter set, keep this unset.
+examples/custom_backend/mlkem_native/mlkem_native_config.h:174: * included in the build, including code needed only for other parameter
+examples/custom_backend/mlkem_native/mlkem_native_config.h:181: * To build mlkem-native with support for all parameter sets, build it three
+examples/custom_backend/mlkem_native/mlkem_native_config.h:182: * times -- once per parameter set -- and set the option
+examples/custom_backend/mlkem_native/mlkem_native_config.h:197: * single parameter set, keep this unset.
+examples/custom_backend/mlkem_native/mlkem_native_config.h:202: * To build mlkem-native with support for all parameter sets, build it three
+examples/custom_backend/mlkem_native/mlkem_native_config.h:203: * times -- once per parameter set -- and set the option
+examples/custom_backend/mlkem_native/mlkem_native_config.h:219: * parameter-set-independent headers should be #undef'ined or not at the
+examples/custom_backend/mlkem_native/mlkem_native_config.h:615: * Set this to add a context parameter that is provided to public API
+examples/custom_backend/mlkem_native/mlkem_native_config.h:618: * The type of the context parameter is configured via
+examples/custom_backend/mlkem_native/mlkem_native_config.h:626: * Set this to define the type for the context parameter used by
+examples/monolithic_build/README.md:6:parameter set of ML-KEM as a single compilation unit using the auto-generated
+examples/monolithic_build/README.md:14:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/monolithic_build/main.c:12: * This requires specifying the parameter set and namespace prefix
+examples/monolithic_build/main.c:15: * The parameter set is configured on the command line
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:41: * Specifies the parameter set for ML-KEM:
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:46: * If you want to support multiple parameter sets, build the library multiple
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:78: * prefixed with the parameter set (512/768/1024).
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:88: * parameter sets.
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:90: * If you need only a single parameter set, keep this unset.
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:92: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:93: * times -- once per parameter set -- and set the option
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:139: *       does not disambiguate between the parameter sets.
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:168: * single parameter set, keep this unset.
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:171: * included in the build, including code needed only for other parameter
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:178: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:179: * times -- once per parameter set -- and set the option
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:194: * single parameter set, keep this unset.
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:199: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:200: * times -- once per parameter set -- and set the option
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:216: * parameter-set-independent headers should be #undef'ined or not at the
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:618: * Set this to add a context parameter that is provided to public API
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:621: * The type of the context parameter is configured via
+examples/monolithic_build/mlkem_native/mlkem_native_config.h:629: * Set this to define the type for the context parameter used by
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:43: * Specifies the parameter set for ML-KEM:
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:48: * If you want to support multiple parameter sets, build the library multiple
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:80: * prefixed with the parameter set (512/768/1024).
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:90: * parameter sets.
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:92: * If you need only a single parameter set, keep this unset.
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:94: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:95: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:141: *       does not disambiguate between the parameter sets.
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:170: * single parameter set, keep this unset.
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:173: * included in the build, including code needed only for other parameter
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:180: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:181: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:196: * single parameter set, keep this unset.
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:201: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:202: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:218: * parameter-set-independent headers should be #undef'ined or not at the
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:620: * Set this to add a context parameter that is provided to public API
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:623: * The type of the context parameter is configured via
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h:631: * Set this to define the type for the context parameter used by
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:47: * Specifies the parameter set for ML-KEM:
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:52: * If you want to support multiple parameter sets, build the library multiple
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:84: * prefixed with the parameter set (512/768/1024).
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:94: * parameter sets.
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:96: * If you need only a single parameter set, keep this unset.
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:98: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:99: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:145: *       does not disambiguate between the parameter sets.
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:174: * single parameter set, keep this unset.
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:177: * included in the build, including code needed only for other parameter
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:184: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:185: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:200: * single parameter set, keep this unset.
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:205: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:206: * times -- once per parameter set -- and set the option
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:222: * parameter-set-independent headers should be #undef'ined or not at the
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:626: * Set this to add a context parameter that is provided to public API
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:629: * The type of the context parameter is configured via
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h:637: * Set this to define the type for the context parameter used by
+examples/monolithic_build_native/README.md:11:- You need only one ML-KEM parameter set (512, 768, or 1024)
+examples/monolithic_build_native/main.c:12: * This requires specifying the parameter set and namespace prefix
+examples/monolithic_build_native/main.c:15: * The parameter set is configured on the command line
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:41: * Specifies the parameter set for ML-KEM:
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:46: * If you want to support multiple parameter sets, build the library multiple
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:78: * prefixed with the parameter set (512/768/1024).
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:88: * parameter sets.
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:90: * If you need only a single parameter set, keep this unset.
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:92: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:93: * times -- once per parameter set -- and set the option
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:139: *       does not disambiguate between the parameter sets.
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:168: * single parameter set, keep this unset.
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:171: * included in the build, including code needed only for other parameter
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:178: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:179: * times -- once per parameter set -- and set the option
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:194: * single parameter set, keep this unset.
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:199: * To build mlkem-native with support for all parameter sets, build it three
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:200: * times -- once per parameter set -- and set the option
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:216: * parameter-set-independent headers should be #undef'ined or not at the
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:618: * Set this to add a context parameter that is provided to public API
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:621: * The type of the context parameter is configured via
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h:629: * Set this to define the type for the context parameter used by
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:42: * Specifies the parameter set for ML-KEM:
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:47: * If you want to support multiple parameter sets, build the library multiple
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:79: * prefixed with the parameter set (512/768/1024).
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:89: * parameter sets.
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:91: * If you need only a single parameter set, keep this unset.
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:93: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:94: * times -- once per parameter set -- and set the option
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:140: *       does not disambiguate between the parameter sets.
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:169: * single parameter set, keep this unset.
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:172: * included in the build, including code needed only for other parameter
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:179: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:180: * times -- once per parameter set -- and set the option
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:195: * single parameter set, keep this unset.
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:200: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:201: * times -- once per parameter set -- and set the option
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:217: * parameter-set-independent headers should be #undef'ined or not at the
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:619: * Set this to add a context parameter that is provided to public API
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:622: * The type of the context parameter is configured via
+examples/multilevel_build/mlkem_native/mlkem_native_config.h:630: * Set this to define the type for the context parameter used by
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:44: * Specifies the parameter set for ML-KEM:
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:49: * If you want to support multiple parameter sets, build the library multiple
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:81: * prefixed with the parameter set (512/768/1024).
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:91: * parameter sets.
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:93: * If you need only a single parameter set, keep this unset.
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:95: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:96: * times -- once per parameter set -- and set the option
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:142: *       does not disambiguate between the parameter sets.
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:171: * single parameter set, keep this unset.
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:174: * included in the build, including code needed only for other parameter
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:181: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:182: * times -- once per parameter set -- and set the option
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:197: * single parameter set, keep this unset.
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:202: * To build mlkem-native with support for all parameter sets, build it three
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:203: * times -- once per parameter set -- and set the option
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:219: * parameter-set-independent headers should be #undef'ined or not at the
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:617: * Set this to add a context parameter that is provided to public API
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:620: * The type of the context parameter is configured via
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h:628: * Set this to define the type for the context parameter used by
+proofs/cbmc/Makefile.common:357:# are used for offset into the object.  This limits the size of the
+proofs/cbmc/indcpa_dec/Makefile:33:USE_FUNCTION_CONTRACTS += mlk_poly_tomsg
+proofs/cbmc/keccakf1600_extract_bytes/keccakf1600_extract_bytes_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600_extract_bytes/keccakf1600_extract_bytes_harness.c:13:  mlk_keccakf1600_extract_bytes(state, data, offset, length);
+proofs/cbmc/keccakf1600_extract_bytes_BE/keccakf1600_extract_bytes_be_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600_extract_bytes_BE/keccakf1600_extract_bytes_be_harness.c:13:  mlk_keccakf1600_extract_bytes(state, data, offset, length);
+proofs/cbmc/keccakf1600_xor_bytes/keccakf1600_xor_bytes_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600_xor_bytes/keccakf1600_xor_bytes_harness.c:13:  mlk_keccakf1600_xor_bytes(state, data, offset, length);
+proofs/cbmc/keccakf1600_xor_bytes_BE/keccakf1600_xor_bytes_be_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600_xor_bytes_BE/keccakf1600_xor_bytes_be_harness.c:13:  mlk_keccakf1600_xor_bytes(state, data, offset, length);
+proofs/cbmc/keccakf1600x4_extract_bytes/keccakf1600x4_extract_bytes_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600x4_extract_bytes/keccakf1600x4_extract_bytes_harness.c:13:  mlk_keccakf1600x4_extract_bytes(state, data0, data1, data2, data3, offset,
+proofs/cbmc/keccakf1600x4_extract_bytes_c/keccakf1600x4_extract_bytes_c_harness.c:10:                                       unsigned char *data3, unsigned offset,
+proofs/cbmc/keccakf1600x4_extract_bytes_c/keccakf1600x4_extract_bytes_c_harness.c:17:  unsigned offset;
+proofs/cbmc/keccakf1600x4_extract_bytes_c/keccakf1600x4_extract_bytes_c_harness.c:19:  mlk_keccakf1600x4_extract_bytes_c(state, data0, data1, data2, data3, offset,
+proofs/cbmc/keccakf1600x4_extract_bytes_native/keccakf1600x4_extract_bytes_native_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600x4_extract_bytes_native/keccakf1600x4_extract_bytes_native_harness.c:13:  mlk_keccakf1600x4_extract_bytes(state, data0, data1, data2, data3, offset,
+proofs/cbmc/keccakf1600x4_xor_bytes/keccakf1600x4_xor_bytes_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600x4_xor_bytes/keccakf1600x4_xor_bytes_harness.c:13:  mlk_keccakf1600x4_xor_bytes(state, data0, data1, data2, data3, offset,
+proofs/cbmc/keccakf1600x4_xor_bytes_c/keccakf1600x4_xor_bytes_c_harness.c:11:                                   const unsigned char *data3, unsigned offset,
+proofs/cbmc/keccakf1600x4_xor_bytes_c/keccakf1600x4_xor_bytes_c_harness.c:18:  unsigned offset;
+proofs/cbmc/keccakf1600x4_xor_bytes_c/keccakf1600x4_xor_bytes_c_harness.c:20:  mlk_keccakf1600x4_xor_bytes_c(state, data0, data1, data2, data3, offset,
+proofs/cbmc/keccakf1600x4_xor_bytes_native/keccakf1600x4_xor_bytes_native_harness.c:11:  unsigned offset;
+proofs/cbmc/keccakf1600x4_xor_bytes_native/keccakf1600x4_xor_bytes_native_harness.c:13:  mlk_keccakf1600x4_xor_bytes(state, data0, data1, data2, data3, offset,
+proofs/cbmc/mlkem_native_config_cbmc.h:43: * Specifies the parameter set for ML-KEM:
+proofs/cbmc/mlkem_native_config_cbmc.h:48: * If you want to support multiple parameter sets, build the library multiple
+proofs/cbmc/mlkem_native_config_cbmc.h:80: * prefixed with the parameter set (512/768/1024).
+proofs/cbmc/mlkem_native_config_cbmc.h:90: * parameter sets.
+proofs/cbmc/mlkem_native_config_cbmc.h:92: * If you need only a single parameter set, keep this unset.
+proofs/cbmc/mlkem_native_config_cbmc.h:94: * To build mlkem-native with support for all parameter sets, build it three
+proofs/cbmc/mlkem_native_config_cbmc.h:95: * times -- once per parameter set -- and set the option
+proofs/cbmc/mlkem_native_config_cbmc.h:141: *       does not disambiguate between the parameter sets.
+proofs/cbmc/mlkem_native_config_cbmc.h:170: * single parameter set, keep this unset.
+proofs/cbmc/mlkem_native_config_cbmc.h:173: * included in the build, including code needed only for other parameter
+proofs/cbmc/mlkem_native_config_cbmc.h:180: * To build mlkem-native with support for all parameter sets, build it three
+proofs/cbmc/mlkem_native_config_cbmc.h:181: * times -- once per parameter set -- and set the option
+proofs/cbmc/mlkem_native_config_cbmc.h:196: * single parameter set, keep this unset.
+proofs/cbmc/mlkem_native_config_cbmc.h:201: * To build mlkem-native with support for all parameter sets, build it three
+proofs/cbmc/mlkem_native_config_cbmc.h:202: * times -- once per parameter set -- and set the option
+proofs/cbmc/mlkem_native_config_cbmc.h:218: * parameter-set-independent headers should be #undef'ined or not at the
+proofs/cbmc/mlkem_native_config_cbmc.h:618: * Set this to add a context parameter that is provided to public API
+proofs/cbmc/mlkem_native_config_cbmc.h:621: * The type of the context parameter is configured via
+proofs/cbmc/mlkem_native_config_cbmc.h:629: * Set this to define the type for the context parameter used by
+proofs/cbmc/poly_tomsg/Makefile:11:PROOF_UID = mlk_poly_tomsg
+proofs/cbmc/poly_tomsg/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_tomsg
+proofs/cbmc/poly_tomsg/Makefile:31:FUNCTION_NAME = mlk_poly_tomsg
+proofs/cbmc/poly_tomsg/poly_tomsg_harness.c:13:  mlk_poly_tomsg(msg, a);
+proofs/cbmc/proof_guide.md:82:constant (declared in `stdint.h`) and `OBJECT_BITS` is a command-line parameter
+proofs/cbmc/proof_guide.md:92:This matters where a function takes a formal parameter `p` of some pointer type
+proofs/cbmc/proof_guide.md:93:`t` and a `len` parameter of type `size_t` that denotes the number of elements
+proofs/cbmc/proof_guide.md:94:pointed to by `p`, and those parameters are subject to a
+proofs/cbmc/proof_guide.md:397:appropriately typed actual parameters. The actual parameters should be variables of the simplest type possible, and
+proofs/cbmc/proof_guide.md:401:For example, if a function f() expects a single parameter which is a pointer to some struct s:
+proofs/cbmc/proof_guide.md:528:`mlk_poly_tobytes()` has a simple API, requiring two parameters, so the harness function is:
+proofs/cbmc/proof_guide.md:552:So we need to write a requires contract to constrain the ranges of the coefficients denoted by the parameter `a`. There
+proofs/cbmc/rej_uniform/rej_uniform_harness.c:9:unsigned mlk_rej_uniform(int16_t *r, unsigned target, unsigned offset,
+proofs/cbmc/rej_uniform/rej_uniform_harness.c:14:  unsigned target, offset, inlen;
+proofs/cbmc/rej_uniform/rej_uniform_harness.c:18:  mlk_rej_uniform(r, target, offset, buf, inlen);
+proofs/cbmc/rej_uniform_c/rej_uniform_c_harness.c:7:unsigned mlk_rej_uniform_c(int16_t *r, unsigned target, unsigned offset,
+proofs/cbmc/rej_uniform_c/rej_uniform_c_harness.c:13:  unsigned target, offset;
+proofs/cbmc/rej_uniform_c/rej_uniform_c_harness.c:17:  mlk_rej_uniform_c(r, target, offset, buf, buflen);
+proofs/cbmc/rej_uniform_native/rej_uniform_native_harness.c:9:unsigned mlk_rej_uniform(int16_t *r, unsigned target, unsigned offset,
+proofs/cbmc/rej_uniform_native/rej_uniform_native_harness.c:14:  unsigned target, offset, inlen;
+proofs/cbmc/rej_uniform_native/rej_uniform_native_harness.c:18:  mlk_rej_uniform(r, target, offset, buf, inlen);
+proofs/cbmc/scalar_compress_d1/Makefile:11:PROOF_UID = mlk_scalar_compress_d1
+proofs/cbmc/scalar_compress_d1/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d1
+proofs/cbmc/scalar_compress_d1/scalar_compress_d1_harness.c:12:  uint8_t d = mlk_scalar_compress_d1(u);
+proofs/cbmc/scalar_compress_d10/Makefile:11:PROOF_UID = mlk_scalar_compress_d10
+proofs/cbmc/scalar_compress_d10/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d10
+proofs/cbmc/scalar_compress_d10/scalar_compress_d10_harness.c:12:  uint16_t d = mlk_scalar_compress_d10(u);
+proofs/cbmc/scalar_compress_d11/Makefile:11:PROOF_UID = mlk_scalar_compress_d11
+proofs/cbmc/scalar_compress_d11/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d11
+proofs/cbmc/scalar_compress_d11/scalar_compress_d11_harness.c:12:  uint16_t d = mlk_scalar_compress_d11(u);
+proofs/hol_light/README.md:73:absence of the (possibly secret) _data_ behind those pointers as a parameter to the event-generating function
+proofs/hol_light/aarch64/Makefile:37:# Add explicit language input parameter to cpp, otherwise the use of #n for
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:33:      c_parameter: int16_t p[256]
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:39:      c_parameter: const int16_t twiddles12345[80]
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:45:      c_parameter: const int16_t twiddles56[384]
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:70:        .cfi_adjust_cfa_offset 0x40
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:72:        .cfi_rel_offset d8, 0x0
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:73:        .cfi_rel_offset d9, 0x8
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:75:        .cfi_rel_offset d10, 0x10
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:76:        .cfi_rel_offset d11, 0x18
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:78:        .cfi_rel_offset d12, 0x20
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:79:        .cfi_rel_offset d13, 0x28
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:81:        .cfi_rel_offset d14, 0x30
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:82:        .cfi_rel_offset d15, 0x38
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S:623:        .cfi_adjust_cfa_offset -0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:22:      c_parameter: uint64_t state[25]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:28:      c_parameter: uint64_t const *rc
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:53:        .cfi_adjust_cfa_offset 0x80
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:55:        .cfi_rel_offset x19, 0x20
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:56:        .cfi_rel_offset x20, 0x28
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:58:        .cfi_rel_offset x21, 0x30
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:59:        .cfi_rel_offset x22, 0x38
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:61:        .cfi_rel_offset x23, 0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:62:        .cfi_rel_offset x24, 0x48
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:64:        .cfi_rel_offset x25, 0x50
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:65:        .cfi_rel_offset x26, 0x58
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:67:        .cfi_rel_offset x27, 0x60
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:68:        .cfi_rel_offset x28, 0x68
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:70:        .cfi_rel_offset x29, 0x70
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:71:        .cfi_rel_offset x30, 0x78
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S:368:        .cfi_adjust_cfa_offset -0x80
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:29:      c_parameter: uint64_t state[25]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:35:      c_parameter: const uint64_t rc[24]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:70:        .cfi_adjust_cfa_offset 0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:72:        .cfi_rel_offset d8, 0x0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:73:        .cfi_rel_offset d9, 0x8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:75:        .cfi_rel_offset d10, 0x10
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:76:        .cfi_rel_offset d11, 0x18
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:78:        .cfi_rel_offset d12, 0x20
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:79:        .cfi_rel_offset d13, 0x28
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:81:        .cfi_rel_offset d14, 0x30
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:82:        .cfi_rel_offset d15, 0x38
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S:194:        .cfi_adjust_cfa_offset -0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:29:      c_parameter: uint64_t state[50]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:35:      c_parameter: const uint64_t rc[24]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:70:        .cfi_adjust_cfa_offset 0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:72:        .cfi_rel_offset d8, 0x0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:73:        .cfi_rel_offset d9, 0x8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:75:        .cfi_rel_offset d10, 0x10
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:76:        .cfi_rel_offset d11, 0x18
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:78:        .cfi_rel_offset d12, 0x20
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:79:        .cfi_rel_offset d13, 0x28
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:81:        .cfi_rel_offset d14, 0x30
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:82:        .cfi_rel_offset d15, 0x38
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S:249:        .cfi_adjust_cfa_offset -0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:22:      c_parameter: uint64_t state[100]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:28:      c_parameter: const uint64_t rc[24]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:53:        .cfi_adjust_cfa_offset 0xe0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:55:        .cfi_rel_offset x19, 0x30
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:56:        .cfi_rel_offset x20, 0x38
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:58:        .cfi_rel_offset x21, 0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:59:        .cfi_rel_offset x22, 0x48
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:61:        .cfi_rel_offset x23, 0x50
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:62:        .cfi_rel_offset x24, 0x58
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:64:        .cfi_rel_offset x25, 0x60
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:65:        .cfi_rel_offset x26, 0x68
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:67:        .cfi_rel_offset x27, 0x70
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:68:        .cfi_rel_offset x28, 0x78
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:70:        .cfi_rel_offset x29, 0x80
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:71:        .cfi_rel_offset x30, 0x88
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:73:        .cfi_rel_offset d8, 0x90
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:74:        .cfi_rel_offset d9, 0x98
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:76:        .cfi_rel_offset d10, 0xa0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:77:        .cfi_rel_offset d11, 0xa8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:79:        .cfi_rel_offset d12, 0xb0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:80:        .cfi_rel_offset d13, 0xb8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:82:        .cfi_rel_offset d14, 0xc0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:83:        .cfi_rel_offset d15, 0xc8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:1069:        .cfi_adjust_cfa_offset -0xe0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:23:      c_parameter: uint64_t state[100]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:29:      c_parameter: const uint64_t rc[24]
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:55:        .cfi_adjust_cfa_offset 0xe0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:57:        .cfi_rel_offset x19, 0x30
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:58:        .cfi_rel_offset x20, 0x38
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:60:        .cfi_rel_offset x21, 0x40
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:61:        .cfi_rel_offset x22, 0x48
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:63:        .cfi_rel_offset x23, 0x50
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:64:        .cfi_rel_offset x24, 0x58
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:66:        .cfi_rel_offset x25, 0x60
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:67:        .cfi_rel_offset x26, 0x68
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:69:        .cfi_rel_offset x27, 0x70
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:70:        .cfi_rel_offset x28, 0x78
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:72:        .cfi_rel_offset x29, 0x80
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:73:        .cfi_rel_offset x30, 0x88
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:75:        .cfi_rel_offset d8, 0x90
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:76:        .cfi_rel_offset d9, 0x98
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:78:        .cfi_rel_offset d10, 0xa0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:79:        .cfi_rel_offset d11, 0xa8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:81:        .cfi_rel_offset d12, 0xb0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:82:        .cfi_rel_offset d13, 0xb8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:84:        .cfi_rel_offset d14, 0xc0
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:85:        .cfi_rel_offset d15, 0xc8
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:977:        .cfi_adjust_cfa_offset -0xe0
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:33:      c_parameter: int16_t p[256]
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:39:      c_parameter: const int16_t twiddles12345[80]
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:45:      c_parameter: const int16_t twiddles56[384]
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:70:        .cfi_adjust_cfa_offset 0x40
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:72:        .cfi_rel_offset d8, 0x0
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:73:        .cfi_rel_offset d9, 0x8
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:75:        .cfi_rel_offset d10, 0x10
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:76:        .cfi_rel_offset d11, 0x18
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:78:        .cfi_rel_offset d12, 0x20
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:79:        .cfi_rel_offset d13, 0x28
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:81:        .cfi_rel_offset d14, 0x30
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:82:        .cfi_rel_offset d15, 0x38
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S:557:        .cfi_adjust_cfa_offset -0x40
+proofs/hol_light/aarch64/mlkem/poly_mulcache_compute_aarch64_asm.S:17:      c_parameter: int16_t cache[128]
+proofs/hol_light/aarch64/mlkem/poly_mulcache_compute_aarch64_asm.S:23:      c_parameter: const int16_t mlk_poly[256]
+proofs/hol_light/aarch64/mlkem/poly_mulcache_compute_aarch64_asm.S:29:      c_parameter: const int16_t zetas[128]
+proofs/hol_light/aarch64/mlkem/poly_mulcache_compute_aarch64_asm.S:35:      c_parameter: const int16_t zetas_twisted[128]
+proofs/hol_light/aarch64/mlkem/poly_reduce_aarch64_asm.S:17:      c_parameter: int16_t p[256]
+NATIVE_PROOF_SEARCH=PASS
+
+===== 8. LIST RELEVANT NATIVE VERIFICATION FILES =====
+RELEVANT_NATIVE_FILE_COUNT=126
+examples/basic/README.md
+examples/basic/main.c
+examples/basic_deterministic/main.c
+examples/basic_deterministic/mlkem_native/mlkem_native_config.h
+examples/bring_your_own_fips202/README.md
+examples/bring_your_own_fips202/main.c
+examples/bring_your_own_fips202/mlkem_native/mlkem_native_config.h
+examples/bring_your_own_fips202_static/README.md
+examples/bring_your_own_fips202_static/main.c
+examples/bring_your_own_fips202_static/mlkem_native/mlkem_native_config.h
+examples/custom_backend/README.md
+examples/custom_backend/main.c
+examples/custom_backend/mlkem_native/mlkem_native_config.h
+examples/monolithic_build/README.md
+examples/monolithic_build/main.c
+examples/monolithic_build/mlkem_native/mlkem_native_config.h
+examples/monolithic_build_multilevel/mlkem_native/mlkem_native_config.h
+examples/monolithic_build_multilevel_native/mlkem_native/mlkem_native_config.h
+examples/monolithic_build_native/README.md
+examples/monolithic_build_native/main.c
+examples/monolithic_build_native/mlkem_native/mlkem_native_config.h
+examples/multilevel_build/mlkem_native/mlkem_native_config.h
+examples/multilevel_build_native/mlkem_native/mlkem_native_config.h
+proofs/cbmc/Makefile.common
+proofs/cbmc/indcpa_dec/Makefile
+proofs/cbmc/keccakf1600_extract_bytes/keccakf1600_extract_bytes_harness.c
+proofs/cbmc/keccakf1600_extract_bytes_BE/keccakf1600_extract_bytes_be_harness.c
+proofs/cbmc/keccakf1600_xor_bytes/keccakf1600_xor_bytes_harness.c
+proofs/cbmc/keccakf1600_xor_bytes_BE/keccakf1600_xor_bytes_be_harness.c
+proofs/cbmc/keccakf1600x4_extract_bytes/keccakf1600x4_extract_bytes_harness.c
+proofs/cbmc/keccakf1600x4_extract_bytes_c/keccakf1600x4_extract_bytes_c_harness.c
+proofs/cbmc/keccakf1600x4_extract_bytes_native/keccakf1600x4_extract_bytes_native_harness.c
+proofs/cbmc/keccakf1600x4_xor_bytes/keccakf1600x4_xor_bytes_harness.c
+proofs/cbmc/keccakf1600x4_xor_bytes_c/keccakf1600x4_xor_bytes_c_harness.c
+proofs/cbmc/keccakf1600x4_xor_bytes_native/keccakf1600x4_xor_bytes_native_harness.c
+proofs/cbmc/mlkem_native_config_cbmc.h
+proofs/cbmc/poly_tomsg/Makefile
+proofs/cbmc/poly_tomsg/poly_tomsg_harness.c
+proofs/cbmc/proof_guide.md
+proofs/cbmc/rej_uniform/rej_uniform_harness.c
+proofs/cbmc/rej_uniform_c/rej_uniform_c_harness.c
+proofs/cbmc/rej_uniform_native/rej_uniform_native_harness.c
+proofs/cbmc/scalar_compress_d1/Makefile
+proofs/cbmc/scalar_compress_d1/scalar_compress_d1_harness.c
+proofs/cbmc/scalar_compress_d10/Makefile
+proofs/cbmc/scalar_compress_d10/scalar_compress_d10_harness.c
+proofs/cbmc/scalar_compress_d11/Makefile
+proofs/cbmc/scalar_compress_d11/scalar_compress_d11_harness.c
+proofs/hol_light/README.md
+proofs/hol_light/aarch64/Makefile
+proofs/hol_light/aarch64/mlkem/intt_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_scalar_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x1_v84a_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x2_v84a_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/ntt_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/poly_mulcache_compute_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/poly_reduce_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/poly_tobytes_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/poly_tomont_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S
+proofs/hol_light/aarch64/mlkem/rej_uniform_aarch64_asm.S
+proofs/hol_light/aarch64/proofs/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.ml
+proofs/hol_light/aarch64/proofs/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.ml
+proofs/hol_light/x86_64/Makefile
+proofs/hol_light/x86_64/mlkem/intt_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/keccak_f1600_x4_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/ntt_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/nttfrombytes_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/ntttobytes_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/nttunpack_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_compress_d10_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_compress_d11_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_compress_d4_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_compress_d5_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_decompress_d10_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_decompress_d11_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_decompress_d4_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_decompress_d5_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/poly_mulcache_compute_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/reduce_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/rej_uniform_avx2_asm.S
+proofs/hol_light/x86_64/mlkem/tomont_avx2_asm.S
+proofs/hol_light/x86_64/proofs/keccak_f1600_x4_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/nttfrombytes_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/ntttobytes_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/nttunpack_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/poly_compress_d10_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/poly_compress_d11_avx2_asm.ml
+proofs/hol_light/x86_64/proofs/poly_compress_d5_avx2_asm.ml
+test/abicheck/aarch64/callstub_aarch64.S
+test/abicheck/armv81m/callstub_armv81m.S
+test/abicheck/ppc64le/callstub_ppc64le.S
+test/abicheck/x86_64/callstub_x86_64.S
+test/acvp/acvp_client.py
+test/baremetal/platform/aarch64-virt/semihosting.c
+test/baremetal/platform/avr/exec_wrapper.py
+test/bench/bench_components_mlkem.c
+test/configs/break_pct_config.h
+test/configs/configs.yml
+test/configs/custom_heap_alloc_config.h
+test/configs/custom_memcpy_config.h
+test/configs/custom_memset_config.h
+test/configs/custom_native_capability_config_0.h
+test/configs/custom_native_capability_config_1.h
+test/configs/custom_native_capability_config_CPUID_AVX2.h
+test/configs/custom_native_capability_config_ID_AA64PFR1_EL1.h
+test/configs/custom_randombytes_config.h
+test/configs/custom_stdlib_config.h
+test/configs/custom_zeroize_config.h
+test/configs/no_asm_config.h
+test/configs/serial_fips202_config.h
+test/configs/test_alloc_config.h
+test/mk/components.mk
+test/src/test_alloc.c
+test/src/test_unit.c
+test/test_bounds.py
+test/wycheproof/wycheproof_client.py
+test/zephyr/app/CMakeLists.txt
+test/zephyr/app/shim_nucleo_n657x0_q.c
+NATIVE_VERIFICATION_FILE_INDEX=PASS
+
+===== 9. SOURCE-LEVEL T5 CLASSIFICATION RECORD =====
+TARGET=mlk_poly_tomsg
+PROPOSED_PROPERTY=T5_EXACT_ADMISSIBLE_OFFSET_SET
+CANONICAL_INPUT_DOMAIN=0_TO_3328
+REFERENCE_DECISION_ONE_INTERVAL=833_TO_2496
+
+T1_FIXED_PRODUCTION_SEMANTICS=ALREADY_ACCEPTED
+T2_RELATIONAL_PROPERTIES=ALREADY_ACCEPTED
+
+T5_DISTINCTNESS_HYPOTHESIS=PARAMETER_ROBUSTNESS_NOT_FIXED_FUNCTION_REPROOF
+T5_ADMISSIBLE_SHAPE=NOT_YET_ASSUMED_TO_BE_CONTIGUOUS
+T5_REQUIRES_PARAMETERIZED_EVIDENCE_LOCAL_MODEL=YES
+T5_REQUIRES_PRODUCTION_OFFSET_MEMBERSHIP_PROOF=YES
+T5_REQUIRES_NECESSITY_AND_SUFFICIENCY=YES
+T5_REQUIRES_OUTSIDE_SET_COUNTEREXAMPLES=YES
+
+REPOSITORY_LEVEL_NOVELTY=UNDECIDED_PENDING_SEMANTIC_REVIEW
+GLOBAL_RESEARCH_NOVELTY=NOT_CLAIMED
+
+===== 10. FINAL SOURCE RECHECK AND HASH FREEZE =====
+082d33a7e99e7d6c522b6c2f166cdb73cebd7223c4f42276f0516a0eba1a1e01  ./01_source_analysis/mlk_poly_tomsg_context.txt
+92360da7aa8a4a06edd338bb1e274bb5f8deb86ecd2d976c0cf806076627e350  ./01_source_analysis/production_symbol_locations.txt
+191f08e58b881315ea37d5529b353ae94d06d66e1d534b119b05dde053c43540  ./01_source_analysis/scalar_compress_d1_context.txt
+ef674fe1ebddb2a1db9e279d932513bdbf261b81cfc0a60bba3cc4e37ec655d2  ./02_repository_search/mlkem_arithmetic_matches.txt
+b3ba860004208245bf0e6d96d26545e216e938e4806ccffbf27bd3fc3f60b53e  ./02_repository_search/native_tomsg_and_offset_matches.txt
+229faaddff7b652c559d73fba273e56aea3f34197d026431873b5e7d108ab825  ./02_repository_search/native_verification_search_paths.txt
+7a4d24e511acb978e000c027f118c7cb0c5e5d9fc3985f84017807ff4d26b97d  ./02_repository_search/relevant_native_verification_files.txt
+f054e0d9d249a4403edaa47216ea7741ba04a4ee13ac97c5482cc29bf3c1ba0d  ./03_environment/toolchain_and_platform.txt
+b0a3e673d74e660fd3305b5793f0d2938d66765eeb287753232d98b67674cdb3  ./MSG05A_T5_NOVELTY_SOURCE_ANALYSIS_TERMINAL_CAPTURE.txt
+7f4f61474dfa03368e224706b52266891a5005e777a137b7112651b1517113cc  ./T5_PREPROOF_CLASSIFICATION.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG05A_SOURCE_BINDING=PASS
+MSG05A_SCALAR_ARITHMETIC_CONTEXT_CAPTURE=PASS
+MSG05A_TOMSG_CONTEXT_CAPTURE=PASS
+MSG05A_NATIVE_PROOF_SEARCH=PASS
+T5_INTERVAL_SHAPE=NOT_PREASSUMED
+T5_REPOSITORY_NOVELTY=AWAITING_SEMANTIC_CLASSIFICATION
+NEXT_STAGE=MSG05B_EXACT_OFFSET_EXPRESSION_AND_NATIVE_OVERLAP_CLASSIFICATION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05A_T5_NOVELTY_SOURCE_ANALYSIS_20260723T140332Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

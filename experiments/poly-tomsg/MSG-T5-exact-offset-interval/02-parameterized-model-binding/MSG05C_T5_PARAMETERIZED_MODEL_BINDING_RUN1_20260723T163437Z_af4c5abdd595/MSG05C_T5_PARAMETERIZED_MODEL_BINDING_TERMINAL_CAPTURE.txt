@@ -1,0 +1,328 @@
+============================================================
+MSG05C — T5 PARAMETERIZED MODEL AND PRODUCTION BINDING
+============================================================
+
+CAPTURE_UTC=2026-07-23T16:34:37Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+MSG05A=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05A_T5_NOVELTY_SOURCE_ANALYSIS_20260723T140332Z_af4c5abdd595
+MSG05B=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+COMMIT_BINDING=PASS
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+
+===== 3. MSG05A AND MSG05B BINDING =====
+DERIVED_LOWER=1073417800
+EXPECTED_LOWER=1073417800
+DERIVED_UPPER=1074063871
+EXPECTED_UPPER=1074063871
+DERIVED_PRODUCTION_OFFSET=1073741824
+EXPECTED_PRODUCTION_OFFSET=1073741824
+REPOSITORY_NOVELTY=PASS
+CAMPAIGN_DISTINCTNESS=PASS
+MSG05A_BINDING=PASS
+MSG05B_EXACT_INTERVAL_BINDING=PASS
+MSG05B_NOVELTY_BINDING=PASS
+80d936318b6f56f3c46bfffb763b93a1b2f3798c2109d419d4e8e0046ea03d52  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/01_exact_derivation/exact_offset_set.txt
+faf815bea120243d3fc1e91b6d13c6b936ebd5fb3ceabeb7c44b67038659fed7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/03_classification/T5_NOVELTY_AND_SCOPE_CLASSIFICATION.txt
+
+===== 4. WRITE PARAMETERIZED-MODEL BINDING HARNESS =====
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=135
+HARNESS_BYTE_COUNT=3302
+     1	/*
+     2	 * MSG-T5 model-binding theorem.
+     3	 *
+     4	 * The real frozen helper computes:
+     5	 *
+     6	 *   d0 = uint32(u * 1290168)
+     7	 *   return uint8((d0 + 2^30) >> 31)
+     8	 *
+     9	 * where uint32 addition uses modulo-2^32 semantics.
+    10	 *
+    11	 * The evidence-local model below replaces only the offset 2^30 with a
+    12	 * parameter c. This stage sets c back to 2^30 and proves that the model equals:
+    13	 *
+    14	 *   1. the real frozen mlk_scalar_compress_d1 helper; and
+    15	 *   2. the selected output bit of the real frozen mlk_poly_tomsg function.
+    16	 *
+    17	 * This stage does not yet prove interval sufficiency or necessity.
+    18	 */
+    19	
+    20	#include <stdint.h>
+    21	#include "compress.h"
+    22	
+    23	#define MSG_T5_FIXED_MULTIPLIER ((uint32_t)1290168u)
+    24	#define MSG_T5_PRODUCTION_OFFSET ((uint32_t)1073741824u)
+    25	#define MSG_T5_ADMISSIBLE_LOWER ((uint32_t)1073417800u)
+    26	#define MSG_T5_ADMISSIBLE_UPPER ((uint32_t)1074063871u)
+    27	
+    28	/*
+    29	 * Source-faithful parameterized model.
+    30	 *
+    31	 * uint64_t intermediates and an explicit low-32-bit mask express the same
+    32	 * modulo-2^32 behavior without relying on implicit unsigned overflow in this
+    33	 * evidence-local helper.
+    34	 */
+    35	static uint8_t msg_t5_offset_model(int16_t u, uint32_t c)
+    36	{
+    37	  uint64_t product;
+    38	  uint32_t d0;
+    39	  uint64_t wide_sum;
+    40	  uint32_t wrapped_sum;
+    41	
+    42	  product =
+    43	      (uint64_t)(uint32_t)u *
+    44	      (uint64_t)MSG_T5_FIXED_MULTIPLIER;
+    45	
+    46	  d0 =
+    47	      (uint32_t)(
+    48	          product &
+    49	          (uint64_t)0xFFFFFFFFu);
+    50	
+    51	  wide_sum =
+    52	      (uint64_t)d0 +
+    53	      (uint64_t)c;
+    54	
+    55	  wrapped_sum =
+    56	      (uint32_t)(
+    57	          wide_sum &
+    58	          (uint64_t)0xFFFFFFFFu);
+    59	
+    60	  return (uint8_t)(wrapped_sum >> 31);
+    61	}
+    62	
+    63	int main(void)
+    64	{
+    65	  mlk_poly input;
+    66	
+    67	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    68	
+    69	  unsigned i;
+    70	  unsigned k;
+    71	
+    72	  uint8_t model_bit;
+    73	  uint8_t helper_bit;
+    74	  uint8_t tomsg_bit;
+    75	
+    76	  __CPROVER_assert(
+    77	      MLKEM_N == 256,
+    78	      "MSG_T5_MODEL_CONFIGURATION: polynomial degree must be 256");
+    79	
+    80	  __CPROVER_assert(
+    81	      MLKEM_INDCPA_MSGBYTES == 32,
+    82	      "MSG_T5_MODEL_CONFIGURATION: message size must be 32 bytes");
+    83	
+    84	  __CPROVER_assert(
+    85	      MSG_T5_ADMISSIBLE_LOWER <= MSG_T5_PRODUCTION_OFFSET &&
+    86	      MSG_T5_PRODUCTION_OFFSET <= MSG_T5_ADMISSIBLE_UPPER,
+    87	      "MSG_T5_PRODUCTION_MEMBERSHIP: production offset must lie in the derived interval");
+    88	
+    89	  __CPROVER_assume(k < MLKEM_N);
+    90	
+    91	  /*
+    92	   * The complete canonical polynomial domain remains symbolic.
+    93	   */
+    94	  for (i = 0u; i < MLKEM_N; i++)
+    95	  {
+    96	    __CPROVER_assume(input.coeffs[i] >= 0);
+    97	    __CPROVER_assume(input.coeffs[i] < MLKEM_Q);
+    98	  }
+    99	
+   100	  /*
+   101	   * Evaluate the parameterized evidence-local model at the real production
+   102	   * offset.
+   103	   */
+   104	  model_bit =
+   105	      msg_t5_offset_model(
+   106	          input.coeffs[k],
+   107	          MSG_T5_PRODUCTION_OFFSET);
+   108	
+   109	  /*
+   110	   * Independently call the real frozen scalar helper.
+   111	   */
+   112	  helper_bit =
+   113	      mlk_scalar_compress_d1(
+   114	          input.coeffs[k]);
+   115	
+   116	  /*
+   117	   * Execute the real frozen production mlk_poly_tomsg implementation.
+   118	   */
+   119	  mlk_poly_tomsg(msg, &input);
+   120	
+   121	  tomsg_bit =
+   122	      (uint8_t)(
+   123	          (msg[k >> 3] >> (k & 7u)) &
+   124	          1u);
+   125	
+   126	  __CPROVER_assert(
+   127	      model_bit == helper_bit,
+   128	      "MSG_T5_MODEL_HELPER_BINDING: parameterized model at 2^30 must equal the real scalar helper");
+   129	
+   130	  __CPROVER_assert(
+   131	      model_bit == tomsg_bit,
+   132	      "MSG_T5_MODEL_TOMSG_BINDING: parameterized model at 2^30 must equal the real tomsg output bit");
+   133	
+   134	  return 0;
+   135	}
+84584e5db9de2d1c5311a193b7810fe2c241a28c130ca69e2af6c282b225a82b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c
+
+===== 5. STATIC HARNESS AUDIT =====
+TARGET_CALL_COUNT=1
+DIRECT_HELPER_CALL_COUNT=1
+MODEL_CALL_COUNT=1
+FIXED_MULTIPLIER_COUNT=1
+PRODUCTION_OFFSET_COUNT=1
+EXPLICIT_WRAP_MASK_COUNT=2
+MODEL_HELPER_ASSERTION_COUNT=1
+MODEL_TOMSG_ASSERTION_COUNT=1
+COEFFICIENT_EQUALITY_ASSUME_COUNT=0
+FULL_CANONICAL_POLYNOMIAL_SYMBOLIC=YES
+SELECTED_INDEX_SYMBOLIC=YES
+UNRELATED_COEFFICIENTS_UNRESTRICTED=YES
+PARAMETERIZED_MODEL_USES_EXPLICIT_UINT32_WRAP=YES
+STATIC_MODEL_BINDING_AUDIT=PASS
+
+===== 6. BUILD MODEL-BINDING GOTO =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg05c_t5bind -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 51K Jul 23 19:34 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto
+14a3a82b727fcbe47bb3bbf0413118be0bd199713034645fb9b496b3e76d0494  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto
+
+===== 7. VALIDATE AND INSPECT GOTO MODEL =====
+GOTO_VALIDATE_EXIT=0
+SHOW_FUNCTIONS_EXIT=0
+SHOW_LOOPS_EXIT=0
+SHOW_PROPERTIES_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto'
+--- Validation stderr ---
+MAIN_TARGET_CALL_COUNT=1
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+PARAMETERIZED_MODEL_BODY_COUNT=1
+40-        // 32 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c line 113 function main
+41-        CALL main::1::helper_bit := mlk_scalar_compress_d1(main::1::input.coeffs[cast(main::1::k, signedbv[64])])
+42-        // 33 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c line 119 function main
+43:        CALL mlk_msg05c_t5bind_poly_tomsg(address_of(main::1::msg[0]), address_of(main::1::input))
+44-        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c line 121 function main
+45-        ASSIGN main::1::tomsg_bit := cast(bitand(cast(ashr(cast(main::1::msg[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+46-        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c line 126 function main
+--- Registered loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c line 94 function main
+
+--
+Loop mlk_msg05c_t5bind_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg05c_t5bind_poly_tomsg
+
+Loop mlk_msg05c_t5bind_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg05c_t5bind_poly_tomsg
+
+Loop mlk_msg05c_t5bind_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg05c_t5bind_poly_tomsg
+
+PRODUCTION_MEMBERSHIP_PROPERTY_ID=main.assertion.3
+MODEL_HELPER_PROPERTY_ID=main.assertion.4
+MODEL_TOMSG_PROPERTY_ID=main.assertion.5
+GOTO_BINARY_VALIDATION=PASS
+PRODUCTION_TARGET_BODY_BINDING=PASS
+REAL_SCALAR_HELPER_BODY_BINDING=PASS
+PARAMETERIZED_MODEL_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+MODEL_BINDING_PROPERTIES_REGISTERED=PASS
+
+===== 8. WRITE AUTHORITATIVE CBMC COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto" --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,mlk_msg05c_t5bind_poly_tomsg.0:257,mlk_msg05c_t5bind_poly_tomsg.1:257,mlk_msg05c_t5bind_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --all-properties --trace --json-ui
+CBMC_COMMAND_STATIC_AUDIT=PASS
+
+===== 9. EXECUTE AUTHORITATIVE MODEL-BINDING PROOF =====
+CBMC_EXIT=0
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/05_results/msg_t5_parameterized_model_binding_result.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/06_logs/msg_t5_parameterized_model_binding_stderr.txt
+--- CBMC stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=527
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+CBMC_EXIT=0
+PRODUCTION_MEMBERSHIP_PROPERTY_ID=main.assertion.3
+MODEL_HELPER_PROPERTY_ID=main.assertion.4
+MODEL_TOMSG_PROPERTY_ID=main.assertion.5
+SUCCESS_COUNT=527
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 1.90
+	System time (seconds): 0.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.07
+	Maximum resident set size (kbytes): 146512
+	Exit status: 0
+
+===== 10. POSITIVE-PROOF ACCEPTANCE GATE =====
+PRODUCTION_OFFSET_INTERVAL_MEMBERSHIP=PROVED
+PARAMETERIZED_MODEL_EQUALS_REAL_HELPER_AT_PRODUCTION_OFFSET=PROVED
+PARAMETERIZED_MODEL_EQUALS_REAL_TOMSG_BIT_AT_PRODUCTION_OFFSET=PROVED
+MSG05C_MODEL_BINDING=PASS
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+80d936318b6f56f3c46bfffb763b93a1b2f3798c2109d419d4e8e0046ea03d52  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/01_exact_derivation/exact_offset_set.txt
+faf815bea120243d3fc1e91b6d13c6b936ebd5fb3ceabeb7c44b67038659fed7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/03_classification/T5_NOVELTY_AND_SCOPE_CLASSIFICATION.txt
+84584e5db9de2d1c5311a193b7810fe2c241a28c130ca69e2af6c282b225a82b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c
+14a3a82b727fcbe47bb3bbf0413118be0bd199713034645fb9b496b3e76d0494  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto
+df768b542e66bab6074edaf159a05ed6f30501cbef40e1d6f2447f88aa135735  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/04_commands/msg05c_goto_build_command.txt
+1c11db64166d49b954e95228b904a790ab3fa9cc110f15de9a94cfd9fa342a4d  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/04_commands/msg05c_cbmc_command.txt
+e54acfc3154c3311716e91053170603e9e4a0f4bbea872a8c7df3128c66fb4cd  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/05_results/msg_t5_parameterized_model_binding_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/06_logs/msg_t5_parameterized_model_binding_stderr.txt
+8d6bf5fd2da46a5fc0cb0dcc82ea30336a9d2438fbdfdd86d5e6dfa152294ac2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/05_results/msg05c_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG05C_SOURCE_BINDING=PASS
+MSG05C_MSG05B_INTERVAL_BINDING=PASS
+MSG05C_PRODUCTION_TARGET_BODY_BINDING=PASS
+MSG05C_REAL_HELPER_BODY_BINDING=PASS
+MSG05C_PARAMETERIZED_MODEL_BODY_BINDING=PASS
+MSG05C_PRODUCTION_OFFSET_MEMBERSHIP=PROVED
+MSG05C_MODEL_EQUALS_REAL_HELPER=PROVED
+MSG05C_MODEL_EQUALS_REAL_TOMSG_BIT=PROVED
+T5_PARAMETERIZED_MODEL_BINDING=ACCEPTED
+T5_EXACT_INTERVAL_THEOREM=NOT_YET_PROVED
+NEXT_STAGE=MSG05D_EXACT_INTERVAL_SUFFICIENCY_PROOF
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

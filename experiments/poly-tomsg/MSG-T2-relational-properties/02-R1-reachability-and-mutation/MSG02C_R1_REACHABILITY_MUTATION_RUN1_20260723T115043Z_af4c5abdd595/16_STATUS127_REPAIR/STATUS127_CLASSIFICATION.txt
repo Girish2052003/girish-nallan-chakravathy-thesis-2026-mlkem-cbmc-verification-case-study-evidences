@@ -1,0 +1,18 @@
+STATUS127_CLASSIFICATION=SHELL_COMMAND_EXECUTION_FAILURE
+
+MUTATION_HARNESS_BUILD_FAILED=NO
+MUTATION_GOTO_BUILD_FAILED=NO
+MUTATION_GOTO_CREATED=YES
+MUTATION_CBMC_EXECUTED_BEFORE_REPAIR=NO
+FUNCTIONAL_COUNTEREXAMPLE_BEFORE_REPAIR=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+OBSERVATION:
+The previous script stopped immediately after entering the GOTO-validation
+section with shell status 127. Both stdout and stderr of that command had been
+redirected, preventing the terminal from displaying the underlying message.
+
+REPAIR:
+Expose the redirected log, resolve all required executables to absolute paths,
+revalidate the existing mutation GOTO, and execute only the registered
+expected-failure mutation property.

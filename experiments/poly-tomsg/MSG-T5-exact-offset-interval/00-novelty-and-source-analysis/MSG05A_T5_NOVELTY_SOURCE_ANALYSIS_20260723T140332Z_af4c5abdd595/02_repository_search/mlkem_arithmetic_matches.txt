@@ -1,0 +1,897 @@
+mlkem/mlkem_native.c:98:#include "src/fips202/native/aarch64/src/keccakf1600_round_constants.c"
+mlkem/mlkem_native.c:105:#include "src/fips202/native/armv81m/src/keccakf1600_round_constants.c"
+mlkem/mlkem_native.c:260:#undef MLKEM_Q
+mlkem/mlkem_native.c:261:#undef MLKEM_Q_HALF
+mlkem/mlkem_native.c:297:#undef mlk_poly_compress_d10
+mlkem/mlkem_native.c:298:#undef mlk_poly_compress_d11
+mlkem/mlkem_native.c:301:#undef mlk_poly_decompress_d10
+mlkem/mlkem_native.c:302:#undef mlk_poly_decompress_d11
+mlkem/mlkem_native.c:464:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:499:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:518:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native.c:598:#undef mlk_poly_compress_d10_avx2_asm
+mlkem/mlkem_native.c:599:#undef mlk_poly_compress_d11_avx2_asm
+mlkem/mlkem_native.c:602:#undef mlk_poly_decompress_d10_avx2_asm
+mlkem/mlkem_native.c:603:#undef mlk_poly_decompress_d11_avx2_asm
+mlkem/mlkem_native.c:616:#undef mlk_compress_d10_data
+mlkem/mlkem_native.c:617:#undef mlk_compress_d11_data
+mlkem/mlkem_native.c:620:#undef mlk_decompress_d10_data
+mlkem/mlkem_native.c:621:#undef mlk_decompress_d11_data
+mlkem/mlkem_native_asm.S:80:#include "src/native/x86_64/src/poly_compress_d10_avx2_asm.S"
+mlkem/mlkem_native_asm.S:81:#include "src/native/x86_64/src/poly_compress_d11_avx2_asm.S"
+mlkem/mlkem_native_asm.S:84:#include "src/native/x86_64/src/poly_decompress_d10_avx2_asm.S"
+mlkem/mlkem_native_asm.S:85:#include "src/native/x86_64/src/poly_decompress_d11_avx2_asm.S"
+mlkem/mlkem_native_asm.S:284:#undef MLKEM_Q
+mlkem/mlkem_native_asm.S:285:#undef MLKEM_Q_HALF
+mlkem/mlkem_native_asm.S:321:#undef mlk_poly_compress_d10
+mlkem/mlkem_native_asm.S:322:#undef mlk_poly_compress_d11
+mlkem/mlkem_native_asm.S:325:#undef mlk_poly_decompress_d10
+mlkem/mlkem_native_asm.S:326:#undef mlk_poly_decompress_d11
+mlkem/mlkem_native_asm.S:488:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:523:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:542:#undef mlk_keccakf1600_round_constants
+mlkem/mlkem_native_asm.S:622:#undef mlk_poly_compress_d10_avx2_asm
+mlkem/mlkem_native_asm.S:623:#undef mlk_poly_compress_d11_avx2_asm
+mlkem/mlkem_native_asm.S:626:#undef mlk_poly_decompress_d10_avx2_asm
+mlkem/mlkem_native_asm.S:627:#undef mlk_poly_decompress_d11_avx2_asm
+mlkem/mlkem_native_asm.S:640:#undef mlk_compress_d10_data
+mlkem/mlkem_native_asm.S:641:#undef mlk_compress_d11_data
+mlkem/mlkem_native_asm.S:644:#undef mlk_decompress_d10_data
+mlkem/mlkem_native_asm.S:645:#undef mlk_decompress_d11_data
+mlkem/src/cbmc.h:135: *  array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q)
+mlkem/src/cbmc.h:138: *  0 <= a->coeffs[k]) && a->coeffs[k] < MLKEM_Q)) }
+mlkem/src/cbmc.h:185:/* Wrapper around array_bound operating on absolute values.
+mlkem/src/compress.c:35: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:41:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:46:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:77:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:83:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:99: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:100:MLK_STATIC_TESTABLE void mlk_poly_compress_d10_c(
+mlkem/src/compress.c:105:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:110:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:123:      t[k] = mlk_scalar_compress_d10(a->coeffs[4 * j + k]);
+mlkem/src/compress.c:139:void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+mlkem/src/compress.c:144:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:150:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:151:  ret = mlk_poly_compress_d10_native(r, a->coeffs);
+mlkem/src/compress.c:158:  mlk_poly_compress_d10_c(r, a);
+mlkem/src/compress.c:169:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:176:    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:183:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:193:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:201:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:211:MLK_STATIC_TESTABLE void mlk_poly_decompress_d10_c(
+mlkem/src/compress.c:217:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:224:    invariant(array_bound(r->coeffs, 0, 4 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:239:      invariant(array_bound(r->coeffs, 0, 4 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:242:      r->coeffs[4 * j + k] = mlk_scalar_decompress_d10(t[k]);
+mlkem/src/compress.c:246:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:250:void mlk_poly_decompress_d10(mlk_poly *r,
+mlkem/src/compress.c:256:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:261:  ret = mlk_poly_decompress_d10_native(r->coeffs, a);
+mlkem/src/compress.c:264:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:269:  mlk_poly_decompress_d10_c(r, a);
+mlkem/src/compress.c:279: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:285:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:290:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:321:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:327:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:343: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:344:MLK_STATIC_TESTABLE void mlk_poly_compress_d11_c(
+mlkem/src/compress.c:349:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:354:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:368:      t[k] = mlk_scalar_compress_d11(a->coeffs[8 * j + k]);
+mlkem/src/compress.c:390:void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+mlkem/src/compress.c:395:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:401:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:402:  ret = mlk_poly_compress_d11_native(r, a->coeffs);
+mlkem/src/compress.c:409:  mlk_poly_compress_d11_c(r, a);
+mlkem/src/compress.c:420:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:427:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:432:    const unsigned offset = i * 5;
+mlkem/src/compress.c:443:    t[0] = 0x1F & (a[offset + 0] >> 0);
+mlkem/src/compress.c:444:    t[1] = 0x1F & ((a[offset + 0] >> 5) | (a[offset + 1] << 3));
+mlkem/src/compress.c:445:    t[2] = 0x1F & (a[offset + 1] >> 2);
+mlkem/src/compress.c:446:    t[3] = 0x1F & ((a[offset + 1] >> 7) | (a[offset + 2] << 1));
+mlkem/src/compress.c:447:    t[4] = 0x1F & ((a[offset + 2] >> 4) | (a[offset + 3] << 4));
+mlkem/src/compress.c:448:    t[5] = 0x1F & (a[offset + 3] >> 1);
+mlkem/src/compress.c:449:    t[6] = 0x1F & ((a[offset + 3] >> 6) | (a[offset + 4] << 2));
+mlkem/src/compress.c:450:    t[7] = 0x1F & (a[offset + 4] >> 3);
+mlkem/src/compress.c:456:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:463:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:473:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:481:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:491:MLK_STATIC_TESTABLE void mlk_poly_decompress_d11_c(
+mlkem/src/compress.c:497:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:504:    invariant(array_bound(r->coeffs, 0, 8 * j, 0, MLKEM_Q))
+mlkem/src/compress.c:524:      invariant(array_bound(r->coeffs, 0, 8 * j + k, 0, MLKEM_Q))
+mlkem/src/compress.c:527:      r->coeffs[8 * j + k] = mlk_scalar_decompress_d11(t[k]);
+mlkem/src/compress.c:531:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:535:void mlk_poly_decompress_d11(mlk_poly *r,
+mlkem/src/compress.c:541:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:546:  ret = mlk_poly_decompress_d11_native(r->coeffs, a);
+mlkem/src/compress.c:549:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:554:  mlk_poly_decompress_d11_c(r, a);
+mlkem/src/compress.c:563: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/compress.c:569:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.c:574:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:585:     * t0 and t1 are both < MLKEM_Q, so contain at most 12 bits each of
+mlkem/src/compress.c:613:  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:673: *            - We use a value barrier around the bit-selection mask to
+mlkem/src/compress.c:689:    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+mlkem/src/compress.c:696:      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+mlkem/src/compress.c:699:      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+mlkem/src/compress.c:704:      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+mlkem/src/compress.c:707:  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/compress.c:714: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+mlkem/src/compress.c:720:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/compress.c:733:      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+mlkem/src/compress.h:32: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:40: * Compute round(u * 2 / MLKEM_Q).
+mlkem/src/compress.h:46: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+mlkem/src/compress.h:52:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:54:  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+mlkem/src/compress.h:58:   * round(u * 2 / MLKEM_Q)
+mlkem/src/compress.h:59:   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:60:   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+mlkem/src/compress.h:63:  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+mlkem/src/compress.h:74: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:82: * Compute round(u * 16 / MLKEM_Q) % 16.
+mlkem/src/compress.h:89: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:95:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:97:  ensures(return_value == (((uint32_t)u * 16 + MLKEM_Q / 2) / MLKEM_Q) % 16))
+mlkem/src/compress.h:101:   * round(u * 16 / MLKEM_Q)
+mlkem/src/compress.h:102:   *   = round(u * 16 * (2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:103:   *  ~= round(u * 16 * round(2^28 / MLKEM_Q) / 2^28)
+mlkem/src/compress.h:106:  /* check-magic: 1290160 == 16 * round(2^28 / MLKEM_Q) */
+mlkem/src/compress.h:109:  return (uint8_t)((d0 + ((uint32_t)1u << 27)) >> 28); /* round(d0/2^28) */
+mlkem/src/compress.h:116: * Compute round(u * MLKEM_Q / 16).
+mlkem/src/compress.h:130:  ensures(return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:133:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:135:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 8) >> 4);
+mlkem/src/compress.h:140: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:148: * Compute round(u * 32 / MLKEM_Q) % 32.
+mlkem/src/compress.h:155: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:161:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:163:  ensures(return_value == (((uint32_t)u * 32 + MLKEM_Q / 2) / MLKEM_Q) % 32)  )
+mlkem/src/compress.h:167:   * round(u * 32 / MLKEM_Q)
+mlkem/src/compress.h:168:   *   = round(u * 32 * (2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:169:   *  ~= round(u * 32 * round(2^27 / MLKEM_Q) / 2^27)
+mlkem/src/compress.h:172:  /* check-magic: 1290176 == 2^5 * round(2^27 / MLKEM_Q) */
+mlkem/src/compress.h:175:  return (uint8_t)((d0 + ((uint32_t)1u << 26)) >> 27); /* round(d0/2^27) */
+mlkem/src/compress.h:182: * Compute round(u * MLKEM_Q / 32).
+mlkem/src/compress.h:196:  ensures(0 <= return_value && return_value <= MLKEM_Q - 1)
+mlkem/src/compress.h:199:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:201:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 16) >> 5);
+mlkem/src/compress.h:206: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:214: * Compute round(u * 2**10 / MLKEM_Q) % 2**10.
+mlkem/src/compress.h:221: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+mlkem/src/compress.h:227:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:229:  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+mlkem/src/compress.h:233:   * round(u * 1024 / MLKEM_Q)
+mlkem/src/compress.h:234:   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:235:   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:238:  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:240:  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+mlkem/src/compress.h:248: * Compute round(u * MLKEM_Q / 1024).
+mlkem/src/compress.h:259:static MLK_INLINE int16_t mlk_scalar_decompress_d10(uint16_t u)
+mlkem/src/compress.h:262:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:265:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:267:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 512) >> 10);
+mlkem/src/compress.h:272: * and wrap around for large values of u. This is expected and required.
+mlkem/src/compress.h:280: * Compute round(u * 2**11 / MLKEM_Q) % 2**11.
+mlkem/src/compress.h:287: * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+mlkem/src/compress.h:291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+mlkem/src/compress.h:293:  requires(0 <= u && u <= MLKEM_Q - 1)
+mlkem/src/compress.h:295:  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+mlkem/src/compress.h:299:   * round(u * 2048 / MLKEM_Q)
+mlkem/src/compress.h:300:   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:301:   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+mlkem/src/compress.h:304:  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+mlkem/src/compress.h:306:  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+mlkem/src/compress.h:314: * Compute round(u * MLKEM_Q / 2048).
+mlkem/src/compress.h:325:static MLK_INLINE int16_t mlk_scalar_decompress_d11(uint16_t u)
+mlkem/src/compress.h:328:  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+mlkem/src/compress.h:331:  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+mlkem/src/compress.h:333:  return (int16_t)((((uint32_t)u * MLKEM_Q) + 1024) >> 11);
+mlkem/src/compress.h:351: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:357:#define mlk_poly_compress_d10 MLK_NAMESPACE(poly_compress_d10)
+mlkem/src/compress.h:371: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:374:void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+mlkem/src/compress.h:383: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:400:#define mlk_poly_decompress_d10 MLK_NAMESPACE(poly_decompress_d10)
+mlkem/src/compress.h:403: * approximate inverse of mlk_poly_compress_d10.
+mlkem/src/compress.h:406: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:420:void mlk_poly_decompress_d10(mlk_poly *r,
+mlkem/src/compress.h:439: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:445:#define mlk_poly_compress_d11 MLK_NAMESPACE(poly_compress_d11)
+mlkem/src/compress.h:459: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:462:void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+mlkem/src/compress.h:471: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:488:#define mlk_poly_decompress_d11 MLK_NAMESPACE(poly_decompress_d11)
+mlkem/src/compress.h:491: * approximate inverse of mlk_poly_compress_d11.
+mlkem/src/compress.h:494: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/compress.h:508:void mlk_poly_decompress_d11(mlk_poly *r,
+mlkem/src/compress.h:522: *               [0,1,..,MLKEM_Q-1].
+mlkem/src/compress.h:529:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:574:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/compress.h:595:  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/fips202/fips202x4.c:98:  size_t current_offset = 0;
+mlkem/src/fips202/fips202x4.c:101:    assigns(nblocks, current_offset,
+mlkem/src/fips202/fips202x4.c:108:    invariant(current_offset == (loop_entry(nblocks) - nblocks) * r)
+mlkem/src/fips202/fips202x4.c:113:        s, &out0[current_offset], &out1[current_offset], &out2[current_offset],
+mlkem/src/fips202/fips202x4.c:114:        &out3[current_offset], 0, r);
+mlkem/src/fips202/fips202x4.c:115:    current_offset += r;
+mlkem/src/fips202/keccakf1600.c:34:#define MLK_KECCAK_ROL(a, offset) (((a) << (offset)) ^ ((a) >> (64 - (offset))))
+mlkem/src/fips202/keccakf1600.c:37:                                   unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:41:  uint8_t *state_ptr = (uint8_t *)state + offset;
+mlkem/src/fips202/keccakf1600.c:54:    data[i] = (state[(offset + i) >> 3] >> (8 * ((offset + i) & 0x07))) & 0xFF;
+mlkem/src/fips202/keccakf1600.c:60:                               unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:64:  uint8_t *state_ptr = (uint8_t *)state + offset;
+mlkem/src/fips202/keccakf1600.c:77:    state[(offset + i) >> 3] ^= (uint64_t)data[i]
+mlkem/src/fips202/keccakf1600.c:78:                                << (8 * ((offset + i) & 0x07));
+mlkem/src/fips202/keccakf1600.c:88:                                              unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:90:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.c:91:         0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.c:103:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 0, data0, offset,
+mlkem/src/fips202/keccakf1600.c:105:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 1, data1, offset,
+mlkem/src/fips202/keccakf1600.c:107:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 2, data2, offset,
+mlkem/src/fips202/keccakf1600.c:109:  mlk_keccakf1600_extract_bytes(state + MLK_KECCAK_LANES * 3, data3, offset,
+mlkem/src/fips202/keccakf1600.c:115:                                     unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.c:120:                                              offset, length) ==
+mlkem/src/fips202/keccakf1600.c:126:  mlk_keccakf1600x4_extract_bytes_c(state, data0, data1, data2, data3, offset,
+mlkem/src/fips202/keccakf1600.c:135:                                          unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.c:137:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.c:138:         0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.c:151:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 0, data0, offset,
+mlkem/src/fips202/keccakf1600.c:153:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 1, data1, offset,
+mlkem/src/fips202/keccakf1600.c:155:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 2, data2, offset,
+mlkem/src/fips202/keccakf1600.c:157:  mlk_keccakf1600_xor_bytes(state + MLK_KECCAK_LANES * 3, data3, offset,
+mlkem/src/fips202/keccakf1600.c:164:                                 const unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.c:169:                                          offset,
+mlkem/src/fips202/keccakf1600.c:175:  mlk_keccakf1600x4_xor_bytes_c(state, data0, data1, data2, data3, offset,
+mlkem/src/fips202/keccakf1600.c:214:  unsigned round;
+mlkem/src/fips202/keccakf1600.c:256:  for (round = 0; round < MLK_KECCAK_NROUNDS; round += 2)
+mlkem/src/fips202/keccakf1600.c:257:  __loop__(invariant(round <= MLK_KECCAK_NROUNDS && round % 2 == 0)
+mlkem/src/fips202/keccakf1600.c:258:           decreases(MLK_KECCAK_NROUNDS - round))
+mlkem/src/fips202/keccakf1600.c:267:    /* thetaRhoPiChiIotaPrepareTheta(round, A, E) */
+mlkem/src/fips202/keccakf1600.c:285:    Eba ^= (uint64_t)mlk_KeccakF_RoundConstants[round];
+mlkem/src/fips202/keccakf1600.c:362:    /* thetaRhoPiChiIotaPrepareTheta(round+1, E, A) */
+mlkem/src/fips202/keccakf1600.c:380:    Aba ^= (uint64_t)mlk_KeccakF_RoundConstants[round + 1];
+mlkem/src/fips202/keccakf1600.h:22:                                   unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.h:24:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:25:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:33:                               unsigned offset, unsigned length)
+mlkem/src/fips202/keccakf1600.h:35:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:36:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:46:                                     unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.h:49:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:50:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/keccakf1600.h:66:                                 const unsigned char *data3, unsigned offset,
+mlkem/src/fips202/keccakf1600.h:69:    requires(0 <= offset && offset <= MLK_KECCAK_LANES * sizeof(uint64_t) &&
+mlkem/src/fips202/keccakf1600.h:70:             0 <= length && length <= MLK_KECCAK_LANES * sizeof(uint64_t) - offset)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:11:#define mlk_keccakf1600_round_constants \
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:12:  MLK_NAMESPACE(keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:14:    mlk_keccakf1600_round_constants[24];
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:24:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:36:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:48:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:62:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/fips202_native_aarch64.h:76:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:51:        .cfi_adjust_cfa_offset 0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:53:        .cfi_rel_offset x19, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:54:        .cfi_rel_offset x20, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:56:        .cfi_rel_offset x21, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:57:        .cfi_rel_offset x22, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:59:        .cfi_rel_offset x23, 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:60:        .cfi_rel_offset x24, 0x48
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:62:        .cfi_rel_offset x25, 0x50
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:63:        .cfi_rel_offset x26, 0x58
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:65:        .cfi_rel_offset x27, 0x60
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:66:        .cfi_rel_offset x28, 0x68
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:68:        .cfi_rel_offset x29, 0x70
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:69:        .cfi_rel_offset x30, 0x78
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S:366:        .cfi_adjust_cfa_offset -0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:69:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:71:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:72:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:74:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:75:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:77:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:78:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:80:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:81:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x1_v84a_aarch64_asm.S:193:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:69:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:71:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:72:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:74:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:75:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:77:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:78:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:80:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:81:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x2_v84a_aarch64_asm.S:248:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:51:        .cfi_adjust_cfa_offset 0xe0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:53:        .cfi_rel_offset x19, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:54:        .cfi_rel_offset x20, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:56:        .cfi_rel_offset x21, 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:57:        .cfi_rel_offset x22, 0x48
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:59:        .cfi_rel_offset x23, 0x50
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:60:        .cfi_rel_offset x24, 0x58
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:62:        .cfi_rel_offset x25, 0x60
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:63:        .cfi_rel_offset x26, 0x68
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:65:        .cfi_rel_offset x27, 0x70
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:66:        .cfi_rel_offset x28, 0x78
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:68:        .cfi_rel_offset x29, 0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:69:        .cfi_rel_offset x30, 0x88
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:71:        .cfi_rel_offset d8, 0x90
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:72:        .cfi_rel_offset d9, 0x98
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:74:        .cfi_rel_offset d10, 0xa0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:75:        .cfi_rel_offset d11, 0xa8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:77:        .cfi_rel_offset d12, 0xb0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:78:        .cfi_rel_offset d13, 0xb8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:80:        .cfi_rel_offset d14, 0xc0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:81:        .cfi_rel_offset d15, 0xc8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_scalar_hybrid_aarch64_asm.S:1067:        .cfi_adjust_cfa_offset -0xe0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:54:        .cfi_adjust_cfa_offset 0xe0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:56:        .cfi_rel_offset x19, 0x30
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:57:        .cfi_rel_offset x20, 0x38
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:59:        .cfi_rel_offset x21, 0x40
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:60:        .cfi_rel_offset x22, 0x48
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:62:        .cfi_rel_offset x23, 0x50
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:63:        .cfi_rel_offset x24, 0x58
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:65:        .cfi_rel_offset x25, 0x60
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:66:        .cfi_rel_offset x26, 0x68
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:68:        .cfi_rel_offset x27, 0x70
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:69:        .cfi_rel_offset x28, 0x78
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:71:        .cfi_rel_offset x29, 0x80
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:72:        .cfi_rel_offset x30, 0x88
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:74:        .cfi_rel_offset d8, 0x90
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:75:        .cfi_rel_offset d9, 0x98
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:77:        .cfi_rel_offset d10, 0xa0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:78:        .cfi_rel_offset d11, 0xa8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:80:        .cfi_rel_offset d12, 0xb0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:81:        .cfi_rel_offset d13, 0xb8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:83:        .cfi_rel_offset d14, 0xc0
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:84:        .cfi_rel_offset d15, 0xc8
+mlkem/src/fips202/native/aarch64/src/keccak_f1600_x4_v8a_v84a_scalar_hybrid_aarch64_asm.S:976:        .cfi_adjust_cfa_offset -0xe0
+mlkem/src/fips202/native/aarch64/src/keccakf1600_round_constants.c:24:    mlk_keccakf1600_round_constants[24] = {
+mlkem/src/fips202/native/aarch64/src/keccakf1600_round_constants.c:41:MLK_EMPTY_CU(fips202_aarch64_round_constants)
+mlkem/src/fips202/native/aarch64/x1_scalar.h:21:                                         mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/aarch64/x1_v84a.h:29:  mlk_keccak_f1600_x1_v84a_aarch64_asm(state, mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/aarch64/x2_v84a.h:30:                                       mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/aarch64/x2_v84a.h:32:                                       mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/aarch64/x4_v8a_scalar.h:21:      state, mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/aarch64/x4_v8a_v84a_scalar.h:30:      state, mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/api.h:78:    const unsigned char *data2, const unsigned char *data3, unsigned offset,
+mlkem/src/fips202/native/api.h:81:  requires(0 <= offset && offset <= 25 * sizeof(uint64_t) &&
+mlkem/src/fips202/native/api.h:82:           0 <= length && length <= 25 * sizeof(uint64_t) - offset)
+mlkem/src/fips202/native/api.h:100:    unsigned char *data2, unsigned char *data3, unsigned offset,
+mlkem/src/fips202/native/api.h:103:  requires(0 <= offset && offset <= 25 * sizeof(uint64_t) &&
+mlkem/src/fips202/native/api.h:104:           0 <= length && length <= 25 * sizeof(uint64_t) - offset)
+mlkem/src/fips202/native/armv81m/mve.h:42:    const uint8_t *data2, const uint8_t *data3, unsigned offset,
+mlkem/src/fips202/native/armv81m/mve.h:46:                                          offset, length);
+mlkem/src/fips202/native/armv81m/mve.h:56:    uint8_t *data3, unsigned offset, unsigned length)
+mlkem/src/fips202/native/armv81m/mve.h:59:                                              offset, length);
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:10:/* Keccak round constants in bit-interleaved form */
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:11:#define mlk_keccakf1600_round_constants \
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:12:  MLK_NAMESPACE(keccakf1600_round_constants)
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:14:    mlk_keccakf1600_round_constants[48];
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:25:                                             const uint8_t *d3, unsigned offset,
+mlkem/src/fips202/native/armv81m/src/fips202_native_armv81m.h:33:                                                 unsigned offset,
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:32:      description: Keccak round constants in bit-interleaved form (24 pairs of 32-bit words)
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:39:// Bit-interleaving background
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:45:// round function) to be implemented as pairs of 32-bit rotations.
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:87:        .cfi_adjust_cfa_offset 0x24
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:88:        .cfi_rel_offset r4, 0x0
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:89:        .cfi_rel_offset r5, 0x4
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:90:        .cfi_rel_offset r6, 0x8
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:91:        .cfi_rel_offset r7, 0xc
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:92:        .cfi_rel_offset r8, 0x10
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:93:        .cfi_rel_offset r9, 0x14
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:94:        .cfi_rel_offset r10, 0x18
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:95:        .cfi_rel_offset r11, 0x1c
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:96:        .cfi_rel_offset lr, 0x20
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:98:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:99:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:100:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:101:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:102:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:103:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:104:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:105:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:106:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:108:        .cfi_adjust_cfa_offset 0x80
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:117:        wls lr, lr, Lkeccak_f1600_x4_mve_asm_roundend @ imm = #0x8c0
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:119:Lkeccak_f1600_x4_mve_asm_roundstart:
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:680:Lkeccak_f1600_x4_mve_asm_roundend_pre:
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:681:        le lr, Lkeccak_f1600_x4_mve_asm_roundstart @ imm = #-0x8c0
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:683:Lkeccak_f1600_x4_mve_asm_roundend:
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:685:        .cfi_adjust_cfa_offset -0x80
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:695:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.S:706:        .cfi_adjust_cfa_offset -0x24
+mlkem/src/fips202/native/armv81m/src/keccak_f1600_x4_mve.c:25:                              mlk_keccakf1600_round_constants);
+mlkem/src/fips202/native/armv81m/src/keccakf1600_round_constants.c:14: * Keccak round constants in bit-interleaved form.
+mlkem/src/fips202/native/armv81m/src/keccakf1600_round_constants.c:20:    mlk_keccakf1600_round_constants[48] = {
+mlkem/src/fips202/native/armv81m/src/keccakf1600_round_constants.c:49:MLK_EMPTY_CU(fips202_armv81m_round_constants)
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:14:// void KeccakF1600x4_StateExtractBytes(state, d0, d1, d2, d3, offset, length)
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:17:// byte 'offset', recombines the even and odd halves of each lane back
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:21:// Bit-interleaving background
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:27:// round function) to be implemented as pairs of 32-bit rotations.
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:53://   Prologue -- if offset is not 8-byte aligned, extract
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:54://               min(length, 8-(offset%8)) bytes via predicated byte stores.
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:78:        .cfi_adjust_cfa_offset 0x28
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:79:        .cfi_rel_offset r4, 0x0
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:80:        .cfi_rel_offset r5, 0x4
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:81:        .cfi_rel_offset r6, 0x8
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:82:        .cfi_rel_offset r7, 0xc
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:83:        .cfi_rel_offset r8, 0x10
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:84:        .cfi_rel_offset r9, 0x14
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:85:        .cfi_rel_offset r10, 0x18
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:86:        .cfi_rel_offset r11, 0x1c
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:87:        .cfi_rel_offset lr, 0x24
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:89:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:90:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:91:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:92:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:93:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:94:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:95:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:96:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:97:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:314:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/armv81m/src/state_extract_bytes_x4_mve.S:325:        .cfi_adjust_cfa_offset -0x28
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:13:// void KeccakF1600x4_StateXORBytes(state, d0, d1, d2, d3, offset, length)
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:17:// XORs the result into the Keccak state starting at byte 'offset'.
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:20:// Bit-interleaving background
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:26:// round function) to be implemented as pairs of 32-bit rotations.
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:52://   Prologue -- if offset is not 8-byte aligned, absorb
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:53://               min(length, 8-(offset%8)) bytes via predicated byte loads.
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:77:        .cfi_adjust_cfa_offset 0x28
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:78:        .cfi_rel_offset r4, 0x0
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:79:        .cfi_rel_offset r5, 0x4
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:80:        .cfi_rel_offset r6, 0x8
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:81:        .cfi_rel_offset r7, 0xc
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:82:        .cfi_rel_offset r8, 0x10
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:83:        .cfi_rel_offset r9, 0x14
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:84:        .cfi_rel_offset r10, 0x18
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:85:        .cfi_rel_offset r11, 0x1c
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:86:        .cfi_rel_offset lr, 0x24
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:88:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:89:        .cfi_rel_offset d8, 0x0
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:90:        .cfi_rel_offset d9, 0x8
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:91:        .cfi_rel_offset d10, 0x10
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:92:        .cfi_rel_offset d11, 0x18
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:93:        .cfi_rel_offset d12, 0x20
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:94:        .cfi_rel_offset d13, 0x28
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:95:        .cfi_rel_offset d14, 0x30
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:96:        .cfi_rel_offset d15, 0x38
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:335:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/fips202/native/armv81m/src/state_xor_bytes_x4_mve.S:346:        .cfi_adjust_cfa_offset -0x28
+mlkem/src/fips202/native/x86_64/keccak_f1600_x4_avx2.h:27:  mlk_keccak_f1600_x4_avx2_asm(state, mlk_keccakf1600_round_constants,
+mlkem/src/fips202/native/x86_64/src/fips202_native_x86_64.h:18:#define mlk_keccakf1600_round_constants \
+mlkem/src/fips202/native/x86_64/src/fips202_native_x86_64.h:19:  MLK_NAMESPACE(keccakf1600_round_constants)
+mlkem/src/fips202/native/x86_64/src/fips202_native_x86_64.h:21:    mlk_keccakf1600_round_constants[24];
+mlkem/src/fips202/native/x86_64/src/fips202_native_x86_64.h:38:  requires(rc == mlk_keccakf1600_round_constants)
+mlkem/src/fips202/native/x86_64/src/keccakf1600_constants.c:21:    mlk_keccakf1600_round_constants[24] = {
+mlkem/src/indcpa.c:55: *                  [0,..,MLKEM_Q-1].
+mlkem/src/indcpa.c:62:  mlk_assert_bound_2d(pk->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/indcpa.c:74: *                      will be normalized to [0,1,..,MLKEM_Q-1].
+mlkem/src/indcpa.c:101:  mlk_assert_bound_2d(sk->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/indcpa.c:166:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:169:    array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:178:       array_bound(v->vec[x].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/indcpa.c:195:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.c:198:    array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))))
+mlkem/src/indcpa.c:206:       array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/indcpa.h:45:  array_bound(a->vec[x].vec[y].coeffs, 0, MLKEM_N, 0, MLKEM_Q))))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:75:  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:85:  ensures(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:102:  ensures(array_abs_bound(cache, 0, MLKEM_N/2, MLKEM_Q))
+mlkem/src/native/aarch64/src/arith_native_aarch64.h:180:    ensures(array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:67:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:69:        .cfi_rel_offset d8, 0x0
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:70:        .cfi_rel_offset d9, 0x8
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:72:        .cfi_rel_offset d10, 0x10
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:73:        .cfi_rel_offset d11, 0x18
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:75:        .cfi_rel_offset d12, 0x20
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:76:        .cfi_rel_offset d13, 0x28
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:78:        .cfi_rel_offset d14, 0x30
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:79:        .cfi_rel_offset d15, 0x38
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:80:        mov w5, #0xd01              // =3329
+mlkem/src/native/aarch64/src/intt_aarch64_asm.S:620:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:67:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:69:        .cfi_rel_offset d8, 0x0
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:70:        .cfi_rel_offset d9, 0x8
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:72:        .cfi_rel_offset d10, 0x10
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:73:        .cfi_rel_offset d11, 0x18
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:75:        .cfi_rel_offset d12, 0x20
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:76:        .cfi_rel_offset d13, 0x28
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:78:        .cfi_rel_offset d14, 0x30
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:79:        .cfi_rel_offset d15, 0x38
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:80:        mov w5, #0xd01              // =3329
+mlkem/src/native/aarch64/src/ntt_aarch64_asm.S:554:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/native/aarch64/src/poly_mulcache_compute_aarch64_asm.S:55:        mov w5, #0xd01              // =3329
+mlkem/src/native/aarch64/src/poly_reduce_aarch64_asm.S:37:        mov w2, #0xd01              // =3329
+mlkem/src/native/aarch64/src/poly_tomont_aarch64_asm.S:37:        mov w2, #0xd01              // =3329
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:68:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:70:        .cfi_rel_offset d8, 0x0
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:71:        .cfi_rel_offset d9, 0x8
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:73:        .cfi_rel_offset d10, 0x10
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:74:        .cfi_rel_offset d11, 0x18
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:76:        .cfi_rel_offset d12, 0x20
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:77:        .cfi_rel_offset d13, 0x28
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:79:        .cfi_rel_offset d14, 0x30
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:80:        .cfi_rel_offset d15, 0x38
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:81:        mov w14, #0xd01             // =3329
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k2_aarch64_asm.S:251:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:68:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:70:        .cfi_rel_offset d8, 0x0
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:71:        .cfi_rel_offset d9, 0x8
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:73:        .cfi_rel_offset d10, 0x10
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:74:        .cfi_rel_offset d11, 0x18
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:76:        .cfi_rel_offset d12, 0x20
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:77:        .cfi_rel_offset d13, 0x28
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:79:        .cfi_rel_offset d14, 0x30
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:80:        .cfi_rel_offset d15, 0x38
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:81:        mov w14, #0xd01             // =3329
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k3_aarch64_asm.S:305:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:68:        .cfi_adjust_cfa_offset 0x40
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:70:        .cfi_rel_offset d8, 0x0
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:71:        .cfi_rel_offset d9, 0x8
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:73:        .cfi_rel_offset d10, 0x10
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:74:        .cfi_rel_offset d11, 0x18
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:76:        .cfi_rel_offset d12, 0x20
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:77:        .cfi_rel_offset d13, 0x28
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:79:        .cfi_rel_offset d14, 0x30
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:80:        .cfi_rel_offset d15, 0x38
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:81:        mov w14, #0xd01             // =3329
+mlkem/src/native/aarch64/src/polyvec_basemul_acc_montgomery_cached_k4_aarch64_asm.S:359:        .cfi_adjust_cfa_offset -0x40
+mlkem/src/native/aarch64/src/rej_uniform_aarch64_asm.S:57:        .cfi_adjust_cfa_offset 0x240
+mlkem/src/native/aarch64/src/rej_uniform_aarch64_asm.S:68:        mov w11, #0xd01             // =3329
+mlkem/src/native/aarch64/src/rej_uniform_aarch64_asm.S:215:        .cfi_adjust_cfa_offset -0x240
+mlkem/src/native/api.h:45:#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/api.h:51:#define MLK_NTT_BOUND (8 * MLKEM_Q)
+mlkem/src/native/api.h:73: * Those functions are meant to be trivial wrappers around the chosen native
+mlkem/src/native/api.h:98:  requires(array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:102:  ensures((return_value == MLK_NATIVE_FUNC_FALLBACK) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:142:  requires(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:144:  ensures(array_bound(p, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:176: * to unsigned canonical representatives in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:189:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(p, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:210:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(p, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/api.h:241:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_abs_bound(cache, 0, MLKEM_N/2, MLKEM_Q))
+mlkem/src/native/api.h:350: * @param[in]  a Input polynomial, with each coefficient in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:361:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:394: * integers mod MLKEM_Q, represented in [0,..,MLKEM_Q-1].
+mlkem/src/native/api.h:397: * @param      len    Requested number of 16-bit integers (uniform mod MLKEM_Q).
+mlkem/src/native/api.h:418:              ==> array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+mlkem/src/native/api.h:432: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:443:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:457: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:463:static MLK_INLINE int mlk_poly_compress_d10_native(
+mlkem/src/native/api.h:468:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:481: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:498:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:504: * approximate inverse of mlk_poly_compress_d10.
+mlkem/src/native/api.h:509: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:519:static MLK_INLINE int mlk_poly_decompress_d10_native(
+mlkem/src/native/api.h:526:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:540: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:551:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:565: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/native/api.h:571:static MLK_INLINE int mlk_poly_compress_d11_native(
+mlkem/src/native/api.h:576:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/api.h:589: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:606:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/api.h:612: * approximate inverse of mlk_poly_compress_d11.
+mlkem/src/native/api.h:617: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/native/api.h:627:static MLK_INLINE int mlk_poly_decompress_d11_native(
+mlkem/src/native/api.h:634:  ensures((return_value == MLK_NATIVE_FUNC_SUCCESS) ==> array_bound(r, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/native/ppc64le/src/consts.c:21: * For the layout, see the offset macros in consts.h.
+mlkem/src/native/ppc64le/src/consts.c:26:    -3329, -3329, -3329, -3329, -3329, -3329, -3329, -3329,
+mlkem/src/native/ppc64le/src/consts.c:28:    3329, 3329, 3329, 3329, 3329, 3329, 3329, 3329,
+mlkem/src/native/ppc64le/src/consts.c:29:    /* round(2^26 / MLKEM_Q), Barrett reduction constant */
+mlkem/src/native/ppc64le/src/consts.c:35:    /* 2^16 mod MLKEM_Q (R), Barrett tomont factor */
+mlkem/src/native/ppc64le/src/consts.h:16:/* Byte offsets into the constant table */
+mlkem/src/native/riscv64/src/rv64v_poly.c:19:/* check-magic: -3327 == signed_mod(pow(MLKEM_Q,-1,2^16), 2^16) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:22:/* check-magic: 2285 == unsigned_mod(2^16, MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:25:/* check-magic: 1353 == pow(2, 32, MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:28:/* check-magic: 1441 == pow(2,32-7,MLKEM_Q) */
+mlkem/src/native/riscv64/src/rv64v_poly.c:36:  t = __riscv_vmulh_vx_i16m1(t, MLKEM_Q, vl);    /* t = (t*Q) / R  */
+mlkem/src/native/riscv64/src/rv64v_poly.c:50:  z = __riscv_vsub_vv_i32m2(z, __riscv_vwmul_vx_i32m2(t, MLKEM_Q, vl),
+mlkem/src/native/riscv64/src/rv64v_poly.c:62:  const int16_t v = ((1 << 26) + MLKEM_Q / 2) / MLKEM_Q;
+mlkem/src/native/riscv64/src/rv64v_poly.c:67:  t = __riscv_vmul_vx_i16m1(t, MLKEM_Q, vl);
+mlkem/src/native/riscv64/src/rv64v_poly.c:70:  mlk_assert_abs_bound_int16m1(t, vl, MLKEM_Q_HALF);
+mlkem/src/native/riscv64/src/rv64v_poly.c:89:  m = __riscv_vand_vx_i16m1(m, MLKEM_Q, vl); /* m = (x < 0) ?  Q : 0 */
+mlkem/src/native/riscv64/src/rv64v_poly.c:124:  mlk_assert_abs_bound_int16m1(result, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:155:    mlk_assert_abs_bound(&uc, 1, MLKEM_Q_HALF);                  \
+mlkem/src/native/riscv64/src/rv64v_poly.c:158:    mlk_assert_abs_bound_int16m1(ut, vl, MLKEM_Q);               \
+mlkem/src/native/riscv64/src/rv64v_poly.c:162:    mlk_assert_abs_bound_int16m1(u0, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:163:    mlk_assert_abs_bound_int16m1(u1, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:168:    mlk_assert_abs_bound_int16m1(uc, vl, MLKEM_Q_HALF);          \
+mlkem/src/native/riscv64/src/rv64v_poly.c:171:    mlk_assert_abs_bound_int16m1(ut, vl, MLKEM_Q);               \
+mlkem/src/native/riscv64/src/rv64v_poly.c:175:    mlk_assert_abs_bound_int16m1(u0, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:176:    mlk_assert_abs_bound_int16m1(u1, vl, (layer + 1) * MLKEM_Q); \
+mlkem/src/native/riscv64/src/rv64v_poly.c:376:  mlk_assert_abs_bound_int16m1(t0, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:377:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:383:  mlk_assert_abs_bound_int16m1(t0, vl, 2 * MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:384:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:395:  mlk_assert_abs_bound_int16m1(t0, vl, 4 * MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:396:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:407:  mlk_assert_abs_bound_int16m1(t0, vl, 8 * MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:408:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:413:  mlk_assert_abs_bound_int16m1(t0, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:414:  mlk_assert_abs_bound_int16m1(t1, vl, MLKEM_Q);
+mlkem/src/native/riscv64/src/rv64v_poly.c:428:    mlk_assert_abs_bound_int16m1(v0, vl, (b0) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:429:    mlk_assert_abs_bound_int16m1(v1, vl, (b1) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:430:    mlk_assert_abs_bound_int16m1(v2, vl, (b2) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:431:    mlk_assert_abs_bound_int16m1(v3, vl, (b3) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:432:    mlk_assert_abs_bound_int16m1(v4, vl, (b4) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:433:    mlk_assert_abs_bound_int16m1(v5, vl, (b5) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:434:    mlk_assert_abs_bound_int16m1(v6, vl, (b6) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:435:    mlk_assert_abs_bound_int16m1(v7, vl, (b7) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:436:    mlk_assert_abs_bound_int16m1(v8, vl, (b8) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:437:    mlk_assert_abs_bound_int16m1(v9, vl, (b9) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:438:    mlk_assert_abs_bound_int16m1(va, vl, (ba) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:439:    mlk_assert_abs_bound_int16m1(vb, vl, (bb) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:440:    mlk_assert_abs_bound_int16m1(vc, vl, (bc) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:441:    mlk_assert_abs_bound_int16m1(vd, vl, (bd) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:442:    mlk_assert_abs_bound_int16m1(ve, vl, (be) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:443:    mlk_assert_abs_bound_int16m1(vf, vl, (bf) * MLKEM_Q);                      \
+mlkem/src/native/riscv64/src/rv64v_poly.c:608:/* ML-KEM's middle field GF(3329)[X]/(X^2) multiplication */
+mlkem/src/native/riscv64/src/rv64v_poly.c:761:      lt = __riscv_vmsltu_vx_u16m1_b16(x, MLKEM_Q, vl);
+mlkem/src/native/x86_64/meta.h:209:static MLK_INLINE int mlk_poly_compress_d10_native(
+mlkem/src/native/x86_64/meta.h:217:  mlk_poly_compress_d10_avx2_asm(r, a, mlk_compress_d10_data);
+mlkem/src/native/x86_64/meta.h:235:static MLK_INLINE int mlk_poly_decompress_d10_native(
+mlkem/src/native/x86_64/meta.h:243:  mlk_poly_decompress_d10_avx2_asm(r, a, mlk_decompress_d10_data);
+mlkem/src/native/x86_64/meta.h:263:static MLK_INLINE int mlk_poly_compress_d11_native(
+mlkem/src/native/x86_64/meta.h:271:  mlk_poly_compress_d11_avx2_asm(r, a, mlk_compress_d11_data);
+mlkem/src/native/x86_64/meta.h:289:static MLK_INLINE int mlk_poly_decompress_d11_native(
+mlkem/src/native/x86_64/meta.h:297:  mlk_poly_decompress_d11_avx2_asm(r, a, mlk_decompress_d11_data);
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:33:    ensures(array_bound(r, 0, (unsigned) return_value, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:72:  requires(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:88:  ensures(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:103:  ensures(array_abs_bound(out, 0, MLKEM_N/2, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:166:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:192:  ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:206:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:225:  ensures(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:228:#define mlk_poly_compress_d10_avx2_asm MLK_NAMESPACE(poly_compress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:230:void mlk_poly_compress_d10_avx2_asm(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:234: * proofs/hol_light/x86_64/proofs/poly_compress_d10_avx2_asm.ml.
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:239:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:240:  requires(data == mlk_compress_d10_data)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:244:#define mlk_poly_decompress_d10_avx2_asm \
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:245:  MLK_NAMESPACE(poly_decompress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:247:void mlk_poly_decompress_d10_avx2_asm(
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:251: * proofs/hol_light/x86_64/proofs/poly_decompress_d10_avx2_asm.ml.
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:256:  requires(data == mlk_decompress_d10_data)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:258:  ensures(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:272:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:291:  ensures(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:294:#define mlk_poly_compress_d11_avx2_asm MLK_NAMESPACE(poly_compress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:296:void mlk_poly_compress_d11_avx2_asm(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:300: * proofs/hol_light/x86_64/proofs/poly_compress_d11_avx2_asm.ml.
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:305:  requires(array_bound(a, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:306:  requires(data == mlk_compress_d11_data)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:310:#define mlk_poly_decompress_d11_avx2_asm \
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:311:  MLK_NAMESPACE(poly_decompress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:313:void mlk_poly_decompress_d11_avx2_asm(
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:317: * proofs/hol_light/x86_64/proofs/poly_decompress_d11_avx2_asm.ml.
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:322:  requires(data == mlk_decompress_d11_data)
+mlkem/src/native/x86_64/src/arith_native_x86_64.h:324:  ensures(array_bound(r, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/native/x86_64/src/compress_consts.c:35:    mlk_compress_d10_data[32] = {
+mlkem/src/native/x86_64/src/compress_consts.c:42:    mlk_decompress_d10_data[32] = {
+mlkem/src/native/x86_64/src/compress_consts.c:74:    mlk_compress_d11_data[64] =
+mlkem/src/native/x86_64/src/compress_consts.c:86:    mlk_decompress_d11_data[128] = {
+mlkem/src/native/x86_64/src/compress_consts.h:25:#define mlk_compress_d10_data MLK_NAMESPACE(compress_d10_data)
+mlkem/src/native/x86_64/src/compress_consts.h:26:MLK_INTERNAL_DATA_DECLARATION const uint8_t mlk_compress_d10_data[32];
+mlkem/src/native/x86_64/src/compress_consts.h:28:#define mlk_decompress_d10_data MLK_NAMESPACE(decompress_d10_data)
+mlkem/src/native/x86_64/src/compress_consts.h:29:MLK_INTERNAL_DATA_DECLARATION const uint8_t mlk_decompress_d10_data[32];
+mlkem/src/native/x86_64/src/compress_consts.h:37:#define mlk_compress_d11_data MLK_NAMESPACE(compress_d11_data)
+mlkem/src/native/x86_64/src/compress_consts.h:38:MLK_INTERNAL_DATA_DECLARATION const uint8_t mlk_compress_d11_data[64];
+mlkem/src/native/x86_64/src/compress_consts.h:40:#define mlk_decompress_d11_data MLK_NAMESPACE(decompress_d11_data)
+mlkem/src/native/x86_64/src/compress_consts.h:41:MLK_INTERNAL_DATA_DECLARATION const uint8_t mlk_decompress_d11_data[128];
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:21: * Name:        mlk_poly_compress_d10_avx2_asm
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:36:  Name: poly_compress_d10_avx2_asm
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:38:  Signature: void mlk_poly_compress_d10_avx2_asm(uint8_t *r, const int16_t *a, const uint8_t *data)
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:66: *   dev/x86_64/src/poly_compress_d10_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:71:.global MLK_ASM_NAMESPACE(poly_compress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:72:MLK_ASM_FN_SYMBOL(poly_compress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S:402:MLK_ASM_FN_SIZE(poly_compress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:21: * Name:        mlk_poly_compress_d11_avx2_asm
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:38:  Name: poly_compress_d11_avx2_asm
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:40:  Signature: void mlk_poly_compress_d11_avx2_asm(uint8_t *r, const int16_t *a, const uint8_t *data)
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:68: *   dev/x86_64/src/poly_compress_d11_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:73:.global MLK_ASM_NAMESPACE(poly_compress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:74:MLK_ASM_FN_SYMBOL(poly_compress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S:469:MLK_ASM_FN_SIZE(poly_compress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:21: * Name:        mlk_poly_decompress_d10_avx2_asm
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:36:  Name: poly_decompress_d10_avx2_asm
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:38:  Signature: void mlk_poly_decompress_d10_avx2_asm(int16_t *r, const uint8_t *a, const uint8_t *data)
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:66: *   dev/x86_64/src/poly_decompress_d10_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:71:.global MLK_ASM_NAMESPACE(poly_decompress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:72:MLK_ASM_FN_SYMBOL(poly_decompress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S:248:MLK_ASM_FN_SIZE(poly_decompress_d10_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:21: * Name:        mlk_poly_decompress_d11_avx2_asm
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:38:  Name: poly_decompress_d11_avx2_asm
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:40:  Signature: void mlk_poly_decompress_d11_avx2_asm(int16_t *r, const uint8_t *a, const uint8_t *data)
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:68: *   dev/x86_64/src/poly_decompress_d11_avx2_asm.S using scripts/simpasm. Do not modify it directly.
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:73:.global MLK_ASM_NAMESPACE(poly_decompress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:74:MLK_ASM_FN_SYMBOL(poly_decompress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S:298:MLK_ASM_FN_SIZE(poly_decompress_d11_avx2_asm)
+mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S:71:        .cfi_adjust_cfa_offset 0x210
+mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S:125:        .cfi_adjust_cfa_offset -0x210
+mlkem/src/params.h:23:#define MLKEM_Q 3329
+mlkem/src/params.h:24:#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */
+mlkem/src/poly.c:32: * Montgomery multiplication modulo MLKEM_Q.
+mlkem/src/poly.c:38: *          (abs value < (MLKEM_Q+1)/2).
+mlkem/src/poly.c:40: * @return 16-bit integer congruent to a*b*R^{-1} mod MLKEM_Q, and
+mlkem/src/poly.c:41: *         smaller than MLKEM_Q in absolute value.
+mlkem/src/poly.c:45:  requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF)
+mlkem/src/poly.c:46:  ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)
+mlkem/src/poly.c:50:  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);
+mlkem/src/poly.c:54:   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2
+mlkem/src/poly.c:55:   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2
+mlkem/src/poly.c:56:   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2
+mlkem/src/poly.c:57:   *        < MLKEM_Q
+mlkem/src/poly.c:60:  mlk_assert_abs_bound(&res, 1, MLKEM_Q);
+mlkem/src/poly.c:66: * representative congruent to a mod MLKEM_Q in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2].
+mlkem/src/poly.c:72: * @return Integer in [-(MLKEM_Q-1)/2, (MLKEM_Q-1)/2] congruent to @p a modulo
+mlkem/src/poly.c:73: *         MLKEM_Q.
+mlkem/src/poly.c:77:  ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)
+mlkem/src/poly.c:82:   *     round(a/MLKEM_Q)
+mlkem/src/poly.c:83:   *   = round(a*(2^N/MLKEM_Q))/2^N)
+mlkem/src/poly.c:84:   *  ~= round(a*round(2^N/MLKEM_Q)/2^N)
+mlkem/src/poly.c:88:  const int32_t magic = 20159; /* check-magic: 20159 == round(2^26 / MLKEM_Q) */
+mlkem/src/poly.c:100:   * evaluate t * MLKEM_Q and the subsequent subtraction
+mlkem/src/poly.c:102:  int16_t res = (int16_t)(a - t * MLKEM_Q);
+mlkem/src/poly.c:104:  mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);
+mlkem/src/poly.c:113:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:117:  const int16_t f = 1353; /* check-magic: 1353 == signed_mod(2^32, MLKEM_Q) */
+mlkem/src/poly.c:121:    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))
+mlkem/src/poly.c:127:  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/poly.c:138:    mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/poly.c:147: * Constant-time conversion of signed representatives modulo MLKEM_Q within
+mlkem/src/poly.c:148: * range [-(MLKEM_Q-1), MLKEM_Q-1] into unsigned representatives within
+mlkem/src/poly.c:149: * range [0, MLKEM_Q-1].
+mlkem/src/poly.c:158: * @return Unsigned representative in [0, MLKEM_Q).
+mlkem/src/poly.c:162:  requires(c > -MLKEM_Q && c < MLKEM_Q)
+mlkem/src/poly.c:163:  ensures(return_value >= 0 && return_value < MLKEM_Q)
+mlkem/src/poly.c:164:  ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q)))
+mlkem/src/poly.c:166:  mlk_assert_abs_bound(&c, 1, MLKEM_Q);
+mlkem/src/poly.c:168:  /* Add MLKEM_Q if c is negative, but in constant time.
+mlkem/src/poly.c:170:   * Note that c + MLKEM_Q does not overflow in int16_t,
+mlkem/src/poly.c:172:  c = mlk_ct_sel_int16((int16_t)(c + MLKEM_Q), c, mlk_ct_cmask_neg_i16(c));
+mlkem/src/poly.c:174:  mlk_assert_bound(&c, 1, 0, MLKEM_Q);
+mlkem/src/poly.c:181: *              Accordingly, we need a conditional addition of MLKEM_Q
+mlkem/src/poly.c:189:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.c:197:    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+mlkem/src/poly.c:206:  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly.c:217:    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly.c:281:    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))
+mlkem/src/poly.c:285:    /* The values in zeta table are <= MLKEM_Q in absolute value,
+mlkem/src/poly.c:297:  mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);
+mlkem/src/poly.c:325: *          coefficients must be bound by `bound + MLKEM_Q`. Post `start`,
+mlkem/src/poly.c:328: * [start, start+2*len) have bound bumped to `bound + MLKEM_Q`.
+mlkem/src/poly.c:349:  requires(0 <= bound && bound < INT16_MAX - MLKEM_Q)
+mlkem/src/poly.c:350:  requires(-MLKEM_Q_HALF < zeta && zeta < MLKEM_Q_HALF)
+mlkem/src/poly.c:352:  requires(array_abs_bound(r, 0, start, bound + MLKEM_Q))
+mlkem/src/poly.c:355:  ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q))
+mlkem/src/poly.c:368:    invariant(array_abs_bound(r, 0,           j,           bound + MLKEM_Q))
+mlkem/src/poly.c:370:    invariant(array_abs_bound(r, start + len, j + len,     bound + MLKEM_Q))
+mlkem/src/poly.c:394:  requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))
+mlkem/src/poly.c:396:  ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q)))
+mlkem/src/poly.c:406:    invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q))
+mlkem/src/poly.c:407:    invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q))
+mlkem/src/poly.c:411:    mlk_ntt_butterfly_block(r, zeta, start, len, layer * MLKEM_Q);
+mlkem/src/poly.c:430:  requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:438:  mlk_assert_abs_bound(p, MLKEM_N, MLKEM_Q);
+mlkem/src/poly.c:445:    invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))
+mlkem/src/poly.c:460:  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+mlkem/src/poly.c:480:  requires(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:482:  ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)))
+mlkem/src/poly.c:489:    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:501:      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.c:526:  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */
+mlkem/src/poly.c:532:   * absolute value < MLKEM_Q.
+mlkem/src/poly.c:537:    invariant(array_abs_bound(r, 0, j, MLKEM_Q))
+mlkem/src/poly.c:547:    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.h:25:#define MLK_INVNTT_BOUND (8 * MLKEM_Q)
+mlkem/src/poly.h:28:#define MLK_NTT_BOUND (8 * MLKEM_Q)
+mlkem/src/poly.h:50: * integer congruent to a * R^-1 mod MLKEM_Q, where R=2^16.
+mlkem/src/poly.h:53: *          to INT32_MAX - 2^15 * MLKEM_Q.
+mlkem/src/poly.h:55: * @return Integer congruent to a * R^-1 modulo MLKEM_Q, with absolute value
+mlkem/src/poly.h:56: *         <= ceil(|a| / 2^16) + (MLKEM_Q + 1)/2.
+mlkem/src/poly.h:60:    requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+mlkem/src/poly.h:61:             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)))
+mlkem/src/poly.h:70:  /* check-magic: 62209 == unsigned_mod(pow(MLKEM_Q, -1, 2^16), 2^16) */
+mlkem/src/poly.h:82:  mlk_assert(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&
+mlkem/src/poly.h:83:             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)));
+mlkem/src/poly.h:85:  r = a - ((int32_t)t * MLKEM_Q);
+mlkem/src/poly.h:94:   *                   <= ceil(|a| / 2^16 + MLKEM_Q / 2)
+mlkem/src/poly.h:95:   *                   <= ceil(|a| / 2^16) + (MLKEM_Q + 1) / 2
+mlkem/src/poly.h:107: * Bounds: output < MLKEM_Q in absolute value.
+mlkem/src/poly.h:120:  ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly.h:159: * coefficients are in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly.h:178:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly.h:241: * MLKEM_Q in absolute value.
+mlkem/src/poly.h:258:  requires(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))
+mlkem/src/poly_k.c:46: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/poly_k.c:52:  mlk_assert_bound_2d(a->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly_k.c:71:  mlk_assert_bound_2d(r->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly_k.c:78: *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+mlkem/src/poly_k.c:83:  mlk_assert_bound_2d(a->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly_k.c:240: *              Accordingly, we need a conditional addition of MLKEM_Q
+mlkem/src/poly_k.c:253:  mlk_assert_bound_2d(r->vec, MLKEM_K, MLKEM_N, 0, MLKEM_Q);
+mlkem/src/poly_k.c:292:  mlk_assert_abs_bound_2d(r->vec, MLKEM_K, MLKEM_N, MLKEM_Q);
+mlkem/src/poly_k.h:60: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly_k.h:67:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly_k.h:71:  mlk_poly_compress_d10(r, a);
+mlkem/src/poly_k.h:73:  mlk_poly_compress_d11(r, a);
+mlkem/src/poly_k.h:85: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/poly_k.h:101:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:104:  mlk_poly_decompress_d10(r, a);
+mlkem/src/poly_k.h:106:  mlk_poly_decompress_d11(r, a);
+mlkem/src/poly_k.h:123: *               i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly_k.h:130:  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/poly_k.h:149: * unsigned-canonical (non-negative and smaller than MLKEM_Q).
+mlkem/src/poly_k.h:165:  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:187: *               canonical, i.e. in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly_k.h:196:         array_bound(a->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:210: *               to [0,1,..,MLKEM_Q-1].
+mlkem/src/poly_k.h:222:         array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:235: *               coefficients in [0,1,..,MLKEM_Q-1].
+mlkem/src/poly_k.h:243:         array_bound(a->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:274: * MLKEM_Q in absolute value.
+mlkem/src/poly_k.h:289:  array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLKEM_Q)))
+mlkem/src/poly_k.h:411:    array_bound(r->vec[k0].coeffs, 0, MLKEM_N, 0, MLKEM_Q)))
+mlkem/src/poly_k.h:450: * Bounds: output < MLKEM_Q in absolute value.
+mlkem/src/poly_k.h:464:    array_abs_bound(r->vec[j].coeffs, 0, MLKEM_N, MLKEM_Q)))
+mlkem/src/randombytes.h:32: * Internal wrapper around randombytes().
+mlkem/src/sampling.c:30: *              in that it adds the offset and always expects the base of the
+mlkem/src/sampling.c:34:                                               unsigned offset,
+mlkem/src/sampling.c:38:  requires(offset <= target && target <= 4096 && buflen <= 4096 && buflen % 3 == 0)
+mlkem/src/sampling.c:41:  requires(array_bound(r, 0, offset, 0, MLKEM_Q))
+mlkem/src/sampling.c:43:  ensures(offset <= return_value && return_value <= target)
+mlkem/src/sampling.c:44:  ensures(array_bound(r, 0, return_value, 0, MLKEM_Q)))
+mlkem/src/sampling.c:49:  mlk_assert_bound(r, offset, 0, MLKEM_Q);
+mlkem/src/sampling.c:51:  ctr = offset;
+mlkem/src/sampling.c:56:    invariant(offset <= ctr && ctr <= target && pos <= buflen)
+mlkem/src/sampling.c:57:    invariant(array_bound(r, 0, ctr, 0, MLKEM_Q))
+mlkem/src/sampling.c:71:    if (val0 < MLKEM_Q)
+mlkem/src/sampling.c:75:    if (ctr < target && val1 < MLKEM_Q)
+mlkem/src/sampling.c:81:  mlk_assert_bound(r, ctr, 0, MLKEM_Q);
+mlkem/src/sampling.c:87: * integers mod MLKEM_Q.
+mlkem/src/sampling.c:90: * signature differs from the reference in that it adds the offset and always
+mlkem/src/sampling.c:96: * @param      target Requested number of 16-bit integers (uniform mod MLKEM_Q).
+mlkem/src/sampling.c:98: * @param      offset Number of 16-bit integers that have already been
+mlkem/src/sampling.c:109: * @return New offset of sampled 16-bit integers, at most @p target and at
+mlkem/src/sampling.c:110: *         least the initial @p offset. If the new offset is strictly less
+mlkem/src/sampling.c:115:static unsigned mlk_rej_uniform(int16_t *r, unsigned target, unsigned offset,
+mlkem/src/sampling.c:118:  requires(offset <= target && target <= 4096 && buflen <= 4096 && buflen % 3 == 0)
+mlkem/src/sampling.c:121:  requires(array_bound(r, 0, offset, 0, MLKEM_Q))
+mlkem/src/sampling.c:123:  ensures(offset <= return_value && return_value <= target)
+mlkem/src/sampling.c:124:  ensures(array_bound(r, 0, return_value, 0, MLKEM_Q))
+mlkem/src/sampling.c:128:  if (offset == 0)
+mlkem/src/sampling.c:135:      mlk_assert_bound(r, res, 0, MLKEM_Q);
+mlkem/src/sampling.c:141:  return mlk_rej_uniform_c(r, target, offset, buf, buflen);
+mlkem/src/sampling.c:146:  ((12 * MLKEM_N / 8 * ((uint32_t)1 << 12) / MLKEM_Q + MLK_XOF_RATE) / \
+mlkem/src/sampling.c:198:    invariant(array_bound(vec0->coeffs, 0, ctr[0], 0, MLKEM_Q))
+mlkem/src/sampling.c:199:    invariant(array_bound(vec1->coeffs, 0, ctr[1], 0, MLKEM_Q))
+mlkem/src/sampling.c:200:    invariant(array_bound(vec2->coeffs, 0, ctr[2], 0, MLKEM_Q))
+mlkem/src/sampling.c:201:    invariant(array_bound(vec3->coeffs, 0, ctr[3], 0, MLKEM_Q)))
+mlkem/src/sampling.c:241:    invariant(array_bound(entry->coeffs, 0, ctr, 0, MLKEM_Q)))
+mlkem/src/sampling.h:83:  ensures(array_bound(vec0->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:84:  ensures(array_bound(vec1->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:85:  ensures(array_bound(vec2->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+mlkem/src/sampling.h:86:  ensures(array_bound(vec3->coeffs, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/sampling.h:105:  ensures(array_bound(entry->coeffs, 0, MLKEM_N, 0, MLKEM_Q)));
+mlkem/src/verify.h:266: * @spec{With `a = MLKEM_Q_HALF` and `b=0`, this essentially implements
+mlkem/src/verify.h:268: * `a = x + MLKEM_Q`, `b = x`, and `cond` indicating whether `x` is negative,
+mlkem/src/verify.h:279: * branches. For `a = MLKEM_Q_HALF` and `b=0`, also embedded in

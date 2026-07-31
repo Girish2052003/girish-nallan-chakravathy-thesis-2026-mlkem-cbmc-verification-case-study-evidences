@@ -1,0 +1,337 @@
+============================================================
+MSG02F — R2A AND R2B REACHABILITY COMPANIONS
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:51:05Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595
+
+===== 1. RESOLVE EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE AND POSITIVE-PROOF BINDING =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+R2A_FAILURES=0
+R2A_UNKNOWNS=0
+R2B_FAILURES=0
+R2B_UNKNOWNS=0
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+R2A_POSITIVE_PROOF_BINDING=PASS
+R2B_POSITIVE_PROOF_BINDING=PASS
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+c38f6ce6c994376e2725f076d116f7fea4a166b39a8f7bdbffccce3d0d3b0fec  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_cross_bit_preservation_result.json
+
+===== 3. WRITE R2A REACHABILITY HARNESS =====
+R2A_COVERAGE_HARNESS_WRITTEN=PASS
+R2A_SOURCE_COVER_COUNT=6
+R2A_SOURCE_TARGET_CALL_COUNT=2
+     1	/*
+     2	 * MSG-T2-R2A reachability companion.
+     3	 *
+     4	 * The selected coefficients are equal, while one distinct symbolic
+     5	 * coefficient is forced to differ. This demonstrates that R2A is not relying
+     6	 * on complete equality of the two input polynomials.
+     7	 */
+     8	
+     9	#include <stdint.h>
+    10	#include "compress.h"
+    11	
+    12	int main(void)
+    13	{
+    14	  mlk_poly a;
+    15	  mlk_poly b;
+    16	
+    17	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    18	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    19	
+    20	  unsigned i;
+    21	  unsigned k;
+    22	  unsigned m;
+    23	
+    24	  uint8_t bit_a;
+    25	  uint8_t bit_b;
+    26	
+    27	  __CPROVER_assume(k < MLKEM_N);
+    28	  __CPROVER_assume(m < MLKEM_N);
+    29	  __CPROVER_assume(m != k);
+    30	
+    31	  for (i = 0u; i < MLKEM_N; i++)
+    32	  {
+    33	    __CPROVER_assume(a.coeffs[i] >= 0);
+    34	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    35	
+    36	    __CPROVER_assume(b.coeffs[i] >= 0);
+    37	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    38	  }
+    39	
+    40	  __CPROVER_assume(a.coeffs[k] == b.coeffs[k]);
+    41	  __CPROVER_assume(a.coeffs[m] != b.coeffs[m]);
+    42	
+    43	  /* Goal 1: nontrivial R2A antecedent is satisfiable. */
+    44	  __CPROVER_cover(1);
+    45	
+    46	  mlk_poly_tomsg(msg_a, &a);
+    47	  mlk_poly_tomsg(msg_b, &b);
+    48	
+    49	  /* Goal 2: both production executions return. */
+    50	  __CPROVER_cover(1);
+    51	
+    52	  bit_a =
+    53	      (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    54	
+    55	  bit_b =
+    56	      (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    57	
+    58	  /* Goals 3–4: boundary coefficient positions are reachable. */
+    59	  __CPROVER_cover(k == 0u);
+    60	  __CPROVER_cover(k == MLKEM_N - 1u);
+    61	
+    62	  /* Goals 5–6: both equal selected-bit decisions are reachable. */
+    63	  __CPROVER_cover(bit_a == 0u && bit_b == 0u);
+    64	  __CPROVER_cover(bit_a == 1u && bit_b == 1u);
+    65	
+    66	  return 0;
+    67	}
+2ee4c2b036c6ec7218e7a2a6abaa01c456841e8053f1deb2243d26f1963a4fd8  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c
+
+===== 4. WRITE R2B REACHABILITY HARNESS =====
+R2B_COVERAGE_HARNESS_WRITTEN=PASS
+R2B_SOURCE_COVER_COUNT=6
+R2B_SOURCE_TARGET_CALL_COUNT=2
+     1	/*
+     2	 * MSG-T2-R2B reachability companion.
+     3	 *
+     4	 * Every coefficient other than k is equal. Coefficient k is forced to differ.
+     5	 * The companion demonstrates that a real selected-coefficient change may
+     6	 * either preserve or change its own output decision.
+     7	 */
+     8	
+     9	#include <stdint.h>
+    10	#include "compress.h"
+    11	
+    12	int main(void)
+    13	{
+    14	  mlk_poly a;
+    15	  mlk_poly b;
+    16	
+    17	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    18	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    19	
+    20	  unsigned i;
+    21	  unsigned k;
+    22	
+    23	  uint8_t bit_a;
+    24	  uint8_t bit_b;
+    25	
+    26	  __CPROVER_assume(k < MLKEM_N);
+    27	
+    28	  for (i = 0u; i < MLKEM_N; i++)
+    29	  {
+    30	    __CPROVER_assume(a.coeffs[i] >= 0);
+    31	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    32	
+    33	    __CPROVER_assume(b.coeffs[i] >= 0);
+    34	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    35	
+    36	    if (i != k)
+    37	    {
+    38	      __CPROVER_assume(a.coeffs[i] == b.coeffs[i]);
+    39	    }
+    40	  }
+    41	
+    42	  __CPROVER_assume(a.coeffs[k] != b.coeffs[k]);
+    43	
+    44	  /* Goal 1: a genuine selected-coefficient change is satisfiable. */
+    45	  __CPROVER_cover(1);
+    46	
+    47	  mlk_poly_tomsg(msg_a, &a);
+    48	  mlk_poly_tomsg(msg_b, &b);
+    49	
+    50	  /* Goal 2: both production executions return. */
+    51	  __CPROVER_cover(1);
+    52	
+    53	  bit_a =
+    54	      (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    55	
+    56	  bit_b =
+    57	      (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    58	
+    59	  /* Goals 3–4: boundary coefficient positions are reachable. */
+    60	  __CPROVER_cover(k == 0u);
+    61	  __CPROVER_cover(k == MLKEM_N - 1u);
+    62	
+    63	  /*
+    64	   * Goals 5–6:
+    65	   * Distinct canonical coefficients may remain in the same Compress1 region
+    66	   * or may cross a Compress1 decision boundary.
+    67	   */
+    68	  __CPROVER_cover(bit_a == bit_b);
+    69	  __CPROVER_cover(bit_a != bit_b);
+    70	
+    71	  return 0;
+    72	}
+168cd0aee3feb9718db8ee01640fb4cfee49e70843643e430e6117c641ef43cb  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c
+
+===== 5. BUILD R2A COVERAGE GOTO =====
+R2A_GOTO_BUILD_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 31 function main
+
+--
+Loop mlk_msg02f_r2acov_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02f_r2acov_poly_tomsg
+
+Loop mlk_msg02f_r2acov_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02f_r2acov_poly_tomsg
+
+Loop mlk_msg02f_r2acov_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02f_r2acov_poly_tomsg
+
+R2A_COVERAGE_GOTO_BUILD=PASS
+R2A_COVERAGE_GOTO_VALIDATION=PASS
+70d26e729a8ad1e1462aa231d524941c3a41c673510eb82e4ce25d253fda25b2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability.goto
+
+===== 6. BUILD R2B COVERAGE GOTO =====
+R2B_GOTO_BUILD_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 28 function main
+
+Loop mlk_msg02f_r2bcov_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02f_r2bcov_poly_tomsg
+
+Loop mlk_msg02f_r2bcov_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02f_r2bcov_poly_tomsg
+
+Loop mlk_msg02f_r2bcov_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02f_r2bcov_poly_tomsg
+
+R2B_COVERAGE_GOTO_BUILD=PASS
+R2B_COVERAGE_GOTO_VALIDATION=PASS
+c71fc9ba8fbca94d1e8bb18ce9524335f15ebae1d0c8e8fe3c4fd3e8705bdc8b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability.goto
+
+===== 7. EXECUTE R2A COVERAGE =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability.goto" --function main --object-bits 8 --unwindset main.0:257,mlk_msg02f_r2acov_poly_tomsg.0:257,mlk_msg02f_r2acov_poly_tomsg.1:257,mlk_msg02f_r2acov_poly_tomsg.2:257 --sat-solver minisat2 --cover cover
+R2A_COVERAGE_EXIT=0
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Rewriting existing assertions as assumptions
+Starting Bounded Model Checking
+Passing problem to propositional reduction
+converting SSA
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+
+** coverage results:
+[main.coverage.1] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 44 function main condition '1 != 0': SATISFIED
+[main.coverage.2] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 50 function main condition '1 != 0': SATISFIED
+[main.coverage.3] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 59 function main condition 'k == 0u': SATISFIED
+[main.coverage.4] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 60 function main condition 'k == (unsigned int)256 - 1u': SATISFIED
+[main.coverage.5] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 63 function main condition '(unsigned int)bit_a == 0u && (unsigned int)bit_b == 0u': SATISFIED
+[main.coverage.6] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c line 64 function main condition '(unsigned int)bit_a == 1u && (unsigned int)bit_b == 1u': SATISFIED
+
+** 6 of 6 covered (100.0%)
+--- R2A coverage stderr ---
+--cover is incompatible with --unwinding-assertions, so unwinding-assertions will be defaulted to false
+**** WARNING: Use --unwinding-assertions to obtain sound verification results
+R2A_COVERAGE_SATISFIED=6
+R2A_COVERAGE_FAILED=0
+R2A_REACHABILITY=PASS
+R2A_NONTRIVIAL_UNRELATED_DIFFERENCE_REACHABLE=YES
+R2A_BOTH_SELECTED_DECISIONS_REACHABLE=YES
+
+===== 8. EXECUTE R2B COVERAGE =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability.goto" --function main --object-bits 8 --unwindset main.0:257,mlk_msg02f_r2bcov_poly_tomsg.0:257,mlk_msg02f_r2bcov_poly_tomsg.1:257,mlk_msg02f_r2bcov_poly_tomsg.2:257 --sat-solver minisat2 --cover cover
+R2B_COVERAGE_EXIT=0
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Rewriting existing assertions as assumptions
+Starting Bounded Model Checking
+Passing problem to propositional reduction
+converting SSA
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+
+** coverage results:
+[main.coverage.1] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 45 function main condition '1 != 0': SATISFIED
+[main.coverage.2] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 51 function main condition '1 != 0': SATISFIED
+[main.coverage.3] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 60 function main condition 'k == 0u': SATISFIED
+[main.coverage.4] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 61 function main condition 'k == (unsigned int)256 - 1u': SATISFIED
+[main.coverage.5] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 68 function main condition 'bit_a == bit_b': SATISFIED
+[main.coverage.6] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c line 69 function main condition 'bit_a != bit_b': SATISFIED
+
+** 6 of 6 covered (100.0%)
+--- R2B coverage stderr ---
+--cover is incompatible with --unwinding-assertions, so unwinding-assertions will be defaulted to false
+**** WARNING: Use --unwinding-assertions to obtain sound verification results
+R2B_COVERAGE_SATISFIED=6
+R2B_COVERAGE_FAILED=0
+R2B_REACHABILITY=PASS
+R2B_SELECTED_COEFFICIENT_CHANGE_REACHABLE=YES
+R2B_SELECTED_BIT_EQUAL_AND_DIFFERENT_OUTCOMES_REACHABLE=YES
+
+===== 9. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+c38f6ce6c994376e2725f076d116f7fea4a166b39a8f7bdbffccce3d0d3b0fec  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_cross_bit_preservation_result.json
+2ee4c2b036c6ec7218e7a2a6abaa01c456841e8053f1deb2243d26f1963a4fd8  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability_harness.c
+70d26e729a8ad1e1462aa231d524941c3a41c673510eb82e4ce25d253fda25b2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/01_r2a_coverage/msg_t2_r2a_reachability.goto
+72b27f2dd398263e47b7a3660c6d885d734d14512e873c7c76707889960477b5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2a_reachability_result.txt
+168cd0aee3feb9718db8ee01640fb4cfee49e70843643e430e6117c641ef43cb  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability_harness.c
+c71fc9ba8fbca94d1e8bb18ce9524335f15ebae1d0c8e8fe3c4fd3e8705bdc8b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/02_r2b_coverage/msg_t2_r2b_reachability.goto
+2081773a41f90b36987c73305ebfda343922552a18cc1786ee0f4b975c40ae94  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2b_reachability_result.txt
+c722f0b3e2c059ad1e2e912cb696c74af54a9ae7adc4e04132d82f415c326dee  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/03_commands/r2a_coverage_cbmc_command.txt
+8358c337691b720222b2a72a02c10f7a0363ebe464b1bdc4fd1b1cd63a390f9a  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/03_commands/r2b_coverage_cbmc_command.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02F_R2A_REACHABILITY_6_OF_6=PASS
+MSG02F_R2A_NONTRIVIALITY=PASS
+MSG02F_R2B_REACHABILITY_6_OF_6=PASS
+MSG02F_R2B_SELECTED_CHANGE_NONVACUITY=PASS
+MSG_T2_2A_COEFFICIENT_LOCALITY=PROVISIONALLY_PROVED
+MSG_T2_2B_CROSS_BIT_PRESERVATION=PROVISIONALLY_PROVED
+NEXT_STAGE=MSG02G_R2A_R2B_MUTATION_HARDENING
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

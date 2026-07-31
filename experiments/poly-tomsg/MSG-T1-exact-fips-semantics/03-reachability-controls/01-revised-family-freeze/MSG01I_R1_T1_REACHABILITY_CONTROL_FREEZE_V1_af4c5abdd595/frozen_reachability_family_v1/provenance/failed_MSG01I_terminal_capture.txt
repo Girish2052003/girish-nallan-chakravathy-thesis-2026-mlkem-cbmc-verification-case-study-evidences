@@ -1,0 +1,290 @@
+============================================================
+MSG-01I — MSG-T1 REACHABILITY CONTROL-FAMILY FREEZE
+============================================================
+
+CAPTURE_UTC=2026-07-22T17:04:49Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+POSITIVE_EVIDENCE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595
+FAMILY=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1
+
+============================================================
+A. SOURCE AND POSITIVE-EVIDENCE BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+POSITIVE_HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+POSITIVE_GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+POSITIVE_JSON_SHA256=3b32112c5537a95d470b0b866c1edf6cb1f8c3be408188c9fc2cdbf91fab40ee
+MSG01H_ARTIFACT_MANIFEST.sha256: OK
+./commands/msg_t1_positive_cbmc_command.txt: OK
+./frozen_inputs/frozen_unwindset.txt: OK
+./frozen_inputs/MSG01G_R1_ARTIFACT_MANIFEST.sha256: OK
+./frozen_inputs/MSG01G_R1_ARTIFACT_MANIFEST.sha256.sha256: OK
+./frozen_inputs/MSG01G_R1_CANDIDATE_FREEZE_RECORD.md: OK
+./frozen_inputs/MSG01G_R1_EXECUTION_PLAN.md: OK
+./frozen_inputs/MSG01G_R1_FREEZE_SUMMARY.txt: OK
+./logs/msg_t1_positive_cbmc_stderr.txt: OK
+./logs/pre_execution_goto_validation.txt: OK
+./MSG01H_EXECUTION_INPUT_BINDING.md: OK
+./MSG01H_POSITIVE_EXECUTION_RESULT.md: OK
+./MSG01H_POSITIVE_EXECUTION_SUMMARY.txt: OK
+./MSG01H_TERMINAL_CAPTURE.txt: OK
+./resource_usage/msg_t1_positive_resource_usage.txt: OK
+./results/msg_t1_positive_all_properties.tsv: OK
+./results/msg_t1_positive_cbmc_exit_code.txt: OK
+./results/msg_t1_positive_cbmc_result.json: OK
+./results/msg_t1_positive_failures_or_unknown.tsv: OK
+./results/msg_t1_positive_parsed_summary.txt: OK
+./support/parse_cbmc_positive_result.py: OK
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN=PASS
+PRODUCTION_SOURCE_BINDING=PASS
+POSITIVE_HARNESS_BINDING=PASS
+POSITIVE_GOTO_BINDING=PASS
+POSITIVE_JSON_BINDING=PASS
+POSITIVE_RESULT_STATUS_BINDING=PASS
+POSITIVE_EVIDENCE_MANIFEST=PASS
+SUPPORT_BINDING=PASS
+
+============================================================
+B. COPY SUPPORT AND POSITIVE PROVENANCE
+============================================================
+SUPPORT_AND_PROVENANCE_COPY=PASS
+
+============================================================
+C. WRITE REACHABILITY HARNESS AND COMPANION HEADER
+============================================================
+REACHABILITY_HARNESS_WRITTEN=PASS
+NEUTRAL_COMPANION_HEADER_WRITTEN=PASS
+HARNESS_SHA256=06c829acf3faca02512f5b2d257ab20cbda2975eecbc8935c6dd27dae862c1b6
+NEUTRAL_HEADER_SHA256=9e3dd1ed9703ec1372f2360fe77f961566a244b660cf23cbcce9d46d2343b6ab
+
+--- Exact reachability harness ---
+     1	/*
+     2	 * MSG-T1 reachability and non-vacuity control harness.
+     3	 *
+     4	 * This is separate from the frozen positive theorem harness.
+     5	 */
+     6	
+     7	#include <stdint.h>
+     8	#include "compress.h"
+     9	
+    10	uint8_t msg_t1_reach_oracle(int16_t u)
+    11	{
+    12	  return (uint8_t)((u >= 833) && (u <= 2496));
+    13	}
+    14	
+    15	int main(void)
+    16	{
+    17	  mlk_poly a;
+    18	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    19	  unsigned k;
+    20	  unsigned selected;
+    21	  int16_t selected_coeff;
+    22	  uint8_t selected_bit;
+    23	
+    24	  __CPROVER_assert(
+    25	      MLKEM_N == 256,
+    26	      "MSG_T1_REACH_MODEL: polynomial degree must be 256");
+    27	
+    28	  __CPROVER_assert(
+    29	      MLKEM_INDCPA_MSGBYTES == 32,
+    30	      "MSG_T1_REACH_MODEL: message size must be 32 bytes");
+    31	
+    32	  for (k = 0u; k < MLKEM_N; k++)
+    33	  {
+    34	    __CPROVER_assume(a.coeffs[k] >= 0);
+    35	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    36	  }
+    37	
+    38	  mlk_poly_tomsg(msg, &a);
+    39	
+    40	  for (k = 0u; k < MLKEM_N; k++)
+    41	  {
+    42	    uint8_t actual_bit;
+    43	    uint8_t expected_bit;
+    44	
+    45	    actual_bit =
+    46	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    47	
+    48	    expected_bit =
+    49	        msg_t1_reach_oracle(a.coeffs[k]);
+    50	
+    51	    __CPROVER_assert(
+    52	        actual_bit == expected_bit,
+    53	        "MSG_T1_REACH_ANCHOR_EXACT: every output bit must match independent oracle");
+    54	  }
+    55	
+    56	  /*
+    57	   * An uninitialised automatic scalar is symbolic in CBMC.
+    58	   * Restrict it to one valid coefficient index.
+    59	   */
+    60	  __CPROVER_assume(selected < MLKEM_N);
+    61	
+    62	  selected_coeff = a.coeffs[selected];
+    63	
+    64	  selected_bit =
+    65	      (uint8_t)((msg[selected >> 3] >> (selected & 7u)) & 1u);
+    66	
+    67	  /* C1: minimum canonical input and lower zero class. */
+    68	  __CPROVER_cover(
+    69	      selected_coeff == 0 &&
+    70	      selected_bit == 0);
+    71	
+    72	  /* C2: final coefficient below the lower one-threshold. */
+    73	  __CPROVER_cover(
+    74	      selected_coeff == 832 &&
+    75	      selected_bit == 0);
+    76	
+    77	  /* C3: first coefficient in the one-region. */
+    78	  __CPROVER_cover(
+    79	      selected_coeff == 833 &&
+    80	      selected_bit == 1);
+    81	
+    82	  /* C4: final coefficient in the one-region. */
+    83	  __CPROVER_cover(
+    84	      selected_coeff == 2496 &&
+    85	      selected_bit == 1);
+    86	
+    87	  /* C5: first coefficient in the upper zero-region. */
+    88	  __CPROVER_cover(
+    89	      selected_coeff == 2497 &&
+    90	      selected_bit == 0);
+    91	
+    92	  /* C6: maximum canonical coefficient. */
+    93	  __CPROVER_cover(
+    94	      selected_coeff == 3328 &&
+    95	      selected_bit == 0);
+    96	
+    97	  /* C7: interior witness for the lower zero-region. */
+    98	  __CPROVER_cover(
+    99	      selected_coeff > 0 &&
+   100	      selected_coeff < 832 &&
+   101	      selected_bit == 0);
+   102	
+   103	  /* C8: interior witness for the one-region. */
+   104	  __CPROVER_cover(
+   105	      selected_coeff > 833 &&
+   106	      selected_coeff < 2496 &&
+   107	      selected_bit == 1);
+   108	
+   109	  /* C9: interior witness for the upper zero-region. */
+   110	  __CPROVER_cover(
+   111	      selected_coeff > 2497 &&
+   112	      selected_coeff < 3328 &&
+   113	      selected_bit == 0);
+   114	
+   115	  /* C10-C12: first, middle and final flat output positions. */
+   116	  __CPROVER_cover(selected == 0u);
+   117	  __CPROVER_cover(selected == 127u);
+   118	  __CPROVER_cover(selected == 255u);
+   119	
+   120	  return 0;
+   121	}
+
+--- Exact cover-neutral companion header ---
+     1	#ifndef MSG_T1_COVER_NEUTRAL_COMPANION_H
+     2	#define MSG_T1_COVER_NEUTRAL_COMPANION_H
+     3	
+     4	/*
+     5	 * Companion-only transformation.
+     6	 *
+     7	 * The untouched original model retains all cover instructions for explicit
+     8	 * --cover cover execution. This separately named companion model neutralises
+     9	 * covers so ordinary assertions, safety checks and unwinding assertions can
+    10	 * be proved independently.
+    11	 */
+    12	#define __CPROVER_cover(condition) ((void)0)
+    13	
+    14	#endif
+
+============================================================
+D. STATIC CONTROL-FAMILY AUDIT
+============================================================
+COVER_GOAL_COUNT=12
+TARGET_CALL_COUNT=1
+ANCHOR_ASSERTION_COUNT=1
+FALSE_ASSUME_COUNT=0
+ORACLE_HELPER_CALL_COUNT=0
+ORACLE_TARGET_CALL_COUNT=0
+STATIC_CONTROL_FAMILY_AUDIT=PASS
+     1	# MSG-01I — MSG-T1 Reachability Cover-Goal Map
+     2	
+     3	| Goal | Witness |
+     4	|---|---|
+     5	| C1 | coefficient 0 produces bit 0 |
+     6	| C2 | coefficient 832 produces bit 0 |
+     7	| C3 | coefficient 833 produces bit 1 |
+     8	| C4 | coefficient 2496 produces bit 1 |
+     9	| C5 | coefficient 2497 produces bit 0 |
+    10	| C6 | coefficient 3328 produces bit 0 |
+    11	| C7 | interior lower-zero-region witness |
+    12	| C8 | interior one-region witness |
+    13	| C9 | interior upper-zero-region witness |
+    14	| C10 | flat bit index 0 |
+    15	| C11 | flat bit index 127 |
+    16	| C12 | flat bit index 255 |
+    17	
+    18	All cover goals occur after the canonical assumptions and after execution of the
+    19	actual production `mlk_poly_tomsg` body.
+
+============================================================
+E. BUILD ORIGINAL AND COVER-NEUTRAL GOTO MODELS
+============================================================
+--- Original build command ---
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01i -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_compress_direct_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/harnesses/msg_t1_reachability_harness.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/build/msg_t1_reachability_original.goto 
+
+--- Companion build command ---
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01i -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_compress_direct_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg_t1_cover_neutral_companion.h /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/harnesses/msg_t1_reachability_harness.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/support/msg01f_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/build/msg_t1_reachability_companion.goto 
+ORIGINAL_GOTO_BUILD_EXIT=0
+COMPANION_GOTO_BUILD_EXIT=0
+ORIGINAL_GOTO_BUILD=PASS
+COMPANION_GOTO_BUILD=PASS
+ORIGINAL_GOTO_SHA256=63291a6ba949254bffb56cdc899e4567edcd1502bde091038c70988dfa94705c
+COMPANION_GOTO_SHA256=540df0b0c8f751cd5d4e2d981f6ab587f84bba442b848999e159c3af32e18200
+
+============================================================
+F. VALIDATE BOTH GOTO MODELS
+============================================================
+ORIGINAL_GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/build/msg_t1_reachability_original.goto'
+
+COMPANION_GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01I_T1_REACHABILITY_CONTROL_FREEZE_V1_af4c5abdd595/frozen_reachability_family_v1/build/msg_t1_reachability_companion.goto'
+ORIGINAL_GOTO_VALIDATION=PASS
+COMPANION_GOTO_VALIDATION=PASS
+
+============================================================
+G. INVENTORY BOTH MODELS
+============================================================
+--- Original reachable call graph ---
+5:main -> mlk_msg01i_poly_tomsg
+6:main -> msg_t1_reach_oracle
+7:main -> __CPROVER_cover
+8:main -> __CPROVER_cover
+9:main -> __CPROVER_cover
+10:main -> __CPROVER_cover
+11:main -> __CPROVER_cover
+12:main -> __CPROVER_cover
+13:main -> __CPROVER_cover
+14:main -> __CPROVER_cover
+15:main -> __CPROVER_cover
+16:main -> __CPROVER_cover
+17:main -> __CPROVER_cover
+18:main -> __CPROVER_cover
+19:mlk_msg01i_poly_tomsg -> mlk_scalar_compress_d1
+21:__CPROVER__start -> main
+
+--- Companion reachable call graph ---
+5:main -> mlk_msg01i_poly_tomsg
+6:main -> msg_t1_reach_oracle
+7:mlk_msg01i_poly_tomsg -> mlk_scalar_compress_d1
+9:__CPROVER__start -> main
+
+============================================================
+H. DERIVE AND COMPARE REACHABLE UNWINDSETS
+============================================================
+REACHABLE_FUNCTION_SET_MISMATCH=__CPROVER_cover,main,mlk_msg01i_poly_tomsg,mlk_scalar_compress_d1,msg_t1_reach_oracle
+REACHABILITY_PARSER_EXIT=1
+REACHABILITY_AND_UNWINDSET_DERIVATION=FAIL

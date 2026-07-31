@@ -1,0 +1,100 @@
+============================================================
+MSG-01D-R1 — TRANSFORM AND VALIDATE FROZEN V3 RAW GOTO
+============================================================
+CAPTURE_UTC=2026-07-22T16:27:27Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+RAW=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595
+
+============================================================
+A. INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ADAPTER_SHA256=bfaee9e4cb6c248ea549851eeac8f5e78381448bc76d7c56f3848e42b8342716
+RAW_GOTO_SHA256=f6b5f3d6257a8db15756f3a74644374779cc959d404129bef6f980eee14e2aee
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN=PASS
+COMPRESS_HASH_BINDING=PASS
+ADAPTER_HASH_BINDING=PASS
+RAW_GOTO_HASH_BINDING=PASS
+STAGE0100_COPY=PASS
+f6b5f3d6257a8db15756f3a74644374779cc959d404129bef6f980eee14e2aee  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0100_raw.goto
+
+============================================================
+B. STAGE 0200 — REMOVE FUNCTION POINTERS
+============================================================
+STAGE0200_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0100_raw.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto'
+STAGE0200=PASS
+a4efa11cc93ddd529b139e92227fd04d861b00b939254f79b82286cabbbd1b45  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto
+
+============================================================
+C. STAGE 0400 — ADD CBMC LIBRARY
+============================================================
+STAGE0400_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto'
+Adding CPROVER library (x86_64)
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto'
+STAGE0400=PASS
+941509cf076e32e7f4cfb2d5ecb8f73b2b1a6f4d2f154acabc10c3226ef3227c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto
+
+============================================================
+D. STAGE 0700 — SLICE GLOBAL INITIALISERS
+============================================================
+STAGE0700_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Slicing away initializations of unused global variables
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto'
+STAGE0700=PASS
+063b5faa5775e9607a1f474aa08ce033dc3225569f400edd7b44ffd3d634950b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto
+
+============================================================
+E. STAGE 0800 — DROP UNUSED FUNCTIONS
+============================================================
+STAGE0800_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Removing unused functions
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0800_drop_unused_functions.goto'
+STAGE0800=PASS
+FINAL_GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto
+FINAL_GOTO_SIZE_BYTES=71045
+cf7e54480e02b0205d064ab1c7fe46607fc79b916c5ea7025de022b881b1d3b0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto
+
+============================================================
+F. VALIDATE CLEANED GOTO
+============================================================
+bash: line 340: 17960 Aborted                 (core dumped) goto-instrument --validate-goto-binary "$FINAL" > "$LOGS/validate.txt" 2>&1
+FINAL_VALIDATE_EXIT=134
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_reduce::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x61746e2654c3]
+goto-instrument(+0x9bd5e3) [0x61746e2665e3]
+goto-instrument(+0x157c42) [0x61746da00c42]
+goto-instrument(+0x16d2e6) [0x61746da162e6]
+goto-instrument(+0x6d1408) [0x61746df7a408]
+goto-instrument(+0x1625c5) [0x61746da0b5c5]
+goto-instrument(+0x155f5b) [0x61746d9fef5b]
+goto-instrument(+0x149f2d) [0x61746d9f2f2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7d8e3502a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7d8e3502a28b]
+goto-instrument(+0x157165) [0x61746da00165]
+
+
+--- end invariant violation report ---
+FINAL_GOTO_VALIDATION=FAIL

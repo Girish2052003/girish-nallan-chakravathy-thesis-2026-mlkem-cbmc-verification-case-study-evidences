@@ -1,0 +1,253 @@
+============================================================
+MSG-01B — V1 AUDIT-DEFECT REPAIR AND MSG-T1 CANDIDATE V2
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:05:58Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+V1_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c
+V2_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c
+V2_GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+
+============================================================
+A. AUTHORITATIVE SOURCE GATE
+============================================================
+SOURCE_IS_GIT_WORKTREE=PASS
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+
+============================================================
+B. PRESERVE AND CLASSIFY FAILED V1
+============================================================
+V1_HARNESS_PRESENT=YES
+V1_HARNESS_SHA256=b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733
+V1_RECORDED_EXPECTED_SHA256=b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733
+V1_HARNESS_BINDING=PASS
+     1	# MSG-01B — V1 Failure Classification and V2 Repair Record
+     2	
+     3	## V1 result
+     4	
+     5	MSG-01A candidate V1 terminated before GOTO construction with:
+     6	
+     7	```text
+     8	ORACLE_INDEPENDENCE_STATIC_AUDIT=FAIL
+     9	CAPTURE_STATUS=5
+    10	```
+    11	
+    12	## Root cause
+    13	
+    14	The audit counted every textual occurrence of
+    15	`mlk_scalar_compress_d1` in the complete harness. The only occurrence was
+    16	inside a comment stating that the oracle did not call that function.
+    17	
+    18	The V1 oracle body itself contained no production-helper invocation.
+    19	
+    20	## Classification
+    21	
+    22	```text
+    23	V1_FAILURE_CLASSIFICATION=AUDIT_SCRIPT_FALSE_REJECTION
+    24	V1_HARNESS_FUNCTIONAL_COUNTEREXAMPLE=NO
+    25	V1_GOTO_CONSTRUCTION_EXECUTED=NO
+    26	V1_CBMC_PROOF_EXECUTED=NO
+    27	```
+    28	
+    29	## Repair
+    30	
+    31	V2 retains the executable V1 harness semantics but:
+    32	
+    33	1. replaces the misleading comment text;
+    34	2. extracts the oracle function body;
+    35	3. checks prohibited calls only inside that function body;
+    36	4. performs a second semantic audit on the generated GOTO program;
+    37	5. constructs fresh harness and production GOTO objects separately before
+    38	   linking them.
+    39	
+    40	V1 is retained unmodified as failed-attempt evidence.
+
+============================================================
+C. CREATE CANDIDATE V2 WITHOUT MODIFYING V1
+============================================================
+V1_ORIGINAL_MODIFIED=NO
+V2_HARNESS_WRITTEN=PASS
+V2_HARNESS_LINE_COUNT=99
+V2_HARNESS_BYTE_COUNT=2459
+fe556ce3cf00e8dbce12591fbb68c35739fe6e247bbcc170c60eb4554d2a7bff  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c
+
+--- V1 to V2 diff ---
+--- /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c	2026-07-22 19:02:19.496864555 +0300
++++ /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c	2026-07-22 19:05:58.607590638 +0300
+@@ -5,7 +5,7 @@
+  * against an independently written threshold oracle for canonical
+  * ML-KEM coefficients.
+  *
+- * This file does not call mlk_scalar_compress_d1 from its oracle.
++ * This oracle does not invoke any production compression routine.
+  */
+ 
+ #include <stdint.h>
+
+--- Exact V2 harness ---
+     1	/*
+     2	 * MSG-T1 candidate V1
+     3	 *
+     4	 * Exact functional refinement of the production mlk_poly_tomsg output
+     5	 * against an independently written threshold oracle for canonical
+     6	 * ML-KEM coefficients.
+     7	 *
+     8	 * This oracle does not invoke any production compression routine.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	/*
+    16	 * Independently registered canonical Compress1 decision oracle:
+    17	 *
+    18	 *   0 <= u <= 832       -> 0
+    19	 *   833 <= u <= 2496    -> 1
+    20	 *   2497 <= u <= 3328   -> 0
+    21	 *
+    22	 * Its equivalence to the exact integer FIPS expression over all 3329
+    23	 * canonical inputs was exhaustively established in MSG-00C.
+    24	 */
+    25	uint8_t msg_t1_threshold_oracle(int16_t u)
+    26	{
+    27	  return (uint8_t)((u >= 833) && (u <= 2496));
+    28	}
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly a;
+    33	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    34	  unsigned k;
+    35	
+    36	  __CPROVER_assert(
+    37	      MLKEM_N == 256,
+    38	      "MSG_T1_MODEL: polynomial degree must be 256");
+    39	
+    40	  __CPROVER_assert(
+    41	      MLKEM_INDCPA_MSGBYTES == 32,
+    42	      "MSG_T1_MODEL: message size must be 32 bytes");
+    43	
+    44	  __CPROVER_assert(
+    45	      msg_t1_threshold_oracle(832) == 0,
+    46	      "MSG_T1_ORACLE: lower-zero boundary");
+    47	
+    48	  __CPROVER_assert(
+    49	      msg_t1_threshold_oracle(833) == 1,
+    50	      "MSG_T1_ORACLE: lower-one boundary");
+    51	
+    52	  __CPROVER_assert(
+    53	      msg_t1_threshold_oracle(2496) == 1,
+    54	      "MSG_T1_ORACLE: upper-one boundary");
+    55	
+    56	  __CPROVER_assert(
+    57	      msg_t1_threshold_oracle(2497) == 0,
+    58	      "MSG_T1_ORACLE: upper-zero boundary");
+    59	
+    60	  /*
+    61	   * Uninitialized automatic coefficients are symbolic in the CBMC model.
+    62	   * Restrict each coefficient only to the registered canonical domain.
+    63	   */
+    64	  for (k = 0u; k < MLKEM_N; k++)
+    65	  {
+    66	    __CPROVER_assume(a.coeffs[k] >= 0);
+    67	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    68	  }
+    69	
+    70	  /*
+    71	   * Execute the actual frozen production implementation.
+    72	   * The initial message bytes remain arbitrary.
+    73	   */
+    74	  mlk_poly_tomsg(msg, &a);
+    75	
+    76	  /*
+    77	   * Independent coefficient-to-output-bit comparison.
+    78	   *
+    79	   * This intentionally indexes the output as a flat sequence of 256 bits,
+    80	   * rather than reproducing the production function's nested i/j loops.
+    81	   */
+    82	  for (k = 0u; k < MLKEM_N; k++)
+    83	  {
+    84	    uint8_t actual_bit;
+    85	    uint8_t expected_bit;
+    86	
+    87	    actual_bit =
+    88	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    89	
+    90	    expected_bit =
+    91	        msg_t1_threshold_oracle(a.coeffs[k]);
+    92	
+    93	    __CPROVER_assert(
+    94	        actual_bit == expected_bit,
+    95	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    96	  }
+    97	
+    98	  return 0;
+    99	}
+
+============================================================
+D. SEMANTIC ORACLE-BODY STATIC AUDIT
+============================================================
+--- Extracted oracle body ---
+     1	uint8_t msg_t1_threshold_oracle(int16_t u)
+     2	{
+     3	  return (uint8_t)((u >= 833) && (u <= 2496));
+     4	}
+ORACLE_DEFINITION_COUNT=1
+ORACLE_PRODUCTION_HELPER_CALL_COUNT=0
+ORACLE_PRODUCTION_TARGET_CALL_COUNT=0
+TARGET_CALL_COUNT=1
+EXACT_ASSERTION_COUNT=1
+ORACLE_INDEPENDENCE_STATIC_AUDIT=PASS
+
+============================================================
+E. FRESH TWO-UNIT GOTO CONSTRUCTION
+============================================================
+--- Exact build commands ---
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto 
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto 
+goto-cc /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+HARNESS_GOTO_BUILD_EXIT=0
+HARNESS_GOTO_BUILD=PASS
+b9e590df604c1a0c0b44a39e4452db4edb95fad650f3653debf3dcf0a9055567  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto
+PROJECT_GOTO_BUILD_EXIT=0
+PROJECT_GOTO_BUILD=PASS
+34bedb0ed52e699e64b975d7f2fb9d92c46f67c8954c2265b0d9ce7de1a7e1a0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto
+FRESH_GOTO_LINK_EXIT=0
+
+--- Complete build/link log ---
+FRESH_GOTO_LINK=PASS
+FRESH_GOTO_SIZE_BYTES=94014
+369b83306c1c41aa6e6829d55ca1f317c009149426a79fc37f5be172b4779691  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+
+============================================================
+F. FRESH GOTO BINARY VALIDATION
+============================================================
+bash: line 765: 17494 Aborted                 (core dumped) goto-instrument --validate-goto-binary "$GOTO" > "$VALIDATE_LOG" 2>&1
+FRESH_GOTO_VALIDATE_EXIT=134
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_tomont::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x5f42d638d4c3]
+goto-instrument(+0x9bd5e3) [0x5f42d638e5e3]
+goto-instrument(+0x157c42) [0x5f42d5b28c42]
+goto-instrument(+0x16d2e6) [0x5f42d5b3e2e6]
+goto-instrument(+0x6d1408) [0x5f42d60a2408]
+goto-instrument(+0x1625c5) [0x5f42d5b335c5]
+goto-instrument(+0x155f5b) [0x5f42d5b26f5b]
+goto-instrument(+0x149f2d) [0x5f42d5b1af2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7767b682a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7767b682a28b]
+goto-instrument(+0x157165) [0x5f42d5b28165]
+
+
+--- end invariant violation report ---
+FRESH_GOTO_BINARY_VALIDATION=FAIL

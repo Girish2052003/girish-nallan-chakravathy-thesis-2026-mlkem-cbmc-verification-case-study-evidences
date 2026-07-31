@@ -1,0 +1,96 @@
+============================================================
+MSG02C — MSG-T2-R1 REACHABILITY AND MUTATION HARDENING
+============================================================
+
+CAPTURE_UTC=2026-07-23T11:50:43Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+R1=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+
+============================================================
+A. ACCEPTED POSITIVE-PROOF BINDING
+============================================================
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+R1_FAILURE_COUNT=0
+R1_UNKNOWN_COUNT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto'
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+R1_POSITIVE_RESULT_BINDING=PASS
+R1_GOTO_VALIDATION=PASS
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+2e2e635d7c148028fc3942b113b6a98b5835a63a3169cd2b341efa609fd73cc0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/01_harness/msg_t2_r1_relational_xor_harness.c
+310442c1be12d75b8476acf9215e749eb313f953379f84bec9f97491a282ca09  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto
+c87eea9d7dcd04741ced27bf5c8f996296243d73f4f9dddee3fdaeb8054dd606  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/06_results/msg_t2_r1_cbmc_result.json
+badd4d1f5ba8602d04da16dd881f8179a8010b6bca68f874efe69d73680be2ff  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/05_commands/msg_t2_r1_cbmc_command.txt
+d8765b242a58531ea5dfa30975239770f52915c5dbe0d66aeeb6b9e82070e551  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/10_STATUS46_REPAIR/STATUS46_CLASSIFICATION.txt
+
+============================================================
+B. WRITE REACHABILITY AND NON-VACUITY COMPANION
+============================================================
+COVERAGE_HARNESS_WRITTEN=PASS
+COVERAGE_HARNESS_LINES=90
+COVERAGE_HARNESS_BYTES=2233
+COVERAGE_GOAL_SOURCE_COUNT=11
+41-
+42-  /* Cover 1: canonical assumptions completed. */
+43:  __CPROVER_cover(1);
+--
+46-
+47-  /* Cover 2: first production execution returned. */
+48:  __CPROVER_cover(1);
+--
+51-
+52-  /* Cover 3: second production execution returned. */
+53:  __CPROVER_cover(1);
+--
+71-
+72-    /* Cover 4: first compared coefficient is reachable. */
+73:    __CPROVER_cover(k == 0u);
+74-
+75-    /* Cover 5: final compared coefficient is reachable. */
+76:    __CPROVER_cover(k == MLKEM_N - 1u);
+77-
+78-    /* Covers 6–9: every pair of Compress1 decisions is reachable. */
+79:    __CPROVER_cover(expected_a == 0u && expected_b == 0u);
+80:    __CPROVER_cover(expected_a == 0u && expected_b == 1u);
+81:    __CPROVER_cover(expected_a == 1u && expected_b == 0u);
+82:    __CPROVER_cover(expected_a == 1u && expected_b == 1u);
+83-
+84-    /* Covers 10–11: both relational XOR outcomes are reachable. */
+85:    __CPROVER_cover(actual_xor == 0u);
+86:    __CPROVER_cover(actual_xor == 1u);
+0f5c51e8d2c86b5d0bbf3ee3a64aa68f49fcc68c5d7d96e47fb910156169f341  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c
+
+============================================================
+C. BUILD AND VALIDATE COVERAGE GOTO
+============================================================
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02c_cov -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto"
+COVERAGE_GOTO_BUILD_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto'
+--- Coverage loops ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 33 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 55 function main
+
+--
+Loop mlk_msg02c_cov_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02c_cov_poly_tomsg
+
+Loop mlk_msg02c_cov_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02c_cov_poly_tomsg
+
+Loop mlk_msg02c_cov_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02c_cov_poly_tomsg
+
+COVER_PROPERTY_COUNT=0
+COVERAGE_MAIN_TARGET_CALL_COUNT=2
+FATAL: expected exactly 11 registered coverage goals

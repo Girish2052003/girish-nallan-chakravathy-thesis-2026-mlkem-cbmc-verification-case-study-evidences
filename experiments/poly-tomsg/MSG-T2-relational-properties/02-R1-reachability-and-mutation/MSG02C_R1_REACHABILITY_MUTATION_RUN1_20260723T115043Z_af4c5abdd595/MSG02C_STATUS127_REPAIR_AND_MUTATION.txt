@@ -1,0 +1,168 @@
+============================================================
+MSG02C — STATUS 127 REPAIR AND ISOLATED MUTATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:38:36Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+
+===== 1. EXPOSE PREVIOUS HIDDEN ERROR =====
+PREVIOUS_VALIDATION_LOG_FOUND=YES
+PREVIOUS_VALIDATION_LOG=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/08_inspection/mutation_goto_validation.txt
+--- Previous hidden output ---
+MUT_GOTO || {
+        echo FATAL:: command not found
+--- End previous hidden output ---
+STATUS127_CLASSIFICATION=SHELL_COMMAND_EXECUTION_FAILURE
+
+MUTATION_HARNESS_BUILD_FAILED=NO
+MUTATION_GOTO_BUILD_FAILED=NO
+MUTATION_GOTO_CREATED=YES
+MUTATION_CBMC_EXECUTED_BEFORE_REPAIR=NO
+FUNCTIONAL_COUNTEREXAMPLE_BEFORE_REPAIR=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+OBSERVATION:
+The previous script stopped immediately after entering the GOTO-validation
+section with shell status 127. Both stdout and stderr of that command had been
+redirected, preventing the terminal from displaying the underlying message.
+
+REPAIR:
+Expose the redirected log, resolve all required executables to absolute paths,
+revalidate the existing mutation GOTO, and execute only the registered
+expected-failure mutation property.
+
+===== 2. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+PATH=/home/girish/.local/bin:/usr/bin:/home/girish/.npm-global/bin:/home/girish/.local/bin:/usr/bin:/home/girish/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 3. FROZEN SOURCE AND PRIOR-EVIDENCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+R1_FAILURE_COUNT=0
+R1_UNKNOWN_COUNT=0
+COVERAGE_SATISFIED_COUNT=11
+COVERAGE_FAILED_COUNT=0
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+POSITIVE_R1_BINDING=PASS
+COVERAGE_11_OF_11_BINDING=PASS
+
+===== 4. REVALIDATE EXISTING MUTATION GOTO =====
+MUTATION_GOTO_VALIDATE_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/05_mutation_build/msg_t2_r1_drop_b_mutation.goto'
+--- Validation stderr ---
+MUTATION_GOTO_VALIDATION=PASS
+
+===== 5. INSPECT CALLS, BODIES, LOOPS AND PROPERTY =====
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+--- Two production call sites inside main ---
+38-        // 31 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 47 function main
+39-     2: SKIP
+40-        // 32 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 59 function main
+41:        CALL mlk_msg02c_mut_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::a))
+42-        // 33 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 60 function main
+43:        CALL mlk_msg02c_mut_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::b))
+44-        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 65 function main
+45-        ASSUME main::1::k < cast(256, unsignedbv[32])
+46-        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 67 function main
+--- Mutation loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c line 47 function main
+
+--
+Loop mlk_msg02c_mut_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02c_mut_poly_tomsg
+
+Loop mlk_msg02c_mut_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02c_mut_poly_tomsg
+
+Loop mlk_msg02c_mut_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02c_mut_poly_tomsg
+
+MUTATION_PROPERTY_ID=main.assertion.1
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+MUTATION_LOOP_SET_PRESENT=PASS
+MUTATION_PROPERTY_REGISTRATION=PASS
+
+===== 6. WRITE ISOLATED MUTATION COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/05_mutation_build/msg_t2_r1_drop_b_mutation.goto" --function main --object-bits 8 --unwinding-assertions --unwindset main.0:257,mlk_msg02c_mut_poly_tomsg.0:257,mlk_msg02c_mut_poly_tomsg.1:257,mlk_msg02c_mut_poly_tomsg.2:257 --sat-solver minisat2 --property "main.assertion.1" --trace --json-ui
+ISOLATED_MUTATION_COMMAND_AUDIT=PASS
+
+===== 7. EXECUTE EXPECTED-FAILURE MUTATION =====
+MUTATION_CBMC_EXIT=10
+MUTATION_RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/06_mutation_results/msg_t2_r1_drop_b_mutation_result.json
+MUTATION_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/10_logs/msg_t2_r1_drop_b_mutation_stderr.txt
+--- Mutation stderr ---
+MUTATION_RESULT_JSON_PARSE=PASS
+MUTATION_SUCCESS_COUNT=0
+MUTATION_FAILURE_COUNT=1
+MUTATION_UNKNOWN_COUNT=0
+FAILED_PROPERTY_IDS_BEGIN
+main.assertion.1
+FAILED_PROPERTY_IDS_END
+MUTATION_CBMC_EXIT=10
+MUTATION_PROPERTY_ID=main.assertion.1
+MUTATION_SUCCESS_COUNT=0
+MUTATION_FAILURE_COUNT=1
+MUTATION_UNKNOWN_COUNT=0
+
+--- Mutation resource usage ---
+	User time (seconds): 3.14
+	System time (seconds): 0.18
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.32
+	Maximum resident set size (kbytes): 252564
+	Exit status: 10
+
+===== 8. EXPECTED-FAILURE ACCEPTANCE GATE =====
+CORRUPTED_RELATION_REJECTED=YES
+FAILED_PROPERTY_MATCHES_MUTATION_ASSERTION=YES
+DROP_B_MUTATION_SENSITIVITY=PASS
+
+===== 9. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+2e2e635d7c148028fc3942b113b6a98b5835a63a3169cd2b341efa609fd73cc0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/01_harness/msg_t2_r1_relational_xor_harness.c
+310442c1be12d75b8476acf9215e749eb313f953379f84bec9f97491a282ca09  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto
+c87eea9d7dcd04741ced27bf5c8f996296243d73f4f9dddee3fdaeb8054dd606  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/06_results/msg_t2_r1_cbmc_result.json
+754bd235de56eab8a02a7a2fd6b36b56a37b62bd54ae6859c9d432dbc64428f2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/03_coverage_results/msg_t2_r1_coverage_status139_repair.txt
+203cced3e7c3f3ee5e77c353cdfa4b08dec7f43400c408c68a9e9d48e4a94d7f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/04_mutation_harness/msg_t2_r1_drop_b_mutation_harness.c
+686164b869fd483304c102f00b5d17c020df417628b269d8e84da0e50d96b075  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/05_mutation_build/msg_t2_r1_drop_b_mutation.goto
+afc096cbe3c3d087ea50074cbe46292463b742751d77f6f7382585ac56709a44  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/07_commands/msg_t2_r1_drop_b_mutation_isolated_command.txt
+1e5b94fffdda1dccaac5bf78f2269ffaf3a6769c8afa9b74022869b3e57248bf  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/06_mutation_results/msg_t2_r1_drop_b_mutation_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/10_logs/msg_t2_r1_drop_b_mutation_stderr.txt
+7c8953dfd23490c6fc63f31dd19c8d2619c3cbfdbac0b9e99b14a3dc8abe821c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/16_STATUS127_REPAIR/STATUS127_CLASSIFICATION.txt
+d6778f6e5fc5f26da8e70e61ceef38d3e87380012380b38ea8152969929d387c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/06_mutation_results/drop_b_failed_property_ids_status127.txt
+be66bfc5eb7b8431ef9ffdeda34aadbd75756533fc22f610acf008c1e889131d  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/06_mutation_results/drop_b_status127_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+STATUS127_REPAIR_FINAL=PASS
+MSG02C_POSITIVE_R1_PROOF_BINDING=PASS
+MSG02C_REACHABILITY_11_OF_11=PASS
+MSG02C_ALL_DECISION_PAIRS_REACHABLE=PASS
+MSG02C_BOTH_XOR_OUTCOMES_REACHABLE=PASS
+MSG02C_DROP_B_MUTATION_REJECTED=PASS
+MSG02C_MUTATION_SENSITIVITY=PASS
+MSG_T2_1_RELATIONAL_XOR_LAW=ACCEPTED
+NEXT_STAGE=MSG02D_T2_R2_COEFFICIENT_LOCALITY_AND_CROSS_BIT_PRESERVATION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

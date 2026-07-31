@@ -1,0 +1,532 @@
+===== compress.c matches =====
+98- *              The reference implementation works with coefficients
+99- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+100-MLK_STATIC_TESTABLE void mlk_poly_compress_d10_c(
+101-    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10], const mlk_poly *a)
+102-__contract__(
+103-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+104-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+105-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+106-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+107-)
+108-{
+109-  unsigned j;
+110-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+111-  for (j = 0; j < MLKEM_N / 4; j++)
+112-  __loop__(invariant(j <= MLKEM_N / 4)
+113-           decreases(MLKEM_N / 4 - j))
+114-  {
+115-    unsigned k;
+116-    uint16_t t[4];
+117-    for (k = 0; k < 4; k++)
+118-    __loop__(
+119-      invariant(k <= 4)
+120-      invariant(forall(r, 0, k, t[r] < (1u << 10)))
+121-      decreases(4 - k))
+122-    {
+123:      t[k] = mlk_scalar_compress_d10(a->coeffs[4 * j + k]);
+124-    }
+125-
+126-    /*
+127-     * Make all implicit truncation explicit. No data is being
+128-     * truncated for the LHS's since each t[i] is 10-bit in size.
+129-     */
+130-    r[5 * j + 0] = (uint8_t)((t[0] >> 0) & 0xFF);
+131-    r[5 * j + 1] = (uint8_t)((t[0] >> 8) | ((t[1] << 2) & 0xFF));
+132-    r[5 * j + 2] = (uint8_t)((t[1] >> 6) | ((t[2] << 4) & 0xFF));
+133-    r[5 * j + 3] = (uint8_t)((t[2] >> 4) | ((t[3] << 6) & 0xFF));
+134-    r[5 * j + 4] = (uint8_t)(t[3] >> 2);
+135-  }
+136-}
+137-
+138-MLK_INTERNAL_API
+139-void mlk_poly_compress_d10(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D10],
+140-                           const mlk_poly *a)
+141-__contract__(
+142-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+143-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+144-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+145-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D10))
+146-)
+147-{
+148-#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D10)
+149-  int ret;
+150-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+151-  ret = mlk_poly_compress_d10_native(r, a->coeffs);
+152-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+153-  {
+154-    return;
+155-  }
+156-#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D10 */
+157-
+158-  mlk_poly_compress_d10_c(r, a);
+159-}
+160-
+161-/* Reference: `poly_decompress()` in the reference implementation @[REF],
+162- *            for ML-KEM-{512,768}. */
+163-MLK_STATIC_TESTABLE void mlk_poly_decompress_d4_c(
+164-    mlk_poly *r, const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+165-__contract__(
+166-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+167-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+168-  assigns(memory_slice(r, sizeof(mlk_poly)))
+169-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+170-)
+171-{
+172-  unsigned i;
+173-  for (i = 0; i < MLKEM_N / 2; i++)
+174-  __loop__(
+175-    invariant(i <= MLKEM_N / 2)
+176-    invariant(array_bound(r->coeffs, 0, 2 * i, 0, MLKEM_Q))
+177-    decreases(MLKEM_N / 2 - i))
+178-  {
+179-    r->coeffs[2 * i + 0] = mlk_scalar_decompress_d4((a[i] >> 0) & 0xF);
+180-    r->coeffs[2 * i + 1] = mlk_scalar_decompress_d4((a[i] >> 4) & 0xF);
+181-  }
+182-
+183-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+184-}
+185-
+186-MLK_INTERNAL_API
+187-void mlk_poly_decompress_d4(mlk_poly *r,
+188-                            const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D4])
+189-__contract__(
+190-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+191-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D4))
+192-  assigns(memory_slice(r, sizeof(mlk_poly)))
+193-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+194-)
+195-{
+196-#if defined(MLK_USE_NATIVE_POLY_DECOMPRESS_D4)
+197-  int ret;
+198-  ret = mlk_poly_decompress_d4_native(r->coeffs, a);
+199-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+200-  {
+201-    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+202-    return;
+203-  }
+--
+343- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1]. */
+344-MLK_STATIC_TESTABLE void mlk_poly_compress_d11_c(
+345-    uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11], const mlk_poly *a)
+346-__contract__(
+347-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+348-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+349-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+350-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+351-)
+352-{
+353-  unsigned j;
+354-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+355-
+356-  for (j = 0; j < MLKEM_N / 8; j++)
+357-  __loop__(invariant(j <= MLKEM_N / 8)
+358-           decreases(MLKEM_N / 8 - j))
+359-  {
+360-    unsigned k;
+361-    uint16_t t[8];
+362-    for (k = 0; k < 8; k++)
+363-    __loop__(
+364-      invariant(k <= 8)
+365-      invariant(forall(r, 0, k, t[r] < (1u << 11)))
+366-      decreases(8 - k))
+367-    {
+368:      t[k] = mlk_scalar_compress_d11(a->coeffs[8 * j + k]);
+369-    }
+370-
+371-    /*
+372-     * Make all implicit truncation explicit. No data is being
+373-     * truncated for the LHS's since each t[i] is 11-bit in size.
+374-     */
+375-    r[11 * j + 0] = (uint8_t)((t[0] >> 0) & 0xFF);
+376-    r[11 * j + 1] = (uint8_t)((t[0] >> 8) | ((t[1] << 3) & 0xFF));
+377-    r[11 * j + 2] = (uint8_t)((t[1] >> 5) | ((t[2] << 6) & 0xFF));
+378-    r[11 * j + 3] = (uint8_t)((t[2] >> 2) & 0xFF);
+379-    r[11 * j + 4] = (uint8_t)((t[2] >> 10) | ((t[3] << 1) & 0xFF));
+380-    r[11 * j + 5] = (uint8_t)((t[3] >> 7) | ((t[4] << 4) & 0xFF));
+381-    r[11 * j + 6] = (uint8_t)((t[4] >> 4) | ((t[5] << 7) & 0xFF));
+382-    r[11 * j + 7] = (uint8_t)((t[5] >> 1) & 0xFF);
+383-    r[11 * j + 8] = (uint8_t)((t[5] >> 9) | ((t[6] << 2) & 0xFF));
+384-    r[11 * j + 9] = (uint8_t)((t[6] >> 6) | ((t[7] << 5) & 0xFF));
+385-    r[11 * j + 10] = (uint8_t)(t[7] >> 3);
+386-  }
+387-}
+388-
+389-MLK_INTERNAL_API
+390-void mlk_poly_compress_d11(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D11],
+391-                           const mlk_poly *a)
+392-__contract__(
+393-  requires(memory_no_alias(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+394-  requires(memory_no_alias(a, sizeof(mlk_poly)))
+395-  requires(array_bound(a->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+396-  assigns(memory_slice(r, MLKEM_POLYCOMPRESSEDBYTES_D11))
+397-)
+398-{
+399-#if defined(MLK_USE_NATIVE_POLY_COMPRESS_D11)
+400-  int ret;
+401-  mlk_assert_bound(a, MLKEM_N, 0, MLKEM_Q);
+402-  ret = mlk_poly_compress_d11_native(r, a->coeffs);
+403-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+404-  {
+405-    return;
+406-  }
+407-#endif /* MLK_USE_NATIVE_POLY_COMPRESS_D11 */
+408-
+409-  mlk_poly_compress_d11_c(r, a);
+410-}
+411-
+412-/* Reference: `poly_decompress()` in the reference implementation @[REF],
+413- *            for ML-KEM-1024. */
+414-MLK_STATIC_TESTABLE void mlk_poly_decompress_d5_c(
+415-    mlk_poly *r, const uint8_t a[MLKEM_POLYCOMPRESSEDBYTES_D5])
+416-__contract__(
+417-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+418-  requires(memory_no_alias(a, MLKEM_POLYCOMPRESSEDBYTES_D5))
+419-  assigns(memory_slice(r, sizeof(mlk_poly)))
+420-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+421-)
+422-{
+423-  unsigned i;
+424-  for (i = 0; i < MLKEM_N / 8; i++)
+425-  __loop__(
+426-    invariant(i <= MLKEM_N / 8)
+427-    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+428-    decreases(MLKEM_N / 8 - i))
+429-  {
+430-    unsigned j;
+431-    uint8_t t[8];
+432-    const unsigned offset = i * 5;
+433-    /*
+434-     * Explicitly truncate to avoid warning about
+435-     * implicit truncation in CBMC and unwind loop for ease
+436-     * of proof.
+437-     */
+438-
+439-    /*
+440-     * Decompress 5 8-bit bytes (so 40 bits) into
+441-     * 8 5-bit values stored in t[]
+442-     */
+443-    t[0] = 0x1F & (a[offset + 0] >> 0);
+444-    t[1] = 0x1F & ((a[offset + 0] >> 5) | (a[offset + 1] << 3));
+445-    t[2] = 0x1F & (a[offset + 1] >> 2);
+446-    t[3] = 0x1F & ((a[offset + 1] >> 7) | (a[offset + 2] << 1));
+447-    t[4] = 0x1F & ((a[offset + 2] >> 4) | (a[offset + 3] << 4));
+448-    t[5] = 0x1F & (a[offset + 3] >> 1);
+--
+708-}
+709-
+710-/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+711- *            - In contrast to the reference implementation, we assume
+712- *              unsigned canonical coefficients here.
+713- *              The reference implementation works with coefficients
+714- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+715- */
+716-MLK_INTERNAL_API
+717-void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+718-{
+719-  unsigned i;
+720-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+721-
+722-  for (i = 0; i < MLKEM_N / 8; i++)
+723-  __loop__(invariant(i <= MLKEM_N / 8)
+724-           decreases(MLKEM_N / 8 - i))
+725-  {
+726-    unsigned j;
+727-    msg[i] = 0;
+728-    for (j = 0; j < 8; j++)
+729-    __loop__(
+730-      invariant(i <= MLKEM_N / 8 && j <= 8)
+731-      decreases(8 - j))
+732-    {
+733:      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+734-      msg[i] |= (uint8_t)(t << j);
+735-    }
+736-  }
+737-}
+738-
+739-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+740-
+741-MLK_EMPTY_CU(compress)
+742-
+743-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+===== compress.h matches =====
+25-#include "common.h"
+26-#include "debug.h"
+27-#include "poly.h"
+28-#include "verify.h"
+29-
+30-/*
+31- * The multiplication in this routine will exceed UINT32_MAX
+32- * and wrap around for large values of u. This is expected and required.
+33- */
+34-#ifdef CBMC
+35-#pragma CPROVER check push
+36-#pragma CPROVER check disable "unsigned-overflow"
+37-#endif
+38-
+39-/**
+40- * Compute round(u * 2 / MLKEM_Q).
+41- *
+42- * @spec{Compress_1 from @[FIPS203, Eq (4.7)].}
+43- *
+44- * @reference{Part of poly_tomsg() in the reference implementation @[REF].}
+45- *
+46- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+47- *
+48- * @return Compressed value.
+49- */
+50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+51-__contract__(
+52-  requires(0 <= u && u <= MLKEM_Q - 1)
+53-  ensures(return_value < 2)
+54-  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+55-{
+56-  /* Compute as follows:
+57-   * ```
+58-   * round(u * 2 / MLKEM_Q)
+59-   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+60-   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+61-   * ```
+62-   */
+63-  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+64-  uint32_t d0 = (uint32_t)u * 1290168;
+65-  /* Unsigned shifting by 31 positions leaves only the top bit. */
+66-  return (uint8_t)((d0 + ((uint32_t)1u << 30)) >> 31);
+67-}
+68-#ifdef CBMC
+69-#pragma CPROVER check pop
+70-#endif
+71-
+72-/*
+73- * The multiplication in this routine will exceed UINT32_MAX
+74- * and wrap around for large values of u. This is expected and required.
+75- */
+76-#ifdef CBMC
+77-#pragma CPROVER check push
+78-#pragma CPROVER check disable "unsigned-overflow"
+79-#endif
+80-
+81-/**
+82- * Compute round(u * 16 / MLKEM_Q) % 16.
+83- *
+84- * @spec{Compress_4 from @[FIPS203, Eq (4.7)].}
+85- *
+86- * @reference{Embedded into `poly_compress()` in the reference
+87- * implementation @[REF].}
+88- *
+89- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+90- *
+91- * @return Compressed value.
+92- */
+93-static MLK_INLINE uint8_t mlk_scalar_compress_d4(int16_t u)
+94-__contract__(
+95-  requires(0 <= u && u <= MLKEM_Q - 1)
+96-  ensures(return_value < 16)
+97-  ensures(return_value == (((uint32_t)u * 16 + MLKEM_Q / 2) / MLKEM_Q) % 16))
+98-{
+99-  /* Compute as follows:
+100-   * ```
+101-   * round(u * 16 / MLKEM_Q)
+102-   *   = round(u * 16 * (2^28 / MLKEM_Q) / 2^28)
+103-   *  ~= round(u * 16 * round(2^28 / MLKEM_Q) / 2^28)
+104-   * ```
+105-   */
+106-  /* check-magic: 1290160 == 16 * round(2^28 / MLKEM_Q) */
+107-  uint32_t d0 = (uint32_t)u * 1290160;
+108-  /* The return value is < 16, so not altered by the conversion to uint8_t. */
+109-  return (uint8_t)((d0 + ((uint32_t)1u << 27)) >> 28); /* round(d0/2^28) */
+110-}
+111-#ifdef CBMC
+112-#pragma CPROVER check pop
+113-#endif
+114-
+115-/**
+116- * Compute round(u * MLKEM_Q / 16).
+117- *
+118- * @spec{Decompress_4 from @[FIPS203, Eq (4.8)].}
+119- *
+120- * @reference{Embedded into `poly_decompress()` in the reference
+121- * implementation @[REF].}
+122- *
+123- * @param u Unsigned canonical modulus modulo 16 to be decompressed.
+124- *
+125- * @return Decompressed value.
+126- */
+127-static MLK_INLINE int16_t mlk_scalar_decompress_d4(uint8_t u)
+128-__contract__(
+129-  requires(0 <= u && u < 16)
+130-  ensures(return_value <= (MLKEM_Q - 1))
+--
+200-   * conversion to int16_t. */
+201-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 16) >> 5);
+202-}
+203-
+204-/*
+205- * The multiplication in this routine will exceed UINT32_MAX
+206- * and wrap around for large values of u. This is expected and required.
+207- */
+208-#ifdef CBMC
+209-#pragma CPROVER check push
+210-#pragma CPROVER check disable "unsigned-overflow"
+211-#endif
+212-
+213-/**
+214- * Compute round(u * 2**10 / MLKEM_Q) % 2**10.
+215- *
+216- * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+217- *
+218- * @reference{Embedded into `polyvec_compress()` in the reference
+219- * implementation @[REF].}
+220- *
+221- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+222- *
+223- * @return Compressed value.
+224- */
+225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+226-__contract__(
+227-  requires(0 <= u && u <= MLKEM_Q - 1)
+228-  ensures(return_value < (1u << 10))
+229-  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+230-{
+231-  /* Compute as follows:
+232-   * ```
+233-   * round(u * 1024 / MLKEM_Q)
+234-   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+235-   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+236-   * ```
+237-   */
+238-  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+239-  uint64_t d0 = (uint64_t)u * 2642263040;
+240-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+241-  return (d0 & 0x3FF);
+242-}
+243-#ifdef CBMC
+244-#pragma CPROVER check pop
+245-#endif
+246-
+247-/**
+248- * Compute round(u * MLKEM_Q / 1024).
+249- *
+250- * @spec{Decompress_10 from @[FIPS203, Eq (4.8)].}
+251- *
+252- * @reference{Embedded into `polyvec_decompress()` in the reference
+253- * implementation @[REF].}
+254- *
+255- * @param u Unsigned canonical modulus modulo 1024 to be decompressed.
+256- *
+257- * @return Decompressed value.
+258- */
+259-static MLK_INLINE int16_t mlk_scalar_decompress_d10(uint16_t u)
+260-__contract__(
+261-  requires(0 <= u && u < 1024)
+262-  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+263-)
+264-{
+265-  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+266-   * conversion to int16_t. */
+267-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 512) >> 10);
+268-}
+269-
+270-/*
+271- * The multiplication in this routine will exceed UINT32_MAX
+272- * and wrap around for large values of u. This is expected and required.
+273- */
+274-#ifdef CBMC
+275-#pragma CPROVER check push
+276-#pragma CPROVER check disable "unsigned-overflow"
+277-#endif
+278-
+279-/**
+280- * Compute round(u * 2**11 / MLKEM_Q) % 2**11.
+281- *
+282- * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+283- *
+284- * @reference{Embedded into `polyvec_compress()` in the reference
+285- * implementation @[REF].}
+286- *
+287- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+288- *
+289- * @return Compressed value.
+290- */
+291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+292-__contract__(
+293-  requires(0 <= u && u <= MLKEM_Q - 1)
+294-  ensures(return_value < (1u << 11))
+295-  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+296-{
+297-  /* Compute as follows:
+298-   * ```
+299-   * round(u * 2048 / MLKEM_Q)
+300-   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+301-   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+302-   * ```
+303-   */
+304-  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+305-  uint64_t d0 = (uint64_t)u * 5284526080;
+306-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+307-  return (d0 & 0x7FF);
+308-}
+309-#ifdef CBMC
+310-#pragma CPROVER check pop
+311-#endif
+312-
+313-/**
+314- * Compute round(u * MLKEM_Q / 2048).
+315- *
+316- * @spec{Decompress_11 from @[FIPS203, Eq (4.8)].}
+317- *
+318- * @reference{Embedded into `polyvec_decompress()` in the reference
+319- * implementation @[REF].}
+320- *
+321- * @param u Unsigned canonical modulus modulo 2048 to be decompressed.
+322- *
+323- * @return Decompressed value.
+324- */
+325-static MLK_INLINE int16_t mlk_scalar_decompress_d11(uint16_t u)
+326-__contract__(
+327-  requires(0 <= u && u < 2048)
+328-  ensures(0 <= return_value && return_value <= (MLKEM_Q - 1))
+329-)
+330-{
+331-  /* The return value is in 0..MLKEM_Q-1, hence not altered by the
+332-   * conversion to int16_t. */
+333-  return (int16_t)((((uint32_t)u * MLKEM_Q) + 1024) >> 11);
+334-}
+335-
+336-#if defined(MLK_CONFIG_MULTILEVEL_WITH_SHARED) || (MLKEM_K == 2 || MLKEM_K == 3)
+337-#define mlk_poly_compress_d4 MLK_NAMESPACE(poly_compress_d4)
+338-/**
+339- * Compression (4 bits) and subsequent serialization of a polynomial.
+340- *
+341- * @spec{Implements `ByteEncode_4 (Compress_4 (a))`: ByteEncode_d
+342- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+343- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+344- * `ByteEncode_{d_v} (Compress_{d_v} (v))` appears in @[FIPS203, Algorithm
+345- * 14 (K-PKE.Encrypt), L23], where `d_v=4` for ML-KEM-{512,768} @[FIPS203,
+346- * Table 2].}
+347- *
+348- * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D4
+349- *               bytes).
+350- * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+351- *               i.e. in [0,1,..,MLKEM_Q-1].
+352- */
+353-MLK_INTERNAL_API
+354-void mlk_poly_compress_d4(uint8_t r[MLKEM_POLYCOMPRESSEDBYTES_D4],
+355-                          const mlk_poly *a);
+356-
+357-#define mlk_poly_compress_d10 MLK_NAMESPACE(poly_compress_d10)
+358-/**
+359- * Compression (10 bits) and subsequent serialization of a polynomial.
+360- *
+361- * @spec{Implements `ByteEncode_10 (Compress_10 (a))`: ByteEncode_d
+362- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+363- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+364- * `ByteEncode_{d_u} (Compress_{d_u} (u))` appears in @[FIPS203, Algorithm
+365- * 14 (K-PKE.Encrypt), L22], where `d_u=10` for ML-KEM-{512,768} @[FIPS203,
+366- * Table 2].}
+367- *
+368- * @param[out] r Output byte array (of length MLKEM_POLYCOMPRESSEDBYTES_D10
+369- *               bytes).
+370- * @param[in]  a Input polynomial. Coefficients must be unsigned canonical,
+371- *               i.e. in [0,1,..,MLKEM_Q-1].

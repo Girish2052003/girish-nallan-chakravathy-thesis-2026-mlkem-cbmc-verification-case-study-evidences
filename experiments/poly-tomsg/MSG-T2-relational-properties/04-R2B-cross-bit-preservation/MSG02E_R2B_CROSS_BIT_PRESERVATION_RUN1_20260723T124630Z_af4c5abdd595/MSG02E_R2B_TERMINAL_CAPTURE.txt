@@ -1,0 +1,318 @@
+============================================================
+MSG02E-R2B — SYMBOLIC CROSS-BIT PRESERVATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:46:30Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+R2A=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE BINDING =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 3. PRIOR R2A POSITIVE-PROOF BINDING =====
+R2A_FAILURE_COUNT=0
+R2A_UNKNOWN_COUNT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto'
+R2A_POSITIVE_PROOF_BINDING=PASS
+R2A_GOTO_VALIDATION=PASS
+279dfc12c981a62335ccbe135ab87672320971d52dfb29ffcadfbff4041d490f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/01_harness/msg_t2_r2a_coefficient_locality_harness.c
+998bdb7f2df9e2f2a50fc6e99accf16790f299aa812cbee4e2db274356cead86  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/02_build/msg_t2_r2a_coefficient_locality.goto
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+ee8bf3d61d3dae9981bb41618bdcad58b5a3f6cb6b5ee11565412f7b659625c7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_parsed_summary.txt
+
+===== 4. WRITE R2B CROSS-BIT-PRESERVATION HARNESS =====
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=132
+HARNESS_BYTE_COUNT=3184
+     1	/*
+     2	 * MSG-T2-R2B — symbolic cross-bit preservation.
+     3	 *
+     4	 * Let A and B be arbitrary canonical polynomials and let k be an arbitrary
+     5	 * coefficient index.
+     6	 *
+     7	 * Assume:
+     8	 *
+     9	 *   A[i] == B[i] for every i != k.
+    10	 *
+    11	 * Coefficient k remains unrestricted and may either remain equal or change.
+    12	 *
+    13	 * The theorem establishes that changing at most coefficient k cannot change:
+    14	 *
+    15	 *   1. any output byte outside byte floor(k / 8);
+    16	 *   2. any of the other seven bits inside byte floor(k / 8);
+    17	 *   3. equivalently, any output bit j where j != k.
+    18	 *
+    19	 * This is functional cross-bit non-interference. It is not a timing,
+    20	 * microarchitectural, leakage, or constant-time claim.
+    21	 */
+    22	
+    23	#include <stdint.h>
+    24	#include "compress.h"
+    25	
+    26	int main(void)
+    27	{
+    28	  mlk_poly a;
+    29	  mlk_poly b;
+    30	
+    31	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    32	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    33	
+    34	  unsigned i;
+    35	  unsigned j;
+    36	  unsigned k;
+    37	  unsigned byte_index;
+    38	
+    39	  uint8_t selected_bit_mask;
+    40	  uint8_t preserved_bit_mask;
+    41	
+    42	  __CPROVER_assert(
+    43	      MLKEM_N == 256,
+    44	      "MSG_T2_R2B_MODEL: polynomial degree must be 256");
+    45	
+    46	  __CPROVER_assert(
+    47	      MLKEM_INDCPA_MSGBYTES == 32,
+    48	      "MSG_T2_R2B_MODEL: message size must be 32 bytes");
+    49	
+    50	  /*
+    51	   * Select an arbitrary valid coefficient before imposing relational input
+    52	   * constraints.
+    53	   */
+    54	  __CPROVER_assume(k < MLKEM_N);
+    55	
+    56	  /*
+    57	   * Both polynomials are canonical. Every coefficient pair except the
+    58	   * selected pair k is constrained equal.
+    59	   */
+    60	  for (i = 0u; i < MLKEM_N; i++)
+    61	  {
+    62	    __CPROVER_assume(a.coeffs[i] >= 0);
+    63	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    64	
+    65	    __CPROVER_assume(b.coeffs[i] >= 0);
+    66	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    67	
+    68	    if (i != k)
+    69	    {
+    70	      __CPROVER_assume(a.coeffs[i] == b.coeffs[i]);
+    71	    }
+    72	  }
+    73	
+    74	  /*
+    75	   * Two executions of the actual frozen production implementation.
+    76	   */
+    77	  mlk_poly_tomsg(msg_a, &a);
+    78	  mlk_poly_tomsg(msg_b, &b);
+    79	
+    80	  selected_bit_mask =
+    81	      (uint8_t)(1u << (k & 7u));
+    82	
+    83	  preserved_bit_mask =
+    84	      (uint8_t)(255u ^ (unsigned)selected_bit_mask);
+    85	
+    86	  /*
+    87	   * The other seven bits in the selected output byte must be preserved.
+    88	   */
+    89	  __CPROVER_assert(
+    90	      (uint8_t)(msg_a[k >> 3] & preserved_bit_mask) ==
+    91	          (uint8_t)(msg_b[k >> 3] & preserved_bit_mask),
+    92	      "MSG_T2_R2B_SAME_BYTE: all seven non-selected bits in k's byte must be preserved");
+    93	
+    94	  /*
+    95	   * Every byte outside k's output byte must remain exactly equal.
+    96	   */
+    97	  for (byte_index = 0u;
+    98	       byte_index < MLKEM_INDCPA_MSGBYTES;
+    99	       byte_index++)
+   100	  {
+   101	    if (byte_index != (k >> 3))
+   102	    {
+   103	      __CPROVER_assert(
+   104	          msg_a[byte_index] == msg_b[byte_index],
+   105	          "MSG_T2_R2B_OTHER_BYTES: every byte outside k's byte must be preserved");
+   106	    }
+   107	  }
+   108	
+   109	  /*
+   110	   * Flat bit-level statement of the complete cross-bit theorem.
+   111	   */
+   112	  for (j = 0u; j < MLKEM_N; j++)
+   113	  {
+   114	    if (j != k)
+   115	    {
+   116	      uint8_t bit_a;
+   117	      uint8_t bit_b;
+   118	
+   119	      bit_a =
+   120	          (uint8_t)((msg_a[j >> 3] >> (j & 7u)) & 1u);
+   121	
+   122	      bit_b =
+   123	          (uint8_t)((msg_b[j >> 3] >> (j & 7u)) & 1u);
+   124	
+   125	      __CPROVER_assert(
+   126	          bit_a == bit_b,
+   127	          "MSG_T2_R2B_ALL_OTHER_BITS: every output bit j different from k must be preserved");
+   128	    }
+   129	  }
+   130	
+   131	  return 0;
+   132	}
+ef87e45ce95604ef22036ab35097ecfc43cbf5234e34c952b4095121bd4da08d  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c
+
+===== 5. STATIC RELATIONAL-HARNESS AUDIT =====
+TARGET_CALL_COUNT=2
+OTHER_INDEX_EQUALITY_COUNT=1
+SELECTED_INDEX_EQUALITY_COUNT=0
+DIFFERENCE_FORCED_COUNT=0
+SAME_BYTE_ASSERTION_COUNT=1
+OTHER_BYTES_ASSERTION_COUNT=1
+ALL_OTHER_BITS_ASSERTION_COUNT=1
+SELECTED_COEFFICIENT_REMAINS_UNRESTRICTED=YES
+ALL_OTHER_COEFFICIENTS_EQUATED=YES
+STATIC_R2B_HARNESS_AUDIT=PASS
+
+===== 6. BUILD FRESH R2B GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02e_xbit -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 51K Jul 23 15:46 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto
+518f87cadfa0d4c4c736ab0485cd3154b8368826f20a5e5b4cfd59e5439d4856  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto
+
+===== 7. VALIDATE AND INSPECT R2B MODEL =====
+GOTO_VALIDATE_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto'
+--- Validation stderr ---
+SHOW_FUNCTIONS_EXIT=0
+SHOW_LOOPS_EXIT=0
+SHOW_PROPERTIES_EXIT=0
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+50-        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 60 function main
+51-     3: SKIP
+52-        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 77 function main
+53:        CALL mlk_msg02e_xbit_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::a))
+54-        // 39 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 78 function main
+55:        CALL mlk_msg02e_xbit_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::b))
+56-        // 40 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 80 function main
+57-        ASSIGN main::1::selected_bit_mask := cast(shl(1, bitand(main::1::k, 7)), unsignedbv[8])
+58-        // 41 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 83 function main
+--- Registered loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 60 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 97 function main
+
+Loop main.2:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c line 112 function main
+
+--
+Loop mlk_msg02e_xbit_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02e_xbit_poly_tomsg
+
+Loop mlk_msg02e_xbit_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02e_xbit_poly_tomsg
+
+Loop mlk_msg02e_xbit_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02e_xbit_poly_tomsg
+
+SAME_BYTE_PROPERTY_ID=main.assertion.3
+OTHER_BYTES_PROPERTY_ID=main.assertion.4
+ALL_OTHER_BITS_PROPERTY_ID=main.assertion.5
+GOTO_BINARY_VALIDATION=PASS
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+R2B_PROPERTY_REGISTRATION=PASS
+
+===== 8. WRITE AUTHORITATIVE R2B CBMC COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto" --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257,main.1:33,main.2:257,mlk_msg02e_xbit_poly_tomsg.0:257,mlk_msg02e_xbit_poly_tomsg.1:257,mlk_msg02e_xbit_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --all-properties --trace --json-ui
+R2B_CBMC_COMMAND_STATIC_AUDIT=PASS
+
+===== 9. EXECUTE AUTHORITATIVE R2B PROOF =====
+CBMC_EXIT=0
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_cross_bit_preservation_result.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/06_logs/msg_t2_r2b_cross_bit_preservation_stderr.txt
+--- CBMC stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=533
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+CBMC_EXIT=0
+SAME_BYTE_PROPERTY_ID=main.assertion.3
+OTHER_BYTES_PROPERTY_ID=main.assertion.4
+ALL_OTHER_BITS_PROPERTY_ID=main.assertion.5
+SUCCESS_COUNT=533
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 22.98
+	System time (seconds): 0.12
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:23.10
+	Maximum resident set size (kbytes): 287600
+	Exit status: 0
+
+===== 10. POSITIVE-PROOF ACCEPTANCE GATE =====
+R2B_POSITIVE_CBMC_RESULT=SUCCESS
+CROSS_BIT_PRESERVATION=PROVISIONALLY_PROVED
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+ef87e45ce95604ef22036ab35097ecfc43cbf5234e34c952b4095121bd4da08d  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/01_harness/msg_t2_r2b_cross_bit_preservation_harness.c
+518f87cadfa0d4c4c736ab0485cd3154b8368826f20a5e5b4cfd59e5439d4856  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/02_build/msg_t2_r2b_cross_bit_preservation.goto
+356171576e35962b0722fd775854895e48d1c36e7872cd04379defa0dde7664e  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/04_commands/msg_t2_r2b_goto_build_command.txt
+09aa9d9a748d9e15aca12cbf9104eca5a7aac2b1c7d692c1fde6624fb7abc546  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/04_commands/msg_t2_r2b_cbmc_command.txt
+c38f6ce6c994376e2725f076d116f7fea4a166b39a8f7bdbffccce3d0d3b0fec  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_cross_bit_preservation_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/06_logs/msg_t2_r2b_cross_bit_preservation_stderr.txt
+e3642e6b3936bba479aae6f04f4d1c8736d9dff1fca5d544794d937e880e47c3  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595/05_results/msg_t2_r2b_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02E_R2B_SOURCE_BINDING=PASS
+MSG02E_R2B_SELECTED_COEFFICIENT_UNRESTRICTED=PASS
+MSG02E_R2B_OTHER_COEFFICIENTS_EQUATED=PASS
+MSG02E_R2B_TWO_PRODUCTION_EXECUTIONS=PASS
+MSG02E_R2B_PRODUCTION_BODY_BINDING=PASS
+MSG02E_R2B_SAME_BYTE_PRESERVATION=PROVISIONALLY_PROVED
+MSG02E_R2B_OTHER_BYTES_PRESERVATION=PROVISIONALLY_PROVED
+MSG02E_R2B_ALL_OTHER_BITS_PRESERVATION=PROVISIONALLY_PROVED
+MSG_T2_2B_CROSS_BIT_PRESERVATION=PROVISIONALLY_PROVED
+NEXT_STAGE=MSG02F_R2A_R2B_REACHABILITY_AND_MUTATION_HARDENING
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02E_R2B_CROSS_BIT_PRESERVATION_RUN1_20260723T124630Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

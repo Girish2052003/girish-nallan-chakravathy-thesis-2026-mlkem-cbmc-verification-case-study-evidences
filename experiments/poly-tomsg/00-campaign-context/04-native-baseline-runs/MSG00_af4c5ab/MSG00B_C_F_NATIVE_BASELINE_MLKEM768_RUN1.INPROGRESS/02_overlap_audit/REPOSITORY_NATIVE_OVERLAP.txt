@@ -1,0 +1,289 @@
+============================================================
+REPOSITORY-NATIVE POLY_TOMSG OVERLAP AUDIT
+============================================================
+COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+
+=== NATIVE PROOF CONFIGURATION ===
+# Copyright (c) The mlkem-native project authors
+# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+
+include ../Makefile_params.common
+
+HARNESS_ENTRY = harness
+HARNESS_FILE = poly_tomsg_harness
+
+# This should be a unique identifier for this proof, and will appear on the
+# Litani dashboard. It can be human-readable and contain spaces if you wish.
+PROOF_UID = mlk_poly_tomsg
+
+DEFINES +=
+INCLUDES +=
+
+REMOVE_FUNCTION_BODY +=
+UNWINDSET +=
+
+PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+
+CHECK_FUNCTION_CONTRACTS=mlk_poly_tomsg
+USE_FUNCTION_CONTRACTS=
+APPLY_LOOP_CONTRACTS=on
+USE_DYNAMIC_FRAMES=1
+
+# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+EXTERNAL_SAT_SOLVER=
+CBMCFLAGS=--bitwuzla
+
+FUNCTION_NAME = mlk_poly_tomsg
+
+# If this proof is found to consume huge amounts of RAM, you can set the
+# EXPENSIVE variable. With new enough versions of the proof tools, this will
+# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+# documentation in Makefile.common under the "Job Pools" heading for details.
+# EXPENSIVE = true
+
+# This function is large enough to need...
+CBMC_OBJECT_BITS = 8
+
+# If you require access to a file-local ("static") function or object to conduct
+# your proof, set the following (and do not include the original source file
+# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+# include ../Makefile.common
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+# be set before including Makefile.common, but any use of variables on the
+# left-hand side requires those variables to be defined. Hence, _SOURCE,
+# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+
+include ../Makefile.common
+
+=== ALL POLY_TOMSG PROOF REFERENCES ===
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/indcpa_dec/Makefile:33:USE_FUNCTION_CONTRACTS += mlk_poly_tomsg
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/poly_tomsg/Makefile:7:HARNESS_FILE = poly_tomsg_harness
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/poly_tomsg/Makefile:11:PROOF_UID = mlk_poly_tomsg
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/poly_tomsg/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_poly_tomsg
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/poly_tomsg/Makefile:31:FUNCTION_NAME = mlk_poly_tomsg
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/poly_tomsg/poly_tomsg_harness.c:13:  mlk_poly_tomsg(msg, a);
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d1/Makefile:11:PROOF_UID = mlk_scalar_compress_d1
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d1/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d1
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d1/scalar_compress_d1_harness.c:12:  uint8_t d = mlk_scalar_compress_d1(u);
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d10/Makefile:11:PROOF_UID = mlk_scalar_compress_d10
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d10/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d10
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d10/scalar_compress_d10_harness.c:12:  uint16_t d = mlk_scalar_compress_d10(u);
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d11/Makefile:11:PROOF_UID = mlk_scalar_compress_d11
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d11/Makefile:22:CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d11
+af4c5abdd5958bdc65a03cd5ee86708264f93304:proofs/cbmc/scalar_compress_d11/scalar_compress_d11_harness.c:12:  uint16_t d = mlk_scalar_compress_d11(u);
+
+=== ALL RELEVANT ASSERTION OR ENSURES REFERENCES ===
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:42: * @spec{Compress_1 from @[FIPS203, Eq (4.7)].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:216: * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:282: * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:361: * @spec{Implements `ByteEncode_10 (Compress_10 (a))`: ByteEncode_d
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:449: * @spec{`ByteEncode_11 (Compress_11 (a))`: ByteEncode_d @[FIPS203,
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:517: * @spec{Implements ByteEncode_12 @[FIPS203, Algorithm 5]. Extended to
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:581: * @spec{Implements `ByteEncode_1 (Compress_1 (a))`: ByteEncode_d
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/compress.h:584: * `ByteEncode_1 (Compress_1 (w))` appears in @[FIPS203, Algorithm 14
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/native/api.h:347: * @spec{Implements ByteEncode_12 from @[FIPS203, Algorithm 5].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/native/api.h:452: * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/native/api.h:560: * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+af4c5abdd5958bdc65a03cd5ee86708264f93304:mlkem/src/poly_k.h:229: * @spec{Implements ByteEncode_12 @[FIPS203, Algorithm 5]. Extended to
+
+=== NATIVE HARNESS ===
+// Copyright (c) The mlkem-native project authors
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
+
+#include "compress.h"
+
+void harness(void)
+{
+  mlk_poly *a;
+  uint8_t *msg;
+
+  /* Contracts for this function are in compress.h */
+  mlk_poly_tomsg(msg, a);
+}
+
+=== FUNCTION CONTRACT ===
+581- * @spec{Implements `ByteEncode_1 (Compress_1 (a))`: ByteEncode_d
+582- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+583- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+584- * `ByteEncode_1 (Compress_1 (w))` appears in @[FIPS203, Algorithm 14
+585- * (K-PKE.Decrypt), L7].}
+586- *
+587- * @param[out] msg Output message.
+588- * @param[in]  r   Input polynomial. Coefficients must be unsigned canonical.
+589- */
+590-MLK_INTERNAL_API
+591:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+592-__contract__(
+593-  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+594-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+595-  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+596-  assigns(memory_slice(msg, MLKEM_INDCPA_MSGBYTES))
+597-);
+598-
+599-#endif /* !MLK_COMPRESS_H */
+
+=== SCALAR COMPRESS_D1 CONTRACT ===
+40- * Compute round(u * 2 / MLKEM_Q).
+41- *
+42- * @spec{Compress_1 from @[FIPS203, Eq (4.7)].}
+43- *
+44- * @reference{Part of poly_tomsg() in the reference implementation @[REF].}
+45- *
+46- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+47- *
+48- * @return Compressed value.
+49- */
+50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+51-__contract__(
+52-  requires(0 <= u && u <= MLKEM_Q - 1)
+53-  ensures(return_value < 2)
+54-  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+55-{
+56-  /* Compute as follows:
+57-   * ```
+58-   * round(u * 2 / MLKEM_Q)
+59-   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+60-   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+61-   * ```
+62-   */
+63-  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+64-  uint32_t d0 = (uint32_t)u * 1290168;
+65-  /* Unsigned shifting by 31 positions leaves only the top bit. */
+66-  return (uint8_t)((d0 + ((uint32_t)1u << 30)) >> 31);
+67-}
+68-#ifdef CBMC
+69-#pragma CPROVER check pop
+70-#endif
+71-
+72-/*
+73- * The multiplication in this routine will exceed UINT32_MAX
+74- * and wrap around for large values of u. This is expected and required.
+75- */
+76-#ifdef CBMC
+77-#pragma CPROVER check push
+78-#pragma CPROVER check disable "unsigned-overflow"
+--
+215- *
+216- * @spec{Compress_10 from @[FIPS203, Eq (4.7)].}
+217- *
+218- * @reference{Embedded into `polyvec_compress()` in the reference
+219- * implementation @[REF].}
+220- *
+221- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+222- *
+223- * @return Compressed value.
+224- */
+225:static MLK_INLINE uint16_t mlk_scalar_compress_d10(int16_t u)
+226-__contract__(
+227-  requires(0 <= u && u <= MLKEM_Q - 1)
+228-  ensures(return_value < (1u << 10))
+229-  ensures(return_value == (((uint32_t)u * (1u << 10) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 10)))
+230-{
+231-  /* Compute as follows:
+232-   * ```
+233-   * round(u * 1024 / MLKEM_Q)
+234-   *   = round(u * 1024 * (2^33 / MLKEM_Q) / 2^33)
+235-   *  ~= round(u * 1024 * round(2^33 / MLKEM_Q) / 2^33)
+236-   * ```
+237-   */
+238-  /* check-magic: 2642263040 == 2^10 * round(2^33 / MLKEM_Q) */
+239-  uint64_t d0 = (uint64_t)u * 2642263040;
+240-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+241-  return (d0 & 0x3FF);
+242-}
+243-#ifdef CBMC
+244-#pragma CPROVER check pop
+245-#endif
+246-
+247-/**
+248- * Compute round(u * MLKEM_Q / 1024).
+249- *
+250- * @spec{Decompress_10 from @[FIPS203, Eq (4.8)].}
+251- *
+252- * @reference{Embedded into `polyvec_decompress()` in the reference
+253- * implementation @[REF].}
+--
+281- *
+282- * @spec{Compress_11 from @[FIPS203, Eq (4.7)].}
+283- *
+284- * @reference{Embedded into `polyvec_compress()` in the reference
+285- * implementation @[REF].}
+286- *
+287- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+288- *
+289- * @return Compressed value.
+290- */
+291:static MLK_INLINE uint16_t mlk_scalar_compress_d11(int16_t u)
+292-__contract__(
+293-  requires(0 <= u && u <= MLKEM_Q - 1)
+294-  ensures(return_value < (1u << 11))
+295-  ensures(return_value == (((uint32_t)u * (1u << 11) + MLKEM_Q / 2) / MLKEM_Q) % (1 << 11)))
+296-{
+297-  /* Compute as follows:
+298-   * ```
+299-   * round(u * 2048 / MLKEM_Q)
+300-   *   = round(u * 2048 * (2^33 / MLKEM_Q) / 2^33)
+301-   *  ~= round(u * 2048 * round(2^33 / MLKEM_Q) / 2^33)
+302-   * ```
+303-   */
+304-  /* check-magic: 5284526080 == 2^11 * round(2^33 / MLKEM_Q) */
+305-  uint64_t d0 = (uint64_t)u * 5284526080;
+306-  d0 = (d0 + ((uint64_t)1u << 32)) >> 33; /* round(d0/2^33) */
+307-  return (d0 & 0x7FF);
+308-}
+309-#ifdef CBMC
+310-#pragma CPROVER check pop
+311-#endif
+312-
+313-/**
+314- * Compute round(u * MLKEM_Q / 2048).
+315- *
+316- * @spec{Decompress_11 from @[FIPS203, Eq (4.8)].}
+317- *
+318- * @reference{Embedded into `polyvec_decompress()` in the reference
+319- * implementation @[REF].}
+
+=== PRODUCTION BODY ===
+707-  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+708-}
+709-
+710-/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+711- *            - In contrast to the reference implementation, we assume
+712- *              unsigned canonical coefficients here.
+713- *              The reference implementation works with coefficients
+714- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+715- */
+716-MLK_INTERNAL_API
+717:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+718-{
+719-  unsigned i;
+720-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+721-
+722-  for (i = 0; i < MLKEM_N / 8; i++)
+723-  __loop__(invariant(i <= MLKEM_N / 8)
+724-           decreases(MLKEM_N / 8 - i))
+725-  {
+726-    unsigned j;
+727-    msg[i] = 0;
+728-    for (j = 0; j < 8; j++)
+729-    __loop__(
+730-      invariant(i <= MLKEM_N / 8 && j <= 8)
+731-      decreases(8 - j))
+732-    {
+733-      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+734-      msg[i] |= (uint8_t)(t << j);
+735-    }
+736-  }
+737-}
+738-
+739-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+740-
+741-MLK_EMPTY_CU(compress)
+742-
+743-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */

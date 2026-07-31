@@ -1,0 +1,92 @@
+============================================================
+MSG02C — STATUS 108 REPAIR, COVERAGE AND MUTATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:05:29Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+
+============================================================
+A. FROZEN SOURCE AND ACCEPTED-R1 GATE
+============================================================
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+R1_FAILURE_COUNT=0
+R1_UNKNOWN_COUNT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto'
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+ACCEPTED_R1_BINDING=PASS
+COVERAGE_GOTO_VALIDATION=PASS
+
+============================================================
+B. RECORD STATUS 108 CLASSIFICATION
+============================================================
+STATUS108_CLASSIFICATION=WRONG_TOOL_FOR_COVERAGE_OPTION
+
+FAILED_TOOL=goto-instrument-6.9.0
+UNSUPPORTED_OPTION=--cover
+CORRECT_TOOL=cbmc-6.9.0
+
+COVERAGE_GOTO_BUILD_FAILED=NO
+COVERAGE_GOTO_VALIDATION_FAILED=NO
+COVERAGE_CBMC_EXECUTED_BEFORE_REPAIR=NO
+FUNCTIONAL_COUNTEREXAMPLE=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+ROOT_CAUSE:
+The previous repair attempted to invoke --cover cover through
+goto-instrument. The installed goto-instrument 6.9.0 does not expose the
+coverage option.
+
+REPAIR:
+Use the unchanged validated raw GOTO model as input to CBMC with
+--cover cover. CBMC performs the coverage-goal instrumentation internally.
+SOURCE_COVER_COUNT=11
+
+--- Local CBMC coverage capability ---
+116- --assert-to-assume           convert user assertions to assumptions
+117: --cover CC                   create test-suite with coverage criterion CC, 
+118-                              where CC is one of assertion[s], assume[s], branch
+119-                              [es], condition[s], cover, decision[s], location[s
+120-                              ], or mcdc
+121: --cover-failed-assertions    do not stop coverage checking at failed 
+122:                              assertions (this is the default for --cover 
+123-                              assertions)
+124- --show-test-suite            print test suite for coverage criterion (requires 
+125:                              --cover)
+126- --mm MM                      memory consistency model for concurrent programs 
+127-                              (default: sc)
+--
+180- --unwinding-assertions       generate unwinding assertions (cannot be used 
+181:                              with --cover)
+182- --partial-loops              permit paths with partial loops
+183- --no-self-loops-to-assumptions  do not simplify while(1){} to assume(0)
+CBMC_COVER_OPTION_AVAILABLE=YES
+STATUS108_CLASSIFICATION_RECORDED=PASS
+STATUS108_REPAIR_STRATEGY=PASS
+
+============================================================
+C. EXECUTE ALL 11 COVERAGE GOALS DIRECTLY WITH CBMC
+============================================================
+cbmc "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto" --function main --object-bits 8 --unwinding-assertions --unwindset main.0:257,main.1:257,mlk_msg02c_cov_poly_tomsg.0:257,mlk_msg02c_cov_poly_tomsg.1:257,mlk_msg02c_cov_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --cover cover
+COVERAGE_CBMC_EXIT=1
+COVERAGE_RESULT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/03_coverage_results/msg_t2_r1_coverage_result.txt
+
+--- Complete coverage result ---
+
+--- Coverage stderr ---
+--cover and --unwinding-assertions must not be given together
+EXPECTED_SOURCE_COVER_GOALS=11
+COVERAGE_SATISFIED_COUNT=0
+COVERAGE_FAILED_COUNT=0
+COVERAGE_REPORTED_GOAL_COUNT=0
+COVERAGE_CBMC_EXIT=1
+EXPECTED_SOURCE_COVER_GOALS=11
+COVERAGE_SATISFIED_COUNT=0
+COVERAGE_FAILED_COUNT=0
+COVERAGE_REPORTED_GOAL_COUNT=0
+FATAL: CBMC coverage command returned a tool failure

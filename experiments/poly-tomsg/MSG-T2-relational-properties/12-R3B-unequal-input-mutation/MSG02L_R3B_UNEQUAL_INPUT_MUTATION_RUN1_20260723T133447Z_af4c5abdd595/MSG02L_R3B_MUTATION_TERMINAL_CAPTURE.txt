@@ -1,0 +1,283 @@
+============================================================
+MSG02L — R3B UNEQUAL-INPUT DETERMINISM MUTATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T13:34:47Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 3. R3B PROOF, REACHABILITY AND R3A ACCEPTANCE BINDING =====
+R3B_FAILURE_COUNT=0
+R3B_UNKNOWN_COUNT=0
+R3A_COVERAGE_SATISFIED=9
+R3B_COVERAGE_SATISFIED=11
+R3B_COVERAGE_FAILED=0
+R3A_MUT_FAILURE_COUNT=1
+R3A_MUT_UNKNOWN_COUNT=0
+R3B_POSITIVE_PROOF_BINDING=PASS
+R3B_REACHABILITY_11_OF_11_BINDING=PASS
+R3A_ACCEPTED_BINDING=PASS
+7c8f5c8731dc73d53396db49ae3f5baf8291c273e76fee46e317336e331f6865  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02I_R3B_DETERMINISM_RUN1_20260723T132251Z_af4c5abdd595/05_results/msg_t2_r3b_determinism_result.json
+747b6dca9ee73ca3ec70307c98b88b5efe95c95f99aff844afbb475c7f15e130  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02J_R3A_R3B_REACHABILITY_RUN1_20260723T132734Z_af4c5abdd595/05_results/msg_t2_r3a_reachability_result.txt
+7232f8de5308d0152279d765b315afbe9eca41e691fa91be3fe091b1bea1bed5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02J_R3A_R3B_REACHABILITY_RUN1_20260723T132734Z_af4c5abdd595/05_results/msg_t2_r3b_reachability_result.txt
+13ca5f78a8047200a792558dd7ae264b20c58ef0e04acfb7b78f02f6a181aeda  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02K_R3A_OPPOSITE_DECISION_MUTATION_RUN1_20260723T133042Z_af4c5abdd595/05_results/msg_t2_r3a_opposite_decision_mutation.json
+
+===== 4. WRITE UNEQUAL-INPUT DETERMINISM MUTATION =====
+MUTATION_HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=87
+HARNESS_BYTE_COUNT=2079
+     1	/*
+     2	 * MSG-T2-R3B expected-failure mutation.
+     3	 *
+     4	 * Correct determinism theorem:
+     5	 *
+     6	 *   equal complete polynomial values
+     7	 *     imply
+     8	 *   equal complete message outputs.
+     9	 *
+    10	 * Deliberately corrupted theorem:
+    11	 *
+    12	 *   two polynomial values differ at exactly one coefficient k,
+    13	 *   but their complete message outputs are still asserted equal.
+    14	 *
+    15	 * All coefficients outside k are held equal. The selected coefficients are
+    16	 * fixed to canonical values that produce opposite message-bit decisions:
+    17	 *
+    18	 *   RUN_A[k] = 0
+    19	 *   RUN_B[k] = 1665
+    20	 *
+    21	 * CBMC must reject complete output equality.
+    22	 *
+    23	 * This is functional mutation evidence. It is not a timing, scheduling,
+    24	 * microarchitectural, leakage, or constant-time claim.
+    25	 */
+    26	
+    27	#include <stdint.h>
+    28	#include "compress.h"
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly run_a;
+    33	  mlk_poly run_b;
+    34	
+    35	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    36	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    37	
+    38	  unsigned i;
+    39	  unsigned k;
+    40	  unsigned byte_index;
+    41	
+    42	  __CPROVER_assume(k < MLKEM_N);
+    43	
+    44	  /*
+    45	   * Both inputs are canonical. Every coefficient pair outside k is equal.
+    46	   */
+    47	  for (i = 0u; i < MLKEM_N; i++)
+    48	  {
+    49	    __CPROVER_assume(run_a.coeffs[i] >= 0);
+    50	    __CPROVER_assume(run_a.coeffs[i] < MLKEM_Q);
+    51	
+    52	    __CPROVER_assume(run_b.coeffs[i] >= 0);
+    53	    __CPROVER_assume(run_b.coeffs[i] < MLKEM_Q);
+    54	
+    55	    if (i != k)
+    56	    {
+    57	      __CPROVER_assume(
+    58	          run_a.coeffs[i] == run_b.coeffs[i]);
+    59	    }
+    60	  }
+    61	
+    62	  /*
+    63	   * Deliberately violate the equal-input antecedent at exactly k.
+    64	   */
+    65	  __CPROVER_assume(run_a.coeffs[k] == 0);
+    66	  __CPROVER_assume(run_b.coeffs[k] == 1665);
+    67	
+    68	  /*
+    69	   * Two executions of the real frozen production implementation.
+    70	   */
+    71	  mlk_poly_tomsg(msg_a, &run_a);
+    72	  mlk_poly_tomsg(msg_b, &run_b);
+    73	
+    74	  /*
+    75	   * Corrupted claim: unequal inputs still produce equal complete messages.
+    76	   */
+    77	  for (byte_index = 0u;
+    78	       byte_index < MLKEM_INDCPA_MSGBYTES;
+    79	       byte_index++)
+    80	  {
+    81	    __CPROVER_assert(
+    82	        msg_a[byte_index] == msg_b[byte_index],
+    83	        "MSG_T2_R3B_MUTATION_UNEQUAL_INPUT: complete input equality is necessary for determinism");
+    84	  }
+    85	
+    86	  return 0;
+    87	}
+662d31c878b8700bb944d85a7854e2d6b248693237d44e0f48cbe4aeb94163ac  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c
+
+===== 5. STATIC MUTATION AUDIT =====
+TARGET_CALL_COUNT=2
+OTHER_COEFFICIENT_EQUALITY_COUNT=1
+RUN_A_ZERO_COUNT=1
+RUN_B_ONE_REGION_COUNT=1
+COMPLETE_INPUT_COPY_COUNT=0
+OUTPUT_EQUALITY_ASSUME_COUNT=0
+OUTPUT_LOOP_COUNT=1
+MUTATION_ASSERTION_COUNT=1
+EXACTLY_ONE_INPUT_COEFFICIENT_MAY_DIFFER=YES
+ALL_OTHER_INPUT_COEFFICIENTS_EQUAL=YES
+OPPOSITE_SELECTED_DECISIONS_FORCED=YES
+COMPLETE_INPUT_EQUALITY_REMOVED=YES
+COMPLETE_OUTPUT_EQUALITY_NOT_ASSUMED=YES
+STATIC_MUTATION_AUDIT=PASS
+
+===== 6. BUILD MUTATION GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02l_r3bmut -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 48K Jul 23 16:34 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto
+dfa3c966449ae4e06fc14391d4e12fab8a3f5cc44c819f8fa9e512e28a6d8105  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto
+
+===== 7. VALIDATE AND INSPECT MUTATION MODEL =====
+GOTO_VALIDATE_EXIT=0
+SHOW_FUNCTIONS_EXIT=0
+SHOW_LOOPS_EXIT=0
+SHOW_PROPERTIES_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto'
+--- Validation stderr ---
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+44-        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 66 function main
+45-        ASSUME cast(main::1::run_b.coeffs[cast(main::1::k, signedbv[64])], signedbv[32]) = 1665
+46-        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 71 function main
+47:        CALL mlk_msg02l_r3bmut_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::run_a))
+48-        // 36 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 72 function main
+49:        CALL mlk_msg02l_r3bmut_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::run_b))
+50-        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 77 function main
+51-        ASSIGN main::1::byte_index := 0
+52-        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 78 function main
+--- Mutation loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 47 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c line 77 function main
+
+--
+Loop mlk_msg02l_r3bmut_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02l_r3bmut_poly_tomsg
+
+Loop mlk_msg02l_r3bmut_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02l_r3bmut_poly_tomsg
+
+Loop mlk_msg02l_r3bmut_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02l_r3bmut_poly_tomsg
+
+MUTATION_PROPERTY_ID=main.assertion.1
+GOTO_BINARY_VALIDATION=PASS
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+MUTATION_PROPERTY_REGISTRATION=PASS
+
+===== 8. WRITE ISOLATED MUTATION COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto" --function main --object-bits 8 --unwinding-assertions --unwindset main.0:257,main.1:33,mlk_msg02l_r3bmut_poly_tomsg.0:257,mlk_msg02l_r3bmut_poly_tomsg.1:257,mlk_msg02l_r3bmut_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --property "main.assertion.1" --trace --json-ui
+ISOLATED_MUTATION_COMMAND_AUDIT=PASS
+
+===== 9. EXECUTE EXPECTED-FAILURE MUTATION =====
+MUTATION_CBMC_EXIT=10
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/05_results/msg_t2_r3b_unequal_input_determinism_mutation.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/06_logs/msg_t2_r3b_unequal_input_determinism_mutation_stderr.txt
+--- Mutation stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=0
+FAILURE_COUNT=1
+UNKNOWN_COUNT=0
+FAILED_PROPERTY_IDS_BEGIN
+main.assertion.1
+FAILED_PROPERTY_IDS_END
+MUTATION_CBMC_EXIT=10
+MUTATION_PROPERTY_ID=main.assertion.1
+SUCCESS_COUNT=0
+FAILURE_COUNT=1
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 2.81
+	System time (seconds): 0.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.97
+	Maximum resident set size (kbytes): 270648
+	Exit status: 10
+
+===== 10. EXPECTED-FAILURE ACCEPTANCE GATE =====
+CORRUPTED_R3B_DETERMINISM_REJECTED=YES
+COMPLETE_INPUT_EQUALITY_ANTECEDENT_NECESSARY=YES
+UNEQUAL_INPUT_OUTPUT_DIFFERENCE_DETECTED=YES
+FAILED_PROPERTY_MATCHES_MUTATION_ASSERTION=YES
+R3B_MUTATION_SENSITIVITY=PASS
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+7c8f5c8731dc73d53396db49ae3f5baf8291c273e76fee46e317336e331f6865  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02I_R3B_DETERMINISM_RUN1_20260723T132251Z_af4c5abdd595/05_results/msg_t2_r3b_determinism_result.json
+7232f8de5308d0152279d765b315afbe9eca41e691fa91be3fe091b1bea1bed5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02J_R3A_R3B_REACHABILITY_RUN1_20260723T132734Z_af4c5abdd595/05_results/msg_t2_r3b_reachability_result.txt
+13ca5f78a8047200a792558dd7ae264b20c58ef0e04acfb7b78f02f6a181aeda  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02K_R3A_OPPOSITE_DECISION_MUTATION_RUN1_20260723T133042Z_af4c5abdd595/05_results/msg_t2_r3a_opposite_decision_mutation.json
+662d31c878b8700bb944d85a7854e2d6b248693237d44e0f48cbe4aeb94163ac  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/01_harness/msg_t2_r3b_unequal_input_determinism_mutation.c
+dfa3c966449ae4e06fc14391d4e12fab8a3f5cc44c819f8fa9e512e28a6d8105  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/02_build/msg_t2_r3b_unequal_input_determinism_mutation.goto
+e50dba0550acebbf693c9f48f6e3e1508a5b9f3696fe590a03c746193debc288  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/04_commands/r3b_mutation_goto_build_command.txt
+ba9ca4ad2fea966a7595574a0e55b82b494bab315316550f4480f6410eb2a052  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/04_commands/r3b_mutation_cbmc_command.txt
+8479ee72fa553c5a297d7e14b9628376bafac6cfb3b8737e4f812882cb265982  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/05_results/msg_t2_r3b_unequal_input_determinism_mutation.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/06_logs/msg_t2_r3b_unequal_input_determinism_mutation_stderr.txt
+d6778f6e5fc5f26da8e70e61ceef38d3e87380012380b38ea8152969929d387c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/05_results/r3b_mutation_failed_property_ids.txt
+61e9dc85ca3d654c74f0f3b9cc9f6fa4314bbac25cf4516b7de01bca972eb2c2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595/05_results/r3b_mutation_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02L_R3B_POSITIVE_PROOF_BINDING=PASS
+MSG02L_R3B_REACHABILITY_11_OF_11=PASS
+MSG02L_R3B_UNEQUAL_INPUT_MUTATION_REJECTED=PASS
+MSG02L_R3B_MUTATION_SENSITIVITY=PASS
+MSG_T2_3A_SAME_DECISION_INVARIANCE=ACCEPTED
+MSG_T2_3B_INPUT_FRAME_PRESERVATION=ACCEPTED
+MSG_T2_3B_FULL_MESSAGE_DETERMINISM=ACCEPTED
+MSG_T2_3_BYTE_CONFINEMENT_EVIDENCE=BOUND_TO_ACCEPTED_R2B
+MSG_T2_3_R3_FAMILY=ACCEPTED
+MSG_T2_RELATIONAL_PROPERTY_FAMILY=ACCEPTED
+NEXT_STAGE=MSG02M_T2_FINAL_ACCEPTANCE_AND_EVIDENCE_FREEZE
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02L_R3B_UNEQUAL_INPUT_MUTATION_RUN1_20260723T133447Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

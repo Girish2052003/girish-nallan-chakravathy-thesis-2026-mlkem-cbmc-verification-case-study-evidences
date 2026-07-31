@@ -1,0 +1,3320 @@
+============================================================
+MSG02A — T2 BUILD-INHERITANCE AUDIT
+DATE_UTC=2026-07-23T11:31:18Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+T1FREEZE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595
+T1RUN=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02A_T2_BUILD_INHERITANCE_AUDIT_af4c5abdd595
+============================================================
+
+===== 1. EXACT SOURCE BINDING =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN=YES
+
+===== 2. REQUIRED T1 ARTEFACTS =====
+FOUND=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/harness/msg_t1_exact_fips_candidate_v4.c
+-r--r--r-- 1 girish girish 2.5K Jul 22 19:47 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/harness/msg_t1_exact_fips_candidate_v4.c
+FOUND=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto
+-r--r--r-- 1 girish girish 49K Jul 22 19:47 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto
+FOUND=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/commands/msg_t1_positive_cbmc_command.txt
+-r--r--r-- 1 girish girish 602 Jul 22 19:51 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/commands/msg_t1_positive_cbmc_command.txt
+
+===== 3. COPY REFERENCE ARTEFACTS =====
+REFERENCE_COPY=PASS
+
+===== 4. FROZEN MSG-T1 HARNESS =====
+     1	/*
+     2	 * MSG-T1 candidate V4 - contract-erased, pragma-preserving build
+     3	 *
+     4	 * Exact functional refinement of the production mlk_poly_tomsg output
+     5	 * against an independently written threshold oracle for canonical
+     6	 * ML-KEM coefficients.
+     7	 *
+     8	 * This oracle does not invoke any production compression routine.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	/*
+    16	 * Independently registered canonical Compress1 decision oracle:
+    17	 *
+    18	 *   0 <= u <= 832       -> 0
+    19	 *   833 <= u <= 2496    -> 1
+    20	 *   2497 <= u <= 3328   -> 0
+    21	 *
+    22	 * Its equivalence to the exact integer FIPS expression over all 3329
+    23	 * canonical inputs was exhaustively established in MSG-00C.
+    24	 */
+    25	uint8_t msg_t1_threshold_oracle(int16_t u)
+    26	{
+    27	  return (uint8_t)((u >= 833) && (u <= 2496));
+    28	}
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly a;
+    33	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    34	  unsigned k;
+    35	
+    36	  __CPROVER_assert(
+    37	      MLKEM_N == 256,
+    38	      "MSG_T1_MODEL: polynomial degree must be 256");
+    39	
+    40	  __CPROVER_assert(
+    41	      MLKEM_INDCPA_MSGBYTES == 32,
+    42	      "MSG_T1_MODEL: message size must be 32 bytes");
+    43	
+    44	  __CPROVER_assert(
+    45	      msg_t1_threshold_oracle(832) == 0,
+    46	      "MSG_T1_ORACLE: lower-zero boundary");
+    47	
+    48	  __CPROVER_assert(
+    49	      msg_t1_threshold_oracle(833) == 1,
+    50	      "MSG_T1_ORACLE: lower-one boundary");
+    51	
+    52	  __CPROVER_assert(
+    53	      msg_t1_threshold_oracle(2496) == 1,
+    54	      "MSG_T1_ORACLE: upper-one boundary");
+    55	
+    56	  __CPROVER_assert(
+    57	      msg_t1_threshold_oracle(2497) == 0,
+    58	      "MSG_T1_ORACLE: upper-zero boundary");
+    59	
+    60	  /*
+    61	   * Uninitialized automatic coefficients are symbolic in the CBMC model.
+    62	   * Restrict each coefficient only to the registered canonical domain.
+    63	   */
+    64	  for (k = 0u; k < MLKEM_N; k++)
+    65	  {
+    66	    __CPROVER_assume(a.coeffs[k] >= 0);
+    67	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    68	  }
+    69	
+    70	  /*
+    71	   * Execute the actual frozen production implementation.
+    72	   * The initial message bytes remain arbitrary.
+    73	   */
+    74	  mlk_poly_tomsg(msg, &a);
+    75	
+    76	  /*
+    77	   * Independent coefficient-to-output-bit comparison.
+    78	   *
+    79	   * This intentionally indexes the output as a flat sequence of 256 bits,
+    80	   * rather than reproducing the production function's nested i/j loops.
+    81	   */
+    82	  for (k = 0u; k < MLKEM_N; k++)
+    83	  {
+    84	    uint8_t actual_bit;
+    85	    uint8_t expected_bit;
+    86	
+    87	    actual_bit =
+    88	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    89	
+    90	    expected_bit =
+    91	        msg_t1_threshold_oracle(a.coeffs[k]);
+    92	
+    93	    __CPROVER_assert(
+    94	        actual_bit == expected_bit,
+    95	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    96	  }
+    97	
+    98	  return 0;
+    99	}
+
+===== 5. AUTHORITATIVE MSG-T1 CBMC COMMAND =====
+cbmc /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --unwinding-assertions --unwindset main.0:257\,main.1:257\,mlk_msg01f_poly_tomsg.0:257\,mlk_msg01f_poly_tomsg.1:257\,mlk_msg01f_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --trace --json-ui 
+
+===== 6. RECOVER T1 BUILD-RELATED FILES =====
+BUILD_RELATED_FILE_COUNT=57
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/MSG01A_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/MSG01B_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/commands/goto_build_commands.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/inspection/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/MSG01C_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/commands/goto_build_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/inspection/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/MSG01D_RETRY1_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/logs/validate.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/MSG01E_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/commands/goto_build_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_goto_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_symbols.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_undefined_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/reachable_call_graph.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_goto_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_loops.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_properties.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/logs/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/MSG01F_PREFLIGHT_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/MSG01F_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/commands/goto_build_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/goto_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/loops.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/properties.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/reachable_call_graph.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/symbols.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/undefined_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/logs/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/MSG01G_R1_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/MSG01G_R1_FREEZE_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/commands/cbmc_show_properties_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/cbmc_show_properties.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/loops.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/reachable_call_graph.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/undefined_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/provenance/accepted_goto_build_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/provenance/accepted_msg01f_summary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/MSG01G_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/commands/cbmc_show_properties_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/cbmc_show_properties.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/list_goto_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/list_undefined_functions.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/raw_goto_properties.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/reachable_call_graph.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/show_loops.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/inspection/validate_goto_binary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/provenance/accepted_goto_build_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/provenance/accepted_msg01f_summary.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/MSG01H_TERMINAL_CAPTURE.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/commands/msg_t1_positive_cbmc_command.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/frozen_inputs/MSG01G_R1_FREEZE_SUMMARY.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/logs/pre_execution_goto_validation.txt
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01H_T1_AUTHORITATIVE_POSITIVE_RUN1_af4c5abdd595/resource_usage/msg_t1_positive_resource_usage.txt
+
+===== 7. BUILD-RELATED FILE CONTENTS =====
+
+------------------------------------------------------------
+FILE_NUMBER=1
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/MSG01A_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01A — MSG-T1 CANDIDATE HARNESS AND FRESH GOTO PREFLIGHT
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:02:19Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595
+HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c
+GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/build/msg_t1_exact_fips_candidate_v1.goto
+
+============================================================
+A. AUTHORITATIVE SOURCE GATE
+============================================================
+SOURCE_IS_GIT_WORKTREE=PASS
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+
+============================================================
+B. RECHECK NATIVE DISCOVERY GOTO WITH BINARY VALIDATOR
+============================================================
+NATIVE_DISCOVERY_GOTO_PRESENT=YES
+NATIVE_BINARY_VALIDATE_EXIT=6
+Reading GOTO program from '/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomsg/gotos/poly_tomsg_harness.goto'
+mlk_poly_tomsg type inconsistency
+goto program type: code
+symbol table type: code (at: file /home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomsg/poly_tomsg_harness.c line 13 function harness)
+
+Important:
+The native GOTO remains discovery-only regardless of this result.
+
+============================================================
+C. WRITE MSG-T1 CANDIDATE HARNESS
+============================================================
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=99
+HARNESS_BYTE_COUNT=2459
+b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c
+
+--- Exact candidate harness ---
+     1	/*
+     2	 * MSG-T1 candidate V1
+     3	 *
+     4	 * Exact functional refinement of the production mlk_poly_tomsg output
+     5	 * against an independently written threshold oracle for canonical
+     6	 * ML-KEM coefficients.
+     7	 *
+     8	 * This file does not call mlk_scalar_compress_d1 from its oracle.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	/*
+    16	 * Independently registered canonical Compress1 decision oracle:
+    17	 *
+    18	 *   0 <= u <= 832       -> 0
+    19	 *   833 <= u <= 2496    -> 1
+    20	 *   2497 <= u <= 3328   -> 0
+    21	 *
+    22	 * Its equivalence to the exact integer FIPS expression over all 3329
+    23	 * canonical inputs was exhaustively established in MSG-00C.
+    24	 */
+    25	uint8_t msg_t1_threshold_oracle(int16_t u)
+    26	{
+    27	  return (uint8_t)((u >= 833) && (u <= 2496));
+    28	}
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly a;
+    33	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    34	  unsigned k;
+    35	
+    36	  __CPROVER_assert(
+    37	      MLKEM_N == 256,
+    38	      "MSG_T1_MODEL: polynomial degree must be 256");
+    39	
+    40	  __CPROVER_assert(
+    41	      MLKEM_INDCPA_MSGBYTES == 32,
+    42	      "MSG_T1_MODEL: message size must be 32 bytes");
+    43	
+    44	  __CPROVER_assert(
+    45	      msg_t1_threshold_oracle(832) == 0,
+    46	      "MSG_T1_ORACLE: lower-zero boundary");
+    47	
+    48	  __CPROVER_assert(
+    49	      msg_t1_threshold_oracle(833) == 1,
+    50	      "MSG_T1_ORACLE: lower-one boundary");
+    51	
+    52	  __CPROVER_assert(
+    53	      msg_t1_threshold_oracle(2496) == 1,
+    54	      "MSG_T1_ORACLE: upper-one boundary");
+    55	
+    56	  __CPROVER_assert(
+    57	      msg_t1_threshold_oracle(2497) == 0,
+    58	      "MSG_T1_ORACLE: upper-zero boundary");
+    59	
+    60	  /*
+    61	   * Uninitialized automatic coefficients are symbolic in the CBMC model.
+    62	   * Restrict each coefficient only to the registered canonical domain.
+    63	   */
+    64	  for (k = 0u; k < MLKEM_N; k++)
+    65	  {
+    66	    __CPROVER_assume(a.coeffs[k] >= 0);
+    67	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    68	  }
+    69	
+    70	  /*
+    71	   * Execute the actual frozen production implementation.
+    72	   * The initial message bytes remain arbitrary.
+    73	   */
+    74	  mlk_poly_tomsg(msg, &a);
+    75	
+    76	  /*
+    77	   * Independent coefficient-to-output-bit comparison.
+    78	   *
+    79	   * This intentionally indexes the output as a flat sequence of 256 bits,
+    80	   * rather than reproducing the production function's nested i/j loops.
+    81	   */
+    82	  for (k = 0u; k < MLKEM_N; k++)
+    83	  {
+    84	    uint8_t actual_bit;
+    85	    uint8_t expected_bit;
+    86	
+    87	    actual_bit =
+    88	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    89	
+    90	    expected_bit =
+    91	        msg_t1_threshold_oracle(a.coeffs[k]);
+    92	
+    93	    __CPROVER_assert(
+    94	        actual_bit == expected_bit,
+    95	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    96	  }
+    97	
+    98	  return 0;
+    99	}
+
+============================================================
+D. CANDIDATE ORACLE-INDEPENDENCE AUDIT
+============================================================
+HARNESS_PRODUCTION_HELPER_NAME_COUNT=1
+HARNESS_INDEPENDENT_ORACLE_DEFINITION_COUNT=1
+HARNESS_TARGET_CALL_COUNT=1
+ORACLE_INDEPENDENCE_STATIC_AUDIT=FAIL
+
+------------------------------------------------------------
+FILE_NUMBER=2
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/MSG01B_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01B — V1 AUDIT-DEFECT REPAIR AND MSG-T1 CANDIDATE V2
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:05:58Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+V1_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c
+V2_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c
+V2_GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+
+============================================================
+A. AUTHORITATIVE SOURCE GATE
+============================================================
+SOURCE_IS_GIT_WORKTREE=PASS
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+
+============================================================
+B. PRESERVE AND CLASSIFY FAILED V1
+============================================================
+V1_HARNESS_PRESENT=YES
+V1_HARNESS_SHA256=b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733
+V1_RECORDED_EXPECTED_SHA256=b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733
+V1_HARNESS_BINDING=PASS
+     1	# MSG-01B — V1 Failure Classification and V2 Repair Record
+     2	
+     3	## V1 result
+     4	
+     5	MSG-01A candidate V1 terminated before GOTO construction with:
+     6	
+     7	```text
+     8	ORACLE_INDEPENDENCE_STATIC_AUDIT=FAIL
+     9	CAPTURE_STATUS=5
+    10	```
+    11	
+    12	## Root cause
+    13	
+    14	The audit counted every textual occurrence of
+    15	`mlk_scalar_compress_d1` in the complete harness. The only occurrence was
+    16	inside a comment stating that the oracle did not call that function.
+    17	
+    18	The V1 oracle body itself contained no production-helper invocation.
+    19	
+    20	## Classification
+    21	
+    22	```text
+    23	V1_FAILURE_CLASSIFICATION=AUDIT_SCRIPT_FALSE_REJECTION
+    24	V1_HARNESS_FUNCTIONAL_COUNTEREXAMPLE=NO
+    25	V1_GOTO_CONSTRUCTION_EXECUTED=NO
+    26	V1_CBMC_PROOF_EXECUTED=NO
+    27	```
+    28	
+    29	## Repair
+    30	
+    31	V2 retains the executable V1 harness semantics but:
+    32	
+    33	1. replaces the misleading comment text;
+    34	2. extracts the oracle function body;
+    35	3. checks prohibited calls only inside that function body;
+    36	4. performs a second semantic audit on the generated GOTO program;
+    37	5. constructs fresh harness and production GOTO objects separately before
+    38	   linking them.
+    39	
+    40	V1 is retained unmodified as failed-attempt evidence.
+
+============================================================
+C. CREATE CANDIDATE V2 WITHOUT MODIFYING V1
+============================================================
+V1_ORIGINAL_MODIFIED=NO
+V2_HARNESS_WRITTEN=PASS
+V2_HARNESS_LINE_COUNT=99
+V2_HARNESS_BYTE_COUNT=2459
+fe556ce3cf00e8dbce12591fbb68c35739fe6e247bbcc170c60eb4554d2a7bff  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c
+
+--- V1 to V2 diff ---
+--- /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01A_T1_CANDIDATE_V1_af4c5abdd595/msg_t1_exact_fips_candidate_v1.c	2026-07-22 19:02:19.496864555 +0300
++++ /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c	2026-07-22 19:05:58.607590638 +0300
+@@ -5,7 +5,7 @@
+  * against an independently written threshold oracle for canonical
+  * ML-KEM coefficients.
+  *
+- * This file does not call mlk_scalar_compress_d1 from its oracle.
++ * This oracle does not invoke any production compression routine.
+  */
+ 
+ #include <stdint.h>
+
+--- Exact V2 harness ---
+     1	/*
+     2	 * MSG-T1 candidate V1
+     3	 *
+     4	 * Exact functional refinement of the production mlk_poly_tomsg output
+     5	 * against an independently written threshold oracle for canonical
+     6	 * ML-KEM coefficients.
+     7	 *
+     8	 * This oracle does not invoke any production compression routine.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	/*
+    16	 * Independently registered canonical Compress1 decision oracle:
+    17	 *
+    18	 *   0 <= u <= 832       -> 0
+    19	 *   833 <= u <= 2496    -> 1
+    20	 *   2497 <= u <= 3328   -> 0
+    21	 *
+    22	 * Its equivalence to the exact integer FIPS expression over all 3329
+    23	 * canonical inputs was exhaustively established in MSG-00C.
+    24	 */
+    25	uint8_t msg_t1_threshold_oracle(int16_t u)
+    26	{
+    27	  return (uint8_t)((u >= 833) && (u <= 2496));
+    28	}
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly a;
+    33	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    34	  unsigned k;
+    35	
+    36	  __CPROVER_assert(
+    37	      MLKEM_N == 256,
+    38	      "MSG_T1_MODEL: polynomial degree must be 256");
+    39	
+    40	  __CPROVER_assert(
+    41	      MLKEM_INDCPA_MSGBYTES == 32,
+    42	      "MSG_T1_MODEL: message size must be 32 bytes");
+    43	
+    44	  __CPROVER_assert(
+    45	      msg_t1_threshold_oracle(832) == 0,
+    46	      "MSG_T1_ORACLE: lower-zero boundary");
+    47	
+    48	  __CPROVER_assert(
+    49	      msg_t1_threshold_oracle(833) == 1,
+    50	      "MSG_T1_ORACLE: lower-one boundary");
+    51	
+    52	  __CPROVER_assert(
+    53	      msg_t1_threshold_oracle(2496) == 1,
+    54	      "MSG_T1_ORACLE: upper-one boundary");
+    55	
+    56	  __CPROVER_assert(
+    57	      msg_t1_threshold_oracle(2497) == 0,
+    58	      "MSG_T1_ORACLE: upper-zero boundary");
+    59	
+    60	  /*
+    61	   * Uninitialized automatic coefficients are symbolic in the CBMC model.
+    62	   * Restrict each coefficient only to the registered canonical domain.
+    63	   */
+    64	  for (k = 0u; k < MLKEM_N; k++)
+    65	  {
+    66	    __CPROVER_assume(a.coeffs[k] >= 0);
+    67	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    68	  }
+    69	
+    70	  /*
+    71	   * Execute the actual frozen production implementation.
+    72	   * The initial message bytes remain arbitrary.
+    73	   */
+    74	  mlk_poly_tomsg(msg, &a);
+    75	
+    76	  /*
+    77	   * Independent coefficient-to-output-bit comparison.
+    78	   *
+    79	   * This intentionally indexes the output as a flat sequence of 256 bits,
+    80	   * rather than reproducing the production function's nested i/j loops.
+    81	   */
+    82	  for (k = 0u; k < MLKEM_N; k++)
+    83	  {
+    84	    uint8_t actual_bit;
+    85	    uint8_t expected_bit;
+    86	
+    87	    actual_bit =
+    88	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    89	
+    90	    expected_bit =
+    91	        msg_t1_threshold_oracle(a.coeffs[k]);
+    92	
+    93	    __CPROVER_assert(
+    94	        actual_bit == expected_bit,
+    95	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    96	  }
+    97	
+    98	  return 0;
+    99	}
+
+============================================================
+D. SEMANTIC ORACLE-BODY STATIC AUDIT
+============================================================
+--- Extracted oracle body ---
+     1	uint8_t msg_t1_threshold_oracle(int16_t u)
+     2	{
+     3	  return (uint8_t)((u >= 833) && (u <= 2496));
+     4	}
+ORACLE_DEFINITION_COUNT=1
+ORACLE_PRODUCTION_HELPER_CALL_COUNT=0
+ORACLE_PRODUCTION_TARGET_CALL_COUNT=0
+TARGET_CALL_COUNT=1
+EXACT_ASSERTION_COUNT=1
+ORACLE_INDEPENDENCE_STATIC_AUDIT=PASS
+
+============================================================
+E. FRESH TWO-UNIT GOTO CONSTRUCTION
+============================================================
+--- Exact build commands ---
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto 
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto 
+goto-cc /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+HARNESS_GOTO_BUILD_EXIT=0
+HARNESS_GOTO_BUILD=PASS
+b9e590df604c1a0c0b44a39e4452db4edb95fad650f3653debf3dcf0a9055567  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto
+PROJECT_GOTO_BUILD_EXIT=0
+PROJECT_GOTO_BUILD=PASS
+34bedb0ed52e699e64b975d7f2fb9d92c46f67c8954c2265b0d9ce7de1a7e1a0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto
+FRESH_GOTO_LINK_EXIT=0
+
+--- Complete build/link log ---
+FRESH_GOTO_LINK=PASS
+FRESH_GOTO_SIZE_BYTES=94014
+369b83306c1c41aa6e6829d55ca1f317c009149426a79fc37f5be172b4779691  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+
+============================================================
+F. FRESH GOTO BINARY VALIDATION
+============================================================
+bash: line 765: 17494 Aborted                 (core dumped) goto-instrument --validate-goto-binary "$GOTO" > "$VALIDATE_LOG" 2>&1
+FRESH_GOTO_VALIDATE_EXIT=134
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_tomont::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x5f42d638d4c3]
+goto-instrument(+0x9bd5e3) [0x5f42d638e5e3]
+goto-instrument(+0x157c42) [0x5f42d5b28c42]
+goto-instrument(+0x16d2e6) [0x5f42d5b3e2e6]
+goto-instrument(+0x6d1408) [0x5f42d60a2408]
+goto-instrument(+0x1625c5) [0x5f42d5b335c5]
+goto-instrument(+0x155f5b) [0x5f42d5b26f5b]
+goto-instrument(+0x149f2d) [0x5f42d5b1af2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7767b682a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7767b682a28b]
+goto-instrument(+0x157165) [0x5f42d5b28165]
+
+
+--- end invariant violation report ---
+FRESH_GOTO_BINARY_VALIDATION=FAIL
+
+------------------------------------------------------------
+FILE_NUMBER=3
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/commands/goto_build_commands.txt
+------------------------------------------------------------
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto 
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto 
+goto-cc /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/harness.goto /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/compress_project.goto -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto
+
+------------------------------------------------------------
+FILE_NUMBER=4
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/inspection/validate_goto_binary.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/build/msg_t1_exact_fips_candidate_v2.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_tomont::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x5f42d638d4c3]
+goto-instrument(+0x9bd5e3) [0x5f42d638e5e3]
+goto-instrument(+0x157c42) [0x5f42d5b28c42]
+goto-instrument(+0x16d2e6) [0x5f42d5b3e2e6]
+goto-instrument(+0x6d1408) [0x5f42d60a2408]
+goto-instrument(+0x1625c5) [0x5f42d5b335c5]
+goto-instrument(+0x155f5b) [0x5f42d5b26f5b]
+goto-instrument(+0x149f2d) [0x5f42d5b1af2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7767b682a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7767b682a28b]
+goto-instrument(+0x157165) [0x5f42d5b28165]
+
+
+--- end invariant violation report ---
+
+------------------------------------------------------------
+FILE_NUMBER=5
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/MSG01C_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01C — MSG-T1 CANDIDATE V3 SINGLE-UNIT GOTO RECOVERY
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:20:41Z
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+PRODUCTION_SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+ADAPTER=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/msg_t1_exact_fips_candidate_v3_scu.c
+GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto
+
+============================================================
+A. AUTHORITATIVE SOURCE AND FILE-BINDING GATE
+============================================================
+SOURCE_IS_GIT_WORKTREE=PASS
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+PRODUCTION_SOURCE_PRESENT=YES
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+============================================================
+B. PRESERVE EARLIER FAILED ATTEMPTS
+============================================================
+V1_HARNESS_PRESENT=YES
+V1_HARNESS_SHA256=b72fb9ba4e7bc7557f341c08176df5312e12b7a6eee862b545745da9151e4733
+V2_HARNESS_PRESENT=YES
+V2_HARNESS_SHA256=fe556ce3cf00e8dbce12591fbb68c35739fe6e247bbcc170c60eb4554d2a7bff
+V2_INVALID_LINKED_GOTO_PRESENT=YES
+V2_INVALID_LINKED_GOTO_SHA256=369b83306c1c41aa6e6829d55ca1f317c009149426a79fc37f5be172b4779691
+     1	# MSG-01C — V2 Failure Classification and V3 SCU Repair
+     2	
+     3	## MSG-01A
+     4	
+     5	MSG-01A stopped before GOTO construction because a textual audit counted a
+     6	production-helper name appearing only in a comment.
+     7	
+     8	```text
+     9	CLASSIFICATION=AUDIT_SCRIPT_FALSE_REJECTION
+    10	CBMC_PROOF_EXECUTED=NO
+    11	```
+    12	
+    13	## MSG-01B
+    14	
+    15	MSG-01B repaired the oracle audit. The harness and production translation
+    16	units compiled and linked, but validation of the linked GOTO binary aborted
+    17	because the namespace lacked:
+    18	
+    19	```text
+    20	mlk_poly_tomont::r
+    21	```
+    22	
+    23	The MSG-01B command omitted the native CBMC build definitions:
+    24	
+    25	```text
+    26	-Dstatic=
+    27	-DMLK_INLINE=
+    28	-DMLK_ALWAYS_INLINE=
+    29	```
+    30	
+    31	The resulting failure occurred before property solving.
+    32	
+    33	```text
+    34	CLASSIFICATION=VERIFICATION_ADAPTER_LINK_NAMESPACE_FAILURE
+    35	FUNCTIONAL_COUNTEREXAMPLE=NO
+    36	CBMC_PROOF_EXECUTED=NO
+    37	```
+    38	
+    39	## MSG-01C repair
+    40	
+    41	MSG-01C:
+    42	
+    43	1. preserves V1 and V2 unmodified;
+    44	2. hashes the frozen production `compress.c`;
+    45	3. includes that exact source in one verification translation unit;
+    46	4. restores the native CBMC symbol-exposure definitions;
+    47	5. validates the raw GOTO before proof execution;
+    48	6. audits production-body presence and oracle separation.
+    49	
+    50	The single-unit adapter changes compilation structure for verification. It
+    51	does not edit or replace the frozen production implementation.
+
+============================================================
+C. WRITE SINGLE-COMPILATION-UNIT CANDIDATE V3
+============================================================
+V3_ADAPTER_WRITTEN=PASS
+V3_ADAPTER_LINE_COUNT=84
+V3_ADAPTER_BYTE_COUNT=1986
+bfaee9e4cb6c248ea549851eeac8f5e78381448bc76d7c56f3848e42b8342716  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/msg_t1_exact_fips_candidate_v3_scu.c
+
+--- Exact V3 single-unit adapter ---
+     1	/*
+     2	 * MSG-T1 candidate V3 — single-compilation-unit verification adapter.
+     3	 *
+     4	 * The frozen production implementation below is included directly from:
+     5	 *
+     6	 *   /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+     7	 *
+     8	 * Expected production-source SHA-256:
+     9	 *
+    10	 *   9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+    11	 *
+    12	 * The production file itself is not modified.
+    13	 */
+    14	
+    15	#include "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c"
+    16	
+    17	/*
+    18	 * Independent canonical Compress1 decision oracle:
+    19	 *
+    20	 *   0 <= u <= 832       -> 0
+    21	 *   833 <= u <= 2496    -> 1
+    22	 *   2497 <= u <= 3328   -> 0
+    23	 */
+    24	uint8_t msg_t1_threshold_oracle(int16_t u)
+    25	{
+    26	  return (uint8_t)((u >= 833) && (u <= 2496));
+    27	}
+    28	
+    29	int main(void)
+    30	{
+    31	  mlk_poly a;
+    32	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    33	  unsigned k;
+    34	
+    35	  __CPROVER_assert(
+    36	      MLKEM_N == 256,
+    37	      "MSG_T1_MODEL: polynomial degree must be 256");
+    38	
+    39	  __CPROVER_assert(
+    40	      MLKEM_INDCPA_MSGBYTES == 32,
+    41	      "MSG_T1_MODEL: message size must be 32 bytes");
+    42	
+    43	  __CPROVER_assert(
+    44	      msg_t1_threshold_oracle(832) == 0,
+    45	      "MSG_T1_ORACLE: lower-zero boundary");
+    46	
+    47	  __CPROVER_assert(
+    48	      msg_t1_threshold_oracle(833) == 1,
+    49	      "MSG_T1_ORACLE: lower-one boundary");
+    50	
+    51	  __CPROVER_assert(
+    52	      msg_t1_threshold_oracle(2496) == 1,
+    53	      "MSG_T1_ORACLE: upper-one boundary");
+    54	
+    55	  __CPROVER_assert(
+    56	      msg_t1_threshold_oracle(2497) == 0,
+    57	      "MSG_T1_ORACLE: upper-zero boundary");
+    58	
+    59	  for (k = 0u; k < MLKEM_N; k++)
+    60	  {
+    61	    __CPROVER_assume(a.coeffs[k] >= 0);
+    62	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    63	  }
+    64	
+    65	  mlk_poly_tomsg(msg, &a);
+    66	
+    67	  for (k = 0u; k < MLKEM_N; k++)
+    68	  {
+    69	    uint8_t actual_bit;
+    70	    uint8_t expected_bit;
+    71	
+    72	    actual_bit =
+    73	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    74	
+    75	    expected_bit =
+    76	        msg_t1_threshold_oracle(a.coeffs[k]);
+    77	
+    78	    __CPROVER_assert(
+    79	        actual_bit == expected_bit,
+    80	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    81	  }
+    82	
+    83	  return 0;
+    84	}
+
+============================================================
+D. V3 ORACLE-INDEPENDENCE STATIC AUDIT
+============================================================
+--- Extracted oracle body ---
+     1	uint8_t msg_t1_threshold_oracle(int16_t u)
+     2	{
+     3	  return (uint8_t)((u >= 833) && (u <= 2496));
+     4	}
+ORACLE_DEFINITION_COUNT=1
+ORACLE_HELPER_CALL_COUNT=0
+ORACLE_TARGET_CALL_COUNT=0
+TARGET_CALL_COUNT=1
+EXACT_ASSERTION_COUNT=1
+PRODUCTION_INCLUDE_COUNT=1
+V3_STATIC_ORACLE_AND_SOURCE_AUDIT=PASS
+
+============================================================
+E. FRESH SINGLE-UNIT RAW GOTO CONSTRUCTION
+============================================================
+--- Exact GOTO build command ---
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/msg_t1_exact_fips_candidate_v3_scu.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto 
+V3_GOTO_BUILD_EXIT=0
+
+--- Build stdout ---
+
+--- Build stderr ---
+V3_GOTO_BUILD=PASS
+V3_GOTO_SIZE_BYTES=105641
+f6b5f3d6257a8db15756f3a74644374779cc959d404129bef6f980eee14e2aee  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto
+
+============================================================
+F. FRESH V3 GOTO BINARY VALIDATION
+============================================================
+bash: line 876: 17865 Aborted                 (core dumped) goto-instrument --validate-goto-binary "$GOTO" > "$VALIDATE_LOG" 2>&1
+V3_GOTO_VALIDATE_EXIT=134
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_sub::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x589f744f54c3]
+goto-instrument(+0x9bd5e3) [0x589f744f65e3]
+goto-instrument(+0x157c42) [0x589f73c90c42]
+goto-instrument(+0x16d2e6) [0x589f73ca62e6]
+goto-instrument(+0x6d1408) [0x589f7420a408]
+goto-instrument(+0x1625c5) [0x589f73c9b5c5]
+goto-instrument(+0x155f5b) [0x589f73c8ef5b]
+goto-instrument(+0x149f2d) [0x589f73c82f2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7be040e2a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7be040e2a28b]
+goto-instrument(+0x157165) [0x589f73c90165]
+
+
+--- end invariant violation report ---
+V3_GOTO_BINARY_VALIDATION=FAIL
+
+------------------------------------------------------------
+FILE_NUMBER=6
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/commands/goto_build_command.txt
+------------------------------------------------------------
+goto-cc -Wall -Werror --native-compiler gcc -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595 -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/ -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/fips202 -DCBMC=1 -DCBMC_OBJECT_BITS=8 -DCBMC_MAX_OBJECT_SIZE=\(SIZE_MAX\>\>\(CBMC_OBJECT_BITS+1\)\) -DMLK_CONFIG_FILE=\"mlkem_native_config_cbmc.h\" -DMLK_CONFIG_PARAMETER_SET=768 -Dstatic= -DMLK_INLINE= -DMLK_ALWAYS_INLINE= /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/msg_t1_exact_fips_candidate_v3_scu.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto 
+
+------------------------------------------------------------
+FILE_NUMBER=7
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/inspection/validate_goto_binary.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_sub::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x589f744f54c3]
+goto-instrument(+0x9bd5e3) [0x589f744f65e3]
+goto-instrument(+0x157c42) [0x589f73c90c42]
+goto-instrument(+0x16d2e6) [0x589f73ca62e6]
+goto-instrument(+0x6d1408) [0x589f7420a408]
+goto-instrument(+0x1625c5) [0x589f73c9b5c5]
+goto-instrument(+0x155f5b) [0x589f73c8ef5b]
+goto-instrument(+0x149f2d) [0x589f73c82f2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7be040e2a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7be040e2a28b]
+goto-instrument(+0x157165) [0x589f73c90165]
+
+
+--- end invariant violation report ---
+
+------------------------------------------------------------
+FILE_NUMBER=8
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/MSG01D_RETRY1_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01D-R1 — TRANSFORM AND VALIDATE FROZEN V3 RAW GOTO
+============================================================
+CAPTURE_UTC=2026-07-22T16:27:27Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+RAW=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01C_T1_CANDIDATE_V3_SCU_af4c5abdd595/build/msg_t1_exact_fips_candidate_v3_scu.goto
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595
+
+============================================================
+A. INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ADAPTER_SHA256=bfaee9e4cb6c248ea549851eeac8f5e78381448bc76d7c56f3848e42b8342716
+RAW_GOTO_SHA256=f6b5f3d6257a8db15756f3a74644374779cc959d404129bef6f980eee14e2aee
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN=PASS
+COMPRESS_HASH_BINDING=PASS
+ADAPTER_HASH_BINDING=PASS
+RAW_GOTO_HASH_BINDING=PASS
+STAGE0100_COPY=PASS
+f6b5f3d6257a8db15756f3a74644374779cc959d404129bef6f980eee14e2aee  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0100_raw.goto
+
+============================================================
+B. STAGE 0200 — REMOVE FUNCTION POINTERS
+============================================================
+STAGE0200_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0100_raw.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto'
+STAGE0200=PASS
+a4efa11cc93ddd529b139e92227fd04d861b00b939254f79b82286cabbbd1b45  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto
+
+============================================================
+C. STAGE 0400 — ADD CBMC LIBRARY
+============================================================
+STAGE0400_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0200_remove_function_pointers.goto'
+Adding CPROVER library (x86_64)
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto'
+STAGE0400=PASS
+941509cf076e32e7f4cfb2d5ecb8f73b2b1a6f4d2f154acabc10c3226ef3227c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto
+
+============================================================
+D. STAGE 0700 — SLICE GLOBAL INITIALISERS
+============================================================
+STAGE0700_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0400_add_library.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Slicing away initializations of unused global variables
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto'
+STAGE0700=PASS
+063b5faa5775e9607a1f474aa08ce033dc3225569f400edd7b44ffd3d634950b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto
+
+============================================================
+E. STAGE 0800 — DROP UNUSED FUNCTIONS
+============================================================
+STAGE0800_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0700_slice_global_inits.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+Removing unused functions
+Writing GOTO program to '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/0800_drop_unused_functions.goto'
+STAGE0800=PASS
+FINAL_GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto
+FINAL_GOTO_SIZE_BYTES=71045
+cf7e54480e02b0205d064ab1c7fe46607fc79b916c5ea7025de022b881b1d3b0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto
+
+============================================================
+F. VALIDATE CLEANED GOTO
+============================================================
+bash: line 340: 17960 Aborted                 (core dumped) goto-instrument --validate-goto-binary "$FINAL" > "$LOGS/validate.txt" 2>&1
+FINAL_VALIDATE_EXIT=134
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_reduce::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x61746e2654c3]
+goto-instrument(+0x9bd5e3) [0x61746e2665e3]
+goto-instrument(+0x157c42) [0x61746da00c42]
+goto-instrument(+0x16d2e6) [0x61746da162e6]
+goto-instrument(+0x6d1408) [0x61746df7a408]
+goto-instrument(+0x1625c5) [0x61746da0b5c5]
+goto-instrument(+0x155f5b) [0x61746d9fef5b]
+goto-instrument(+0x149f2d) [0x61746d9f2f2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7d8e3502a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7d8e3502a28b]
+goto-instrument(+0x157165) [0x61746da00165]
+
+
+--- end invariant violation report ---
+FINAL_GOTO_VALIDATION=FAIL
+
+------------------------------------------------------------
+FILE_NUMBER=9
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/logs/validate.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01D_RETRY1_TRANSFORM_V3_af4c5abdd595/build/msg_t1_v3_cleaned.goto'
+--- begin invariant violation report ---
+Invariant check failed
+File: ../src/util/namespace.h:49 function: lookup
+Condition: !not_found
+Reason: we are assuming that a name exists in the namespace when this function is called - identifier mlk_poly_reduce::r was not found
+Backtrace:
+goto-instrument(+0x9bc4c3) [0x61746e2654c3]
+goto-instrument(+0x9bd5e3) [0x61746e2665e3]
+goto-instrument(+0x157c42) [0x61746da00c42]
+goto-instrument(+0x16d2e6) [0x61746da162e6]
+goto-instrument(+0x6d1408) [0x61746df7a408]
+goto-instrument(+0x1625c5) [0x61746da0b5c5]
+goto-instrument(+0x155f5b) [0x61746d9fef5b]
+goto-instrument(+0x149f2d) [0x61746d9f2f2d]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca) [0x7d8e3502a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b) [0x7d8e3502a28b]
+goto-instrument(+0x157165) [0x61746da00165]
+
+
+--- end invariant violation report ---
+
+------------------------------------------------------------
+FILE_NUMBER=10
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/MSG01E_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01E — V4 CONTRACT-ERASED, PRAGMA-PRESERVING PREFLIGHT
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:33:02Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+V2=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595
+
+============================================================
+A. FROZEN INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+V2_SHA256=fe556ce3cf00e8dbce12591fbb68c35739fe6e247bbcc170c60eb4554d2a7bff
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+COMPRESS_C_BINDING=PASS
+COMPRESS_H_BINDING=PASS
+V2_HARNESS_BINDING=PASS
+INHERITED_OPTBLOCKER_PRESENT=YES
+INHERITED_OPTBLOCKER_SHA256=3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2
+
+============================================================
+B. WRITE V4 SUPPORT ADAPTERS
+============================================================
+OPTBLOCKER_BYTE_COPY=PASS
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_fail_closed_zeroize.h
+8574e286e38e14b20be76c6887f0364d9cb98bbda4e74162039bf44858add617  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_fail_closed_zeroize.h
+     1	#ifndef MSG01E_FAIL_CLOSED_ZEROIZE_H
+     2	#define MSG01E_FAIL_CLOSED_ZEROIZE_H
+     3	
+     4	#include <stddef.h>
+     5	
+     6	static void mlk_zeroize(void *ptr, size_t len)
+     7	{
+     8	  (void)ptr;
+     9	  (void)len;
+    10	
+    11	  __CPROVER_assert(
+    12	      0,
+    13	      "MSG_T1_ADAPTER: mlk_zeroize must be unreachable");
+    14	}
+    15	
+    16	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_verify_pragma_scope.h
+d99bb70397955d52d7e83888c7a4ede1ebae8890aa8edf781b2b625dc1efd29f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_verify_pragma_scope.h
+     1	#ifndef MSG01E_VERIFY_PRAGMA_SCOPE_H
+     2	#define MSG01E_VERIFY_PRAGMA_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01E requires CBMC to be initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * Load cbmc.h while CBMC is undefined. This keeps __contract__
+    10	 * and __loop__ annotations erased for the direct bounded model.
+    11	 */
+    12	#include "common.h"
+    13	#include "cbmc.h"
+    14	
+    15	/*
+    16	 * Enable only the production verification pragmas in verify.h.
+    17	 */
+    18	#define CBMC 1
+    19	#include "verify.h"
+    20	#undef CBMC
+    21	
+    22	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_compress_intended_wrap_scope.h
+66e61b7e57e3950ef711699249e416dacca666b942f600d8d00150f6737a6c03  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_compress_intended_wrap_scope.h
+     1	#ifndef MSG01E_COMPRESS_INTENDED_WRAP_SCOPE_H
+     2	#define MSG01E_COMPRESS_INTENDED_WRAP_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01E compression adapter requires CBMC initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * cbmc.h has already been loaded with contracts erased.
+    10	 *
+    11	 * Reload-time CBMC visibility here activates the unchanged production
+    12	 * push/disable/pop pragmas around compression helpers. The include guard
+    13	 * then prevents later harness and compress.c includes from redefining them.
+    14	 */
+    15	#define CBMC 1
+    16	#include "compress.h"
+    17	#undef CBMC
+    18	
+    19	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_optblocker_zero.c
+3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_optblocker_zero.c
+     1	/*
+     2	 * Zero-valued environment definition required by verify.h's portable value
+     3	 * barrier. This does not replace or modify production mlk_poly_sub.
+     4	 */
+     5	#include <stdint.h>
+     6	#include "common.h"
+     7	
+     8	volatile uint64_t MLK_NAMESPACE(ct_opt_blocker_u64) = (uint64_t)0;
+
+============================================================
+C. CREATE CANDIDATE V4
+============================================================
+V4_HARNESS_WRITTEN=PASS
+V4_HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+
+--- V2 to V4 difference ---
+--- /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01B_T1_CANDIDATE_V2_af4c5abdd595/msg_t1_exact_fips_candidate_v2.c	2026-07-22 19:05:58.607590638 +0300
++++ /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c	2026-07-22 19:33:02.918575538 +0300
+@@ -1,5 +1,5 @@
+ /*
+- * MSG-T1 candidate V1
++ * MSG-T1 candidate V4 - contract-erased, pragma-preserving build
+  *
+  * Exact functional refinement of the production mlk_poly_tomsg output
+  * against an independently written threshold oracle for canonical
+
+--- Exact V4 harness ---
+     1	/*
+     2	 * MSG-T1 candidate V4 - contract-erased, pragma-preserving build
+     3	 *
+     4	 * Exact functional refinement of the production mlk_poly_tomsg output
+     5	 * against an independently written threshold oracle for canonical
+     6	 * ML-KEM coefficients.
+     7	 *
+     8	 * This oracle does not invoke any production compression routine.
+     9	 */
+    10	
+    11	#include <stdint.h>
+    12	
+    13	#include "compress.h"
+    14	
+    15	/*
+    16	 * Independently registered canonical Compress1 decision oracle:
+    17	 *
+    18	 *   0 <= u <= 832       -> 0
+    19	 *   833 <= u <= 2496    -> 1
+    20	 *   2497 <= u <= 3328   -> 0
+    21	 *
+    22	 * Its equivalence to the exact integer FIPS expression over all 3329
+    23	 * canonical inputs was exhaustively established in MSG-00C.
+    24	 */
+    25	uint8_t msg_t1_threshold_oracle(int16_t u)
+    26	{
+    27	  return (uint8_t)((u >= 833) && (u <= 2496));
+    28	}
+    29	
+    30	int main(void)
+    31	{
+    32	  mlk_poly a;
+    33	  uint8_t msg[MLKEM_INDCPA_MSGBYTES];
+    34	  unsigned k;
+    35	
+    36	  __CPROVER_assert(
+    37	      MLKEM_N == 256,
+    38	      "MSG_T1_MODEL: polynomial degree must be 256");
+    39	
+    40	  __CPROVER_assert(
+    41	      MLKEM_INDCPA_MSGBYTES == 32,
+    42	      "MSG_T1_MODEL: message size must be 32 bytes");
+    43	
+    44	  __CPROVER_assert(
+    45	      msg_t1_threshold_oracle(832) == 0,
+    46	      "MSG_T1_ORACLE: lower-zero boundary");
+    47	
+    48	  __CPROVER_assert(
+    49	      msg_t1_threshold_oracle(833) == 1,
+    50	      "MSG_T1_ORACLE: lower-one boundary");
+    51	
+    52	  __CPROVER_assert(
+    53	      msg_t1_threshold_oracle(2496) == 1,
+    54	      "MSG_T1_ORACLE: upper-one boundary");
+    55	
+    56	  __CPROVER_assert(
+    57	      msg_t1_threshold_oracle(2497) == 0,
+    58	      "MSG_T1_ORACLE: upper-zero boundary");
+    59	
+    60	  /*
+    61	   * Uninitialized automatic coefficients are symbolic in the CBMC model.
+    62	   * Restrict each coefficient only to the registered canonical domain.
+    63	   */
+    64	  for (k = 0u; k < MLKEM_N; k++)
+    65	  {
+    66	    __CPROVER_assume(a.coeffs[k] >= 0);
+    67	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    68	  }
+    69	
+    70	  /*
+    71	   * Execute the actual frozen production implementation.
+    72	   * The initial message bytes remain arbitrary.
+    73	   */
+    74	  mlk_poly_tomsg(msg, &a);
+    75	
+    76	  /*
+    77	   * Independent coefficient-to-output-bit comparison.
+    78	   *
+    79	   * This intentionally indexes the output as a flat sequence of 256 bits,
+    80	   * rather than reproducing the production function's nested i/j loops.
+    81	   */
+    82	  for (k = 0u; k < MLKEM_N; k++)
+    83	  {
+    84	    uint8_t actual_bit;
+    85	    uint8_t expected_bit;
+    86	
+    87	    actual_bit =
+    88	        (uint8_t)((msg[k >> 3] >> (k & 7u)) & 1u);
+    89	
+    90	    expected_bit =
+    91	        msg_t1_threshold_oracle(a.coeffs[k]);
+    92	
+    93	    __CPROVER_assert(
+    94	        actual_bit == expected_bit,
+    95	        "MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle");
+    96	  }
+    97	
+    98	  return 0;
+    99	}
+V2_ORIGINAL_MODIFIED=NO
+
+============================================================
+D. WRITE ADAPTER RECOVERY RECORD
+============================================================
+     1	# MSG-01E Adapter Recovery Record
+     2	
+     3	## Preserved failed attempts
+     4	
+     5	- MSG-01A: audit-script false rejection.
+     6	- MSG-01B: contract-bearing linked GOTO validation failure.
+     7	- MSG-01C: contract-bearing single-unit GOTO validation failure.
+     8	- MSG-01D-R1: reachability cleanup completed, but parameter-dependent contract
+     9	  metadata still caused GOTO validation failure.
+    10	
+    11	No MSG-T1 property solving occurred in those attempts.
+    12	
+    13	## V4 correction
+    14	
+    15	V4 follows the previously validated SUB-T6 adapter architecture:
+    16	
+    17	1. CBMC is not globally defined.
+    18	2. cbmc.h is loaded while CBMC is undefined, erasing production contracts.
+    19	3. verify.h is loaded briefly with CBMC defined.
+    20	4. compress.h is loaded briefly with CBMC defined, activating the unchanged
+    21	   production overflow pragma scopes.
+    22	5. The actual frozen compress.c is compiled.
+    23	6. No function contract replaces mlk_poly_tomsg or mlk_scalar_compress_d1.
+    24	7. The V2 functional harness semantics are retained.
+    25	
+    26	This is a verification compilation adapter. It does not edit production code.
+
+============================================================
+E. BUILD V4 GOTO
+============================================================
+--- Exact build command ---
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01e -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_compress_intended_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto 
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+V4_GOTO_BUILD_EXIT=0
+
+--- Build stdout ---
+
+--- Build stderr ---
+V4_GOTO_BUILD=PASS
+V4_GOTO_SIZE_BYTES=51355
+V4_GOTO_SHA256=bfe77b1b8164b4c11526ebd4918fc28743c9b62622a6341c6ada2e5c0b6ff468
+
+============================================================
+F. VALIDATE V4 GOTO
+============================================================
+V4_GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+V4_GOTO_BINARY_VALIDATION=PASS
+
+============================================================
+G. STRUCTURAL INSPECTION
+============================================================
+FUNCTION_LIST_EXIT=0
+SYMBOL_LIST_EXIT=0
+UNDEFINED_LIST_EXIT=0
+CALL_GRAPH_EXIT=0
+LOOP_LIST_EXIT=0
+PROPERTY_LIST_EXIT=0
+FUNCTION_BODY_EXIT=0
+
+--- Relevant functions ---
+1:Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+31:main /* main */
+63:mlk_msg01e_poly_tomsg /* mlk_msg01e_poly_tomsg */
+77:mlk_scalar_compress_d1 /* mlk_scalar_compress_d1 */
+79:mlk_scalar_compress_d10 /* mlk_scalar_compress_d10 */
+91:msg_t1_threshold_oracle /* msg_t1_threshold_oracle */
+
+--- Reachable call graph ---
+1:Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+5:main -> msg_t1_threshold_oracle
+6:main -> msg_t1_threshold_oracle
+7:main -> msg_t1_threshold_oracle
+8:main -> msg_t1_threshold_oracle
+9:main -> mlk_msg01e_poly_tomsg
+10:main -> msg_t1_threshold_oracle
+12:__CPROVER__start -> main
+13:mlk_msg01e_poly_tomsg -> array_bound
+14:mlk_msg01e_poly_tomsg -> cassert
+15:mlk_msg01e_poly_tomsg -> mlk_scalar_compress_d1
+
+--- Loop inventory ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+
+------------------------------------------------------------
+FILE_NUMBER=11
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/commands/goto_build_command.txt
+------------------------------------------------------------
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01e -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_compress_intended_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto 
+
+------------------------------------------------------------
+FILE_NUMBER=12
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_goto_functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+
+__CPROVER__start /* __CPROVER__start */
+
+__CPROVER_assert /* __CPROVER_assert, body not available */
+
+__CPROVER_assignable /* __CPROVER_assignable, body not available */
+
+__CPROVER_assume /* __CPROVER_assume, body not available */
+
+__CPROVER_freeable /* __CPROVER_freeable, body not available */
+
+__CPROVER_initialize /* __CPROVER_initialize */
+
+__CPROVER_is_freeable /* __CPROVER_is_freeable, body not available */
+
+__CPROVER_object_from /* __CPROVER_object_from, body not available */
+
+__CPROVER_object_upto /* __CPROVER_object_upto, body not available */
+
+__CPROVER_object_whole /* __CPROVER_object_whole, body not available */
+
+__CPROVER_was_freed /* __CPROVER_was_freed, body not available */
+
+array_abs_bound /* array_abs_bound, body not available */
+
+array_bound /* array_bound, body not available */
+
+cassert /* cassert, body not available */
+
+main /* main */
+
+mlk_cast_int16_to_uint16 /* mlk_cast_int16_to_uint16 */
+
+mlk_cast_int32_to_uint16 /* mlk_cast_int32_to_uint16 */
+
+mlk_cast_uint16_to_int16 /* mlk_cast_uint16_to_int16 */
+
+mlk_ct_cmask_nonzero_u16 /* mlk_ct_cmask_nonzero_u16 */
+
+mlk_ct_get_optblocker_i32 /* mlk_ct_get_optblocker_i32 */
+
+mlk_ct_get_optblocker_u64 /* mlk_ct_get_optblocker_u64 */
+
+mlk_ct_get_optblocker_u8 /* mlk_ct_get_optblocker_u8 */
+
+mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+
+mlk_msg01e_poly_compress_d10 /* mlk_msg01e_poly_compress_d10 */
+
+mlk_msg01e_poly_compress_d4 /* mlk_msg01e_poly_compress_d4 */
+
+mlk_msg01e_poly_decompress_d10 /* mlk_msg01e_poly_decompress_d10 */
+
+mlk_msg01e_poly_decompress_d4 /* mlk_msg01e_poly_decompress_d4 */
+
+mlk_msg01e_poly_frombytes /* mlk_msg01e_poly_frombytes */
+
+mlk_msg01e_poly_frommsg /* mlk_msg01e_poly_frommsg */
+
+mlk_msg01e_poly_tobytes /* mlk_msg01e_poly_tobytes */
+
+mlk_msg01e_poly_tomsg /* mlk_msg01e_poly_tomsg */
+
+mlk_poly_compress_d10_c /* mlk_poly_compress_d10_c */
+
+mlk_poly_compress_d4_c /* mlk_poly_compress_d4_c */
+
+mlk_poly_decompress_d10_c /* mlk_poly_decompress_d10_c */
+
+mlk_poly_decompress_d4_c /* mlk_poly_decompress_d4_c */
+
+mlk_poly_frombytes_c /* mlk_poly_frombytes_c */
+
+mlk_poly_tobytes_c /* mlk_poly_tobytes_c */
+
+mlk_scalar_compress_d1 /* mlk_scalar_compress_d1 */
+
+mlk_scalar_compress_d10 /* mlk_scalar_compress_d10 */
+
+mlk_scalar_compress_d4 /* mlk_scalar_compress_d4 */
+
+mlk_scalar_decompress_d10 /* mlk_scalar_decompress_d10 */
+
+mlk_scalar_decompress_d4 /* mlk_scalar_decompress_d4 */
+
+mlk_value_barrier_i32 /* mlk_value_barrier_i32 */
+
+mlk_value_barrier_u8 /* mlk_value_barrier_u8 */
+
+msg_t1_threshold_oracle /* msg_t1_threshold_oracle */
+
+------------------------------------------------------------
+FILE_NUMBER=13
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_symbols.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+__CPROVER__start void (void)
+__CPROVER_architecture_NULL_is_zero __CPROVER_integer
+__CPROVER_architecture_alignment __CPROVER_integer
+__CPROVER_architecture_arch const char *
+__CPROVER_architecture_arch$object const char
+__CPROVER_architecture_bool_width __CPROVER_integer
+__CPROVER_architecture_char_is_unsigned __CPROVER_integer
+__CPROVER_architecture_char_width __CPROVER_integer
+__CPROVER_architecture_double_width __CPROVER_integer
+__CPROVER_architecture_endianness __CPROVER_integer
+__CPROVER_architecture_int_width __CPROVER_integer
+__CPROVER_architecture_long_double_width __CPROVER_integer
+__CPROVER_architecture_long_int_width __CPROVER_integer
+__CPROVER_architecture_long_long_int_width __CPROVER_integer
+__CPROVER_architecture_memory_operand_size __CPROVER_integer
+__CPROVER_architecture_os const char *
+__CPROVER_architecture_os$object const char
+__CPROVER_architecture_pointer_width __CPROVER_integer
+__CPROVER_architecture_short_int_width __CPROVER_integer
+__CPROVER_architecture_single_width __CPROVER_integer
+__CPROVER_architecture_wchar_t_is_unsigned __CPROVER_integer
+__CPROVER_architecture_wchar_t_width __CPROVER_integer
+__CPROVER_architecture_word_size __CPROVER_integer
+__CPROVER_assert void (__CPROVER_bool, const char *)
+__CPROVER_assignable void (void *, __CPROVER_size_t, __CPROVER_bool)
+__CPROVER_assume void (__CPROVER_bool)
+__CPROVER_constant_infinity_uint const unsigned int
+__CPROVER_dead_object const void *
+__CPROVER_dead_object$object const void
+__CPROVER_deallocated const void *
+__CPROVER_deallocated$object const void
+__CPROVER_freeable void (void *)
+__CPROVER_initialize void (void)
+__CPROVER_is_freeable __CPROVER_bool (void *)
+__CPROVER_max_malloc_size __CPROVER_size_t
+__CPROVER_memory unsigned char [INFINITY()]
+__CPROVER_memory_leak const void *
+__CPROVER_memory_leak$object const void
+__CPROVER_object_from void (void *)
+__CPROVER_object_upto void (void *, __CPROVER_size_t)
+__CPROVER_object_whole void (void *)
+__CPROVER_rounding_mode signed int
+__CPROVER_size_t __CPROVER_size_t
+__CPROVER_was_freed __CPROVER_bool (void *)
+array_abs_bound signed int (void)
+array_bound signed int (void)
+cassert signed int (void)
+int16_t int16_t
+int32_t int32_t
+main signed int (void)
+main::$tmp::return_value_msg_t1_threshold_oracle uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$0 uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$1 uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$2 uint8_t
+main::1::2::1::actual_bit uint8_t
+main::1::2::1::expected_bit uint8_t
+main::1::a mlk_poly
+main::1::k unsigned int
+main::1::msg uint8_t [32l]
+mlk_cast_int16_to_uint16 uint16_t (int32_t x)
+mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 uint16_t
+mlk_cast_int16_to_uint16::x int32_t
+mlk_cast_int32_to_uint16 uint16_t (int32_t x)
+mlk_cast_int32_to_uint16::x int32_t
+mlk_cast_uint16_to_int16 int16_t (uint16_t x)
+mlk_cast_uint16_to_int16::x uint16_t
+mlk_ct_cmask_nonzero_u16 uint16_t (uint16_t x)
+mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 uint16_t
+mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 int32_t
+mlk_ct_cmask_nonzero_u16::1::tmp int32_t
+mlk_ct_cmask_nonzero_u16::x uint16_t
+mlk_ct_get_optblocker_i32 int32_t (void)
+mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 uint64_t
+mlk_ct_get_optblocker_u64 uint64_t (void)
+mlk_ct_get_optblocker_u8 uint8_t (void)
+mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 uint64_t
+mlk_ct_sel_int16 int16_t (int16_t a, int16_t b, uint16_t cond)
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 uint16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 uint16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 int16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 uint16_t
+mlk_ct_sel_int16::1::au uint16_t
+mlk_ct_sel_int16::1::bu uint16_t
+mlk_ct_sel_int16::1::res uint16_t
+mlk_ct_sel_int16::a int16_t
+mlk_ct_sel_int16::b int16_t
+mlk_ct_sel_int16::cond uint16_t
+mlk_msg01e_ct_opt_blocker_u64 volatile uint64_t
+mlk_msg01e_poly_compress_d10 void (uint8_t *r, const mlk_poly *a)
+mlk_msg01e_poly_compress_d10::a const mlk_poly *
+mlk_msg01e_poly_compress_d10::a$object const mlk_poly
+mlk_msg01e_poly_compress_d10::r uint8_t *
+mlk_msg01e_poly_compress_d10::r$object uint8_t
+mlk_msg01e_poly_compress_d4 void (uint8_t *r, const mlk_poly *a)
+mlk_msg01e_poly_compress_d4::a const mlk_poly *
+mlk_msg01e_poly_compress_d4::a$object const mlk_poly
+mlk_msg01e_poly_compress_d4::r uint8_t *
+mlk_msg01e_poly_compress_d4::r$object uint8_t
+mlk_msg01e_poly_decompress_d10 void (mlk_poly *r, const uint8_t *a)
+mlk_msg01e_poly_decompress_d10::a const uint8_t *
+mlk_msg01e_poly_decompress_d10::a$object const uint8_t
+mlk_msg01e_poly_decompress_d10::r mlk_poly *
+mlk_msg01e_poly_decompress_d10::r$object mlk_poly
+mlk_msg01e_poly_decompress_d4 void (mlk_poly *r, const uint8_t *a)
+mlk_msg01e_poly_decompress_d4::a const uint8_t *
+mlk_msg01e_poly_decompress_d4::a$object const uint8_t
+mlk_msg01e_poly_decompress_d4::r mlk_poly *
+mlk_msg01e_poly_decompress_d4::r$object mlk_poly
+mlk_msg01e_poly_frombytes void (mlk_poly *r, const uint8_t *a)
+mlk_msg01e_poly_frombytes::a const uint8_t *
+mlk_msg01e_poly_frombytes::a$object const uint8_t
+mlk_msg01e_poly_frombytes::r mlk_poly *
+mlk_msg01e_poly_frombytes::r$object mlk_poly
+mlk_msg01e_poly_frommsg void (mlk_poly *r, const uint8_t *msg)
+mlk_msg01e_poly_frommsg::$tmp::return_value_array_abs_bound signed int
+mlk_msg01e_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16 int16_t
+mlk_msg01e_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8 uint8_t
+mlk_msg01e_poly_frommsg::1::1::1::1::1::mask uint8_t
+mlk_msg01e_poly_frommsg::1::1::1::j unsigned int
+mlk_msg01e_poly_frommsg::1::i unsigned int
+mlk_msg01e_poly_frommsg::msg const uint8_t *
+mlk_msg01e_poly_frommsg::msg$object const uint8_t
+mlk_msg01e_poly_frommsg::r mlk_poly *
+mlk_msg01e_poly_frommsg::r$object mlk_poly
+mlk_msg01e_poly_tobytes void (uint8_t *r, const mlk_poly *a)
+mlk_msg01e_poly_tobytes::a const mlk_poly *
+mlk_msg01e_poly_tobytes::a$object const mlk_poly
+mlk_msg01e_poly_tobytes::r uint8_t *
+mlk_msg01e_poly_tobytes::r$object uint8_t
+mlk_msg01e_poly_tomsg void (uint8_t *msg, const mlk_poly *r)
+mlk_msg01e_poly_tomsg::$tmp::return_value_array_bound signed int
+mlk_msg01e_poly_tomsg::$tmp::return_value_mlk_scalar_compress_d1 uint8_t
+mlk_msg01e_poly_tomsg::1::1::1::1::1::t uint32_t
+mlk_msg01e_poly_tomsg::1::1::1::j unsigned int
+mlk_msg01e_poly_tomsg::1::i unsigned int
+mlk_msg01e_poly_tomsg::msg uint8_t *
+mlk_msg01e_poly_tomsg::msg$object uint8_t
+mlk_msg01e_poly_tomsg::r const mlk_poly *
+mlk_msg01e_poly_tomsg::r$object const mlk_poly
+mlk_poly mlk_poly
+mlk_poly_compress_d10_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_compress_d10_c::$tmp::return_value_array_bound signed int
+mlk_poly_compress_d10_c::$tmp::return_value_mlk_scalar_compress_d10 uint16_t
+mlk_poly_compress_d10_c::1::1::1::k unsigned int
+mlk_poly_compress_d10_c::1::1::1::t uint16_t [4l]
+mlk_poly_compress_d10_c::1::j unsigned int
+mlk_poly_compress_d10_c::a const mlk_poly *
+mlk_poly_compress_d10_c::a$object const mlk_poly
+mlk_poly_compress_d10_c::r uint8_t *
+mlk_poly_compress_d10_c::r$object uint8_t
+mlk_poly_compress_d4_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_compress_d4_c::$tmp::return_value_array_bound signed int
+mlk_poly_compress_d4_c::$tmp::return_value_mlk_scalar_compress_d4 uint8_t
+mlk_poly_compress_d4_c::1::1::1::j unsigned int
+mlk_poly_compress_d4_c::1::1::1::t uint8_t [8l]
+mlk_poly_compress_d4_c::1::i unsigned int
+mlk_poly_compress_d4_c::a const mlk_poly *
+mlk_poly_compress_d4_c::a$object const mlk_poly
+mlk_poly_compress_d4_c::r uint8_t *
+mlk_poly_compress_d4_c::r$object uint8_t
+mlk_poly_decompress_d10_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_decompress_d10_c::$tmp::return_value_array_bound signed int
+mlk_poly_decompress_d10_c::$tmp::return_value_mlk_scalar_decompress_d10 int16_t
+mlk_poly_decompress_d10_c::1::1::1::base const uint8_t *
+mlk_poly_decompress_d10_c::1::1::1::base$object const uint8_t
+mlk_poly_decompress_d10_c::1::1::1::k unsigned int
+mlk_poly_decompress_d10_c::1::1::1::t uint16_t [4l]
+mlk_poly_decompress_d10_c::1::j unsigned int
+mlk_poly_decompress_d10_c::a const uint8_t *
+mlk_poly_decompress_d10_c::a$object const uint8_t
+mlk_poly_decompress_d10_c::r mlk_poly *
+mlk_poly_decompress_d10_c::r$object mlk_poly
+mlk_poly_decompress_d4_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_decompress_d4_c::$tmp::return_value_array_bound signed int
+mlk_poly_decompress_d4_c::$tmp::return_value_mlk_scalar_decompress_d4 int16_t
+mlk_poly_decompress_d4_c::$tmp::return_value_mlk_scalar_decompress_d4$0 int16_t
+mlk_poly_decompress_d4_c::1::i unsigned int
+mlk_poly_decompress_d4_c::a const uint8_t *
+mlk_poly_decompress_d4_c::a$object const uint8_t
+mlk_poly_decompress_d4_c::r mlk_poly *
+mlk_poly_decompress_d4_c::r$object mlk_poly
+mlk_poly_frombytes_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_frombytes_c::$tmp::return_value_array_bound signed int
+mlk_poly_frombytes_c::1::1::1::t0 const uint8_t
+mlk_poly_frombytes_c::1::1::1::t1 const uint8_t
+mlk_poly_frombytes_c::1::1::1::t2 const uint8_t
+mlk_poly_frombytes_c::1::i unsigned int
+mlk_poly_frombytes_c::a const uint8_t *
+mlk_poly_frombytes_c::a$object const uint8_t
+mlk_poly_frombytes_c::r mlk_poly *
+mlk_poly_frombytes_c::r$object mlk_poly
+mlk_poly_tobytes_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_tobytes_c::$tmp::return_value_array_bound signed int
+mlk_poly_tobytes_c::1::1::1::t0 const uint16_t
+mlk_poly_tobytes_c::1::1::1::t1 const uint16_t
+mlk_poly_tobytes_c::1::i unsigned int
+mlk_poly_tobytes_c::a const mlk_poly *
+mlk_poly_tobytes_c::a$object const mlk_poly
+mlk_poly_tobytes_c::r uint8_t *
+mlk_poly_tobytes_c::r$object uint8_t
+mlk_scalar_compress_d1 uint8_t (int16_t u)
+mlk_scalar_compress_d10 uint16_t (int16_t u)
+mlk_scalar_compress_d10::1::d0 uint64_t
+mlk_scalar_compress_d10::u int16_t
+mlk_scalar_compress_d1::1::d0 uint32_t
+mlk_scalar_compress_d1::u int16_t
+mlk_scalar_compress_d4 uint8_t (int16_t u)
+mlk_scalar_compress_d4::1::d0 uint32_t
+mlk_scalar_compress_d4::u int16_t
+mlk_scalar_decompress_d10 int16_t (uint16_t u)
+mlk_scalar_decompress_d10::u uint16_t
+mlk_scalar_decompress_d4 int16_t (uint8_t u)
+mlk_scalar_decompress_d4::u uint8_t
+mlk_value_barrier_i32 int32_t (int32_t b)
+mlk_value_barrier_i32::$tmp::return_value_mlk_ct_get_optblocker_i32 int32_t
+mlk_value_barrier_i32::b int32_t
+mlk_value_barrier_u8 uint8_t (uint8_t b)
+mlk_value_barrier_u8::$tmp::return_value_mlk_ct_get_optblocker_u8 uint8_t
+mlk_value_barrier_u8::b uint8_t
+msg_t1_threshold_oracle uint8_t (int16_t u)
+msg_t1_threshold_oracle::u int16_t
+return' signed int
+tag-#anon#ST[ARR256{S16}'coeffs'] struct { int16_t coeffs[256l]; }
+uint16_t uint16_t
+uint32_t uint32_t
+uint64_t uint64_t
+uint8_t uint8_t
+
+------------------------------------------------------------
+FILE_NUMBER=14
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/list_undefined_functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+array_abs_bound
+__CPROVER_assert
+__CPROVER_object_from
+__CPROVER_was_freed
+__CPROVER_object_upto
+array_bound
+__CPROVER_assignable
+__CPROVER_assume
+__CPROVER_object_whole
+__CPROVER_freeable
+__CPROVER_is_freeable
+cassert
+
+------------------------------------------------------------
+FILE_NUMBER=15
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/reachable_call_graph.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> mlk_msg01e_poly_tomsg
+main -> msg_t1_threshold_oracle
+__CPROVER__start -> __CPROVER_initialize
+__CPROVER__start -> main
+mlk_msg01e_poly_tomsg -> array_bound
+mlk_msg01e_poly_tomsg -> cassert
+mlk_msg01e_poly_tomsg -> mlk_scalar_compress_d1
+
+------------------------------------------------------------
+FILE_NUMBER=16
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_goto_functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER__start /* __CPROVER__start */
+        // 0 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 1 file <built-in-additions> line 26
+        CALL __CPROVER_initialize()
+        // 2 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 30
+        CALL return' := main()
+        // 3 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 30
+        OUTPUT address_of("return'"[0])
+        // 4 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER_initialize /* __CPROVER_initialize */
+        // 5 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 6 file <built-in-additions> line 10
+        ASSIGN __CPROVER_dead_object := NULL
+        // 7 file <built-in-additions> line 9
+        ASSIGN __CPROVER_deallocated := NULL
+        // 8 file <built-in-additions> line 14
+        ASSIGN __CPROVER_max_malloc_size := 36028797018963968
+        // 9 file <built-in-additions> line 11
+        ASSIGN __CPROVER_memory_leak := NULL
+        // 10 file <built-in-additions> line 18
+        ASSIGN __CPROVER_rounding_mode := 0
+        // 11 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/support/msg01e_optblocker_zero.c line 8
+        ASSIGN mlk_msg01e_ct_opt_blocker_u64 := cast(0, unsignedbv[64])
+        // 12 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+main /* main */
+        // 13 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 32 function main
+        DECL main::1::a : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 14 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 33 function main
+        DECL main::1::msg : unsignedbv[8][32]
+        // 15 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 34 function main
+        DECL main::1::k : unsignedbv[32]
+        // 16 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 36 function main
+        ASSERT 256 = 256 // MSG_T1_MODEL: polynomial degree must be 256
+        // 17 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 40 function main
+        ASSERT 32 = 32 // MSG_T1_MODEL: message size must be 32 bytes
+        // 18 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle : unsignedbv[8]
+        // 19 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle := msg_t1_threshold_oracle(cast(832, signedbv[16]))
+        // 20 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 44 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle, signedbv[32]) = 0 // MSG_T1_ORACLE: lower-zero boundary
+        // 21 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle
+        // 22 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$0 : unsignedbv[8]
+        // 23 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$0 := msg_t1_threshold_oracle(cast(833, signedbv[16]))
+        // 24 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 48 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$0, signedbv[32]) = 1 // MSG_T1_ORACLE: lower-one boundary
+        // 25 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$0
+        // 26 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$1 : unsignedbv[8]
+        // 27 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$1 := msg_t1_threshold_oracle(cast(2496, signedbv[16]))
+        // 28 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 52 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$1, signedbv[32]) = 1 // MSG_T1_ORACLE: upper-one boundary
+        // 29 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$1
+        // 30 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$2 : unsignedbv[8]
+        // 31 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$2 := msg_t1_threshold_oracle(cast(2497, signedbv[16]))
+        // 32 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 56 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$2, signedbv[32]) = 0 // MSG_T1_ORACLE: upper-zero boundary
+        // 33 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$2
+        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        ASSIGN main::1::k := 0
+        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+     1: IF ¬(main::1::k < cast(256, unsignedbv[32])) THEN GOTO 2
+        // 36 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 66 function main
+        ASSUME cast(main::1::a.coeffs[cast(main::1::k, signedbv[64])], signedbv[32]) ≥ 0
+        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 67 function main
+        ASSUME cast(main::1::a.coeffs[cast(main::1::k, signedbv[64])], signedbv[32]) < 3329
+        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        ASSIGN main::1::k := main::1::k + 1
+        // 39 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        GOTO 1
+        // 40 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+     2: SKIP
+        // 41 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 74 function main
+        CALL mlk_msg01e_poly_tomsg(address_of(main::1::msg[0]), address_of(main::1::a))
+        // 42 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        ASSIGN main::1::k := 0
+        // 43 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+     3: IF ¬(main::1::k < cast(256, unsignedbv[32])) THEN GOTO 4
+        // 44 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 84 function main
+        DECL main::1::2::1::actual_bit : unsignedbv[8]
+        // 45 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 85 function main
+        DECL main::1::2::1::expected_bit : unsignedbv[8]
+        // 46 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 87 function main
+        ASSIGN main::1::2::1::actual_bit := cast(bitand(cast(ashr(cast(main::1::msg[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+        // 47 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 91 function main
+        CALL main::1::2::1::expected_bit := msg_t1_threshold_oracle(main::1::a.coeffs[cast(main::1::k, signedbv[64])])
+        // 48 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 93 function main
+        ASSERT main::1::2::1::actual_bit = main::1::2::1::expected_bit // MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+        // 49 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 96 function main
+        DEAD main::1::2::1::expected_bit
+        // 50 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 96 function main
+        DEAD main::1::2::1::actual_bit
+        // 51 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        ASSIGN main::1::k := main::1::k + 1
+        // 52 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        GOTO 3
+        // 53 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+     4: SKIP
+        // 54 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        SET RETURN VALUE 0
+        // 55 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::k
+        // 56 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::msg
+        // 57 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::a
+        // 58 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        GOTO 5
+        // 59 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 99 function main
+     5: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_int16_to_uint16 /* mlk_cast_int16_to_uint16 */
+        // 60 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        DECL mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 : unsignedbv[16]
+        // 61 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        CALL mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 := mlk_cast_int32_to_uint16(mlk_cast_int16_to_uint16::x)
+        // 62 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        SET RETURN VALUE mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 63 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        DEAD mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 64 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        GOTO 1
+        // 65 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 187 function mlk_cast_int16_to_uint16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_int32_to_uint16 /* mlk_cast_int32_to_uint16 */
+        // 66 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 174 function mlk_cast_int32_to_uint16
+        SET RETURN VALUE cast(bitand(mlk_cast_int32_to_uint16::x, cast(65535, signedbv[32])), unsignedbv[16])
+        // 67 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 174 function mlk_cast_int32_to_uint16
+        GOTO 1
+        // 68 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 175 function mlk_cast_int32_to_uint16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_uint16_to_int16 /* mlk_cast_uint16_to_int16 */
+        // 69 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 159 function mlk_cast_uint16_to_int16
+        SET RETURN VALUE cast(mlk_cast_uint16_to_int16::x, signedbv[16])
+        // 70 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 159 function mlk_cast_uint16_to_int16
+        GOTO 1
+        // 71 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 160 function mlk_cast_uint16_to_int16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_cmask_nonzero_u16 /* mlk_ct_cmask_nonzero_u16 */
+        // 72 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::1::tmp : signedbv[32]
+        // 73 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 : signedbv[32]
+        // 74 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        CALL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 := mlk_value_barrier_i32(-(cast(mlk_ct_cmask_nonzero_u16::x, signedbv[32])))
+        // 75 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        ASSIGN mlk_ct_cmask_nonzero_u16::1::tmp := mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32
+        // 76 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32
+        // 77 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 239 function mlk_ct_cmask_nonzero_u16
+        ASSIGN mlk_ct_cmask_nonzero_u16::1::tmp := ashr(mlk_ct_cmask_nonzero_u16::1::tmp, 16)
+        // 78 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 : unsignedbv[16]
+        // 79 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        CALL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 := mlk_cast_int32_to_uint16(mlk_ct_cmask_nonzero_u16::1::tmp)
+        // 80 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        SET RETURN VALUE mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 81 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 82 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::1::tmp
+        // 83 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        GOTO 1
+        // 84 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 241 function mlk_ct_cmask_nonzero_u16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_i32 /* mlk_ct_get_optblocker_i32 */
+        // 85 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        DECL mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 : unsignedbv[64]
+        // 86 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        CALL mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 := mlk_ct_get_optblocker_u64()
+        // 87 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        SET RETURN VALUE cast(mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64, signedbv[32])
+        // 88 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        DEAD mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64
+        // 89 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        GOTO 1
+        // 90 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_u64 /* mlk_ct_get_optblocker_u64 */
+        // 91 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+        SET RETURN VALUE mlk_msg01e_ct_opt_blocker_u64
+        // 92 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+        GOTO 1
+        // 93 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_u8 /* mlk_ct_get_optblocker_u8 */
+        // 94 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        DECL mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 : unsignedbv[64]
+        // 95 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        CALL mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 := mlk_ct_get_optblocker_u64()
+        // 96 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        SET RETURN VALUE cast(mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64, unsignedbv[8])
+        // 97 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        DEAD mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64
+        // 98 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        GOTO 1
+        // 99 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+        // 100 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::au : unsignedbv[16]
+        // 101 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 : unsignedbv[16]
+        // 102 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::a, signedbv[32]))
+        // 103 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::au := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+        // 104 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+        // 105 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::bu : unsignedbv[16]
+        // 106 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 : unsignedbv[16]
+        // 107 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::b, signedbv[32]))
+        // 108 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::bu := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+        // 109 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+        // 110 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::res : unsignedbv[16]
+        // 111 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 : unsignedbv[16]
+        // 112 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 := mlk_ct_cmask_nonzero_u16(mlk_ct_sel_int16::cond)
+        // 113 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::res := cast(bitxor(cast(mlk_ct_sel_int16::1::bu, signedbv[32]), bitand(cast(mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16, signedbv[32]), bitxor(cast(mlk_ct_sel_int16::1::au, signedbv[32]), cast(mlk_ct_sel_int16::1::bu, signedbv[32])))), unsignedbv[16])
+        // 114 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16
+        // 115 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 : signedbv[16]
+        // 116 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 := mlk_cast_uint16_to_int16(mlk_ct_sel_int16::1::res)
+        // 117 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        SET RETURN VALUE mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+        // 118 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+        // 119 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::res
+        // 120 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::bu
+        // 121 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::au
+        // 122 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        GOTO 1
+        // 123 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 296 function mlk_ct_sel_int16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01e_poly_compress_d10 /* mlk_msg01e_poly_compress_d10 */
+        // 124 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 158 function mlk_msg01e_poly_compress_d10
+        CALL mlk_poly_compress_d10_c(mlk_msg01e_poly_compress_d10::r, mlk_msg01e_poly_compress_d10::a)
+        // 125 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 159 function mlk_msg01e_poly_compress_d10
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01e_poly_compress_d4 /* mlk_msg01e_poly_compress_d4 */
+        // 126 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 91 function mlk_msg01e_poly_compress_d4
+        CALL mlk_poly_compress_d4_c(mlk_msg01e_poly_compress_d4::r, mlk_msg01e_poly_compress_d4::a)
+        // 127 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 92 function mlk_msg01e_poly_compress_d4
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01e_poly_decompress_d10 /* mlk_msg01e_poly_decompress_d10 */
+        // 128 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 269 function mlk_msg01e_poly_decompress_d10
+        CALL mlk_poly_decompress_d10_c(mlk_msg01e_poly_decompress_d10::r, mlk_msg01e_poly_decompress_d10::a)
+        // 129 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 270 function mlk_msg01e_poly_decompress_d10
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+------------------------------------------------------------
+FILE_NUMBER=17
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_loops.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_compress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 117 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 111 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 54 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 48 function mlk_poly_compress_d4_c
+
+Loop mlk_msg01e_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg01e_poly_tomsg
+
+Loop mlk_msg01e_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg01e_poly_tomsg
+
+Loop mlk_msg01e_poly_frommsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 693 function mlk_msg01e_poly_frommsg
+
+Loop mlk_msg01e_poly_frommsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 686 function mlk_msg01e_poly_frommsg
+
+Loop mlk_poly_tobytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 576 function mlk_poly_tobytes_c
+
+Loop mlk_poly_decompress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 236 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 221 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_frombytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+
+
+------------------------------------------------------------
+FILE_NUMBER=18
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/inspection/show_properties.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+Property main.assertion.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 36 function main
+  MSG_T1_MODEL: polynomial degree must be 256
+  256 == 256
+
+Property main.assertion.2:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 40 function main
+  MSG_T1_MODEL: message size must be 32 bytes
+  32 == 32
+
+Property main.assertion.3:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 44 function main
+  MSG_T1_ORACLE: lower-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle == 0
+
+Property main.assertion.4:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 48 function main
+  MSG_T1_ORACLE: lower-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$0 == 1
+
+Property main.assertion.5:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 52 function main
+  MSG_T1_ORACLE: upper-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$1 == 1
+
+Property main.assertion.6:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 56 function main
+  MSG_T1_ORACLE: upper-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle$2 == 0
+
+Property main.assertion.7:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 93 function main
+  MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+  actual_bit == expected_bit
+
+
+------------------------------------------------------------
+FILE_NUMBER=19
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/logs/validate_goto_binary.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/build/msg_t1_exact_fips_candidate_v4.goto'
+
+------------------------------------------------------------
+FILE_NUMBER=20
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/MSG01F_PREFLIGHT_SUMMARY.txt
+------------------------------------------------------------
+MSG-01F V4 DIRECT-PRAGMA PREFLIGHT SUMMARY
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+V4_HARNESS_BINDING=PASS
+V4_HARNESS_MODIFIED=NO
+COMPRESS_HEADER_PARSED_WITH_CBMC_UNDEFINED=PASS
+DIRECT_PRAGMA_SCOPE_STATIC_AUDIT=PASS
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+GOTO_BUILD_EXIT=0
+GOTO_BUILD=PASS
+GOTO_VALIDATE_EXIT=0
+GOTO_BINARY_VALIDATION=PASS
+PRODUCTION_BODY_BINDING=PASS
+ORACLE_GOTO_SEPARATION=PASS
+CONTRACT_AND_DEBUG_HELPER_ERASURE=PASS
+DIRECT_PRAGMA_ADAPTER=PASS
+POST_INTEGRITY=PASS
+CANDIDATE_STATUS=VALIDATED_NOT_YET_FROZEN
+CBMC_PROPERTY_SOLVING_EXECUTED=NO
+
+------------------------------------------------------------
+FILE_NUMBER=21
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/MSG01F_TERMINAL_CAPTURE.txt
+------------------------------------------------------------
+============================================================
+MSG-01F — V4 DIRECT-PRAGMA ADAPTER RECOVERY
+============================================================
+
+CAPTURE_UTC=2026-07-22T16:38:29Z
+SOURCE=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+V4_HARNESS=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595
+
+============================================================
+A. FROZEN INPUT BINDING
+============================================================
+SOURCE_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMPRESS_C_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+V4_HARNESS_SHA256=5ce480427d7792b3dca091ac198b43562c4d4dfd6c9d96dae5a73e7ef1e72b55
+OPTBLOCKER_SHA256=3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+COMPRESS_C_BINDING=PASS
+COMPRESS_H_BINDING=PASS
+V4_HARNESS_BINDING=PASS
+OPTBLOCKER_BINDING=PASS
+
+============================================================
+B. WRITE EXACT SUPPORT ARCHITECTURE
+============================================================
+OPTBLOCKER_BYTE_COPY=PASS
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h
+b71285ddfe229382a0402461f023defcf80a4941aaf35c3db732086ff312779a  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h
+     1	#ifndef MSG01F_FAIL_CLOSED_ZEROIZE_H
+     2	#define MSG01F_FAIL_CLOSED_ZEROIZE_H
+     3	
+     4	#include <stddef.h>
+     5	
+     6	static void mlk_zeroize(void *ptr, size_t len)
+     7	{
+     8	  (void)ptr;
+     9	  (void)len;
+    10	
+    11	  __CPROVER_assert(
+    12	      0,
+    13	      "MSG_T1_ADAPTER: mlk_zeroize must be unreachable");
+    14	}
+    15	
+    16	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h
+0aacacb9a12ef28be9044ee3593930e69e67fcf1b107ed81ccbde9f047edb489  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h
+     1	#ifndef MSG01F_VERIFY_PRAGMA_SCOPE_H
+     2	#define MSG01F_VERIFY_PRAGMA_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01F requires CBMC to be initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * Load annotations with CBMC undefined.
+    10	 * Production contracts and loop contracts remain erased.
+    11	 */
+    12	#include "common.h"
+    13	#include "cbmc.h"
+    14	
+    15	/*
+    16	 * Retain verification pragmas and portable verification utilities.
+    17	 * CBMC is undefined again before compress.h is parsed.
+    18	 */
+    19	#define CBMC 1
+    20	#include "verify.h"
+    21	#undef CBMC
+    22	
+    23	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h
+7820ea424366906c1a10271579500c2eee94372c03e589560f82a046d545c42b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h
+     1	#ifndef MSG01F_COMPRESS_DIRECT_WRAP_SCOPE_H
+     2	#define MSG01F_COMPRESS_DIRECT_WRAP_SCOPE_H
+     3	
+     4	#ifdef CBMC
+     5	#error "MSG-01F direct-wrap adapter requires CBMC initially undefined"
+     6	#endif
+     7	
+     8	/*
+     9	 * Exact inherited successful adapter pattern:
+    10	 *
+    11	 * - compress.h is parsed while CBMC is undefined;
+    12	 * - __contract__ and __loop__ material remain erased;
+    13	 * - the inline compression definitions are parsed inside a direct
+    14	 *   unsigned-overflow disable scope;
+    15	 * - no production helper or production function is replaced.
+    16	 *
+    17	 * The structural audit requires mlk_scalar_compress_d1 to be the only
+    18	 * reachable scalar-compression helper.
+    19	 */
+    20	#pragma CPROVER check push
+    21	#pragma CPROVER check disable "unsigned-overflow"
+    22	#include "compress.h"
+    23	#pragma CPROVER check pop
+    24	
+    25	#endif
+
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c
+3338ed52257c20fe3edb62bf0a4ceb16680c20332b04d19e1a2fdbf6dc3aefb2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c
+     1	/*
+     2	 * Zero-valued environment definition required by verify.h's portable value
+     3	 * barrier. This does not replace or modify production mlk_poly_sub.
+     4	 */
+     5	#include <stdint.h>
+     6	#include "common.h"
+     7	
+     8	volatile uint64_t MLK_NAMESPACE(ct_opt_blocker_u64) = (uint64_t)0;
+
+============================================================
+C. STATIC ADAPTER AUDIT
+============================================================
+COMPRESS_HEADER_PARSED_WITH_CBMC_UNDEFINED=PASS
+DIRECT_PRAGMA_SCOPE_STATIC_AUDIT=PASS
+
+============================================================
+D. BUILD FRESH V4 GOTO
+============================================================
+--- Exact build command ---
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01f -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto 
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+GOTO_BUILD_EXIT=0
+
+--- Build stdout ---
+
+--- Build stderr ---
+GOTO_BUILD=PASS
+GOTO_SIZE_BYTES=49251
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+
+============================================================
+E. VALIDATE FRESH GOTO
+============================================================
+GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+GOTO_BINARY_VALIDATION=PASS
+
+============================================================
+F. STRUCTURAL INVENTORY
+============================================================
+FUNCTION_LIST_EXIT=0
+SYMBOL_LIST_EXIT=0
+UNDEFINED_LIST_EXIT=0
+CALL_GRAPH_EXIT=0
+LOOP_LIST_EXIT=0
+PROPERTY_LIST_EXIT=0
+FUNCTION_BODY_EXIT=0
+
+--- Relevant functions ---
+25:main /* main */
+57:mlk_msg01f_poly_tomsg /* mlk_msg01f_poly_tomsg */
+71:mlk_scalar_compress_d1 /* mlk_scalar_compress_d1 */
+73:mlk_scalar_compress_d10 /* mlk_scalar_compress_d10 */
+85:msg_t1_threshold_oracle /* msg_t1_threshold_oracle */
+
+--- Reachable call graph ---
+5:main -> msg_t1_threshold_oracle
+6:main -> msg_t1_threshold_oracle
+7:main -> msg_t1_threshold_oracle
+8:main -> msg_t1_threshold_oracle
+9:main -> mlk_msg01f_poly_tomsg
+10:main -> msg_t1_threshold_oracle
+11:mlk_msg01f_poly_tomsg -> mlk_scalar_compress_d1
+13:__CPROVER__start -> main
+
+--- Reachable scalar compression helpers ---
+mlk_scalar_compress_d1
+
+--- Undefined functions ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+__CPROVER_assume
+__CPROVER_assert
+__CPROVER_object_from
+__CPROVER_was_freed
+__CPROVER_assignable
+__CPROVER_object_whole
+__CPROVER_freeable
+__CPROVER_is_freeable
+__CPROVER_object_upto
+
+--- Loop inventory ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+
+Loop mlk_poly_decompress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 236 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 221 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 246 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_decompress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 183 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_compress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 110 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 117 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 111 function mlk_poly_compress_d10_c
+
+Loop mlk_msg01f_poly_frommsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 693 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 686 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 707 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg01f_poly_tomsg
+
+Loop mlk_poly_frombytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+
+Loop mlk_poly_frombytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 654 function mlk_poly_frombytes_c
+
+Loop mlk_poly_tobytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 574 function mlk_poly_tobytes_c
+
+Loop mlk_poly_tobytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 576 function mlk_poly_tobytes_c
+
+Loop mlk_poly_compress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 46 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 54 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 48 function mlk_poly_compress_d4_c
+
+
+--- MSG-T1 properties ---
+4:  MSG_T1_MODEL: polynomial degree must be 256
+9:  MSG_T1_MODEL: message size must be 32 bytes
+14:  MSG_T1_ORACLE: lower-zero boundary
+19:  MSG_T1_ORACLE: lower-one boundary
+24:  MSG_T1_ORACLE: upper-one boundary
+29:  MSG_T1_ORACLE: upper-zero boundary
+34:  MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+
+============================================================
+G. PRODUCTION, ORACLE AND ADAPTER AUDIT
+============================================================
+TARGET_FUNCTION_COUNT=1
+ORACLE_FUNCTION_COUNT=1
+TARGET_CALL_COUNT=1
+DIRECT_D1_CALL_COUNT=1
+REACHABLE_SCALAR_HELPER_COUNT=1
+REACHABLE_D1_COUNT=1
+TARGET_BODY_COUNT=22
+HELPER_BODY_COUNT=5
+HELPER_MAGIC_COUNT=1
+MSG_T1_EXACT_PROPERTY_COUNT=1
+D1_OVERFLOW_PROPERTY_COUNT=0
+BAD_HELPER_CALL_COUNT=0
+BAD_HELPER_UNDEFINED_COUNT=0
+BAD_CONTRACT_SYMBOL_COUNT=0
+CONTRACT_REPLACEMENT_COUNT=0
+ORACLE_TO_D1_COUNT=0
+
+PRODUCTION_BODY_BINDING=PASS
+ORACLE_GOTO_SEPARATION=PASS
+CONTRACT_AND_DEBUG_HELPER_ERASURE=PASS
+DIRECT_PRAGMA_ADAPTER=PASS
+MSG01F_STRUCTURAL_GATE=PASS
+
+============================================================
+H. POST-INTEGRITY GATE
+============================================================
+POST_INTEGRITY=PASS
+
+============================================================
+I. WRITE MSG-01F SUMMARY
+============================================================
+MSG-01F V4 DIRECT-PRAGMA PREFLIGHT SUMMARY
+SOURCE_HEAD_BINDING=PASS
+SOURCE_WORKTREE_CLEAN_BEFORE=PASS
+V4_HARNESS_BINDING=PASS
+V4_HARNESS_MODIFIED=NO
+COMPRESS_HEADER_PARSED_WITH_CBMC_UNDEFINED=PASS
+DIRECT_PRAGMA_SCOPE_STATIC_AUDIT=PASS
+GLOBAL_CBMC_DEFINE_ABSENT=PASS
+GOTO=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto
+GOTO_SHA256=51d559dcafd6668d5a7e0ed979bac481bf311cf292f4a46d66b6fcd2d04fbf5d
+GOTO_BUILD_EXIT=0
+GOTO_BUILD=PASS
+GOTO_VALIDATE_EXIT=0
+GOTO_BINARY_VALIDATION=PASS
+PRODUCTION_BODY_BINDING=PASS
+ORACLE_GOTO_SEPARATION=PASS
+CONTRACT_AND_DEBUG_HELPER_ERASURE=PASS
+DIRECT_PRAGMA_ADAPTER=PASS
+POST_INTEGRITY=PASS
+CANDIDATE_STATUS=VALIDATED_NOT_YET_FROZEN
+CBMC_PROPERTY_SOLVING_EXECUTED=NO
+
+------------------------------------------------------------
+FILE_NUMBER=22
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/commands/goto_build_command.txt
+------------------------------------------------------------
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg01f -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_fail_closed_zeroize.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_verify_pragma_scope.h -include /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_compress_direct_wrap_scope.h -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem -I/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src -I/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c -o /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto 
+
+------------------------------------------------------------
+FILE_NUMBER=23
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+
+__CPROVER__start /* __CPROVER__start */
+
+__CPROVER_assert /* __CPROVER_assert, body not available */
+
+__CPROVER_assignable /* __CPROVER_assignable, body not available */
+
+__CPROVER_assume /* __CPROVER_assume, body not available */
+
+__CPROVER_freeable /* __CPROVER_freeable, body not available */
+
+__CPROVER_initialize /* __CPROVER_initialize */
+
+__CPROVER_is_freeable /* __CPROVER_is_freeable, body not available */
+
+__CPROVER_object_from /* __CPROVER_object_from, body not available */
+
+__CPROVER_object_upto /* __CPROVER_object_upto, body not available */
+
+__CPROVER_object_whole /* __CPROVER_object_whole, body not available */
+
+__CPROVER_was_freed /* __CPROVER_was_freed, body not available */
+
+main /* main */
+
+mlk_cast_int16_to_uint16 /* mlk_cast_int16_to_uint16 */
+
+mlk_cast_int32_to_uint16 /* mlk_cast_int32_to_uint16 */
+
+mlk_cast_uint16_to_int16 /* mlk_cast_uint16_to_int16 */
+
+mlk_ct_cmask_nonzero_u16 /* mlk_ct_cmask_nonzero_u16 */
+
+mlk_ct_get_optblocker_i32 /* mlk_ct_get_optblocker_i32 */
+
+mlk_ct_get_optblocker_u64 /* mlk_ct_get_optblocker_u64 */
+
+mlk_ct_get_optblocker_u8 /* mlk_ct_get_optblocker_u8 */
+
+mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+
+mlk_msg01f_poly_compress_d10 /* mlk_msg01f_poly_compress_d10 */
+
+mlk_msg01f_poly_compress_d4 /* mlk_msg01f_poly_compress_d4 */
+
+mlk_msg01f_poly_decompress_d10 /* mlk_msg01f_poly_decompress_d10 */
+
+mlk_msg01f_poly_decompress_d4 /* mlk_msg01f_poly_decompress_d4 */
+
+mlk_msg01f_poly_frombytes /* mlk_msg01f_poly_frombytes */
+
+mlk_msg01f_poly_frommsg /* mlk_msg01f_poly_frommsg */
+
+mlk_msg01f_poly_tobytes /* mlk_msg01f_poly_tobytes */
+
+mlk_msg01f_poly_tomsg /* mlk_msg01f_poly_tomsg */
+
+mlk_poly_compress_d10_c /* mlk_poly_compress_d10_c */
+
+mlk_poly_compress_d4_c /* mlk_poly_compress_d4_c */
+
+mlk_poly_decompress_d10_c /* mlk_poly_decompress_d10_c */
+
+mlk_poly_decompress_d4_c /* mlk_poly_decompress_d4_c */
+
+mlk_poly_frombytes_c /* mlk_poly_frombytes_c */
+
+mlk_poly_tobytes_c /* mlk_poly_tobytes_c */
+
+mlk_scalar_compress_d1 /* mlk_scalar_compress_d1 */
+
+mlk_scalar_compress_d10 /* mlk_scalar_compress_d10 */
+
+mlk_scalar_compress_d4 /* mlk_scalar_compress_d4 */
+
+mlk_scalar_decompress_d10 /* mlk_scalar_decompress_d10 */
+
+mlk_scalar_decompress_d4 /* mlk_scalar_decompress_d4 */
+
+mlk_value_barrier_i32 /* mlk_value_barrier_i32 */
+
+mlk_value_barrier_u8 /* mlk_value_barrier_u8 */
+
+msg_t1_threshold_oracle /* msg_t1_threshold_oracle */
+
+------------------------------------------------------------
+FILE_NUMBER=24
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/goto_functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER__start /* __CPROVER__start */
+        // 0 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 1 file <built-in-additions> line 26
+        CALL __CPROVER_initialize()
+        // 2 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 30
+        CALL return' := main()
+        // 3 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 30
+        OUTPUT address_of("return'"[0])
+        // 4 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER_initialize /* __CPROVER_initialize */
+        // 5 no location
+        // Labels: __CPROVER_HIDE
+        SKIP
+        // 6 file <built-in-additions> line 10
+        ASSIGN __CPROVER_dead_object := NULL
+        // 7 file <built-in-additions> line 9
+        ASSIGN __CPROVER_deallocated := NULL
+        // 8 file <built-in-additions> line 14
+        ASSIGN __CPROVER_max_malloc_size := 36028797018963968
+        // 9 file <built-in-additions> line 11
+        ASSIGN __CPROVER_memory_leak := NULL
+        // 10 file <built-in-additions> line 18
+        ASSIGN __CPROVER_rounding_mode := 0
+        // 11 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/support/msg01f_optblocker_zero.c line 8
+        ASSIGN mlk_msg01f_ct_opt_blocker_u64 := cast(0, unsignedbv[64])
+        // 12 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+main /* main */
+        // 13 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 32 function main
+        DECL main::1::a : struct tag-#anon#ST[ARR256{S16}'coeffs']
+        // 14 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 33 function main
+        DECL main::1::msg : unsignedbv[8][32]
+        // 15 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 34 function main
+        DECL main::1::k : unsignedbv[32]
+        // 16 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 36 function main
+        ASSERT 256 = 256 // MSG_T1_MODEL: polynomial degree must be 256
+        // 17 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 40 function main
+        ASSERT 32 = 32 // MSG_T1_MODEL: message size must be 32 bytes
+        // 18 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle : unsignedbv[8]
+        // 19 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle := msg_t1_threshold_oracle(cast(832, signedbv[16]))
+        // 20 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 44 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle, signedbv[32]) = 0 // MSG_T1_ORACLE: lower-zero boundary
+        // 21 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 45 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle
+        // 22 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$0 : unsignedbv[8]
+        // 23 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$0 := msg_t1_threshold_oracle(cast(833, signedbv[16]))
+        // 24 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 48 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$0, signedbv[32]) = 1 // MSG_T1_ORACLE: lower-one boundary
+        // 25 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 49 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$0
+        // 26 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$1 : unsignedbv[8]
+        // 27 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$1 := msg_t1_threshold_oracle(cast(2496, signedbv[16]))
+        // 28 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 52 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$1, signedbv[32]) = 1 // MSG_T1_ORACLE: upper-one boundary
+        // 29 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 53 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$1
+        // 30 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        DECL main::$tmp::return_value_msg_t1_threshold_oracle$2 : unsignedbv[8]
+        // 31 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        CALL main::$tmp::return_value_msg_t1_threshold_oracle$2 := msg_t1_threshold_oracle(cast(2497, signedbv[16]))
+        // 32 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 56 function main
+        ASSERT cast(main::$tmp::return_value_msg_t1_threshold_oracle$2, signedbv[32]) = 0 // MSG_T1_ORACLE: upper-zero boundary
+        // 33 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 57 function main
+        DEAD main::$tmp::return_value_msg_t1_threshold_oracle$2
+        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        ASSIGN main::1::k := 0
+        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+     1: IF ¬(main::1::k < cast(256, unsignedbv[32])) THEN GOTO 2
+        // 36 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 66 function main
+        ASSUME cast(main::1::a.coeffs[cast(main::1::k, signedbv[64])], signedbv[32]) ≥ 0
+        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 67 function main
+        ASSUME cast(main::1::a.coeffs[cast(main::1::k, signedbv[64])], signedbv[32]) < 3329
+        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        ASSIGN main::1::k := main::1::k + 1
+        // 39 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+        GOTO 1
+        // 40 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+     2: SKIP
+        // 41 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 74 function main
+        CALL mlk_msg01f_poly_tomsg(address_of(main::1::msg[0]), address_of(main::1::a))
+        // 42 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        ASSIGN main::1::k := 0
+        // 43 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+     3: IF ¬(main::1::k < cast(256, unsignedbv[32])) THEN GOTO 4
+        // 44 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 84 function main
+        DECL main::1::2::1::actual_bit : unsignedbv[8]
+        // 45 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 85 function main
+        DECL main::1::2::1::expected_bit : unsignedbv[8]
+        // 46 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 87 function main
+        ASSIGN main::1::2::1::actual_bit := cast(bitand(cast(ashr(cast(main::1::msg[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+        // 47 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 91 function main
+        CALL main::1::2::1::expected_bit := msg_t1_threshold_oracle(main::1::a.coeffs[cast(main::1::k, signedbv[64])])
+        // 48 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 93 function main
+        ASSERT main::1::2::1::actual_bit = main::1::2::1::expected_bit // MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+        // 49 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 96 function main
+        DEAD main::1::2::1::expected_bit
+        // 50 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 96 function main
+        DEAD main::1::2::1::actual_bit
+        // 51 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        ASSIGN main::1::k := main::1::k + 1
+        // 52 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+        GOTO 3
+        // 53 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+     4: SKIP
+        // 54 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        SET RETURN VALUE 0
+        // 55 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::k
+        // 56 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::msg
+        // 57 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        DEAD main::1::a
+        // 58 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 98 function main
+        GOTO 5
+        // 59 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 99 function main
+     5: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_int16_to_uint16 /* mlk_cast_int16_to_uint16 */
+        // 60 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        DECL mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 : unsignedbv[16]
+        // 61 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        CALL mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 := mlk_cast_int32_to_uint16(mlk_cast_int16_to_uint16::x)
+        // 62 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        SET RETURN VALUE mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 63 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        DEAD mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 64 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 186 function mlk_cast_int16_to_uint16
+        GOTO 1
+        // 65 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 187 function mlk_cast_int16_to_uint16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_int32_to_uint16 /* mlk_cast_int32_to_uint16 */
+        // 66 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 174 function mlk_cast_int32_to_uint16
+        SET RETURN VALUE cast(bitand(mlk_cast_int32_to_uint16::x, cast(65535, signedbv[32])), unsignedbv[16])
+        // 67 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 174 function mlk_cast_int32_to_uint16
+        GOTO 1
+        // 68 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 175 function mlk_cast_int32_to_uint16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_cast_uint16_to_int16 /* mlk_cast_uint16_to_int16 */
+        // 69 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 159 function mlk_cast_uint16_to_int16
+        SET RETURN VALUE cast(mlk_cast_uint16_to_int16::x, signedbv[16])
+        // 70 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 159 function mlk_cast_uint16_to_int16
+        GOTO 1
+        // 71 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 160 function mlk_cast_uint16_to_int16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_cmask_nonzero_u16 /* mlk_ct_cmask_nonzero_u16 */
+        // 72 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::1::tmp : signedbv[32]
+        // 73 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 : signedbv[32]
+        // 74 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        CALL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 := mlk_value_barrier_i32(-(cast(mlk_ct_cmask_nonzero_u16::x, signedbv[32])))
+        // 75 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        ASSIGN mlk_ct_cmask_nonzero_u16::1::tmp := mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32
+        // 76 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32
+        // 77 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 239 function mlk_ct_cmask_nonzero_u16
+        ASSIGN mlk_ct_cmask_nonzero_u16::1::tmp := ashr(mlk_ct_cmask_nonzero_u16::1::tmp, 16)
+        // 78 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DECL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 : unsignedbv[16]
+        // 79 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        CALL mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 := mlk_cast_int32_to_uint16(mlk_ct_cmask_nonzero_u16::1::tmp)
+        // 80 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        SET RETURN VALUE mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 81 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16
+        // 82 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        DEAD mlk_ct_cmask_nonzero_u16::1::tmp
+        // 83 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 240 function mlk_ct_cmask_nonzero_u16
+        GOTO 1
+        // 84 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 241 function mlk_ct_cmask_nonzero_u16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_i32 /* mlk_ct_get_optblocker_i32 */
+        // 85 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        DECL mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 : unsignedbv[64]
+        // 86 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        CALL mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 := mlk_ct_get_optblocker_u64()
+        // 87 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        SET RETURN VALUE cast(mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64, signedbv[32])
+        // 88 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        DEAD mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64
+        // 89 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+        GOTO 1
+        // 90 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 99 function mlk_ct_get_optblocker_i32
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_u64 /* mlk_ct_get_optblocker_u64 */
+        // 91 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+        SET RETURN VALUE mlk_msg01f_ct_opt_blocker_u64
+        // 92 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+        GOTO 1
+        // 93 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 90 function mlk_ct_get_optblocker_u64
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_get_optblocker_u8 /* mlk_ct_get_optblocker_u8 */
+        // 94 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        DECL mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 : unsignedbv[64]
+        // 95 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        CALL mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 := mlk_ct_get_optblocker_u64()
+        // 96 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        SET RETURN VALUE cast(mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64, unsignedbv[8])
+        // 97 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        DEAD mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64
+        // 98 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+        GOTO 1
+        // 99 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 93 function mlk_ct_get_optblocker_u8
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_ct_sel_int16 /* mlk_ct_sel_int16 */
+        // 100 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::au : unsignedbv[16]
+        // 101 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 : unsignedbv[16]
+        // 102 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::a, signedbv[32]))
+        // 103 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::au := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+        // 104 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 292 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16
+        // 105 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::bu : unsignedbv[16]
+        // 106 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 : unsignedbv[16]
+        // 107 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 := mlk_cast_int16_to_uint16(cast(mlk_ct_sel_int16::b, signedbv[32]))
+        // 108 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::bu := mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+        // 109 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 293 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0
+        // 110 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::1::res : unsignedbv[16]
+        // 111 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 : unsignedbv[16]
+        // 112 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 := mlk_ct_cmask_nonzero_u16(mlk_ct_sel_int16::cond)
+        // 113 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        ASSIGN mlk_ct_sel_int16::1::res := cast(bitxor(cast(mlk_ct_sel_int16::1::bu, signedbv[32]), bitand(cast(mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16, signedbv[32]), bitxor(cast(mlk_ct_sel_int16::1::au, signedbv[32]), cast(mlk_ct_sel_int16::1::bu, signedbv[32])))), unsignedbv[16])
+        // 114 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 294 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16
+        // 115 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DECL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 : signedbv[16]
+        // 116 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        CALL mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 := mlk_cast_uint16_to_int16(mlk_ct_sel_int16::1::res)
+        // 117 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        SET RETURN VALUE mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+        // 118 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16
+        // 119 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::res
+        // 120 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::bu
+        // 121 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        DEAD mlk_ct_sel_int16::1::au
+        // 122 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 295 function mlk_ct_sel_int16
+        GOTO 1
+        // 123 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 296 function mlk_ct_sel_int16
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01f_poly_compress_d10 /* mlk_msg01f_poly_compress_d10 */
+        // 124 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 158 function mlk_msg01f_poly_compress_d10
+        CALL mlk_poly_compress_d10_c(mlk_msg01f_poly_compress_d10::r, mlk_msg01f_poly_compress_d10::a)
+        // 125 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 159 function mlk_msg01f_poly_compress_d10
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01f_poly_compress_d4 /* mlk_msg01f_poly_compress_d4 */
+        // 126 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 91 function mlk_msg01f_poly_compress_d4
+        CALL mlk_poly_compress_d4_c(mlk_msg01f_poly_compress_d4::r, mlk_msg01f_poly_compress_d4::a)
+        // 127 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 92 function mlk_msg01f_poly_compress_d4
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+mlk_msg01f_poly_decompress_d10 /* mlk_msg01f_poly_decompress_d10 */
+        // 128 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 269 function mlk_msg01f_poly_decompress_d10
+        CALL mlk_poly_decompress_d10_c(mlk_msg01f_poly_decompress_d10::r, mlk_msg01f_poly_decompress_d10::a)
+        // 129 file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 270 function mlk_msg01f_poly_decompress_d10
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+------------------------------------------------------------
+FILE_NUMBER=25
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/loops.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 64 function main
+
+Loop main.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 82 function main
+
+Loop mlk_poly_decompress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 236 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 221 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 246 function mlk_poly_decompress_d10_c
+
+Loop mlk_poly_decompress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 173 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_decompress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 183 function mlk_poly_decompress_d4_c
+
+Loop mlk_poly_compress_d10_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 110 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 117 function mlk_poly_compress_d10_c
+
+Loop mlk_poly_compress_d10_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 111 function mlk_poly_compress_d10_c
+
+Loop mlk_msg01f_poly_frommsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 693 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 686 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_frommsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 707 function mlk_msg01f_poly_frommsg
+
+Loop mlk_msg01f_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg01f_poly_tomsg
+
+Loop mlk_msg01f_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg01f_poly_tomsg
+
+Loop mlk_poly_frombytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 635 function mlk_poly_frombytes_c
+
+Loop mlk_poly_frombytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 654 function mlk_poly_frombytes_c
+
+Loop mlk_poly_tobytes_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 574 function mlk_poly_tobytes_c
+
+Loop mlk_poly_tobytes_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 576 function mlk_poly_tobytes_c
+
+Loop mlk_poly_compress_d4_c.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 46 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 54 function mlk_poly_compress_d4_c
+
+Loop mlk_poly_compress_d4_c.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 48 function mlk_poly_compress_d4_c
+
+
+------------------------------------------------------------
+FILE_NUMBER=26
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/properties.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Property main.assertion.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 36 function main
+  MSG_T1_MODEL: polynomial degree must be 256
+  256 == 256
+
+Property main.assertion.2:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 40 function main
+  MSG_T1_MODEL: message size must be 32 bytes
+  32 == 32
+
+Property main.assertion.3:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 44 function main
+  MSG_T1_ORACLE: lower-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle == 0
+
+Property main.assertion.4:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 48 function main
+  MSG_T1_ORACLE: lower-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$0 == 1
+
+Property main.assertion.5:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 52 function main
+  MSG_T1_ORACLE: upper-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$1 == 1
+
+Property main.assertion.6:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 56 function main
+  MSG_T1_ORACLE: upper-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle$2 == 0
+
+Property main.assertion.7:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 93 function main
+  MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+  actual_bit == expected_bit
+
+
+------------------------------------------------------------
+FILE_NUMBER=27
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/reachable_call_graph.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Function Pointer Removal
+Virtual function removal
+Cleaning inline assembler statements
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> msg_t1_threshold_oracle
+main -> mlk_msg01f_poly_tomsg
+main -> msg_t1_threshold_oracle
+mlk_msg01f_poly_tomsg -> mlk_scalar_compress_d1
+__CPROVER__start -> __CPROVER_initialize
+__CPROVER__start -> main
+
+------------------------------------------------------------
+FILE_NUMBER=28
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/symbols.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+__CPROVER__start void (void)
+__CPROVER_architecture_NULL_is_zero __CPROVER_integer
+__CPROVER_architecture_alignment __CPROVER_integer
+__CPROVER_architecture_arch const char *
+__CPROVER_architecture_arch$object const char
+__CPROVER_architecture_bool_width __CPROVER_integer
+__CPROVER_architecture_char_is_unsigned __CPROVER_integer
+__CPROVER_architecture_char_width __CPROVER_integer
+__CPROVER_architecture_double_width __CPROVER_integer
+__CPROVER_architecture_endianness __CPROVER_integer
+__CPROVER_architecture_int_width __CPROVER_integer
+__CPROVER_architecture_long_double_width __CPROVER_integer
+__CPROVER_architecture_long_int_width __CPROVER_integer
+__CPROVER_architecture_long_long_int_width __CPROVER_integer
+__CPROVER_architecture_memory_operand_size __CPROVER_integer
+__CPROVER_architecture_os const char *
+__CPROVER_architecture_os$object const char
+__CPROVER_architecture_pointer_width __CPROVER_integer
+__CPROVER_architecture_short_int_width __CPROVER_integer
+__CPROVER_architecture_single_width __CPROVER_integer
+__CPROVER_architecture_wchar_t_is_unsigned __CPROVER_integer
+__CPROVER_architecture_wchar_t_width __CPROVER_integer
+__CPROVER_architecture_word_size __CPROVER_integer
+__CPROVER_assert void (__CPROVER_bool, const char *)
+__CPROVER_assignable void (void *, __CPROVER_size_t, __CPROVER_bool)
+__CPROVER_assume void (__CPROVER_bool)
+__CPROVER_constant_infinity_uint const unsigned int
+__CPROVER_dead_object const void *
+__CPROVER_dead_object$object const void
+__CPROVER_deallocated const void *
+__CPROVER_deallocated$object const void
+__CPROVER_freeable void (void *)
+__CPROVER_initialize void (void)
+__CPROVER_is_freeable __CPROVER_bool (void *)
+__CPROVER_max_malloc_size __CPROVER_size_t
+__CPROVER_memory unsigned char [INFINITY()]
+__CPROVER_memory_leak const void *
+__CPROVER_memory_leak$object const void
+__CPROVER_object_from void (void *)
+__CPROVER_object_upto void (void *, __CPROVER_size_t)
+__CPROVER_object_whole void (void *)
+__CPROVER_rounding_mode signed int
+__CPROVER_size_t __CPROVER_size_t
+__CPROVER_was_freed __CPROVER_bool (void *)
+int16_t int16_t
+int32_t int32_t
+main signed int (void)
+main::$tmp::return_value_msg_t1_threshold_oracle uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$0 uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$1 uint8_t
+main::$tmp::return_value_msg_t1_threshold_oracle$2 uint8_t
+main::1::2::1::actual_bit uint8_t
+main::1::2::1::expected_bit uint8_t
+main::1::a mlk_poly
+main::1::k unsigned int
+main::1::msg uint8_t [32l]
+mlk_cast_int16_to_uint16 uint16_t (int32_t x)
+mlk_cast_int16_to_uint16::$tmp::return_value_mlk_cast_int32_to_uint16 uint16_t
+mlk_cast_int16_to_uint16::x int32_t
+mlk_cast_int32_to_uint16 uint16_t (int32_t x)
+mlk_cast_int32_to_uint16::x int32_t
+mlk_cast_uint16_to_int16 int16_t (uint16_t x)
+mlk_cast_uint16_to_int16::x uint16_t
+mlk_ct_cmask_nonzero_u16 uint16_t (uint16_t x)
+mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_cast_int32_to_uint16 uint16_t
+mlk_ct_cmask_nonzero_u16::$tmp::return_value_mlk_value_barrier_i32 int32_t
+mlk_ct_cmask_nonzero_u16::1::tmp int32_t
+mlk_ct_cmask_nonzero_u16::x uint16_t
+mlk_ct_get_optblocker_i32 int32_t (void)
+mlk_ct_get_optblocker_i32::$tmp::return_value_mlk_ct_get_optblocker_u64 uint64_t
+mlk_ct_get_optblocker_u64 uint64_t (void)
+mlk_ct_get_optblocker_u8 uint8_t (void)
+mlk_ct_get_optblocker_u8::$tmp::return_value_mlk_ct_get_optblocker_u64 uint64_t
+mlk_ct_sel_int16 int16_t (int16_t a, int16_t b, uint16_t cond)
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16 uint16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_int16_to_uint16$0 uint16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_cast_uint16_to_int16 int16_t
+mlk_ct_sel_int16::$tmp::return_value_mlk_ct_cmask_nonzero_u16 uint16_t
+mlk_ct_sel_int16::1::au uint16_t
+mlk_ct_sel_int16::1::bu uint16_t
+mlk_ct_sel_int16::1::res uint16_t
+mlk_ct_sel_int16::a int16_t
+mlk_ct_sel_int16::b int16_t
+mlk_ct_sel_int16::cond uint16_t
+mlk_msg01f_ct_opt_blocker_u64 volatile uint64_t
+mlk_msg01f_poly_compress_d10 void (uint8_t *r, const mlk_poly *a)
+mlk_msg01f_poly_compress_d10::a const mlk_poly *
+mlk_msg01f_poly_compress_d10::a$object const mlk_poly
+mlk_msg01f_poly_compress_d10::r uint8_t *
+mlk_msg01f_poly_compress_d10::r$object uint8_t
+mlk_msg01f_poly_compress_d4 void (uint8_t *r, const mlk_poly *a)
+mlk_msg01f_poly_compress_d4::a const mlk_poly *
+mlk_msg01f_poly_compress_d4::a$object const mlk_poly
+mlk_msg01f_poly_compress_d4::r uint8_t *
+mlk_msg01f_poly_compress_d4::r$object uint8_t
+mlk_msg01f_poly_decompress_d10 void (mlk_poly *r, const uint8_t *a)
+mlk_msg01f_poly_decompress_d10::a const uint8_t *
+mlk_msg01f_poly_decompress_d10::a$object const uint8_t
+mlk_msg01f_poly_decompress_d10::r mlk_poly *
+mlk_msg01f_poly_decompress_d10::r$object mlk_poly
+mlk_msg01f_poly_decompress_d4 void (mlk_poly *r, const uint8_t *a)
+mlk_msg01f_poly_decompress_d4::a const uint8_t *
+mlk_msg01f_poly_decompress_d4::a$object const uint8_t
+mlk_msg01f_poly_decompress_d4::r mlk_poly *
+mlk_msg01f_poly_decompress_d4::r$object mlk_poly
+mlk_msg01f_poly_frombytes void (mlk_poly *r, const uint8_t *a)
+mlk_msg01f_poly_frombytes::a const uint8_t *
+mlk_msg01f_poly_frombytes::a$object const uint8_t
+mlk_msg01f_poly_frombytes::r mlk_poly *
+mlk_msg01f_poly_frombytes::r$object mlk_poly
+mlk_msg01f_poly_frommsg void (mlk_poly *r, const uint8_t *msg)
+mlk_msg01f_poly_frommsg::$tmp::return_value_mlk_ct_sel_int16 int16_t
+mlk_msg01f_poly_frommsg::$tmp::return_value_mlk_value_barrier_u8 uint8_t
+mlk_msg01f_poly_frommsg::1::1::1::1::1::mask uint8_t
+mlk_msg01f_poly_frommsg::1::1::1::j unsigned int
+mlk_msg01f_poly_frommsg::1::i unsigned int
+mlk_msg01f_poly_frommsg::msg const uint8_t *
+mlk_msg01f_poly_frommsg::msg$object const uint8_t
+mlk_msg01f_poly_frommsg::r mlk_poly *
+mlk_msg01f_poly_frommsg::r$object mlk_poly
+mlk_msg01f_poly_tobytes void (uint8_t *r, const mlk_poly *a)
+mlk_msg01f_poly_tobytes::a const mlk_poly *
+mlk_msg01f_poly_tobytes::a$object const mlk_poly
+mlk_msg01f_poly_tobytes::r uint8_t *
+mlk_msg01f_poly_tobytes::r$object uint8_t
+mlk_msg01f_poly_tomsg void (uint8_t *msg, const mlk_poly *r)
+mlk_msg01f_poly_tomsg::$tmp::return_value_mlk_scalar_compress_d1 uint8_t
+mlk_msg01f_poly_tomsg::1::2::1::1::1::t uint32_t
+mlk_msg01f_poly_tomsg::1::2::1::j unsigned int
+mlk_msg01f_poly_tomsg::1::i unsigned int
+mlk_msg01f_poly_tomsg::msg uint8_t *
+mlk_msg01f_poly_tomsg::msg$object uint8_t
+mlk_msg01f_poly_tomsg::r const mlk_poly *
+mlk_msg01f_poly_tomsg::r$object const mlk_poly
+mlk_poly mlk_poly
+mlk_poly_compress_d10_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_compress_d10_c::$tmp::return_value_mlk_scalar_compress_d10 uint16_t
+mlk_poly_compress_d10_c::1::2::1::k unsigned int
+mlk_poly_compress_d10_c::1::2::1::t uint16_t [4l]
+mlk_poly_compress_d10_c::1::j unsigned int
+mlk_poly_compress_d10_c::a const mlk_poly *
+mlk_poly_compress_d10_c::a$object const mlk_poly
+mlk_poly_compress_d10_c::r uint8_t *
+mlk_poly_compress_d10_c::r$object uint8_t
+mlk_poly_compress_d4_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_compress_d4_c::$tmp::return_value_mlk_scalar_compress_d4 uint8_t
+mlk_poly_compress_d4_c::1::2::1::j unsigned int
+mlk_poly_compress_d4_c::1::2::1::t uint8_t [8l]
+mlk_poly_compress_d4_c::1::i unsigned int
+mlk_poly_compress_d4_c::a const mlk_poly *
+mlk_poly_compress_d4_c::a$object const mlk_poly
+mlk_poly_compress_d4_c::r uint8_t *
+mlk_poly_compress_d4_c::r$object uint8_t
+mlk_poly_decompress_d10_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_decompress_d10_c::$tmp::return_value_mlk_scalar_decompress_d10 int16_t
+mlk_poly_decompress_d10_c::1::1::1::base const uint8_t *
+mlk_poly_decompress_d10_c::1::1::1::base$object const uint8_t
+mlk_poly_decompress_d10_c::1::1::1::k unsigned int
+mlk_poly_decompress_d10_c::1::1::1::t uint16_t [4l]
+mlk_poly_decompress_d10_c::1::j unsigned int
+mlk_poly_decompress_d10_c::a const uint8_t *
+mlk_poly_decompress_d10_c::a$object const uint8_t
+mlk_poly_decompress_d10_c::r mlk_poly *
+mlk_poly_decompress_d10_c::r$object mlk_poly
+mlk_poly_decompress_d4_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_decompress_d4_c::$tmp::return_value_mlk_scalar_decompress_d4 int16_t
+mlk_poly_decompress_d4_c::$tmp::return_value_mlk_scalar_decompress_d4$0 int16_t
+mlk_poly_decompress_d4_c::1::i unsigned int
+mlk_poly_decompress_d4_c::a const uint8_t *
+mlk_poly_decompress_d4_c::a$object const uint8_t
+mlk_poly_decompress_d4_c::r mlk_poly *
+mlk_poly_decompress_d4_c::r$object mlk_poly
+mlk_poly_frombytes_c void (mlk_poly *r, const uint8_t *a)
+mlk_poly_frombytes_c::1::1::1::t0 const uint8_t
+mlk_poly_frombytes_c::1::1::1::t1 const uint8_t
+mlk_poly_frombytes_c::1::1::1::t2 const uint8_t
+mlk_poly_frombytes_c::1::i unsigned int
+mlk_poly_frombytes_c::a const uint8_t *
+mlk_poly_frombytes_c::a$object const uint8_t
+mlk_poly_frombytes_c::r mlk_poly *
+mlk_poly_frombytes_c::r$object mlk_poly
+mlk_poly_tobytes_c void (uint8_t *r, const mlk_poly *a)
+mlk_poly_tobytes_c::1::2::1::t0 const uint16_t
+mlk_poly_tobytes_c::1::2::1::t1 const uint16_t
+mlk_poly_tobytes_c::1::i unsigned int
+mlk_poly_tobytes_c::a const mlk_poly *
+mlk_poly_tobytes_c::a$object const mlk_poly
+mlk_poly_tobytes_c::r uint8_t *
+mlk_poly_tobytes_c::r$object uint8_t
+mlk_scalar_compress_d1 uint8_t (int16_t u)
+mlk_scalar_compress_d10 uint16_t (int16_t u)
+mlk_scalar_compress_d10::1::d0 uint64_t
+mlk_scalar_compress_d10::u int16_t
+mlk_scalar_compress_d1::1::d0 uint32_t
+mlk_scalar_compress_d1::u int16_t
+mlk_scalar_compress_d4 uint8_t (int16_t u)
+mlk_scalar_compress_d4::1::d0 uint32_t
+mlk_scalar_compress_d4::u int16_t
+mlk_scalar_decompress_d10 int16_t (uint16_t u)
+mlk_scalar_decompress_d10::u uint16_t
+mlk_scalar_decompress_d4 int16_t (uint8_t u)
+mlk_scalar_decompress_d4::u uint8_t
+mlk_value_barrier_i32 int32_t (int32_t b)
+mlk_value_barrier_i32::$tmp::return_value_mlk_ct_get_optblocker_i32 int32_t
+mlk_value_barrier_i32::b int32_t
+mlk_value_barrier_u8 uint8_t (uint8_t b)
+mlk_value_barrier_u8::$tmp::return_value_mlk_ct_get_optblocker_u8 uint8_t
+mlk_value_barrier_u8::b uint8_t
+msg_t1_threshold_oracle uint8_t (int16_t u)
+msg_t1_threshold_oracle::u int16_t
+return' signed int
+tag-#anon#ST[ARR256{S16}'coeffs'] struct { int16_t coeffs[256l]; }
+uint16_t uint16_t
+uint32_t uint32_t
+uint64_t uint64_t
+uint8_t uint8_t
+
+------------------------------------------------------------
+FILE_NUMBER=29
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/inspection/undefined_functions.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+__CPROVER_assume
+__CPROVER_assert
+__CPROVER_object_from
+__CPROVER_was_freed
+__CPROVER_assignable
+__CPROVER_object_whole
+__CPROVER_freeable
+__CPROVER_is_freeable
+__CPROVER_object_upto
+
+------------------------------------------------------------
+FILE_NUMBER=30
+FILE=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/logs/validate_goto_binary.txt
+------------------------------------------------------------
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01F_T1_V4_DIRECT_PRAGMA_RECOVERY_af4c5abdd595/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+OUTPUT_LIMIT_REACHED_AFTER_30_FILES=YES
+
+===== 8. VALIDATE FROZEN MSG-T1 GOTO MODEL =====
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+Invalid User Input
+Option: [in] [out]
+Reason: Invalid number of positional arguments passed
+Suggestion: goto-instrument needs one input and one output file, aside from other flags

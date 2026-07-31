@@ -1,0 +1,20 @@
+STATUS139_CLASSIFICATION=INCOMPATIBLE_CBMC_OPTIONS
+
+UNDERLYING_CBMC_EXIT=1
+INCOMPATIBLE_OPTION_1=--cover cover
+INCOMPATIBLE_OPTION_2=--unwinding-assertions
+
+COVERAGE_GOTO_BUILD_FAILED=NO
+COVERAGE_GOTO_VALIDATION_FAILED=NO
+COVERAGE_SOLVER_EXECUTED=NO
+COVERAGE_GOALS_EVALUATED=NO
+FUNCTIONAL_COUNTEREXAMPLE=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+ROOT_CAUSE:
+The coverage command supplied --cover and --unwinding-assertions together.
+CBMC 6.9.0 explicitly rejects this option combination.
+
+REPAIR:
+Retain the exact explicit --unwindset bounds but remove
+--unwinding-assertions. Execute coverage through CBMC only.

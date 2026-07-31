@@ -1,0 +1,366 @@
+============================================================
+MSG05B — T5 EXACT OFFSET AND OVERLAP CLASSIFICATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T16:30:08Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+MSG05A=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05A_T5_NOVELTY_SOURCE_ANALYSIS_20260723T140332Z_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595
+
+===== 1. FROZEN SOURCE AND MSG05A BINDING =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+MSG05A_BINDING=PASS
+COMMIT_BINDING=PASS
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+
+===== 2. EXACT PRODUCTION-EXPRESSION BINDING =====
+40- * Compute round(u * 2 / MLKEM_Q).
+41- *
+42- * @spec{Compress_1 from @[FIPS203, Eq (4.7)].}
+43- *
+44- * @reference{Part of poly_tomsg() in the reference implementation @[REF].}
+45- *
+46- * @param u Unsigned canonical modulus modulo MLKEM_Q to be compressed.
+47- *
+48- * @return Compressed value.
+49- */
+50:static MLK_INLINE uint8_t mlk_scalar_compress_d1(int16_t u)
+51-__contract__(
+52-  requires(0 <= u && u <= MLKEM_Q - 1)
+53-  ensures(return_value < 2)
+54-  ensures(return_value == (((uint32_t)u * 2 + MLKEM_Q / 2) / MLKEM_Q) % 2)  )
+55-{
+56-  /* Compute as follows:
+57-   * ```
+58-   * round(u * 2 / MLKEM_Q)
+59-   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+60-   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+61-   * ```
+62-   */
+63-  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+64-  uint32_t d0 = (uint32_t)u * 1290168;
+65-  /* Unsigned shifting by 31 positions leaves only the top bit. */
+66-  return (uint8_t)((d0 + ((uint32_t)1u << 30)) >> 31);
+67-}
+68-#ifdef CBMC
+
+56-  /* Compute as follows:
+57-   * ```
+58-   * round(u * 2 / MLKEM_Q)
+59-   *   = round(u * 2 * (2^31 / MLKEM_Q) / 2^31)
+60-   *  ~= round(u * 2 * round(2^31 / MLKEM_Q) / 2^31)
+61-   * ```
+62-   */
+63-  /* check-magic: 1290168 == 2*round(2^31 / MLKEM_Q) */
+64:  uint32_t d0 = (uint32_t)u * 1290168;
+65-  /* Unsigned shifting by 31 positions leaves only the top bit. */
+66-  return (uint8_t)((d0 + ((uint32_t)1u << 30)) >> 31);
+67-}
+68-#ifdef CBMC
+69-#pragma CPROVER check pop
+70-#endif
+71-
+72-/*
+73- * The multiplication in this routine will exceed UINT32_MAX
+74- * and wrap around for large values of u. This is expected and required.
+75- */
+76-#ifdef CBMC
+77-#pragma CPROVER check push
+78-#pragma CPROVER check disable "unsigned-overflow"
+79-#endif
+80-
+81-/**
+82- * Compute round(u * 16 / MLKEM_Q) % 16.
+FIXED_MULTIPLIER=1290168
+FIXED_SHIFT=31
+PRODUCTION_OFFSET_EXPRESSION=1u_LEFT_SHIFT_30
+PRODUCTION_OFFSET_DECIMAL=1073741824
+UINT32_WRAP_SEMANTICS=REQUIRED
+EXACT_PRODUCTION_EXPRESSION_BINDING=PASS
+
+===== 3. EXACT NATIVE-PROOF INVENTORY =====
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/scalar_compress_d1/Makefile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/scalar_compress_d1/scalar_compress_d1_harness.c
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomsg/Makefile
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/poly_tomsg/poly_tomsg_harness.c
+/home/girish/THESIS-2026/mlkem-native_af4c5abd/proofs/cbmc/indcpa_dec/Makefile
+===== scalar_compress_d1 harness =====
+     1	// Copyright (c) The mlkem-native project authors
+     2	// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     3	// SPDX-License-Identifier: MIT-0
+     4	
+     5	#include "compress.h"
+     6	
+     7	void harness(void)
+     8	{
+     9	  int16_t u;
+    10	
+    11	  /* Contracts for this function are in compress.h */
+    12	  uint8_t d = mlk_scalar_compress_d1(u);
+    13	}
+
+===== scalar_compress_d1 Makefile =====
+     1	# Copyright (c) The mlkem-native project authors
+     2	# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     3	
+     4	include ../Makefile_params.common
+     5	
+     6	HARNESS_ENTRY = harness
+     7	HARNESS_FILE = scalar_compress_d1_harness
+     8	
+     9	# This should be a unique identifier for this proof, and will appear on the
+    10	# Litani dashboard. It can be human-readable and contain spaces if you wish.
+    11	PROOF_UID = mlk_scalar_compress_d1
+    12	
+    13	DEFINES +=
+    14	INCLUDES +=
+    15	
+    16	REMOVE_FUNCTION_BODY +=
+    17	UNWINDSET +=
+    18	
+    19	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    20	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/poly.c
+    21	
+    22	CHECK_FUNCTION_CONTRACTS=mlk_scalar_compress_d1
+    23	USE_FUNCTION_CONTRACTS=
+    24	APPLY_LOOP_CONTRACTS=on
+    25	USE_DYNAMIC_FRAMES=1
+    26	CBMCFLAGS=--smt2
+    27	
+    28	# Uncomment this to see what commands litani is running...
+    29	#VERBOSE=on
+    30	
+    31	# If this proof is found to consume huge amounts of RAM, you can set the
+    32	# EXPENSIVE variable. With new enough versions of the proof tools, this will
+    33	# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+    34	# documentation in Makefile.common under the "Job Pools" heading for details.
+    35	# EXPENSIVE = true
+    36	
+    37	# If you require access to a file-local ("static") function or object to conduct
+    38	# your proof, set the following (and do not include the original source file
+    39	# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+    40	# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+    41	# include ../Makefile.common
+    42	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+    43	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+    44	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+    45	# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+    46	# be set before including Makefile.common, but any use of variables on the
+    47	# left-hand side requires those variables to be defined. Hence, _SOURCE,
+    48	# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+    49	
+    50	include ../Makefile.common
+
+===== poly_tomsg harness =====
+     1	// Copyright (c) The mlkem-native project authors
+     2	// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     3	// SPDX-License-Identifier: MIT-0
+     4	
+     5	#include "compress.h"
+     6	
+     7	void harness(void)
+     8	{
+     9	  mlk_poly *a;
+    10	  uint8_t *msg;
+    11	
+    12	  /* Contracts for this function are in compress.h */
+    13	  mlk_poly_tomsg(msg, a);
+    14	}
+
+===== poly_tomsg Makefile =====
+     1	# Copyright (c) The mlkem-native project authors
+     2	# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+     3	
+     4	include ../Makefile_params.common
+     5	
+     6	HARNESS_ENTRY = harness
+     7	HARNESS_FILE = poly_tomsg_harness
+     8	
+     9	# This should be a unique identifier for this proof, and will appear on the
+    10	# Litani dashboard. It can be human-readable and contain spaces if you wish.
+    11	PROOF_UID = mlk_poly_tomsg
+    12	
+    13	DEFINES +=
+    14	INCLUDES +=
+    15	
+    16	REMOVE_FUNCTION_BODY +=
+    17	UNWINDSET +=
+    18	
+    19	PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
+    20	PROJECT_SOURCES += $(SRCDIR)/mlkem/src/compress.c
+    21	
+    22	CHECK_FUNCTION_CONTRACTS=mlk_poly_tomsg
+    23	USE_FUNCTION_CONTRACTS=
+    24	APPLY_LOOP_CONTRACTS=on
+    25	USE_DYNAMIC_FRAMES=1
+    26	
+    27	# Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
+    28	EXTERNAL_SAT_SOLVER=
+    29	CBMCFLAGS=--bitwuzla
+    30	
+    31	FUNCTION_NAME = mlk_poly_tomsg
+    32	
+    33	# If this proof is found to consume huge amounts of RAM, you can set the
+    34	# EXPENSIVE variable. With new enough versions of the proof tools, this will
+    35	# restrict the number of EXPENSIVE CBMC jobs running at once. See the
+    36	# documentation in Makefile.common under the "Job Pools" heading for details.
+    37	# EXPENSIVE = true
+    38	
+    39	# This function is large enough to need...
+    40	CBMC_OBJECT_BITS = 8
+    41	
+    42	# If you require access to a file-local ("static") function or object to conduct
+    43	# your proof, set the following (and do not include the original source file
+    44	# ("mlkem/src/poly.c") in PROJECT_SOURCES).
+    45	# REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
+    46	# include ../Makefile.common
+    47	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mlkem/src/poly.c
+    48	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_FUNCTIONS = foo bar
+    49	# $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_OBJECTS = baz
+    50	# Care is required with variables on the left-hand side: REWRITTEN_SOURCES must
+    51	# be set before including Makefile.common, but any use of variables on the
+    52	# left-hand side requires those variables to be defined. Hence, _SOURCE,
+    53	# _FUNCTIONS, _OBJECTS is set after including Makefile.common.
+    54	
+    55	include ../Makefile.common
+
+===== indcpa_dec contract use =====
+29-USE_FUNCTION_CONTRACTS += mlk_polyvec_frombytes
+30-USE_FUNCTION_CONTRACTS += mlk_polyvec_reduce
+31-USE_FUNCTION_CONTRACTS += mlk_poly_sub
+32-USE_FUNCTION_CONTRACTS += mlk_poly_reduce
+33:USE_FUNCTION_CONTRACTS += mlk_poly_tomsg
+34-USE_FUNCTION_CONTRACTS += mlk_zeroize
+35-APPLY_LOOP_CONTRACTS=on
+36-USE_DYNAMIC_FRAMES=1
+37-
+NATIVE_FIXED_SCALAR_CONTRACT_PROOF=FOUND
+NATIVE_FIXED_POLY_TOMSG_PROOF=FOUND
+NATIVE_PARAMETERIZED_OFFSET_PROOF=NOT_YET_FOUND
+
+===== 4. EXACT PARAMETERIZED-OFFSET SEARCH =====
+PARAMETERIZED_OFFSET_MATCH_COUNT=0
+EQUIVALENT_NATIVE_PARAMETERIZED_OFFSET_THEOREM_FOUND=NO
+EXACT_NATIVE_OVERLAP_SEARCH=PASS
+
+===== 5. WRITE DETERMINISTIC EXACT-SET DERIVER =====
+DETERMINISTIC_DERIVER_WRITTEN=PASS
+e8e3168f01d03e29dc7bd551d226acf0973d274c98c2bf8ab88c5a1e560934b2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/01_exact_derivation/derive_exact_offset_set.py
+
+===== 6. EXECUTE EXACT-SET DERIVATION =====
+DETERMINISTIC_INTERVAL_DERIVATION=PASS
+EXACT_ADMISSIBLE_LOWER=1073417800
+EXACT_ADMISSIBLE_UPPER=1074063871
+ADMISSIBLE_OFFSET_COUNT=646072
+PRODUCTION_OFFSET=1073741824
+PRODUCTION_OFFSET_ADMISSIBLE=YES
+LOWER_NEAREST_REJECTED=1073417799
+LOWER_NEAREST_REJECTED_WITNESS_U=2497
+UPPER_NEAREST_REJECTED=1074063872
+UPPER_NEAREST_REJECTED_WITNESS_U=832
+ADMISSIBLE_SET_SHAPE=SINGLE_CLOSED_INTERVAL
+FIXED_MULTIPLIER=1290168
+SHIFT=31
+OFFSET_DOMAIN=UINT32
+UINT32_WRAP_SEMANTICS=YES
+EXACT_ADMISSIBLE_LOWER=1073417800
+EXACT_ADMISSIBLE_UPPER=1074063871
+ADMISSIBLE_OFFSET_COUNT=646072
+PRODUCTION_OFFSET=1073741824
+PRODUCTION_OFFSET_ADMISSIBLE=YES
+PRODUCTION_DISTANCE_ABOVE_LOWER=324024
+PRODUCTION_DISTANCE_BELOW_UPPER=322047
+LOWER_NEAREST_REJECTED=1073417799
+LOWER_NEAREST_REJECTED_WITNESS_U=2497
+UPPER_NEAREST_REJECTED=1074063872
+UPPER_NEAREST_REJECTED_WITNESS_U=832
+ADMISSIBLE_SET_SHAPE=SINGLE_CLOSED_INTERVAL
+DETERMINISTIC_DERIVATION=PASS
+u	d0	oracle	allowed_intervals
+832	1073419776	0	[(0, 1074063871), (3221547520, 4294967295)]
+833	1074709944	1	[(1072773704, 3220257351)]
+2496	3220259328	1	[(0, 1074707967), (3222191616, 4294967295)]
+2497	3221549496	0	[(1073417800, 3220901447)]
+EXACT_SET_DERIVATION=PASS
+NEAREST_OUTSIDE_WITNESSES=PASS
+
+===== 7. WRITE NOVELTY AND NON-OVERLAP CLASSIFICATION =====
+TARGET=mlk_scalar_compress_d1_USED_BY_mlk_poly_tomsg
+PROPERTY=T5_EXACT_ADMISSIBLE_UINT32_OFFSET_INTERVAL
+
+PARAMETERIZED_EXPRESSION=TOP_BIT_OF_UINT32_WRAP_u_TIMES_1290168_PLUS_c
+FIXED_MULTIPLIER=1290168
+PARAMETER=UINT32_OFFSET_c
+FIXED_SHIFT=31
+CANONICAL_INPUT_DOMAIN=0_TO_3328
+REFERENCE_ONE_INTERVAL=833_TO_2496
+
+NATIVE_FIXED_SCALAR_CONTRACT_PROOF=YES
+NATIVE_FIXED_SCALAR_HARNESS=YES
+NATIVE_FIXED_POLY_TOMSG_HARNESS=YES
+NATIVE_PARAMETERIZED_OFFSET_THEOREM=NO
+
+T1_PROVES_ONE_FIXED_PRODUCTION_OFFSET=YES
+T5_CHARACTERIZES_ALL_UINT32_OFFSETS=YES
+T5_LOGICAL_DUPLICATION_WITH_T1=NO
+T5_USES_T1_REFERENCE_SEMANTICS=YES
+T5_LOGICAL_DUPLICATION_WITH_T2=NO
+T5_CHANGES_MULTIPLIER=NO
+T5_OVERLAP_WITH_MULTIPLIER_THEOREM_T4=NO
+
+T5_REPOSITORY_LEVEL_NOVELTY=PASS
+T5_CAMPAIGN_LEVEL_DISTINCTNESS=PASS
+GLOBAL_RESEARCH_NOVELTY=NOT_CLAIMED
+
+EXACT_ADMISSIBLE_LOWER=1073417800
+EXACT_ADMISSIBLE_UPPER=1074063871
+ADMISSIBLE_OFFSET_COUNT=646072
+PRODUCTION_OFFSET=1073741824
+PRODUCTION_OFFSET_MEMBERSHIP=PASS
+
+NEXT_PROOF_REQUIREMENTS=PARAMETERIZED_MODEL_BINDING_SUFFICIENCY_NECESSITY_BOUNDARY_MUTATIONS
+T5_REPOSITORY_LEVEL_NOVELTY=PASS
+T5_CAMPAIGN_LEVEL_DISTINCTNESS=PASS
+T5_LOGICAL_DUPLICATION_WITH_T1=NO
+T5_LOGICAL_DUPLICATION_WITH_T2=NO
+
+===== 8. HASH FREEZE AND FINAL SOURCE RECHECK =====
+081d79f273ecefe8c50ebb30f6a4882f1bd9de8b56a2ffc5fe5731096046c659  ./01_exact_derivation/critical_constraints.tsv
+7b1dda46308024f9ece1b437810e9c869f95e18e18fb721a7ba07c127a28e34a  ./01_exact_derivation/derivation_execution.txt
+e8e3168f01d03e29dc7bd551d226acf0973d274c98c2bf8ab88c5a1e560934b2  ./01_exact_derivation/derive_exact_offset_set.py
+44a3103194a776e1b4945e8b903c8b590f675daeb027683daacee1271823d005  ./01_exact_derivation/exact_offset_set.json
+80d936318b6f56f3c46bfffb763b93a1b2f3798c2109d419d4e8e0046ea03d52  ./01_exact_derivation/exact_offset_set.txt
+d8a746b48f7e2182e80246eace4dbe5e93cfcef6d699e1a60b135d327a571ad6  ./01_exact_derivation/tightening_steps.json
+0ebed6a9f44166684526842955e8deaf5d9e470b6a728d521c42de06c8347499  ./02_native_overlap/exact_native_proof_files.txt
+bf9aaf10a9f5f0e2fd941bab2d3a50311ff2dc1a656500fc488021a1ef9ca314  ./02_native_overlap/native_fixed_proof_contents.txt
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./02_native_overlap/parameterized_offset_matches.txt
+faf815bea120243d3fc1e91b6d13c6b936ebd5fb3ceabeb7c44b67038659fed7  ./03_classification/T5_NOVELTY_AND_SCOPE_CLASSIFICATION.txt
+d675d5172bd596c79549b320152b381fa7a08c4121811ceb3cf4b4bb0c3b603d  ./05_source_binding/scalar_compress_d1_exact_expression.txt
+7a99fd6482d0dd43179ae82590e1290529ad92f713633c8bddcf21e4d0eb5ddf  ./MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_TERMINAL_CAPTURE.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG05B_SOURCE_BINDING=PASS
+MSG05B_EXACT_PRODUCTION_EXPRESSION_BINDING=PASS
+MSG05B_NATIVE_FIXED_PROOF_INVENTORY=PASS
+MSG05B_EQUIVALENT_NATIVE_PARAMETERIZED_THEOREM_FOUND=NO
+MSG05B_EXACT_ADMISSIBLE_SET_DERIVATION=PASS
+MSG05B_PRODUCTION_OFFSET_MEMBERSHIP=PASS
+MSG05B_NEAREST_REJECTED_WITNESSES=PASS
+T5_EXACT_ADMISSIBLE_LOWER=1073417800
+T5_EXACT_ADMISSIBLE_UPPER=1074063871
+T5_ADMISSIBLE_OFFSET_COUNT=646072
+T5_ADMISSIBLE_SET_SHAPE=SINGLE_CLOSED_INTERVAL
+T5_REPOSITORY_LEVEL_NOVELTY=PASS
+T5_CAMPAIGN_LEVEL_DISTINCTNESS=PASS
+NEXT_STAGE=MSG05C_PARAMETERIZED_MODEL_AND_PRODUCTION_OFFSET_BINDING
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

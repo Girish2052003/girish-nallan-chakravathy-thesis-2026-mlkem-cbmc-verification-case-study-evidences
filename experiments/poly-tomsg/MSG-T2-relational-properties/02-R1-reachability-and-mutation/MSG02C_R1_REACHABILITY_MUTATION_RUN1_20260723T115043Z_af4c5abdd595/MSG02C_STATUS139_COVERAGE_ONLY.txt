@@ -1,0 +1,139 @@
+============================================================
+MSG02C — STATUS 139 REPAIR: COVERAGE ONLY
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:12:14Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+
+===== 1. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 2. RECORD STATUS 139 CLASSIFICATION =====
+STATUS139_CLASSIFICATION=INCOMPATIBLE_CBMC_OPTIONS
+
+UNDERLYING_CBMC_EXIT=1
+INCOMPATIBLE_OPTION_1=--cover cover
+INCOMPATIBLE_OPTION_2=--unwinding-assertions
+
+COVERAGE_GOTO_BUILD_FAILED=NO
+COVERAGE_GOTO_VALIDATION_FAILED=NO
+COVERAGE_SOLVER_EXECUTED=NO
+COVERAGE_GOALS_EVALUATED=NO
+FUNCTIONAL_COUNTEREXAMPLE=NO
+SOURCE_REPOSITORY_MODIFIED=NO
+
+ROOT_CAUSE:
+The coverage command supplied --cover and --unwinding-assertions together.
+CBMC 6.9.0 explicitly rejects this option combination.
+
+REPAIR:
+Retain the exact explicit --unwindset bounds but remove
+--unwinding-assertions. Execute coverage through CBMC only.
+
+===== 3. COVERAGE HARNESS AUDIT =====
+SOURCE_COVER_COUNT=11
+SOURCE_TARGET_CALL_COUNT=2
+COVERAGE_SOURCE_AUDIT=PASS
+
+===== 4. REVALIDATE COVERAGE GOTO =====
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto'
+COVERAGE_GOTO_VALIDATION=PASS
+
+===== 5. WRITE MINIMAL COMPATIBLE COVERAGE COMMAND =====
+cbmc "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto" --function main --object-bits 8 --unwindset main.0:257,main.1:257,mlk_msg02c_cov_poly_tomsg.0:257,mlk_msg02c_cov_poly_tomsg.1:257,mlk_msg02c_cov_poly_tomsg.2:257 --sat-solver minisat2 --cover cover
+INCOMPATIBLE_OPTION_PRESENT=NO
+EXPLICIT_UNWINDSET_PRESENT=YES
+COVERAGE_COMMAND_STATIC_AUDIT=PASS
+
+===== 6. EXECUTE CBMC COVERAGE =====
+COVERAGE_CBMC_EXIT=0
+COVERAGE_RESULT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/03_coverage_results/msg_t2_r1_coverage_status139_repair.txt
+COVERAGE_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/10_logs/msg_t2_r1_coverage_status139_repair_stderr.txt
+
+===== 7. COMPLETE COVERAGE STDOUT =====
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Rewriting existing assertions as assumptions
+Starting Bounded Model Checking
+Passing problem to propositional reduction
+converting SSA
+Running propositional reduction
+SAT checker: instance is SATISFIABLE
+
+** coverage results:
+[main.coverage.1] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 43 function main condition '1 != 0': SATISFIED
+[main.coverage.2] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 48 function main condition '1 != 0': SATISFIED
+[main.coverage.3] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 53 function main condition '1 != 0': SATISFIED
+[main.coverage.4] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 73 function main condition 'k == 0u': SATISFIED
+[main.coverage.5] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 76 function main condition 'k == (unsigned int)256 - 1u': SATISFIED
+[main.coverage.6] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 79 function main condition '(unsigned int)expected_a == 0u && (unsigned int)expected_b == 0u': SATISFIED
+[main.coverage.7] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 80 function main condition '(unsigned int)expected_a == 0u && (unsigned int)expected_b == 1u': SATISFIED
+[main.coverage.8] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 81 function main condition '(unsigned int)expected_a == 1u && (unsigned int)expected_b == 0u': SATISFIED
+[main.coverage.9] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 82 function main condition '(unsigned int)expected_a == 1u && (unsigned int)expected_b == 1u': SATISFIED
+[main.coverage.10] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 85 function main condition '(unsigned int)actual_xor == 0u': SATISFIED
+[main.coverage.11] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 86 function main condition '(unsigned int)actual_xor == 1u': SATISFIED
+
+** 11 of 11 covered (100.0%)
+
+===== 8. COMPLETE COVERAGE STDERR =====
+--cover is incompatible with --unwinding-assertions, so unwinding-assertions will be defaulted to false
+**** WARNING: Use --unwinding-assertions to obtain sound verification results
+
+===== 9. NON-AUTHORITATIVE OUTPUT COUNTS =====
+PARSED_SATISFIED_COUNT=11
+PARSED_FAILED_OR_UNSATISFIED_COUNT=0
+
+--- Coverage-related output lines ---
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto
+** coverage results:
+[main.coverage.1] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 43 function main condition '1 != 0': SATISFIED
+[main.coverage.2] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 48 function main condition '1 != 0': SATISFIED
+[main.coverage.3] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 53 function main condition '1 != 0': SATISFIED
+[main.coverage.4] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 73 function main condition 'k == 0u': SATISFIED
+[main.coverage.5] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 76 function main condition 'k == (unsigned int)256 - 1u': SATISFIED
+[main.coverage.6] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 79 function main condition '(unsigned int)expected_a == 0u && (unsigned int)expected_b == 0u': SATISFIED
+[main.coverage.7] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 80 function main condition '(unsigned int)expected_a == 0u && (unsigned int)expected_b == 1u': SATISFIED
+[main.coverage.8] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 81 function main condition '(unsigned int)expected_a == 1u && (unsigned int)expected_b == 0u': SATISFIED
+[main.coverage.9] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 82 function main condition '(unsigned int)expected_a == 1u && (unsigned int)expected_b == 1u': SATISFIED
+[main.coverage.10] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 85 function main condition '(unsigned int)actual_xor == 0u': SATISFIED
+[main.coverage.11] file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c line 86 function main condition '(unsigned int)actual_xor == 1u': SATISFIED
+** 11 of 11 covered (100.0%)
+
+===== 10. RESOURCE USAGE =====
+	User time (seconds): 4.37
+	System time (seconds): 0.40
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.77
+	Maximum resident set size (kbytes): 294404
+	Exit status: 0
+
+===== 11. HASH AND SOURCE RECHECK =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f5c51e8d2c86b5d0bbf3ee3a64aa68f49fcc68c5d7d96e47fb910156169f341  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/01_coverage_harness/msg_t2_r1_reachability_harness.c
+82e8235b3c29940bc4459c778bb4e03ff9db6ad20cf2e769052c15a2782fda6c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/02_coverage_build/msg_t2_r1_reachability.goto
+fe11a972877e7c76f7e0fd09556a36e08dacebf6919b0a616e565063eb4e49e2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/14_STATUS139_REPAIR/STATUS139_CLASSIFICATION.txt
+b8671be7f11af7365e8f3d0a6239f1d78270f06f3beb5d78f73ead19fe9c7bf6  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/07_commands/msg_t2_r1_coverage_status139_repair_command.txt
+754bd235de56eab8a02a7a2fd6b36b56a37b62bd54ae6859c9d432dbc64428f2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/03_coverage_results/msg_t2_r1_coverage_status139_repair.txt
+66a70e890cc0d750d327c1f8604970007efffcabee3fedcaf6931edfabfb7230  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595/10_logs/msg_t2_r1_coverage_status139_repair_stderr.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+STATUS139_REPAIR_RECORDED=PASS
+COVERAGE_COMMAND_EXECUTION=COMPLETED
+COVERAGE_RESULT_REQUIRES_FINAL_INTERPRETATION=YES
+MUTATION_EXECUTED=NO
+NEXT_STAGE=REVIEW_COVERAGE_OUTPUT_BEFORE_MUTATION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02C_R1_REACHABILITY_MUTATION_RUN1_20260723T115043Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

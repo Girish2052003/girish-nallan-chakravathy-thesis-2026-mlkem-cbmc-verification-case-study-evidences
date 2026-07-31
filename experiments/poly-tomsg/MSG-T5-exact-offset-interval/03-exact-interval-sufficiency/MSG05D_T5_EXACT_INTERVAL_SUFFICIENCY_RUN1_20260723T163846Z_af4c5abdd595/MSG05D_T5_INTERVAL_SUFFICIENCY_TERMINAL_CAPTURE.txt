@@ -1,0 +1,322 @@
+============================================================
+MSG05D — T5 EXACT INTERVAL SUFFICIENCY
+============================================================
+
+CAPTURE_UTC=2026-07-23T16:38:46Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+MSG05B=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595
+MSG05C=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+ACTUAL_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+EXPECTED_COMPRESS_H_SHA256=0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd
+COMMIT_BINDING=PASS
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+
+===== 3. MSG05B AND MSG05C BINDING =====
+DERIVED_LOWER=1073417800
+EXPECTED_LOWER=1073417800
+DERIVED_UPPER=1074063871
+EXPECTED_UPPER=1074063871
+DERIVED_COUNT=646072
+EXPECTED_COUNT=646072
+DERIVED_PRODUCTION_OFFSET=1073741824
+EXPECTED_PRODUCTION_OFFSET=1073741824
+REPOSITORY_NOVELTY=PASS
+MSG05C_SUCCESS_COUNT=527
+MSG05C_FAILURE_COUNT=0
+MSG05C_UNKNOWN_COUNT=0
+MSG05C_RESULT_SHA256=e54acfc3154c3311716e91053170603e9e4a0f4bbea872a8c7df3128c66fb4cd
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto'
+MSG05B_EXACT_INTERVAL_BINDING=PASS
+MSG05B_NOVELTY_BINDING=PASS
+MSG05C_MODEL_BINDING_RESULT=PASS
+MSG05C_GOTO_REVALIDATION=PASS
+80d936318b6f56f3c46bfffb763b93a1b2f3798c2109d419d4e8e0046ea03d52  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/01_exact_derivation/exact_offset_set.txt
+faf815bea120243d3fc1e91b6d13c6b936ebd5fb3ceabeb7c44b67038659fed7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/03_classification/T5_NOVELTY_AND_SCOPE_CLASSIFICATION.txt
+e54acfc3154c3311716e91053170603e9e4a0f4bbea872a8c7df3128c66fb4cd  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/05_results/msg_t5_parameterized_model_binding_result.json
+84584e5db9de2d1c5311a193b7810fe2c241a28c130ca69e2af6c282b225a82b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c
+14a3a82b727fcbe47bb3bbf0413118be0bd199713034645fb9b496b3e76d0494  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto
+
+===== 4. WRITE EXACT-INTERVAL SUFFICIENCY HARNESS =====
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=129
+HARNESS_BYTE_COUNT=3436
+     1	/*
+     2	 * MSG-T5 exact admissible-offset interval — sufficiency theorem.
+     3	 *
+     4	 * For every canonical coefficient:
+     5	 *
+     6	 *   0 <= u <= 3328
+     7	 *
+     8	 * and every uint32 offset in the derived closed interval:
+     9	 *
+    10	 *   1073417800 <= c <= 1074063871
+    11	 *
+    12	 * prove that the source-faithful parameterized model equals the independent
+    13	 * canonical threshold oracle:
+    14	 *
+    15	 *   oracle(u) = 1 iff 833 <= u <= 2496.
+    16	 *
+    17	 * The parameterized model was formally bound to the real frozen scalar helper
+    18	 * and the real frozen mlk_poly_tomsg output bit at c = 2^30 in MSG05C.
+    19	 *
+    20	 * This stage proves interval sufficiency. It does not yet prove that every
+    21	 * offset outside the interval is inadmissible.
+    22	 */
+    23	
+    24	#include <stdint.h>
+    25	#include "compress.h"
+    26	
+    27	#define MSG_T5_FIXED_MULTIPLIER ((uint32_t)1290168u)
+    28	#define MSG_T5_ADMISSIBLE_LOWER ((uint32_t)1073417800u)
+    29	#define MSG_T5_ADMISSIBLE_UPPER ((uint32_t)1074063871u)
+    30	#define MSG_T5_ADMISSIBLE_COUNT ((uint32_t)646072u)
+    31	#define MSG_T5_PRODUCTION_OFFSET ((uint32_t)1073741824u)
+    32	
+    33	static uint8_t msg_t5_offset_model(int16_t u, uint32_t c)
+    34	{
+    35	  uint64_t product;
+    36	  uint32_t d0;
+    37	  uint64_t wide_sum;
+    38	  uint32_t wrapped_sum;
+    39	
+    40	  product =
+    41	      (uint64_t)(uint32_t)u *
+    42	      (uint64_t)MSG_T5_FIXED_MULTIPLIER;
+    43	
+    44	  d0 =
+    45	      (uint32_t)(
+    46	          product &
+    47	          (uint64_t)0xFFFFFFFFu);
+    48	
+    49	  wide_sum =
+    50	      (uint64_t)d0 +
+    51	      (uint64_t)c;
+    52	
+    53	  wrapped_sum =
+    54	      (uint32_t)(
+    55	          wide_sum &
+    56	          (uint64_t)0xFFFFFFFFu);
+    57	
+    58	  return (uint8_t)(wrapped_sum >> 31);
+    59	}
+    60	
+    61	/*
+    62	 * Independent semantic oracle already established for the canonical domain:
+    63	 *
+    64	 *   output bit = 1 iff 833 <= u <= 2496.
+    65	 *
+    66	 * It does not call the parameterized model, the scalar helper or poly_tomsg.
+    67	 */
+    68	static uint8_t msg_t5_threshold_oracle(int16_t u)
+    69	{
+    70	  return (uint8_t)((u >= 833) && (u <= 2496));
+    71	}
+    72	
+    73	int main(void)
+    74	{
+    75	  int16_t u;
+    76	  uint32_t c;
+    77	
+    78	  uint8_t model_bit;
+    79	  uint8_t oracle_bit;
+    80	
+    81	  __CPROVER_assert(
+    82	      MLKEM_Q == 3329,
+    83	      "MSG_T5_SUFFICIENCY_CONFIGURATION: MLKEM_Q must be 3329");
+    84	
+    85	  __CPROVER_assert(
+    86	      MSG_T5_ADMISSIBLE_LOWER <= MSG_T5_ADMISSIBLE_UPPER,
+    87	      "MSG_T5_SUFFICIENCY_INTERVAL_ORDER: lower endpoint must not exceed upper endpoint");
+    88	
+    89	  __CPROVER_assert(
+    90	      ((uint64_t)MSG_T5_ADMISSIBLE_UPPER -
+    91	       (uint64_t)MSG_T5_ADMISSIBLE_LOWER +
+    92	       (uint64_t)1u) ==
+    93	          (uint64_t)MSG_T5_ADMISSIBLE_COUNT,
+    94	      "MSG_T5_SUFFICIENCY_CARDINALITY: closed interval must contain exactly 646072 offsets");
+    95	
+    96	  __CPROVER_assert(
+    97	      MSG_T5_ADMISSIBLE_LOWER <= MSG_T5_PRODUCTION_OFFSET &&
+    98	      MSG_T5_PRODUCTION_OFFSET <= MSG_T5_ADMISSIBLE_UPPER,
+    99	      "MSG_T5_SUFFICIENCY_PRODUCTION_MEMBERSHIP: production offset must belong to the interval");
+   100	
+   101	  /*
+   102	   * Universal canonical coefficient and universal admissible offset.
+   103	   */
+   104	  __CPROVER_assume(u >= 0);
+   105	  __CPROVER_assume(u < MLKEM_Q);
+   106	
+   107	  __CPROVER_assume(c >= MSG_T5_ADMISSIBLE_LOWER);
+   108	  __CPROVER_assume(c <= MSG_T5_ADMISSIBLE_UPPER);
+   109	
+   110	  model_bit =
+   111	      msg_t5_offset_model(u, c);
+   112	
+   113	  oracle_bit =
+   114	      msg_t5_threshold_oracle(u);
+   115	
+   116	  __CPROVER_assert(
+   117	      model_bit < 2u,
+   118	      "MSG_T5_SUFFICIENCY_MODEL_RANGE: model result must be one bit");
+   119	
+   120	  __CPROVER_assert(
+   121	      oracle_bit < 2u,
+   122	      "MSG_T5_SUFFICIENCY_ORACLE_RANGE: oracle result must be one bit");
+   123	
+   124	  __CPROVER_assert(
+   125	      model_bit == oracle_bit,
+   126	      "MSG_T5_INTERVAL_SUFFICIENCY: every offset in the derived closed interval must match the canonical threshold oracle");
+   127	
+   128	  return 0;
+   129	}
+cb094974f6d2a8a88c13c2a1d9a4ec050eab4c67df985743d9e81c95c95f248e  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/01_harness/msg_t5_exact_interval_sufficiency_harness.c
+
+===== 5. STATIC HARNESS AND ORACLE AUDIT =====
+MODEL_DEFINITION_COUNT=1
+ORACLE_DEFINITION_COUNT=1
+MODEL_CALL_COUNT=1
+ORACLE_CALL_COUNT=1
+LOWER_ASSUME_COUNT=1
+UPPER_ASSUME_COUNT=1
+CANONICAL_LOWER_ASSUME_COUNT=1
+CANONICAL_UPPER_ASSUME_COUNT=1
+WRAP_MASK_COUNT=2
+SUFFICIENCY_ASSERTION_COUNT=1
+ORACLE_FORBIDDEN_CALL_COUNT=0
+PRODUCTION_CALL_COUNT=0
+DIRECT_HELPER_CALL_COUNT=0
+SYMBOLIC_CANONICAL_COEFFICIENT=YES
+SYMBOLIC_INTERVAL_OFFSET=YES
+FULL_CLOSED_INTERVAL_QUANTIFIED=YES
+PARAMETERIZED_MODEL_BOUND_VIA_MSG05C=YES
+INDEPENDENT_THRESHOLD_ORACLE=PASS
+NO_FIXED_PRODUCTION_CALL_REQUIRED_IN_THIS_STAGE=YES
+STATIC_SUFFICIENCY_HARNESS_AUDIT=PASS
+
+===== 6. BUILD SUFFICIENCY GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg05d_t5suff -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/01_harness/msg_t5_exact_interval_sufficiency_harness.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 12K Jul 23 19:38 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto
+f9b4289eda6001834c33e1155aac433b059953b8c1bb99bd17b88a9818023169  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto
+
+===== 7. VALIDATE AND INSPECT SUFFICIENCY MODEL =====
+GOTO_VALIDATE_EXIT=0
+SHOW_FUNCTIONS_EXIT=0
+SHOW_LOOPS_EXIT=0
+SHOW_PROPERTIES_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto'
+--- Validation stderr ---
+PARAMETERIZED_MODEL_BODY_COUNT=1
+THRESHOLD_ORACLE_BODY_COUNT=1
+REGISTERED_LOOP_COUNT=0
+INTERVAL_ORDER_PROPERTY_ID=main.assertion.2
+CARDINALITY_PROPERTY_ID=main.assertion.3
+PRODUCTION_MEMBERSHIP_PROPERTY_ID=main.assertion.4
+SUFFICIENCY_PROPERTY_ID=main.assertion.7
+GOTO_BINARY_VALIDATION=PASS
+PARAMETERIZED_MODEL_BODY_BINDING=PASS
+INDEPENDENT_ORACLE_BODY_BINDING=PASS
+NO_UNWINDING_REQUIRED_NO_LOOPS=YES
+SUFFICIENCY_PROPERTIES_REGISTERED=PASS
+
+===== 8. WRITE AUTHORITATIVE SUFFICIENCY COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto" --function main --object-bits 8 --bounds-check --pointer-check --pointer-overflow-check --pointer-primitive-check --signed-overflow-check --unsigned-overflow-check --conversion-check --undefined-shift-check --div-by-zero-check --slice-formula --sat-solver minisat2 --all-properties --trace --json-ui
+CBMC_COMMAND_STATIC_AUDIT=PASS
+
+===== 9. EXECUTE AUTHORITATIVE SUFFICIENCY PROOF =====
+CBMC_EXIT=0
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/05_results/msg_t5_exact_interval_sufficiency_result.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/06_logs/msg_t5_exact_interval_sufficiency_stderr.txt
+--- CBMC stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=13
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+SUFFICIENCY_PROPERTY_STATUS=SUCCESS
+CBMC_EXIT=0
+INTERVAL_ORDER_PROPERTY_ID=main.assertion.2
+CARDINALITY_PROPERTY_ID=main.assertion.3
+PRODUCTION_MEMBERSHIP_PROPERTY_ID=main.assertion.4
+SUFFICIENCY_PROPERTY_ID=main.assertion.7
+SUFFICIENCY_PROPERTY_STATUS=SUCCESS
+SUCCESS_COUNT=13
+FAILURE_COUNT=0
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 0.02
+	System time (seconds): 0.01
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.03
+	Maximum resident set size (kbytes): 15308
+	Exit status: 0
+
+===== 10. POSITIVE-PROOF ACCEPTANCE GATE =====
+ALL_CANONICAL_COEFFICIENTS_QUANTIFIED=YES
+ALL_646072_INTERVAL_OFFSETS_QUANTIFIED=YES
+INTERVAL_ENDPOINTS_INCLUDED=YES
+CANONICAL_THRESHOLD_ORACLE_MATCH=PROVED
+EXACT_INTERVAL_SUFFICIENCY=PROVED
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+80d936318b6f56f3c46bfffb763b93a1b2f3798c2109d419d4e8e0046ea03d52  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/01_exact_derivation/exact_offset_set.txt
+faf815bea120243d3fc1e91b6d13c6b936ebd5fb3ceabeb7c44b67038659fed7  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05B_T5_EXACT_OFFSET_CLASSIFICATION_20260723T163008Z_af4c5abdd595/03_classification/T5_NOVELTY_AND_SCOPE_CLASSIFICATION.txt
+e54acfc3154c3311716e91053170603e9e4a0f4bbea872a8c7df3128c66fb4cd  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/05_results/msg_t5_parameterized_model_binding_result.json
+84584e5db9de2d1c5311a193b7810fe2c241a28c130ca69e2af6c282b225a82b  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/01_harness/msg_t5_parameterized_model_binding_harness.c
+14a3a82b727fcbe47bb3bbf0413118be0bd199713034645fb9b496b3e76d0494  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05C_T5_PARAMETERIZED_MODEL_BINDING_RUN1_20260723T163437Z_af4c5abdd595/02_build/msg_t5_parameterized_model_binding.goto
+cb094974f6d2a8a88c13c2a1d9a4ec050eab4c67df985743d9e81c95c95f248e  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/01_harness/msg_t5_exact_interval_sufficiency_harness.c
+f9b4289eda6001834c33e1155aac433b059953b8c1bb99bd17b88a9818023169  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/02_build/msg_t5_exact_interval_sufficiency.goto
+8653582d2b0f88d6f030601caa43ff4cb750f7ad580b27f2ca6968c1db9ddd33  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/04_commands/msg05d_goto_build_command.txt
+c0340d0ec1b7751c6873c9202a704d680469017c2ef5ef4b13a4920b154c6033  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/04_commands/msg05d_cbmc_command.txt
+2891391d56d060dae0577dace82857adb225013c356d37d57951243575ce8db2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/05_results/msg_t5_exact_interval_sufficiency_result.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/06_logs/msg_t5_exact_interval_sufficiency_stderr.txt
+badb765f8258ab66a9a766408ae985e5d6568a8f8d3c2741351289200262697f  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595/05_results/msg05d_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG05D_SOURCE_BINDING=PASS
+MSG05D_MSG05B_INTERVAL_BINDING=PASS
+MSG05D_MSG05C_MODEL_BINDING=PASS
+MSG05D_SYMBOLIC_CANONICAL_COEFFICIENT=PASS
+MSG05D_SYMBOLIC_INTERVAL_OFFSET=PASS
+MSG05D_INDEPENDENT_ORACLE=PASS
+MSG05D_EXACT_INTERVAL_SUFFICIENCY=PROVED
+T5_INTERVAL_SUFFICIENCY=PROVISIONALLY_ACCEPTED
+T5_EXACT_INTERVAL_THEOREM=NOT_YET_PROVED
+NEXT_STAGE=MSG05E_EXACT_OUTSIDE_INTERVAL_NECESSITY_PARTITION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG05D_T5_EXACT_INTERVAL_SUFFICIENCY_RUN1_20260723T163846Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

@@ -1,0 +1,371 @@
+============================================================
+MSG02B-R1 — FUNCTIONAL SEPARABILITY RELATIONAL XOR
+REPAIR + HARNESS + GOTO + FIRST CBMC EXECUTION
+============================================================
+
+CAPTURE_UTC=2026-07-23T11:38:21Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595
+
+============================================================
+A. FROZEN SOURCE GATE
+============================================================
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+============================================================
+B. CLASSIFY AND REPAIR MSG02A STATUS-1 FAILURE
+============================================================
+FAILED_AUDIT_PRESERVED=YES
+MSG02A_FAILURE_CLASSIFICATION=AUDIT_COMMAND_INVOCATION_ERROR
+FAILED_COMMAND_CLASS=INVALID_GOTO_INSTRUMENT_POSITIONAL_ARGUMENT_COUNT
+T1_GOTO_REJECTED=NO
+T1_FUNCTIONAL_COUNTEREXAMPLE=NO
+MSG_T2_PROOF_EXECUTED=NO
+SOURCE_MODIFIED_BY_FAILED_AUDIT=NO
+
+The failed audit invoked goto-instrument --validate-goto-model with an
+insufficient positional-file form. The tool returned invalid-user-input
+status 1 before theorem checking. The frozen MSG-T1 GOTO is revalidated below
+using goto-instrument --validate-goto-binary and CBMC --validate-goto-model.
+
+--- Correct standalone GOTO-binary validation ---
+T1_BINARY_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto'
+T1_GOTO_BINARY_VALIDATION=PASS
+
+--- CBMC model validation and property loading ---
+T1_MODEL_VALIDATE_EXIT=0
+CBMC version 6.9.0 (cbmc-6.9.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01G_R1_T1_FROZEN_EXECUTION_INPUT_V1_af4c5abdd595/frozen_candidate_v1/build/msg_t1_exact_fips_v4_direct_pragma.goto
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Property main.assertion.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 36 function main
+  MSG_T1_MODEL: polynomial degree must be 256
+  256 == 256
+
+Property main.assertion.2:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 40 function main
+  MSG_T1_MODEL: message size must be 32 bytes
+  32 == 32
+
+Property main.assertion.3:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 44 function main
+  MSG_T1_ORACLE: lower-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle == 0
+
+Property main.assertion.4:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 48 function main
+  MSG_T1_ORACLE: lower-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$0 == 1
+
+Property main.assertion.5:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 52 function main
+  MSG_T1_ORACLE: upper-one boundary
+  (signed int)return_value_msg_t1_threshold_oracle$1 == 1
+
+Property main.assertion.6:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 56 function main
+  MSG_T1_ORACLE: upper-zero boundary
+  (signed int)return_value_msg_t1_threshold_oracle$2 == 0
+
+Property main.array_bounds.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 66 function main
+  array 'a'.coeffs upper bound in a.coeffs[(signed long int)k]
+  !((signed long int)k >= 256l)
+
+Property main.array_bounds.2:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 88 function main
+  array 'msg' upper bound in msg[(signed long int)(k >> 3)]
+  !((signed long int)(k >> 3) >= 32l)
+
+Property main.undefined-shift.1:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 88 function main
+  shift distance too large in (signed int)msg[(signed long int)(k >> 3)] >> (k & 7u)
+  !((k & 7u) >= 32u)
+
+Property main.array_bounds.3:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 91 function main
+  array 'a'.coeffs upper bound in a.coeffs[(signed long int)k]
+  !((signed long int)k >= 256l)
+
+Property main.assertion.7:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG01E_T1_CANDIDATE_V4_CONTRACT_ERASED_af4c5abdd595/msg_t1_exact_fips_candidate_v4.c line 93 function main
+  MSG_T1_EXACT: every output bit must equal the independent Compress1 oracle
+  actual_bit == expected_bit
+
+Property mlk_ct_cmask_nonzero_u16.overflow.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/verify.h line 232 function mlk_ct_cmask_nonzero_u16
+  arithmetic overflow on signed unary minus in -((int32_t)x)
+  !((int32_t)x == -2147483648)
+
+Property mlk_msg01f_poly_frommsg.undefined-shift.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 703 function mlk_msg01f_poly_frommsg
+  shift distance too large in 1u << j
+  !(j >= 32u)
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer NULL in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(msg))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer invalid in msg[(signed long int)i]
+  !IS_INVALID_POINTER(msg)
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.3:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: deallocated dynamic object in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(msg) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.4:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: dead object in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(msg) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.5:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer outside object bounds in msg[(signed long int)i]
+  (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(msg) >= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(msg) + (unsigned long int)(signed long int)i) + 1
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.6:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: invalid integer address in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(((const uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(msg)) || msg + (signed long int)i == ((const uint8_t *)NULL)
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.7:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer NULL in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(((int16_t (*)[256l])NULL)) == __CPROVER_POINTER_OBJECT(r))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.8:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer invalid in r->coeffs
+  !IS_INVALID_POINTER(r)
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.9:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: deallocated dynamic object in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(r) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.10:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: dead object in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(r) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object))
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.11:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: pointer outside object bounds in r->coeffs
+  (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(r) >= (unsigned __CPROVER_bitvector[65])__CPROVER_POINTER_OFFSET(r) + 512
+
+Property mlk_msg01f_poly_frommsg.pointer_dereference.12:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  dereference failure: invalid integer address in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(((int16_t (*)[256l])NULL)) == __CPROVER_POINTER_OBJECT(r)) || r == ((mlk_poly *)NULL)
+
+Property mlk_msg01f_poly_frommsg.array_bounds.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 704 function mlk_msg01f_poly_frommsg
+  array.coeffs dynamic object upper bound in r->coeffs[(signed long int)((unsigned int)8 * i + j)]
+  !((signed long int)(8u * i + j) * 2l + (signed long int)__CPROVER_POINTER_OFFSET(r) >= (signed long int)__CPROVER_OBJECT_SIZE(r))
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: pointer NULL in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(((uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(msg))
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: pointer invalid in msg[(signed long int)i]
+  !IS_INVALID_POINTER(msg)
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.3:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: deallocated dynamic object in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(msg) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated))
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.4:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: dead object in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(msg) == __CPROVER_POINTER_OBJECT(__CPROVER_dead_object))
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.5:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: pointer outside object bounds in msg[(signed long int)i]
+  (unsigned __CPROVER_bitvector[65])__CPROVER_OBJECT_SIZE(msg) >= (unsigned __CPROVER_bitvector[65])(__CPROVER_POINTER_OFFSET(msg) + (unsigned long int)(signed long int)i) + 1
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.6:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 727 function mlk_msg01f_poly_tomsg
+  dereference failure: invalid integer address in msg[(signed long int)i]
+  !(__CPROVER_POINTER_OBJECT(((uint8_t *)NULL)) == __CPROVER_POINTER_OBJECT(msg)) || msg + (signed long int)i == ((uint8_t *)NULL)
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.7:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 733 function mlk_msg01f_poly_tomsg
+  dereference failure: pointer NULL in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(((const int16_t (*)[256l])NULL)) == __CPROVER_POINTER_OBJECT(r))
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.8:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 733 function mlk_msg01f_poly_tomsg
+  dereference failure: pointer invalid in r->coeffs
+  !IS_INVALID_POINTER(r)
+
+Property mlk_msg01f_poly_tomsg.pointer_dereference.9:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 733 function mlk_msg01f_poly_tomsg
+  dereference failure: deallocated dynamic object in r->coeffs
+  !(__CPROVER_POINTER_OBJECT(r) == __CPROVER_POINTER_OBJECT(__CPROVER_deallocated))
+T1_CBMC_MODEL_VALIDATION=PASS
+MSG02A_REPAIR=PASS
+
+============================================================
+C. WRITE MSG-T2-R1 SUPPORT ARCHITECTURE
+============================================================
+SUPPORT_FILES_WRITTEN=PASS
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c
+/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h
+
+============================================================
+D. WRITE MSG-T2-R1 RELATIONAL HARNESS
+============================================================
+HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=95
+HARNESS_BYTE_COUNT=2070
+2e2e635d7c148028fc3942b113b6a98b5835a63a3169cd2b341efa609fd73cc0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/01_harness/msg_t2_r1_relational_xor_harness.c
+
+--- Exact MSG-T2-R1 harness ---
+     1	/*
+     2	 * MSG-T2-R1 — exact two-execution relational XOR law.
+     3	 *
+     4	 * For arbitrary canonical polynomials A and B:
+     5	 *
+     6	 *   bit_k(tomsg(A) XOR tomsg(B))
+     7	 *     =
+     8	 *   Compress1(A[k]) XOR Compress1(B[k])
+     9	 *
+    10	 * for every k in 0..255.
+    11	 *
+    12	 * This is a functional self-composition property. It does not claim timing,
+    13	 * leakage, constant-time, or compiler-level side-channel non-interference.
+    14	 */
+    15	
+    16	#include <stdint.h>
+    17	#include "compress.h"
+    18	
+    19	/*
+    20	 * Independent canonical Compress1 decision oracle:
+    21	 *
+    22	 *   0..832     -> 0
+    23	 *   833..2496  -> 1
+    24	 *   2497..3328 -> 0
+    25	 */
+    26	uint8_t msg_t2_threshold_oracle(int16_t u)
+    27	{
+    28	  return (uint8_t)((u >= 833) && (u <= 2496));
+    29	}
+    30	
+    31	int main(void)
+    32	{
+    33	  mlk_poly a;
+    34	  mlk_poly b;
+    35	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    36	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    37	  unsigned k;
+    38	
+    39	  __CPROVER_assert(
+    40	      MLKEM_N == 256,
+    41	      "MSG_T2_MODEL: polynomial degree must be 256");
+    42	
+    43	  __CPROVER_assert(
+    44	      MLKEM_INDCPA_MSGBYTES == 32,
+    45	      "MSG_T2_MODEL: message size must be 32 bytes");
+    46	
+    47	  for (k = 0u; k < MLKEM_N; k++)
+    48	  {
+    49	    __CPROVER_assume(a.coeffs[k] >= 0);
+    50	    __CPROVER_assume(a.coeffs[k] < MLKEM_Q);
+    51	
+    52	    __CPROVER_assume(b.coeffs[k] >= 0);
+    53	    __CPROVER_assume(b.coeffs[k] < MLKEM_Q);
+    54	  }
+    55	
+    56	  /*
+    57	   * Two executions of the real frozen production function.
+    58	   */
+    59	  mlk_poly_tomsg(msg_a, &a);
+    60	  mlk_poly_tomsg(msg_b, &b);
+    61	
+    62	  for (k = 0u; k < MLKEM_N; k++)
+    63	  {
+    64	    uint8_t actual_a;
+    65	    uint8_t actual_b;
+    66	    uint8_t expected_a;
+    67	    uint8_t expected_b;
+    68	    uint8_t actual_xor;
+    69	    uint8_t expected_xor;
+    70	
+    71	    actual_a =
+    72	        (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    73	
+    74	    actual_b =
+    75	        (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    76	
+    77	    expected_a =
+    78	        msg_t2_threshold_oracle(a.coeffs[k]);
+    79	
+    80	    expected_b =
+    81	        msg_t2_threshold_oracle(b.coeffs[k]);
+    82	
+    83	    actual_xor =
+    84	        (uint8_t)(actual_a ^ actual_b);
+    85	
+    86	    expected_xor =
+    87	        (uint8_t)(expected_a ^ expected_b);
+    88	
+    89	    __CPROVER_assert(
+    90	        actual_xor == expected_xor,
+    91	        "MSG_T2_R1: output-bit XOR must equal independent Compress1-decision XOR");
+    92	  }
+    93	
+    94	  return 0;
+    95	}
+
+============================================================
+E. STATIC NOVELTY AND ORACLE-SEPARATION AUDIT
+============================================================
+TARGET_CALL_COUNT=2
+ORACLE_DEFINITION_COUNT=1
+RELATIONAL_ASSERTION_COUNT=1
+ORACLE_FORBIDDEN_HELPER_CALLS=0
+ORACLE_TARGET_CALLS=0
+STATIC_RELATIONAL_HARNESS_AUDIT=PASS
+ORACLE_SEPARATION_STATIC_AUDIT=PASS
+
+============================================================
+F. BUILD FRESH MSG-T2-R1 GOTO MODEL
+============================================================
+goto-cc -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02b -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/01_harness/msg_t2_r1_relational_xor_harness.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto"
+GOTO_BUILD_EXIT=0
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 50K Jul 23 14:38 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto
+310442c1be12d75b8476acf9215e749eb313f953379f84bec9f97491a282ca09  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto
+
+============================================================
+G. GOTO VALIDATION AND BODY-BINDING AUDIT
+============================================================
+GOTO_VALIDATE_EXIT=0
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/03_build/msg_t2_r1_relational_xor.goto'
+GOTO_BINARY_VALIDATION=PASS
+PRODUCTION_CALLS_IN_MAIN=3
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+FATAL: GOTO model does not contain exactly two target calls

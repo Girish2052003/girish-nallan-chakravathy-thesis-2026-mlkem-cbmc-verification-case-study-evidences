@@ -1,0 +1,252 @@
+============================================================
+MSG02G-A — R2A SELECTED-EQUALITY ANTECEDENT MUTATION
+============================================================
+
+CAPTURE_UTC=2026-07-23T12:56:15Z
+REPO=/home/girish/THESIS-2026/mlkem-native_af4c5abd
+OUT=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595
+
+===== 1. RESOLVE REQUIRED EXECUTABLES =====
+GOTO_CC_BIN=/usr/bin/goto-cc
+GOTO_INSTRUMENT_BIN=/usr/bin/goto-instrument
+CBMC_BIN=/usr/bin/cbmc
+JQ_BIN=/usr/bin/jq
+SHA256SUM_BIN=/usr/bin/sha256sum
+TIME_BIN=/usr/bin/time
+gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0
+
+Copyright (C) 2006-2018 Daniel Kroening, Christoph Wintersteiger
+CBMC version: 6.9.0 (cbmc-6.9.0)
+Architecture: x86_64
+OS: linux
+gcc: 13.3.0
+6.9.0 (cbmc-6.9.0)
+6.9.0 (cbmc-6.9.0)
+jq-1.7
+EXECUTABLE_RESOLUTION=PASS
+
+===== 2. FROZEN SOURCE GATE =====
+ACTUAL_HEAD=af4c5abdd5958bdc65a03cd5ee86708264f93304
+EXPECTED_COMMIT=af4c5abdd5958bdc65a03cd5ee86708264f93304
+ACTUAL_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+EXPECTED_COMPRESS_SHA256=9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad
+COMMIT_BINDING=PASS
+SOURCE_TREE_CLEAN_BEFORE=YES
+PRODUCTION_SOURCE_HASH_BINDING=PASS
+
+===== 3. PRIOR POSITIVE-PROOF AND REACHABILITY BINDING =====
+R2A_FAILURE_COUNT=0
+R2A_UNKNOWN_COUNT=0
+R2A_COVERAGE_SATISFIED=6
+R2A_COVERAGE_FAILED=0
+R2B_COVERAGE_SATISFIED=6
+R2A_POSITIVE_PROOF_BINDING=PASS
+R2A_REACHABILITY_BINDING=PASS
+SELECTED_COEFFICIENT_CHANGE_WITNESS_BINDING=PASS
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+72b27f2dd398263e47b7a3660c6d885d734d14512e873c7c76707889960477b5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2a_reachability_result.txt
+2081773a41f90b36987c73305ebfda343922552a18cc1786ee0f4b975c40ae94  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2b_reachability_result.txt
+
+===== 4. WRITE R2A ANTECEDENT-DELETION MUTATION =====
+MUTATION_HARNESS_WRITTEN=PASS
+HARNESS_LINE_COUNT=74
+HARNESS_BYTE_COUNT=1511
+     1	/*
+     2	 * MSG-T2-R2A expected-failure mutation.
+     3	 *
+     4	 * Correct theorem:
+     5	 *
+     6	 *   A[k] == B[k]
+     7	 *     implies
+     8	 *   bit_k(tomsg(A)) == bit_k(tomsg(B)).
+     9	 *
+    10	 * Deliberately corrupted theorem:
+    11	 *
+    12	 *   A[k] != B[k]
+    13	 *     but still assert
+    14	 *   bit_k(tomsg(A)) == bit_k(tomsg(B)).
+    15	 *
+    16	 * Every coefficient other than k is held equal. Therefore a counterexample
+    17	 * is isolated to the selected coefficient and cannot be attributed to an
+    18	 * unrelated polynomial coefficient.
+    19	 */
+    20	
+    21	#include <stdint.h>
+    22	#include "compress.h"
+    23	
+    24	int main(void)
+    25	{
+    26	  mlk_poly a;
+    27	  mlk_poly b;
+    28	
+    29	  uint8_t msg_a[MLKEM_INDCPA_MSGBYTES];
+    30	  uint8_t msg_b[MLKEM_INDCPA_MSGBYTES];
+    31	
+    32	  unsigned i;
+    33	  unsigned k;
+    34	
+    35	  uint8_t bit_a;
+    36	  uint8_t bit_b;
+    37	
+    38	  __CPROVER_assume(k < MLKEM_N);
+    39	
+    40	  for (i = 0u; i < MLKEM_N; i++)
+    41	  {
+    42	    __CPROVER_assume(a.coeffs[i] >= 0);
+    43	    __CPROVER_assume(a.coeffs[i] < MLKEM_Q);
+    44	
+    45	    __CPROVER_assume(b.coeffs[i] >= 0);
+    46	    __CPROVER_assume(b.coeffs[i] < MLKEM_Q);
+    47	
+    48	    if (i != k)
+    49	    {
+    50	      __CPROVER_assume(a.coeffs[i] == b.coeffs[i]);
+    51	    }
+    52	  }
+    53	
+    54	  /*
+    55	   * Deliberate antecedent mutation: selected coefficients are different
+    56	   * rather than equal.
+    57	   */
+    58	  __CPROVER_assume(a.coeffs[k] != b.coeffs[k]);
+    59	
+    60	  mlk_poly_tomsg(msg_a, &a);
+    61	  mlk_poly_tomsg(msg_b, &b);
+    62	
+    63	  bit_a =
+    64	      (uint8_t)((msg_a[k >> 3] >> (k & 7u)) & 1u);
+    65	
+    66	  bit_b =
+    67	      (uint8_t)((msg_b[k >> 3] >> (k & 7u)) & 1u);
+    68	
+    69	  __CPROVER_assert(
+    70	      bit_a == bit_b,
+    71	      "MSG_T2_R2A_MUTATION_REMOVE_EQUALITY: selected equality antecedent is necessary");
+    72	
+    73	  return 0;
+    74	}
+f86d60a5224ce77f2adc01f3220358a79fcb287f121805c60070a443fd31d9c0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c
+
+===== 5. STATIC MUTATION AUDIT =====
+TARGET_CALL_COUNT=2
+OTHER_COEFFICIENT_EQUALITY_COUNT=1
+SELECTED_DIFFERENCE_COUNT=1
+SELECTED_EQUALITY_COUNT=0
+MUTATION_ASSERTION_COUNT=1
+ONLY_SELECTED_COEFFICIENT_MAY_DIFFER=YES
+ORIGINAL_SELECTED_EQUALITY_REMOVED=YES
+STATIC_MUTATION_AUDIT=PASS
+
+===== 6. BUILD MUTATION GOTO MODEL =====
+"/usr/bin/goto-cc" -std=c90 -DMLK_CONFIG_PARAMETER_SET=768 -DMLK_CONFIG_NAMESPACE_PREFIX=mlk_msg02g_r2amut -DMLK_CONFIG_NO_ASM=1 -DMLK_CONFIG_CUSTOM_ZEROIZE=1 -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_fail_closed_zeroize.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_verify_pragma_scope.h" -include "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_compress_direct_wrap_scope.h" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem" -I"/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src" -I"/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c" "/home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02B_R1_T2_RELATIONAL_XOR_RUN1_20260723T113821Z_af4c5abdd595/02_support/msg02b_optblocker_zero.c" -o "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto"
+GOTO_BUILD_EXIT=0
+--- Build stdout ---
+--- Build stderr ---
+GOTO_BUILD=PASS
+-rw-rw-r-- 1 girish girish 48K Jul 23 15:56 /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto
+e95ff44175e2903393df5176a622e5a2b19f7029f8b3732965de3b8a9e301af3  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto
+
+===== 7. VALIDATE CALLS, LOOPS AND MUTATION PROPERTY =====
+GOTO_VALIDATE_EXIT=0
+SHOW_FUNCTIONS_EXIT=0
+SHOW_LOOPS_EXIT=0
+SHOW_PROPERTIES_EXIT=0
+--- Validation stdout ---
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto'
+--- Validation stderr ---
+MAIN_TARGET_CALL_COUNT=2
+TARGET_BODY_COUNT=1
+SCALAR_HELPER_BODY_COUNT=1
+44-        // 34 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 58 function main
+45-        ASSUME main::1::a.coeffs[cast(main::1::k, signedbv[64])] ≠ main::1::b.coeffs[cast(main::1::k, signedbv[64])]
+46-        // 35 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 60 function main
+47:        CALL mlk_msg02g_r2amut_poly_tomsg(address_of(main::1::msg_a[0]), address_of(main::1::a))
+48-        // 36 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 61 function main
+49:        CALL mlk_msg02g_r2amut_poly_tomsg(address_of(main::1::msg_b[0]), address_of(main::1::b))
+50-        // 37 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 63 function main
+51-        ASSIGN main::1::bit_a := cast(bitand(cast(ashr(cast(main::1::msg_a[cast(lshr(main::1::k, 3), signedbv[64])], signedbv[32]), bitand(main::1::k, 7)), unsignedbv[32]), 1), unsignedbv[8])
+52-        // 38 file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 66 function main
+--- Mutation loop set ---
+Loop main.0:
+  file /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c line 40 function main
+
+Loop mlk_msg02g_r2amut_poly_tomsg.0:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 720 function mlk_msg02g_r2amut_poly_tomsg
+
+Loop mlk_msg02g_r2amut_poly_tomsg.1:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 728 function mlk_msg02g_r2amut_poly_tomsg
+
+Loop mlk_msg02g_r2amut_poly_tomsg.2:
+  file /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c line 722 function mlk_msg02g_r2amut_poly_tomsg
+
+MUTATION_PROPERTY_ID=main.assertion.1
+GOTO_BINARY_VALIDATION=PASS
+TWO_PRODUCTION_EXECUTIONS_PRESENT=YES
+PRODUCTION_BODY_BINDING=PASS
+SCALAR_HELPER_BODY_BINDING=PASS
+EXPECTED_LOOP_SET_PRESENT=PASS
+MUTATION_PROPERTY_REGISTRATION=PASS
+
+===== 8. WRITE ISOLATED MUTATION COMMAND =====
+"/usr/bin/cbmc" "/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto" --function main --object-bits 8 --unwinding-assertions --unwindset main.0:257,mlk_msg02g_r2amut_poly_tomsg.0:257,mlk_msg02g_r2amut_poly_tomsg.1:257,mlk_msg02g_r2amut_poly_tomsg.2:257 --slice-formula --sat-solver minisat2 --property "main.assertion.1" --trace --json-ui
+ISOLATED_MUTATION_COMMAND_AUDIT=PASS
+
+===== 9. EXECUTE EXPECTED-FAILURE MUTATION =====
+MUTATION_CBMC_EXIT=10
+RESULT_JSON=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/05_results/msg_t2_r2a_remove_selected_equality_mutation.json
+CBMC_STDERR=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/06_logs/msg_t2_r2a_remove_selected_equality_mutation_stderr.txt
+--- Mutation stderr ---
+RESULT_JSON_PARSE=PASS
+SUCCESS_COUNT=0
+FAILURE_COUNT=1
+UNKNOWN_COUNT=0
+FAILED_PROPERTY_IDS_BEGIN
+main.assertion.1
+FAILED_PROPERTY_IDS_END
+MUTATION_CBMC_EXIT=10
+MUTATION_PROPERTY_ID=main.assertion.1
+SUCCESS_COUNT=0
+FAILURE_COUNT=1
+UNKNOWN_COUNT=0
+
+--- Resource usage ---
+	User time (seconds): 3.15
+	System time (seconds): 0.32
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.47
+	Maximum resident set size (kbytes): 254092
+	Exit status: 10
+
+===== 10. EXPECTED-FAILURE ACCEPTANCE GATE =====
+CORRUPTED_R2A_RELATION_REJECTED=YES
+SELECTED_EQUALITY_ANTECEDENT_NECESSARY=YES
+FAILED_PROPERTY_MATCHES_MUTATION_ASSERTION=YES
+R2A_MUTATION_SENSITIVITY=PASS
+
+===== 11. FINAL HASH AND SOURCE FREEZE =====
+9201bea6ddd1d7622cc6496d2f745fee52397d203392f75a3d6e52a400de5bad  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.c
+0f357a30e7ea37351854dc550e502e5a7eaf80184896bf92b40073175706e0dd  /home/girish/THESIS-2026/mlkem-native_af4c5abd/mlkem/src/compress.h
+9009f3214157551aaa33bd8f30754118601814a2f92cc75e43bb43a86379bf58  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02D_R2A_COEFFICIENT_LOCALITY_RUN1_20260723T124247Z_af4c5abdd595/05_results/msg_t2_r2a_coefficient_locality_result.json
+72b27f2dd398263e47b7a3660c6d885d734d14512e873c7c76707889960477b5  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2a_reachability_result.txt
+2081773a41f90b36987c73305ebfda343922552a18cc1786ee0f4b975c40ae94  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02F_R2A_R2B_REACHABILITY_RUN1_20260723T125105Z_af4c5abdd595/05_results/msg_t2_r2b_reachability_result.txt
+f86d60a5224ce77f2adc01f3220358a79fcb287f121805c60070a443fd31d9c0  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/01_harness/msg_t2_r2a_remove_selected_equality_mutation.c
+e95ff44175e2903393df5176a622e5a2b19f7029f8b3732965de3b8a9e301af3  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/02_build/msg_t2_r2a_remove_selected_equality_mutation.goto
+26f768dd73c5b3f013516e17984a3930bb1affe6bc351a9f35fefccecbeff5c9  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/04_commands/r2a_mutation_goto_build_command.txt
+13a5bc1a811ab5a6c0b3e820479f4e47e6ff1f3e95074d7bc55f5e425c96a7f4  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/04_commands/r2a_mutation_cbmc_command.txt
+279bd741b615243626f2a8dadf515be84eead715843f48ba502eb0c609180ab9  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/05_results/msg_t2_r2a_remove_selected_equality_mutation.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/06_logs/msg_t2_r2a_remove_selected_equality_mutation_stderr.txt
+d6778f6e5fc5f26da8e70e61ceef38d3e87380012380b38ea8152969929d387c  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/05_results/r2a_mutation_failed_property_ids.txt
+61e9dc85ca3d654c74f0f3b9cc9f6fa4314bbac25cf4516b7de01bca972eb2c2  /home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595/05_results/r2a_mutation_parsed_summary.txt
+SOURCE_TREE_CLEAN_AFTER=YES
+SOURCE_REPOSITORY_MODIFIED=NO
+
+============================================================
+MSG02G_R2A_POSITIVE_PROOF_BINDING=PASS
+MSG02G_R2A_REACHABILITY_6_OF_6=PASS
+MSG02G_R2A_ANTECEDENT_MUTATION_REJECTED=PASS
+MSG02G_R2A_MUTATION_SENSITIVITY=PASS
+MSG_T2_2A_COEFFICIENT_LOCALITY=ACCEPTED
+MSG_T2_2B_CROSS_BIT_PRESERVATION=PROVISIONALLY_PROVED
+NEXT_STAGE=MSG02G_B_R2B_SECOND_COEFFICIENT_LEAK_MUTATION
+EVIDENCE_PATH=/home/girish/THESIS-2026/mlk_poly_tomsg_cleanroom/MSG02G_R2A_EQUALITY_ANTECEDENT_MUTATION_RUN1_20260723T125615Z_af4c5abdd595
+FINAL_STATUS=0
+============================================================

@@ -1,0 +1,108 @@
+===== compress.c matches =====
+687-  __loop__(
+688-    invariant(i <= MLKEM_N / 8)
+689-    invariant(array_bound(r->coeffs, 0, 8 * i, 0, MLKEM_Q))
+690-    decreases(MLKEM_N / 8 - i))
+691-  {
+692-    unsigned j;
+693-    for (j = 0; j < 8; j++)
+694-    __loop__(
+695-      invariant(i <  MLKEM_N / 8 && j <= 8)
+696-      invariant(array_bound(r->coeffs, 0, 8 * i + j, 0, MLKEM_Q))
+697-      decreases(8 - j))
+698-    {
+699-      /* mlk_ct_sel_int16(MLKEM_Q_HALF, 0, b) is `Decompress_1(b != 0)`
+700-       * as per @[FIPS203, Eq (4.8)]. */
+701-
+702-      /* Prevent the compiler from recognizing this as a bit selection */
+703-      uint8_t mask = mlk_value_barrier_u8((uint8_t)(1u << j));
+704-      r->coeffs[8 * i + j] = mlk_ct_sel_int16(MLKEM_Q_HALF, 0, msg[i] & mask);
+705-    }
+706-  }
+707-  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);
+708-}
+709-
+710-/* Reference: `poly_tomsg()` in the reference implementation @[REF].
+711- *            - In contrast to the reference implementation, we assume
+712- *              unsigned canonical coefficients here.
+713- *              The reference implementation works with coefficients
+714- *              in the range [-(MLKEM_Q-1), MLKEM_Q-1].
+715- */
+716-MLK_INTERNAL_API
+717:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+718-{
+719-  unsigned i;
+720-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+721-
+722-  for (i = 0; i < MLKEM_N / 8; i++)
+723-  __loop__(invariant(i <= MLKEM_N / 8)
+724-           decreases(MLKEM_N / 8 - i))
+725-  {
+726-    unsigned j;
+727-    msg[i] = 0;
+728-    for (j = 0; j < 8; j++)
+729-    __loop__(
+730-      invariant(i <= MLKEM_N / 8 && j <= 8)
+731-      decreases(8 - j))
+732-    {
+733-      uint32_t t = mlk_scalar_compress_d1(r->coeffs[8 * i + j]);
+734-      msg[i] |= (uint8_t)(t << j);
+735-    }
+736-  }
+737-}
+738-
+739-#else /* !MLK_CONFIG_MULTILEVEL_NO_SHARED */
+740-
+741-MLK_EMPTY_CU(compress)
+742-
+743-#endif /* MLK_CONFIG_MULTILEVEL_NO_SHARED */
+
+===== compress.h matches =====
+552-);
+553-
+554-
+555-#define mlk_poly_frommsg MLK_NAMESPACE(poly_frommsg)
+556-/**
+557- * Convert a 32-byte message to a polynomial.
+558- *
+559- * @spec{Implements `Decompress_1 (ByteDecode_1 (a))`: ByteDecode_d
+560- * @[FIPS203, Algorithm 6], Decompress_d @[FIPS203, Eq (4.8)], extended to
+561- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+562- * `Decompress_1 (ByteDecode_1 (w))` appears in @[FIPS203, Algorithm 15
+563- * (K-PKE.Encrypt), L20].}
+564- *
+565- * @param[out] r   Output polynomial.
+566- * @param[in]  msg Input message.
+567- */
+568-MLK_INTERNAL_API
+569-void mlk_poly_frommsg(mlk_poly *r, const uint8_t msg[MLKEM_INDCPA_MSGBYTES])
+570-__contract__(
+571-  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+572-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+573-  assigns(memory_slice(r, sizeof(mlk_poly)))
+574-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+575-);
+576-
+577:#define mlk_poly_tomsg MLK_NAMESPACE(poly_tomsg)
+578-/**
+579- * Convert a polynomial to a 32-byte message.
+580- *
+581- * @spec{Implements `ByteEncode_1 (Compress_1 (a))`: ByteEncode_d
+582- * @[FIPS203, Algorithm 5], Compress_d @[FIPS203, Eq (4.7)], extended to
+583- * vectors as per @[FIPS203, 2.4.8 Applying Algorithms to Arrays].
+584- * `ByteEncode_1 (Compress_1 (w))` appears in @[FIPS203, Algorithm 14
+585- * (K-PKE.Decrypt), L7].}
+586- *
+587- * @param[out] msg Output message.
+588- * @param[in]  r   Input polynomial. Coefficients must be unsigned canonical.
+589- */
+590-MLK_INTERNAL_API
+591:void mlk_poly_tomsg(uint8_t msg[MLKEM_INDCPA_MSGBYTES], const mlk_poly *r)
+592-__contract__(
+593-  requires(memory_no_alias(msg, MLKEM_INDCPA_MSGBYTES))
+594-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+595-  requires(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+596-  assigns(memory_slice(msg, MLKEM_INDCPA_MSGBYTES))
+597-);
+598-
+599-#endif /* !MLK_COMPRESS_H */
