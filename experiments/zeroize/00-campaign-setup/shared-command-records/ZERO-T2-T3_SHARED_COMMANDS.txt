@@ -1,0 +1,35 @@
+Compilation:
+
+goto-cc
+-Wall
+-Werror
+--native-compiler gcc
+-DCBMC=1
+-DCBMC_OBJECT_BITS=10
+-DMLK_CONFIG_FILE="mlkem_native_config_cbmc.h"
+-DMLK_CONFIG_PARAMETER_SET=768
+-Dstatic=
+-DMLK_INLINE=
+-DMLK_ALWAYS_INLINE=
+
+Library instrumentation:
+
+goto-instrument
+--add-library
+--malloc-may-fail
+--malloc-fail-null
+
+CBMC:
+
+--function harness
+--object-bits 10
+--bounds-check
+--pointer-check
+--pointer-overflow-check
+--conversion-check
+--signed-overflow-check
+--unsigned-overflow-check
+--unwind 17
+--unwinding-assertions
+--slice-formula
+--trace

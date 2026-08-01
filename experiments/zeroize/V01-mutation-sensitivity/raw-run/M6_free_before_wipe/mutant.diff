@@ -1,0 +1,15 @@
+--- /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/reference.c	2026-07-28 08:35:35.027822389 +0300
++++ /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c	2026-07-28 08:35:35.029710352 +0300
+@@ -34,8 +34,11 @@
+ {
+   if (*ptr != NULL)
+   {
+-    zero_v1_wipe_M6(*ptr, len);
++    /*
++     * M6: expose the allocation to the release observer before wiping it.
++     */
+     zero_v1_observe_free_M6(*ptr, len);
++    zero_v1_wipe_M6(*ptr, len);
+     *ptr = NULL;
+   }
+ }

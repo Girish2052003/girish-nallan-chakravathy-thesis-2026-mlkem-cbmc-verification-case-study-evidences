@@ -1,0 +1,17 @@
+--- /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M5_length_plus_one/reference.c	2026-07-28 08:35:35.022824889 +0300
++++ /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M5_length_plus_one/mutant.c	2026-07-28 08:35:35.024823890 +0300
+@@ -6,7 +6,13 @@
+   uint8_t *bytes = (uint8_t *)ptr;
+   size_t i;
+ 
+-  for (i = 0u; i < len; i++)
++  /*
++   * M5: wipe one additional byte beyond the requested interval.
++   *
++   * The selected concrete invocation remains inside the host object so that
++   * the frame assertion—not an out-of-bounds error—is the primary detector.
++   */
++  for (i = 0u; i <= len; i++)
+   {
+     bytes[i] = 0u;
+   }

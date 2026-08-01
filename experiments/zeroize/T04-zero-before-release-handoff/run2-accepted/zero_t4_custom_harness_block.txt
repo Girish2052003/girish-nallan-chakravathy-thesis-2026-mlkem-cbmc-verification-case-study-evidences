@@ -1,0 +1,103 @@
+harness /* harness */
+        // 18 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 49 function harness
+        DECL harness::1::i : unsignedbv[64]
+        // 19 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 50 function harness
+        DECL harness::1::calls_before_null : unsignedbv[64]
+        // 20 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 52 function harness
+        DECL harness::1::null_secret : unsignedbv[8]*
+        // 21 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 52 function harness
+        ASSIGN harness::1::null_secret := cast(cast(0, empty*), unsignedbv[8]*)
+        // 22 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 54 function harness
+        ASSIGN zero_t4_free_calls := cast(0, unsignedbv[64])
+        // 23 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 55 function harness
+        ASSIGN zero_t4_observed_size := cast(0, unsignedbv[64])
+        // 24 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 56 function harness
+        ASSIGN zero_t4_observed_all_zero := cast(0, unsignedbv[8])
+        // 25 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 58 function harness
+        DECL harness::1::secret : unsignedbv[8]*
+        // 26 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 58 function harness
+        DECL harness::$tmp::return_value_zero_t4_custom_alloc : empty*
+        // 27 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 58 function harness
+        CALL harness::$tmp::return_value_zero_t4_custom_alloc := zero_t4_custom_alloc(1 * cast(8, unsignedbv[64]))
+        // 28 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 58 function harness
+        ASSIGN harness::1::secret := cast(harness::$tmp::return_value_zero_t4_custom_alloc, unsignedbv[8]*)
+        // 29 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 58 function harness
+        DEAD harness::$tmp::return_value_zero_t4_custom_alloc
+        // 30 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 60 function harness
+        ASSERT harness::1::secret = address_of(zero_t4_storage[0]) // ZERO-T4.NV2: custom allocation returns the observational backing object
+        // 31 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 64 function harness
+        ASSIGN harness::1::i := cast(0, unsignedbv[64])
+        // 32 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 64 function harness
+     1: IF ¬(harness::1::i < cast(8, unsignedbv[64])) THEN GOTO 2
+        // 33 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 66 function harness
+        DECL harness::$tmp::return_value_nondet_uint8_t : unsignedbv[8]
+        // 34 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 66 function harness
+        ASSIGN harness::$tmp::return_value_nondet_uint8_t := side_effect statement="nondet" #identifier="nondet_uint8_t" is_nondet_nullable="1"
+        // 35 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 66 function harness
+        ASSIGN *(harness::1::secret + cast(harness::1::i, signedbv[64])) := harness::$tmp::return_value_nondet_uint8_t
+        // 36 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 66 function harness
+        DEAD harness::$tmp::return_value_nondet_uint8_t
+        // 37 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 64 function harness
+        ASSIGN harness::1::i := harness::1::i + 1
+        // 38 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 64 function harness
+        GOTO 1
+        // 39 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 64 function harness
+     2: SKIP
+        // 40 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 72 function harness
+        ASSIGN *(harness::1::secret + cast(3, signedbv[64])) := cast(165, unsignedbv[8])
+        // 41 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+     3: IF ¬(harness::1::secret ≠ NULL) THEN GOTO 4
+        // 42 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        CALL mlk_zeroize(cast(harness::1::secret, empty*), 1 * cast(8, unsignedbv[64]))
+        // 43 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        CALL zero_t4_custom_free(cast(harness::1::secret, empty*), 1 * cast(8, unsignedbv[64]))
+        // 44 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        ASSIGN harness::1::secret := cast(cast(0, empty*), unsignedbv[8]*)
+        // 45 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+     4: SKIP
+        // 46 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        IF 0 ≠ 0 THEN GOTO 3
+        // 47 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        SKIP
+        // 48 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 74 function harness
+        SKIP
+        // 49 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 76 function harness
+        ASSERT cast(zero_t4_observed_all_zero, unsignedbv[32]) = 1 // ZERO-T4.P3: custom free hook observes an all-zero allocation
+        // 50 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 80 function harness
+        ASSERT zero_t4_free_calls = cast(1, unsignedbv[64]) // ZERO-T4.P4: custom free hook executes exactly once for non-null memory
+        // 51 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 84 function harness
+        ASSERT zero_t4_observed_size = cast(8, unsignedbv[64]) // ZERO-T4.NV3: custom free hook receives the complete allocation size
+        // 52 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 88 function harness
+        ASSERT harness::1::secret = NULL // ZERO-T4.NV4: custom MLK_FREE resets the exposed pointer
+        // 53 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 92 function harness
+        ASSIGN harness::1::calls_before_null := zero_t4_free_calls
+        // 54 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+     5: IF ¬(harness::1::null_secret ≠ NULL) THEN GOTO 6
+        // 55 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        CALL mlk_zeroize(cast(harness::1::null_secret, empty*), 1 * cast(8, unsignedbv[64]))
+        // 56 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        CALL zero_t4_custom_free(cast(harness::1::null_secret, empty*), 1 * cast(8, unsignedbv[64]))
+        // 57 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        ASSIGN harness::1::null_secret := cast(cast(0, empty*), unsignedbv[8]*)
+        // 58 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+     6: SKIP
+        // 59 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        IF 0 ≠ 0 THEN GOTO 5
+        // 60 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        SKIP
+        // 61 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 94 function harness
+        SKIP
+        // 62 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 96 function harness
+        ASSERT zero_t4_free_calls = harness::1::calls_before_null // ZERO-T4.P5: custom free hook is not called for a null pointer
+        // 63 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 100 function harness
+        ASSERT harness::1::null_secret = NULL // ZERO-T4.NV5: null input remains null
+        // 64 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 103 function harness
+        DEAD harness::1::secret
+        // 65 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 103 function harness
+        DEAD harness::1::null_secret
+        // 66 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 103 function harness
+        DEAD harness::1::calls_before_null
+        // 67 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 103 function harness
+        DEAD harness::1::i
+        // 68 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-T4_RUN2_af4c5abd/zero_t4_custom_free_harness.c line 103 function harness
+        END_FUNCTION

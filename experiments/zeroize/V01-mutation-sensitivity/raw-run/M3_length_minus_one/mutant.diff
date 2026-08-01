@@ -1,0 +1,20 @@
+--- /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M3_length_minus_one/reference.c	2026-07-28 08:35:35.012829890 +0300
++++ /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M3_length_minus_one/mutant.c	2026-07-28 08:35:35.013829390 +0300
+@@ -6,9 +6,15 @@
+   uint8_t *bytes = (uint8_t *)ptr;
+   size_t i;
+ 
+-  for (i = 0u; i < len; i++)
++  /*
++   * M3: wipe one byte fewer than requested.
++   */
++  if (len > 0u)
+   {
+-    bytes[i] = 0u;
++    for (i = 0u; i < len - 1u; i++)
++    {
++      bytes[i] = 0u;
++    }
+   }
+ }
+ 

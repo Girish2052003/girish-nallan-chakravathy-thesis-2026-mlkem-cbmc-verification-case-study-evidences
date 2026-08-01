@@ -1,0 +1,16 @@
+--- /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M7_double_free/reference.c	2026-07-28 08:35:35.033008963 +0300
++++ /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M7_double_free/mutant.c	2026-07-28 08:35:35.033819389 +0300
+@@ -26,7 +26,13 @@
+   if (*ptr != NULL)
+   {
+     zero_v1_wipe_M7(*ptr, len);
++
++    /*
++     * M7: release the same non-null allocation twice.
++     */
+     zero_v1_observe_free_M7(*ptr, len);
++    zero_v1_observe_free_M7(*ptr, len);
++
+     *ptr = NULL;
+   }
+ }

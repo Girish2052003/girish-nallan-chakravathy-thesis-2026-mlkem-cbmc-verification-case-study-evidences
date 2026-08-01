@@ -1,0 +1,103 @@
+Reading GOTO program from '/home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.library.goto'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+harness /* harness */
+        // 0 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 48 function harness
+        DECL harness::1::storage : unsignedbv[8][8]
+        // 1 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 48 function harness
+        ASSIGN harness::1::storage := { cast(17, unsignedbv[8]), cast(34, unsignedbv[8]), cast(161, unsignedbv[8]), cast(178, unsignedbv[8]), cast(195, unsignedbv[8]), cast(212, unsignedbv[8]), cast(119, unsignedbv[8]), cast(136, unsignedbv[8]) }
+        // 2 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 52 function harness
+        DECL harness::1::secret : unsignedbv[8]*
+        // 3 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 52 function harness
+        ASSIGN harness::1::secret := address_of(harness::1::storage[0])
+        // 4 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 54 function harness
+        ASSIGN zero_v1_observed_all_zero_M6 := cast(0, unsignedbv[8])
+        // 5 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 56 function harness
+        CALL zero_v1_mutant_M6(address_of(harness::1::secret), cast(8, unsignedbv[64]))
+        // 6 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 58 function harness
+        ASSERT cast(zero_v1_observed_all_zero_M6, unsignedbv[32]) = 1 // ZERO-V1.M6: ZERO-T4.P3 rejects the free-before-wipe mutant
+        // 7 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 61 function harness
+        DEAD harness::1::secret
+        // 8 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 61 function harness
+        DEAD harness::1::storage
+        // 9 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 61 function harness
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+zero_v1_mutant_M6 /* zero_v1_mutant_M6 */
+        // 10 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 35 function zero_v1_mutant_M6
+        IF ¬(*zero_v1_mutant_M6::ptr ≠ NULL) THEN GOTO 1
+        // 11 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 40 function zero_v1_mutant_M6
+        CALL zero_v1_observe_free_M6(cast(*zero_v1_mutant_M6::ptr, empty*), zero_v1_mutant_M6::len)
+        // 12 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 41 function zero_v1_mutant_M6
+        CALL zero_v1_wipe_M6(cast(*zero_v1_mutant_M6::ptr, empty*), zero_v1_mutant_M6::len)
+        // 13 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 42 function zero_v1_mutant_M6
+        ASSIGN *zero_v1_mutant_M6::ptr := cast(cast(0, empty*), unsignedbv[8]*)
+        // 14 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 43 function zero_v1_mutant_M6
+     1: SKIP
+        // 15 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 44 function zero_v1_mutant_M6
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+zero_v1_observe_free_M6 /* zero_v1_observe_free_M6 */
+        // 16 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 19 function zero_v1_observe_free_M6
+        DECL zero_v1_observe_free_M6::1::bytes : unsignedbv[8]*
+        // 17 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 19 function zero_v1_observe_free_M6
+        ASSIGN zero_v1_observe_free_M6::1::bytes := cast(zero_v1_observe_free_M6::ptr, unsignedbv[8]*)
+        // 18 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 20 function zero_v1_observe_free_M6
+        DECL zero_v1_observe_free_M6::1::i : unsignedbv[64]
+        // 19 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 22 function zero_v1_observe_free_M6
+        ASSIGN zero_v1_observed_all_zero_M6 := cast(1, unsignedbv[8])
+        // 20 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 24 function zero_v1_observe_free_M6
+        ASSIGN zero_v1_observe_free_M6::1::i := cast(0, unsignedbv[64])
+        // 21 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 24 function zero_v1_observe_free_M6
+     1: IF ¬(zero_v1_observe_free_M6::1::i < zero_v1_observe_free_M6::len) THEN GOTO 3
+        // 22 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 26 function zero_v1_observe_free_M6
+        IF ¬(cast(*(zero_v1_observe_free_M6::1::bytes + cast(zero_v1_observe_free_M6::1::i, signedbv[64])), unsignedbv[32]) ≠ 0) THEN GOTO 2
+        // 23 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 28 function zero_v1_observe_free_M6
+        ASSIGN zero_v1_observed_all_zero_M6 := cast(0, unsignedbv[8])
+        // 24 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 29 function zero_v1_observe_free_M6
+     2: SKIP
+        // 25 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 24 function zero_v1_observe_free_M6
+        ASSIGN zero_v1_observe_free_M6::1::i := zero_v1_observe_free_M6::1::i + 1
+        // 26 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 24 function zero_v1_observe_free_M6
+        GOTO 1
+        // 27 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 24 function zero_v1_observe_free_M6
+     3: SKIP
+        // 28 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 31 function zero_v1_observe_free_M6
+        DEAD zero_v1_observe_free_M6::1::i
+        // 29 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 31 function zero_v1_observe_free_M6
+        DEAD zero_v1_observe_free_M6::1::bytes
+        // 30 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 31 function zero_v1_observe_free_M6
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+zero_v1_wipe_M6 /* zero_v1_wipe_M6 */
+        // 31 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 8 function zero_v1_wipe_M6
+        DECL zero_v1_wipe_M6::1::bytes : unsignedbv[8]*
+        // 32 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 8 function zero_v1_wipe_M6
+        ASSIGN zero_v1_wipe_M6::1::bytes := cast(zero_v1_wipe_M6::ptr, unsignedbv[8]*)
+        // 33 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 9 function zero_v1_wipe_M6
+        DECL zero_v1_wipe_M6::1::i : unsignedbv[64]
+        // 34 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 11 function zero_v1_wipe_M6
+        ASSIGN zero_v1_wipe_M6::1::i := cast(0, unsignedbv[64])
+        // 35 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 11 function zero_v1_wipe_M6
+     1: IF ¬(zero_v1_wipe_M6::1::i < zero_v1_wipe_M6::len) THEN GOTO 2
+        // 36 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 13 function zero_v1_wipe_M6
+        ASSIGN *(zero_v1_wipe_M6::1::bytes + cast(zero_v1_wipe_M6::1::i, signedbv[64])) := cast(0, unsignedbv[8])
+        // 37 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 11 function zero_v1_wipe_M6
+        ASSIGN zero_v1_wipe_M6::1::i := zero_v1_wipe_M6::1::i + 1
+        // 38 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 11 function zero_v1_wipe_M6
+        GOTO 1
+        // 39 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 11 function zero_v1_wipe_M6
+     2: SKIP
+        // 40 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 15 function zero_v1_wipe_M6
+        DEAD zero_v1_wipe_M6::1::i
+        // 41 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 15 function zero_v1_wipe_M6
+        DEAD zero_v1_wipe_M6::1::bytes
+        // 42 file /home/girish/THESIS-2026/mlk_zeroize_cleanroom/ZERO-V1_RUN1_af4c5abd/M6_free_before_wipe/mutant.c line 15 function zero_v1_wipe_M6
+        END_FUNCTION
+
