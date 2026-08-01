@@ -1,0 +1,93 @@
+You are the FIPS-aware Property Discovery Agent.
+Target function: mlk_poly_add
+Task: combine legacy spec summary, Agent 2 v2 rich parsed spec outputs, and code summary.
+Propose candidate properties only. Do not claim proof. Human review and CBMC remain required.
+
+{
+  "legacy_spec_constants": {
+    "th": 256
+  },
+  "rich_counts": {
+    "algorithms": 0,
+    "symbols": 6,
+    "parameters": 4,
+    "equations_constraints": 85,
+    "prepost": 33,
+    "hints": 5
+  },
+  "code_function": {
+    "requested_name": "mlk_poly_add",
+    "detected_name": "mlk_poly_add",
+    "matched_by": "exact_or_known_mlkem_variant",
+    "signature": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+    "return_type": "MLK_INTERNAL_API void",
+    "parameters_raw": "mlk_poly *r, const mlk_poly *b",
+    "parameters": [
+      {
+        "index": 0,
+        "raw": "mlk_poly *r",
+        "name": "r",
+        "type_guess": "mlk_poly *",
+        "is_pointer": true,
+        "pointer_depth": 1,
+        "is_const": false,
+        "is_array_syntax": false,
+        "direction_guess": "output_pointer_candidate"
+      },
+      {
+        "index": 1,
+        "raw": "const mlk_poly *b",
+        "name": "b",
+        "type_guess": "const mlk_poly *",
+        "is_pointer": true,
+        "pointer_depth": 1,
+        "is_const": true,
+        "is_array_syntax": false,
+        "direction_guess": "input_pointer_candidate"
+      }
+    ],
+    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+    "start_line": 228,
+    "end_line": 242,
+    "body_hash_sha256": "f05eae6291cc47566ccc81c8d0e04e00a889e39ed52f840530daaaacc34480ed",
+    "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+    "evidence": {
+      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+      "start_line": 228,
+      "end_line": 242,
+      "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+    }
+  },
+  "code_loops": [
+    {
+      "kind": "for",
+      "raw": "i = 0; i < MLKEM_N; i++",
+      "line": 230,
+      "init": "i = 0",
+      "condition": "i < MLKEM_N",
+      "increment": "i++",
+      "loop_variable_guess": "i",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    }
+  ],
+  "code_writes": [
+    {
+      "lhs": "r->coeffs[i]",
+      "operator": "=",
+      "rhs": "(int16_t)(r->coeffs[i] + b->coeffs[i])",
+      "line": 238,
+      "write_kind_guess": "assignment_write",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ]
+}

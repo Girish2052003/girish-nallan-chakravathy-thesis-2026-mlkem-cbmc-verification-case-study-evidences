@@ -1,0 +1,43 @@
+Agent 7 v2 Formal Tool Execution Instruction
+            ===========================================
+
+            Task:
+            Run or prepare the formal verification tool for the current candidate artifact.
+
+            Tool:
+            CBMC
+
+            Artifact:
+            /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/08_repaired_harness.c
+
+            Shell command:
+            cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/08_repaired_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions --trace
+
+            Critic gate:
+            {
+  "schema_version": "1.0",
+  "created_at": "2026-07-09T02:34:38+00:00",
+  "agent": "tool_execution_agent",
+  "critic_present": true,
+  "respect_critic_gate": true,
+  "force_used": false,
+  "ignore_critic_gate_used": false,
+  "review_status": "conditional_accept_for_tool",
+  "tool_execution_allowed_from_critic": true,
+  "repair_recommended_before_tool": false,
+  "high_or_critical_issue_count": 0,
+  "should_block_without_override": false,
+  "blocked": false,
+  "decision": "allowed_to_prepare_or_run_tool",
+  "reasons": [
+    "Critic review status: conditional_accept_for_tool"
+  ],
+  "guardrail": "Critic gating prevents running CBMC on artifacts that Agent 6 judged unsafe, unless --force or --ignore-critic-gate is used."
+}
+
+            Scientific guardrails:
+            - Treat the harness as a candidate formal-verification artifact.
+            - Treat CBMC as the formal checker for the selected harness/property only.
+            - Do not claim full ML-KEM verification from this run.
+            - Save stdout, stderr, command, status, property results, environment snapshot, and traceability.
+            - If the critic blocks tool execution, do not run CBMC unless --force or --ignore-critic-gate is used.

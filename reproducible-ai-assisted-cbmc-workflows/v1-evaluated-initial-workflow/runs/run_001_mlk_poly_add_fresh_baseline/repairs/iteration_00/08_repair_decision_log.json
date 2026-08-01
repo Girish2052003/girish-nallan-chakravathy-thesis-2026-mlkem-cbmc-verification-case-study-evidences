@@ -1,0 +1,84 @@
+{
+  "created_at": "2026-07-09T02:34:37+00:00",
+  "agent": "repair_refinement_agent",
+  "agent_version": "2.0.0",
+  "decisions": [
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R001",
+      "category": "traceability",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Reproducibility requires repaired artifacts to be clearly marked.",
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": "Banner does not affect verification semantics."
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R_INC_LIMITS_H",
+      "category": "cbmc_compatibility",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Harness uses assertions, fixed-width integer casts, or INT16_MIN/INT16_MAX-style guards.",
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": null
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R002",
+      "category": "cbmc_compatibility",
+      "applied": false,
+      "confidence": "high",
+      "reason": "CBMC harnesses commonly use nondet_* symbols; explicit declarations reduce type/parsing problems.",
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": null
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R003",
+      "category": "assumption_transparency",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Generated assumptions can be too strong or unsupported; comments make the limitation explicit.",
+      "source_stage": "agent6_agent8_agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": "Every generated assumption must be checked against selected specification and implementation context."
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R003B",
+      "category": "assertion_transparency",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Candidate assertions need traceability to Agent 4 properties and Agent 5 assertion plan.",
+      "source_stage": "agent5_agent6_agent8_agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": "Every assertion must be checked against the selected candidate property and spec/code evidence."
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R004",
+      "category": "assertion_rewrite",
+      "applied": false,
+      "confidence": "low",
+      "reason": "CBMC failures involving signed overflow/equality assertions often come from expression semantics or over-broad input ranges.",
+      "source_stage": "agent7_agent8_agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": "This preserves the intended equality check shape but does not prove the specification-level property by itself."
+    },
+    {
+      "timestamp": "2026-07-09T02:34:37+00:00",
+      "action_id": "R006",
+      "category": "tool_command_recommendation",
+      "applied": false,
+      "confidence": "medium",
+      "reason": "Loop-based harnesses need appropriate unwinding and unwinding assertions.",
+      "source_stage": "agent3_agent7_agent8_agent9_v2",
+      "safety_level": "candidate_safe",
+      "human_review_note": null
+    }
+  ]
+}

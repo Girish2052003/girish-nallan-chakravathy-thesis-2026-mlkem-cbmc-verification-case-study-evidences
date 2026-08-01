@@ -1,0 +1,187 @@
+{
+  "run_summary": {
+    "run_id": "run_001_mlk_poly_add_fresh_baseline",
+    "target_scheme": "ML-KEM",
+    "target_function": "mlk_poly_add",
+    "verification_tool": "CBMC",
+    "artifact_type": "CBMC harness",
+    "final_status": "inconclusive",
+    "cbmc_status": "dry_run",
+    "highest_critic_severity": "medium",
+    "repair_attempted": true,
+    "human_review_required": true,
+    "overall_usefulness": "medium",
+    "overall_score_percent": 67.14
+  },
+  "quality_scores": [
+    {
+      "criterion": "correctness",
+      "score": 2,
+      "max_score": 5,
+      "level": "weak",
+      "rationale": "Correctness evidence is incomplete.",
+      "evidence": [
+        "CBMC status: dry_run",
+        "Highest critic severity: medium"
+      ]
+    },
+    {
+      "criterion": "tool_compatibility",
+      "score": 1,
+      "max_score": 5,
+      "level": "poor",
+      "rationale": "Tool compatibility evidence is missing or unknown.",
+      "evidence": [
+        "CBMC command recorded.",
+        "CBMC output recorded.",
+        "Tool status: dry_run"
+      ]
+    },
+    {
+      "criterion": "specification_relevance",
+      "score": 4,
+      "max_score": 5,
+      "level": "good",
+      "rationale": "Properties are connected to extracted specification information.",
+      "evidence": [
+        "Candidate properties: 63",
+        "Extracted constants: 1",
+        "Input assumptions: 15",
+        "Output guarantees: 9"
+      ]
+    },
+    {
+      "criterion": "code_relevance",
+      "score": 5,
+      "max_score": 5,
+      "level": "excellent",
+      "rationale": "The artifact is strongly connected to the selected implementation behavior.",
+      "evidence": [
+        "Configured target function: mlk_poly_add",
+        "Detected function: {'requested_name': 'mlk_poly_add', 'detected_name': 'mlk_poly_add', 'matched_by': 'exact_or_known_mlkem_variant', 'signature': 'MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)', 'return_type': 'MLK_INTERNAL_API void', 'parameters_raw': 'mlk_poly *r, const mlk_poly *b', 'parameters': [{'index': 0, 'raw': 'mlk_poly *r', 'name': 'r', 'type_guess': 'mlk_poly *', 'is_pointer': True, 'pointer_depth': 1, 'is_const': False, 'is_array_syntax': False, 'direction_guess': 'output_pointer_candidate'}, {'index': 1, 'raw': 'const mlk_poly *b', 'name': 'b', 'type_guess': 'const mlk_poly *', 'is_pointer': True, 'pointer_depth': 1, 'is_const': True, 'is_array_syntax': False, 'direction_guess': 'input_pointer_candidate'}], 'source_file': '/home/girish/thesis-agent-workflow/inputs/code/poly.c', 'start_line': 228, 'end_line': 242, 'body_hash_sha256': 'f05eae6291cc47566ccc81c8d0e04e00a889e39ed52f840530daaaacc34480ed', 'body_excerpt': '{\\n  unsigned i;\\n  for (i = 0; i < MLKEM_N; i++)\\n  __loop__(\\n    invariant(i <= MLKEM_N)\\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\\n    decreases(MLKEM_N - i))\\n  {\\n    /* The preconditions imply that the addition stays within int16_t. */\\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\\n  }\\n}', 'evidence': {'source_file': '/home/girish/thesis-agent-workflow/inputs/code/poly.c', 'start_line': 228, 'end_line': 242, 'text': 'MLK_INTERNAL_API\\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\\n{\\n  unsigned i;\\n  for (i = 0; i < MLKEM_N; i++)\\n  __loop__(\\n    invariant(i <= MLKEM_N)\\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\\n    decreases(MLKEM_N - i))\\n  {\\n    /* The preconditions imply that the addition stays within int16_t. */\\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\\n  }\\n}'}}",
+        "Harness/manifest target call: mlk_poly_add",
+        "Array accesses detected: 7",
+        "Loops detected: 0"
+      ]
+    },
+    {
+      "criterion": "assumption_quality",
+      "score": 4,
+      "max_score": 5,
+      "level": "good",
+      "rationale": "Assumptions exist and appear connected to extracted specification assumptions.",
+      "evidence": [
+        "CBMC assumptions in harness: 1",
+        "Spec assumptions extracted: 15",
+        "Critic assumption concerns: 0"
+      ]
+    },
+    {
+      "criterion": "assertion_quality",
+      "score": 3,
+      "max_score": 5,
+      "level": "moderate",
+      "rationale": "Assertions exist but critic identified possible weakness or over-strength.",
+      "evidence": [
+        "Assertions in harness: 1",
+        "Critic assertion concerns: 2"
+      ]
+    },
+    {
+      "criterion": "failure_usefulness",
+      "score": 2,
+      "max_score": 5,
+      "level": "weak",
+      "rationale": "Failure usefulness evidence is incomplete.",
+      "evidence": [
+        "CBMC status: dry_run",
+        "Failure type: none",
+        "Failure categories: 0",
+        "Suggested fixes: 1"
+      ]
+    },
+    {
+      "criterion": "human_correction_effort",
+      "score": 3,
+      "max_score": 5,
+      "level": "moderate",
+      "rationale": "Human correction effort appears moderate or not fully known.",
+      "evidence": [
+        "Repair status: repaired_candidate_generated",
+        "Repair changes recorded: 0",
+        "High/critical critic issues: 0",
+        "CBMC status: dry_run"
+      ]
+    },
+    {
+      "criterion": "reproducibility",
+      "score": 5,
+      "max_score": 5,
+      "level": "excellent",
+      "rationale": "Run is highly reproducible with files, prompts, statuses, and events recorded.",
+      "evidence": [
+        "Expected files present: 13/13",
+        "Events log present: True",
+        "Prompt directory present: True",
+        "Agent status directory present: True",
+        "Experiment log present: True"
+      ]
+    },
+    {
+      "criterion": "spec_parsing_quality",
+      "score": 4,
+      "max_score": 5,
+      "level": "good",
+      "rationale": "Agent 2 v2 produced traceable structured parsing evidence across the selected spec material. Some review is still needed.",
+      "evidence": [
+        "Overall v2 spec parsing score: 0.705",
+        "Agent 2 v2 core file coverage: 1.0"
+      ]
+    },
+    {
+      "criterion": "algorithm_extraction_coverage",
+      "score": 1,
+      "max_score": 5,
+      "level": "poor",
+      "rationale": "No usable evidence was found for this v2 evaluation dimension.",
+      "evidence": [
+        "Algorithm blocks: 0",
+        "Quality: 0.0"
+      ]
+    },
+    {
+      "criterion": "symbol_extraction_coverage",
+      "score": 3,
+      "max_score": 5,
+      "level": "moderate",
+      "rationale": "Symbol extraction lacks enough meaning/evidence. Still useful as partial evidence.",
+      "evidence": [
+        "Symbols: 2",
+        "Quality: 0.5"
+      ]
+    },
+    {
+      "criterion": "parameter_extraction_confidence",
+      "score": 5,
+      "max_score": 5,
+      "level": "excellent",
+      "rationale": "Parameter extraction includes values, confidence, and evidence.",
+      "evidence": [
+        "Parameters: 1",
+        "Average confidence: 0.8"
+      ]
+    },
+    {
+      "criterion": "spec_claim_human_review_status",
+      "score": 5,
+      "max_score": 5,
+      "level": "excellent",
+      "rationale": "Extracted spec claims include evidence and/or explicit human-review status.",
+      "evidence": [
+        "Claims: 138",
+        "Coverage: 1.0"
+      ]
+    }
+  ],
+  "overall_score_percent": 67.14
+}

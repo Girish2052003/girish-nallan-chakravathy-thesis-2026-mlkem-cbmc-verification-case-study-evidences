@@ -1,0 +1,55 @@
+{
+  "target_function_for_harness_call": "mlk_poly_add",
+  "suggested_cbmc_function": "harness_mlk_poly_add",
+  "object_setup_hints": [
+    "Create a concrete object for pointer parameter `b` and pass its address to `mlk_poly_add`.",
+    "Create a concrete object for pointer parameter `r` and pass its address to `mlk_poly_add`."
+  ],
+  "loop_bound_expressions": [
+    "i < MLKEM_N"
+  ],
+  "unwind_guess": 256,
+  "recommended_checks": [
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--undefined-shift-check",
+    "--unsigned-overflow-check",
+    "check return value against selected property if specification gives one"
+  ],
+  "helper_sources_or_stubs_may_be_needed": [
+    "__loop__",
+    "invariant",
+    "invariant",
+    "forall",
+    "loop_entry",
+    "invariant",
+    "forall",
+    "loop_entry",
+    "decreases"
+  ],
+  "assumption_warning": "Do not invent input ranges from code alone. Use spec summary + type definitions + human review before adding __CPROVER_assume constraints.",
+  "schema_version": "2.0",
+  "target_function": "mlk_poly_add",
+  "suggested_harness_function": "harness_mlk_poly_add",
+  "unwind_recommendations": [
+    256
+  ],
+  "object_setup_plan": [
+    "Create a concrete object for `b` and pass its address/pointer safely.",
+    "Create a concrete object for `r` and pass its address/pointer safely."
+  ],
+  "assumption_policy": {
+    "do_not_invent_ranges_from_code_alone": true,
+    "allowed_sources_for_assumptions": [
+      "01_spec_summary.json",
+      "01_preconditions_postconditions.json",
+      "01_equations_constraints.json",
+      "02_code_summary.json",
+      "human_notes.md"
+    ],
+    "human_review_required": true
+  },
+  "candidate_first_harness_strategy": "Start with memory/pointer/bounds checks before stronger functional assertions when the spec/code mapping is uncertain.",
+  "guardrail": "These hints guide candidate CBMC harness generation only; they do not prove correctness."
+}

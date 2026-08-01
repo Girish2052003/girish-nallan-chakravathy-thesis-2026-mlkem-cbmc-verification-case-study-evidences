@@ -1,0 +1,122 @@
+{
+  "schema_version": "2.0",
+  "agent": "artifact_generation_agent_v2",
+  "assertions_inserted": [
+    {
+      "kind": "cbmc_builtin_checks",
+      "text": "Bounds, pointer, and overflow checks are primarily requested through CBMC command-line flags.",
+      "human_review_required": true
+    },
+    {
+      "kind": "spec_algorithm_assignment_reference",
+      "text": "Agent 2 v2 parsed algorithm assignment(s); recorded for Critic/Human review before converting into strong assertions.",
+      "count": 10,
+      "human_review_required": true
+    },
+    {
+      "kind": "functional_assertion",
+      "text": "assert(r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i])))",
+      "basis": "detected implementation assignment",
+      "warning": "If target storage type narrows the RHS, Critic Agent may need to revise this assertion or add justified range assumptions.",
+      "human_review_required": true
+    }
+  ],
+  "candidate_algorithm_assignments": [
+    {
+      "lhs": "(ek, dk)",
+      "rhs": "ML-KEM",
+      "source": "rich_spec_text",
+      "evidence": " (ek, dk) <- ML-KEM",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "(𝑐, 𝐾)",
+      "rhs": "ML-KEM",
+      "source": "rich_spec_text",
+      "evidence": " (𝑐, 𝐾) <- ML-KEM",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚",
+      "rhs": "- 𝔹32",
+      "source": "rich_spec_text",
+      "evidence": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "txt 96 96 generation is denoted by a statement of the form 𝑚",
+      "rhs": "- 𝔹32",
+      "source": "rich_spec_text",
+      "evidence": "txt 96 96 generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚",
+      "rhs": "𝐻(𝑚)",
+      "source": "rich_spec_text",
+      "evidence": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "txt 137 137 20, there was an additional step that performed the operation 𝑚",
+      "rhs": "𝐻(𝑚)",
+      "source": "rich_spec_text",
+      "evidence": "txt 137 137 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "1. (ek, dk)",
+      "rhs": "ML-KEM.KeyGen()",
+      "source": "rich_spec_text",
+      "evidence": "1. (ek, dk) <- ML-KEM.KeyGen()",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "2. (𝑐, 𝐾)",
+      "rhs": "ML-KEM.Encaps(ek)",
+      "source": "rich_spec_text",
+      "evidence": "2. (𝑐, 𝐾) <- ML-KEM.Encaps(ek)",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "generation is denoted by a statement of the form 𝑚",
+      "rhs": "- 𝔹32 . A fresh string of random bytes",
+      "source": "rich_spec_text",
+      "evidence": "generation is denoted by a statement of the form 𝑚 <-- 𝔹32 . A fresh string of random bytes",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    },
+    {
+      "lhs": "20, there was an additional step that performed the operation 𝑚",
+      "rhs": "𝐻(𝑚). The purpose",
+      "source": "rich_spec_text",
+      "evidence": "20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚). The purpose",
+      "status": "candidate_from_spec_algorithm",
+      "human_review_required": true
+    }
+  ],
+  "selected_property_types": [
+    "array_bounds",
+    "input_pointer_validity",
+    "loop_bound",
+    "memory_safety",
+    "output_pointer_validity",
+    "parameter_consistency",
+    "spec_code_alignment"
+  ],
+  "critic_agent_checks_required": [
+    "Confirm each assertion follows the selected algorithm/spec section.",
+    "Confirm loop bound and array length are correct.",
+    "Confirm modulus/range assumptions are not invented.",
+    "Confirm functional assertions are not vacuous and account for aliasing/narrowing."
+  ],
+  "human_review_required": true
+}

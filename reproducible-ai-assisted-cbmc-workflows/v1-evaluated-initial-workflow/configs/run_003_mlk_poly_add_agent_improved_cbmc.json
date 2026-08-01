@@ -1,0 +1,103 @@
+{
+  "run_id": "run_003_mlk_poly_add_agent_improved_cbmc",
+  "target_scheme": "ML-KEM",
+  "target_function": "mlk_poly_add",
+  "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+  "header_files": [
+    "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/common.h"
+  ],
+  "spec_mode": "auto_search",
+  "spec_source": "/home/girish/thesis-agent-workflow/inputs/specs/fips203_clean.txt",
+  "auto_extract_spec_excerpt": true,
+  "spec_search_terms": [
+    "polynomial addition",
+    "polynomial coefficients",
+    "modulo q",
+    "q = 3329",
+    "n = 256",
+    "ML-KEM",
+    "K-PKE"
+  ],
+  "spec_max_sections": 3,
+  "spec_context_lines": 8,
+  "verification_goal": "Generate and CBMC-check an improved Agent 5 candidate harness for mlk_poly_add using the human-learned Run 002 correction pattern: old_r snapshot, no-overflow preconditions, and coefficient-wise in-place update assertion.",
+  "verification_tool": "CBMC",
+  "artifact_type": "CBMC harness",
+  "max_iterations": 1,
+  "parallel_initial_agents": false,
+  "strict_outputs": false,
+  "logging": true,
+  "output_root": "/home/girish/thesis-agent-workflow/runs",
+  "spec_extraction_settings": {
+    "mode": "auto_search",
+    "use_external_llm": false,
+    "auto_extract_spec_excerpt": true,
+    "max_sections": 3,
+    "context_lines": 8
+  },
+  "code_understanding_settings": {
+    "use_external_llm": false,
+    "include_headers": true,
+    "extract_target_function_only": true
+  },
+  "property_discovery_settings": {
+    "use_external_llm": false,
+    "prioritise_property_groups": [
+      "pointer_object_validity",
+      "array_bounds",
+      "loop_bounds",
+      "coefficient_update_behaviour",
+      "integer_overflow_awareness",
+      "non_aliasing_assumptions"
+    ]
+  },
+  "artifact_generation_settings": {
+    "use_external_llm": false,
+    "artifact_language": "C",
+    "generate_cbmc_harness": true,
+    "generate_notes": true,
+    "use_human_learned_mlk_poly_add_template": true
+  },
+  "review_critic_settings": {
+    "use_external_llm": false,
+    "strict_review": true
+  },
+  "tool_execution_settings": {
+    "respect_critic_gate": true,
+    "block_on_high_critic_issues": false,
+    "execute": true
+  },
+  "cbmc_settings": {
+    "function": "harness_mlk_poly_add",
+    "bounds_check": true,
+    "pointer_check": true,
+    "signed_overflow_check": true,
+    "unsigned_overflow_check": true,
+    "unwind": 257,
+    "unwinding_assertions": true,
+    "execute": true,
+    "timeout_seconds": 120,
+    "object_bits": 8
+  },
+  "reference_context": {
+    "implementation_repo": "/home/girish/thesis-repos/mlkem-native",
+    "reference_cbmc_harness": "/home/girish/thesis-repos/mlkem-native/proofs/cbmc/poly_add/poly_add_harness.c",
+    "reference_cbmc_makefile": "/home/girish/thesis-repos/mlkem-native/proofs/cbmc/poly_add/Makefile",
+    "note": "Reference proof material is used only as comparison/context, not as generated thesis output."
+  },
+  "scientific_guardrails": {
+    "llm_outputs_are_candidates_only": true,
+    "formal_tool_is_final_checker": true,
+    "human_review_required": true,
+    "do_not_claim_full_mlkem_proof": true,
+    "do_not_claim_full_fips203_conformance": true,
+    "log_failures_honestly": true
+  },
+  "case_study_role": "agent_improved_after_human_corrected_run_002",
+  "human_review_required": true,
+  "project_root": "/home/girish/thesis-agent-workflow",
+  "spec_file": "/home/girish/thesis-agent-workflow/inputs/specs/fips203_clean.txt"
+}

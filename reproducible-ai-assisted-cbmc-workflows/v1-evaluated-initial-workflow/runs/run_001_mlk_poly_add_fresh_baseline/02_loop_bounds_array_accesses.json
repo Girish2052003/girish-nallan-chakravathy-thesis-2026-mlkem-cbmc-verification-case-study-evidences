@@ -1,0 +1,210 @@
+{
+  "schema_version": "2.0",
+  "target_function": "mlk_poly_add",
+  "loop_bound_analysis": [
+    {
+      "loop_id": "L1",
+      "line": 230,
+      "loop_variable_guess": "i",
+      "condition": "i < MLKEM_N",
+      "bound_expression": "MLKEM_N",
+      "bound_kind": "macro",
+      "bound_value_guess": 256,
+      "cbmc_unwind_recommendation": 256,
+      "human_review_required": false,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    }
+  ],
+  "array_accesses": [
+    {
+      "expression": "r->coeffs[k0]",
+      "base": "r->coeffs",
+      "index": "k0",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "coeffs[k0]",
+      "base": "coeffs",
+      "index": "k0",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "r->coeffs[k1]",
+      "base": "r->coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "coeffs[k1]",
+      "base": "coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "b->coeffs[k1]",
+      "base": "b->coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "r->coeffs[i]",
+      "base": "r->coeffs",
+      "index": "i",
+      "line": 238,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "b->coeffs[i]",
+      "base": "b->coeffs",
+      "index": "i",
+      "line": 238,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ],
+  "pointer_accesses": [
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "b->coeffs",
+      "pointer": "b",
+      "field": "coeffs",
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 238,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "b->coeffs",
+      "pointer": "b",
+      "field": "coeffs",
+      "line": 238,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "*r",
+      "pointer": "r",
+      "field": null,
+      "line": 233,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "*r",
+      "pointer": "r",
+      "field": null,
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    }
+  ],
+  "guardrail": "Loop and access facts are extracted candidates; CBMC and human review remain required."
+}

@@ -1,0 +1,551 @@
+.
+|-- agents
+|   |-- artifact_generation_agent.py
+|   |-- artifact_generation_agent.py.before_mlk_poly_add_learned_template
+|   |-- code_understanding_agent.py
+|   |-- counterexample_analysis_agent.py
+|   |-- evaluation_reporter.py
+|   |-- experiment_logger.py
+|   |-- master_orchestrator.py
+|   |-- property_discovery_agent.py
+|   |-- repair_agent.py
+|   |-- repair_agent.py.before_reason_arg_fix
+|   |-- review_critic_agent.py
+|   |-- spec_extraction_agent.py
+|   `-- tool_execution_agent.py
+|-- configs
+|   |-- run_001_mlk_poly_add_fresh_baseline.before_absolute_paths.json
+|   |-- run_001_mlk_poly_add_fresh_baseline.json
+|   `-- run_003_mlk_poly_add_agent_improved_cbmc.json
+|-- dryruns
+|   `-- run_001_mlk_poly_add_fresh_baseline_dryrun_20260709_052253
+|       |-- .orchestrator
+|       |-- events.jsonl
+|       |-- final_run_summary.json
+|       |-- input
+|       |   |-- fips203_clean.txt
+|       |   |-- poly.c
+|       |   `-- run_001_mlk_poly_add_fresh_baseline.json
+|       |-- run_config.resolved.json
+|       |-- snapshots
+|       |   |-- iteration_00
+|       |   |   `-- status.json
+|       |   `-- iteration_01
+|       |       `-- status.json
+|       |-- status.json
+|       |-- stdout_stderr
+|       `-- workflow_plan.json
+|-- failed_runs
+|   `-- run_001_mlk_poly_add_fresh_baseline_repair_arg_fail_20260709_053326
+|       |-- .orchestrator
+|       |-- 01_algorithm_blocks.json
+|       |-- 01_equations_constraints.json
+|       |-- 01_parameter_table.json
+|       |-- 01_preconditions_postconditions.json
+|       |-- 01_spec_sections_index.json
+|       |-- 01_spec_summary.json
+|       |-- 01_spec_summary.md
+|       |-- 01_spec_to_code_hints.json
+|       |-- 01_symbol_table.json
+|       |-- 02_agent2v2_integration_report.json
+|       |-- 02_cbmc_harness_hints.json
+|       |-- 02_code_structure_index.json
+|       |-- 02_code_summary.json
+|       |-- 02_code_summary.md
+|       |-- 02_code_symbol_table.json
+|       |-- 02_code_understanding_v2_report.json
+|       |-- 02_function_signature_analysis.json
+|       |-- 02_integer_range_obligations.csv
+|       |-- 02_integer_range_obligations.json
+|       |-- 02_loop_bound_analysis.csv
+|       |-- 02_loop_bounds_array_accesses.json
+|       |-- 02_macro_constant_map.csv
+|       |-- 02_macro_constant_map.json
+|       |-- 02_memory_safety_obligations.csv
+|       |-- 02_memory_safety_obligations.json
+|       |-- 02_spec_code_mapping_candidates.csv
+|       |-- 02_spec_code_mapping_candidates.json
+|       |-- 03_agent2v2_integration_report.json
+|       |-- 03_candidate_properties.json
+|       |-- 03_candidate_properties.md
+|       |-- 03_property_evidence_matrix.csv
+|       |-- 03_spec_code_traceability.json
+|       |-- 04_artifact_manifest.json
+|       |-- 04_generated_harness.c
+|       |-- 04_generated_harness.md
+|       |-- 04_harness_assumption_traceability.csv
+|       |-- 04_spec_grounded_assertion_plan.json
+|       |-- 04_spec_grounding_report.json
+|       |-- 05_assertion_algorithm_alignment.csv
+|       |-- 05_assumption_evidence_review.csv
+|       |-- 05_critic_review.json
+|       |-- 05_critic_review.md
+|       |-- 05_spec_grounding_review.json
+|       |-- 05_symbol_uncertainty_review.json
+|       |-- 06_cbmc_command.txt
+|       |-- 06_cbmc_diagnostics.json
+|       |-- 06_cbmc_output.txt
+|       |-- 06_cbmc_property_results.json
+|       |-- 06_cbmc_status.json
+|       |-- 06_cbmc_trace_summary.json
+|       |-- 06_critic_gate_decision.json
+|       |-- 06_failed_property_mapping.json
+|       |-- 06_property_mapping.csv
+|       |-- 06_tool_command_manifest.json
+|       |-- 06_tool_environment_snapshot.json
+|       |-- 06_tool_execution.md
+|       |-- 06_tool_execution_traceability.json
+|       |-- 07_agent7v2_integration_report.json
+|       |-- 07_assumption_assertion_failure_map.csv
+|       |-- 07_cbmc_trace_summary.json
+|       |-- 07_counterexample_analysis.json
+|       |-- 07_counterexample_analysis.md
+|       |-- 07_failed_property_mapping.json
+|       |-- 07_failure_classification_matrix.csv
+|       |-- 07_repair_action_plan.json
+|       |-- 07_repair_guidance.json
+|       |-- 07_tool_vs_harness_vs_code_diagnosis.json
+|       |-- agent_status
+|       |   |-- 01_spec_extraction_status.json
+|       |   |-- 02_code_understanding_status.json
+|       |   |-- 03_property_discovery_status.json
+|       |   |-- 04_artifact_generation_status.json
+|       |   |-- 05_critic_review_status.json
+|       |   |-- 06_tool_execution_status.json
+|       |   `-- 07_counterexample_analysis_status.json
+|       |-- events.jsonl
+|       |-- final_run_summary.json
+|       |-- input
+|       |   |-- fips203_clean.txt
+|       |   |-- poly.c
+|       |   `-- run_001_mlk_poly_add_fresh_baseline.json
+|       |-- llm_outputs
+|       |-- llm_prompts
+|       |   |-- 01_spec_extraction_prompt.txt
+|       |   |-- 02_code_understanding_prompt.txt
+|       |   |-- 03_property_discovery_prompt.txt
+|       |   |-- 04_artifact_generation_prompt.txt
+|       |   |-- 05_critic_review_prompt.txt
+|       |   |-- 06_tool_execution_instruction.txt
+|       |   `-- 07_counterexample_analysis_prompt.txt
+|       |-- run_config.resolved.json
+|       |-- selected_spec_excerpt.txt
+|       |-- snapshots
+|       |-- status.json
+|       |-- stdout_stderr
+|       |   |-- artifact_generation_stderr.txt
+|       |   |-- artifact_generation_stdout.txt
+|       |   |-- code_understanding_stderr.txt
+|       |   |-- code_understanding_stdout.txt
+|       |   |-- counterexample_analysis_stderr.txt
+|       |   |-- counterexample_analysis_stdout.txt
+|       |   |-- critic_review_stderr.txt
+|       |   |-- critic_review_stdout.txt
+|       |   |-- property_discovery_stderr.txt
+|       |   |-- property_discovery_stdout.txt
+|       |   |-- repair_stderr.txt
+|       |   |-- repair_stdout.txt
+|       |   |-- spec_extraction_stderr.txt
+|       |   |-- spec_extraction_stdout.txt
+|       |   |-- tool_execution_stderr.txt
+|       |   `-- tool_execution_stdout.txt
+|       |-- tool_outputs
+|       |   `-- cbmc_output_iteration_00.txt
+|       `-- workflow_plan.json
+|-- inputs
+|   |-- code
+|   |   |-- cbmc.h
+|   |   |-- common.h
+|   |   |-- compress.h
+|   |   |-- debug.h
+|   |   |-- fips202
+|   |   |   |-- fips202.h
+|   |   |   |-- fips202x4.h
+|   |   |   `-- keccakf1600.h
+|   |   |-- indcpa.h
+|   |   |-- kem.h
+|   |   |-- mlkem_native_config.h
+|   |   |-- params.h
+|   |   |-- poly.c
+|   |   |-- poly.h
+|   |   |-- poly_k.h
+|   |   |-- randombytes.h
+|   |   |-- sampling.h
+|   |   |-- symmetric.h
+|   |   |-- sys.h
+|   |   |-- verify.h
+|   |   `-- zetas.inc
+|   `-- specs
+|       |-- fips203.pdf
+|       `-- fips203_clean.txt
+|-- runs
+|   |-- mlk_poly_add_case_study_summary
+|   |   |-- evidence_packet_for_chatgpt.txt
+|   |   |-- run_001_002_003_comparison.csv
+|   |   |-- run_001_002_003_comparison.md
+|   |   `-- run_comparison_files.sha256
+|   |-- run_001_mlk_poly_add_fresh_baseline
+|   |   |-- .orchestrator
+|   |   |-- 01_algorithm_blocks.json
+|   |   |-- 01_equations_constraints.json
+|   |   |-- 01_parameter_table.json
+|   |   |-- 01_preconditions_postconditions.json
+|   |   |-- 01_spec_sections_index.json
+|   |   |-- 01_spec_summary.json
+|   |   |-- 01_spec_summary.md
+|   |   |-- 01_spec_to_code_hints.json
+|   |   |-- 01_symbol_table.json
+|   |   |-- 02_agent2v2_integration_report.json
+|   |   |-- 02_cbmc_harness_hints.json
+|   |   |-- 02_code_structure_index.json
+|   |   |-- 02_code_summary.json
+|   |   |-- 02_code_summary.md
+|   |   |-- 02_code_symbol_table.json
+|   |   |-- 02_code_understanding_v2_report.json
+|   |   |-- 02_function_signature_analysis.json
+|   |   |-- 02_integer_range_obligations.csv
+|   |   |-- 02_integer_range_obligations.json
+|   |   |-- 02_loop_bound_analysis.csv
+|   |   |-- 02_loop_bounds_array_accesses.json
+|   |   |-- 02_macro_constant_map.csv
+|   |   |-- 02_macro_constant_map.json
+|   |   |-- 02_memory_safety_obligations.csv
+|   |   |-- 02_memory_safety_obligations.json
+|   |   |-- 02_spec_code_mapping_candidates.csv
+|   |   |-- 02_spec_code_mapping_candidates.json
+|   |   |-- 03_agent2v2_integration_report.json
+|   |   |-- 03_candidate_properties.json
+|   |   |-- 03_candidate_properties.md
+|   |   |-- 03_property_evidence_matrix.csv
+|   |   |-- 03_spec_code_traceability.json
+|   |   |-- 04_artifact_manifest.json
+|   |   |-- 04_generated_harness.c
+|   |   |-- 04_generated_harness.md
+|   |   |-- 04_harness_assumption_traceability.csv
+|   |   |-- 04_spec_grounded_assertion_plan.json
+|   |   |-- 04_spec_grounding_report.json
+|   |   |-- 05_assertion_algorithm_alignment.csv
+|   |   |-- 05_assumption_evidence_review.csv
+|   |   |-- 05_critic_review.json
+|   |   |-- 05_critic_review.md
+|   |   |-- 05_spec_grounding_review.json
+|   |   |-- 05_symbol_uncertainty_review.json
+|   |   |-- 06_cbmc_command.txt
+|   |   |-- 06_cbmc_diagnostics.json
+|   |   |-- 06_cbmc_output.txt
+|   |   |-- 06_cbmc_property_results.json
+|   |   |-- 06_cbmc_status.json
+|   |   |-- 06_cbmc_trace_summary.json
+|   |   |-- 06_critic_gate_decision.json
+|   |   |-- 06_failed_property_mapping.json
+|   |   |-- 06_property_mapping.csv
+|   |   |-- 06_tool_command_manifest.json
+|   |   |-- 06_tool_environment_snapshot.json
+|   |   |-- 06_tool_execution.md
+|   |   |-- 06_tool_execution_traceability.json
+|   |   |-- 07_agent7v2_integration_report.json
+|   |   |-- 07_assumption_assertion_failure_map.csv
+|   |   |-- 07_cbmc_trace_summary.json
+|   |   |-- 07_counterexample_analysis.json
+|   |   |-- 07_counterexample_analysis.md
+|   |   |-- 07_failed_property_mapping.json
+|   |   |-- 07_failure_classification_matrix.csv
+|   |   |-- 07_repair_action_plan.json
+|   |   |-- 07_repair_guidance.json
+|   |   |-- 07_tool_vs_harness_vs_code_diagnosis.json
+|   |   |-- 08_assertion_changes.csv
+|   |   |-- 08_assumption_changes.csv
+|   |   |-- 08_repair_action_plan_consumed.json
+|   |   |-- 08_repair_decision_log.json
+|   |   |-- 08_repair_input_snapshot.json
+|   |   |-- 08_repair_manifest_update.json
+|   |   |-- 08_repair_notes.json
+|   |   |-- 08_repair_notes.md
+|   |   |-- 08_repair_patch.diff
+|   |   |-- 08_repair_safety_review.json
+|   |   |-- 08_repair_traceability.json
+|   |   |-- 08_repaired_harness.c
+|   |   |-- 09_checksums.sha256
+|   |   |-- 09_experiment_log.json
+|   |   |-- 09_experiment_log.md
+|   |   |-- 09_file_index.csv
+|   |   |-- 09_file_index.json
+|   |   |-- 10_evaluation_report.json
+|   |   |-- 10_evaluation_report.md
+|   |   |-- agent_status
+|   |   |   |-- 01_spec_extraction_status.json
+|   |   |   |-- 02_code_understanding_status.json
+|   |   |   |-- 03_property_discovery_status.json
+|   |   |   |-- 04_artifact_generation_status.json
+|   |   |   |-- 05_critic_review_status.json
+|   |   |   |-- 06_tool_execution_status.json
+|   |   |   |-- 07_counterexample_analysis_status.json
+|   |   |   |-- 08_repair_status.json
+|   |   |   |-- 09_experiment_logger_status.json
+|   |   |   `-- 10_evaluation_reporter_status.json
+|   |   |-- evaluation
+|   |   |   |-- algorithm_extraction_coverage.csv
+|   |   |   |-- evaluation_table.csv
+|   |   |   |-- failure_taxonomy.csv
+|   |   |   |-- human_review_checklist.md
+|   |   |   |-- parameter_extraction_confidence.csv
+|   |   |   |-- property_coverage.csv
+|   |   |   |-- run_quality_scorecard.json
+|   |   |   |-- spec_claim_human_review_status.csv
+|   |   |   |-- spec_parsing_quality.csv
+|   |   |   |-- spec_parsing_quality.json
+|   |   |   `-- symbol_extraction_coverage.csv
+|   |   |-- events.jsonl
+|   |   |-- final_report.md
+|   |   |-- final_run_summary.json
+|   |   |-- human_notes.md
+|   |   |-- input
+|   |   |   |-- fips203_clean.txt
+|   |   |   |-- poly.c
+|   |   |   `-- run_001_mlk_poly_add_fresh_baseline.json
+|   |   |-- llm_outputs
+|   |   |-- llm_prompts
+|   |   |   |-- 01_spec_extraction_prompt.txt
+|   |   |   |-- 02_code_understanding_prompt.txt
+|   |   |   |-- 03_property_discovery_prompt.txt
+|   |   |   |-- 04_artifact_generation_prompt.txt
+|   |   |   |-- 05_critic_review_prompt.txt
+|   |   |   |-- 06_tool_execution_instruction.txt
+|   |   |   |-- 07_counterexample_analysis_prompt.txt
+|   |   |   |-- 08_repair_prompt.txt
+|   |   |   |-- 09_experiment_logger_prompt.txt
+|   |   |   `-- 10_evaluation_reporter_prompt.txt
+|   |   |-- repairs
+|   |   |   `-- iteration_00
+|   |   |       |-- 08_assertion_changes.csv
+|   |   |       |-- 08_assumption_changes.csv
+|   |   |       |-- 08_repair_action_plan_consumed.json
+|   |   |       |-- 08_repair_decision_log.json
+|   |   |       |-- 08_repair_input_snapshot.json
+|   |   |       |-- 08_repair_manifest_update.json
+|   |   |       |-- 08_repair_notes.json
+|   |   |       |-- 08_repair_notes.md
+|   |   |       |-- 08_repair_patch.diff
+|   |   |       |-- 08_repair_safety_review.json
+|   |   |       |-- 08_repair_traceability.json
+|   |   |       `-- 08_repaired_harness.c
+|   |   |-- run_config.resolved.json
+|   |   |-- selected_spec_excerpt.txt
+|   |   |-- snapshots
+|   |   |   |-- iteration_00
+|   |   |   |   |-- 04_generated_harness.c
+|   |   |   |   |-- 05_critic_review.json
+|   |   |   |   |-- 06_cbmc_output.txt
+|   |   |   |   |-- 06_cbmc_status.json
+|   |   |   |   |-- 07_counterexample_analysis.json
+|   |   |   |   |-- 08_repair_notes.json
+|   |   |   |   |-- 08_repaired_harness.c
+|   |   |   |   `-- status.json
+|   |   |   `-- iteration_01
+|   |   |       |-- 04_generated_harness.c
+|   |   |       |-- 05_critic_review.json
+|   |   |       |-- 06_cbmc_output.txt
+|   |   |       |-- 06_cbmc_status.json
+|   |   |       |-- 07_counterexample_analysis.json
+|   |   |       |-- 08_repair_notes.json
+|   |   |       |-- 08_repaired_harness.c
+|   |   |       `-- status.json
+|   |   |-- status.json
+|   |   |-- stdout_stderr
+|   |   |   |-- artifact_generation_stderr.txt
+|   |   |   |-- artifact_generation_stdout.txt
+|   |   |   |-- code_understanding_stderr.txt
+|   |   |   |-- code_understanding_stdout.txt
+|   |   |   |-- counterexample_analysis_stderr.txt
+|   |   |   |-- counterexample_analysis_stdout.txt
+|   |   |   |-- critic_review_stderr.txt
+|   |   |   |-- critic_review_stdout.txt
+|   |   |   |-- evaluation_reporter_stderr.txt
+|   |   |   |-- evaluation_reporter_stdout.txt
+|   |   |   |-- experiment_logger_stderr.txt
+|   |   |   |-- experiment_logger_stdout.txt
+|   |   |   |-- property_discovery_stderr.txt
+|   |   |   |-- property_discovery_stdout.txt
+|   |   |   |-- repair_stderr.txt
+|   |   |   |-- repair_stdout.txt
+|   |   |   |-- spec_extraction_stderr.txt
+|   |   |   |-- spec_extraction_stdout.txt
+|   |   |   |-- tool_execution_stderr.txt
+|   |   |   `-- tool_execution_stdout.txt
+|   |   |-- tool_outputs
+|   |   |   |-- cbmc_output_iteration_00.txt
+|   |   |   `-- cbmc_output_iteration_01.txt
+|   |   `-- workflow_plan.json
+|   |-- run_002_mlk_poly_add_human_corrected_cbmc
+|   |   |-- cbmc_command.txt
+|   |   |-- cbmc_command_v6.txt
+|   |   |-- cbmc_exit.txt
+|   |   |-- cbmc_exit_v2.txt
+|   |   |-- cbmc_exit_v3.txt
+|   |   |-- cbmc_exit_v4.txt
+|   |   |-- cbmc_exit_v5.txt
+|   |   |-- cbmc_exit_v6.txt
+|   |   |-- cbmc_output.txt
+|   |   |-- cbmc_output_v2.txt
+|   |   |-- cbmc_output_v3.txt
+|   |   |-- cbmc_output_v4.txt
+|   |   |-- cbmc_output_v5.txt
+|   |   |-- cbmc_output_v6.txt
+|   |   |-- cbmc_quick_summary.txt
+|   |   |-- cbmc_quick_summary_v2.txt
+|   |   |-- cbmc_quick_summary_v3.txt
+|   |   |-- cbmc_quick_summary_v4.txt
+|   |   |-- cbmc_quick_summary_v5.txt
+|   |   |-- cbmc_quick_summary_v6.txt
+|   |   |-- cbmc_stderr.txt
+|   |   |-- cbmc_stderr_v2.txt
+|   |   |-- cbmc_stderr_v3.txt
+|   |   |-- cbmc_stderr_v4.txt
+|   |   |-- cbmc_stderr_v5.txt
+|   |   |-- cbmc_stderr_v6.txt
+|   |   |-- controlled_spec_and_code_context.md
+|   |   |-- mlk_poly_add_human_corrected_harness.c
+|   |   |-- run_002_key_files.sha256
+|   |   `-- run_002_result_summary.md
+|   `-- run_003_mlk_poly_add_agent_improved_cbmc
+|       |-- .orchestrator
+|       |-- 01_algorithm_blocks.json
+|       |-- 01_equations_constraints.json
+|       |-- 01_parameter_table.json
+|       |-- 01_preconditions_postconditions.json
+|       |-- 01_spec_sections_index.json
+|       |-- 01_spec_summary.json
+|       |-- 01_spec_summary.md
+|       |-- 01_spec_to_code_hints.json
+|       |-- 01_symbol_table.json
+|       |-- 02_agent2v2_integration_report.json
+|       |-- 02_cbmc_harness_hints.json
+|       |-- 02_code_structure_index.json
+|       |-- 02_code_summary.json
+|       |-- 02_code_summary.md
+|       |-- 02_code_symbol_table.json
+|       |-- 02_code_understanding_v2_report.json
+|       |-- 02_function_signature_analysis.json
+|       |-- 02_integer_range_obligations.csv
+|       |-- 02_integer_range_obligations.json
+|       |-- 02_loop_bound_analysis.csv
+|       |-- 02_loop_bounds_array_accesses.json
+|       |-- 02_macro_constant_map.csv
+|       |-- 02_macro_constant_map.json
+|       |-- 02_memory_safety_obligations.csv
+|       |-- 02_memory_safety_obligations.json
+|       |-- 02_spec_code_mapping_candidates.csv
+|       |-- 02_spec_code_mapping_candidates.json
+|       |-- 03_agent2v2_integration_report.json
+|       |-- 03_candidate_properties.json
+|       |-- 03_candidate_properties.md
+|       |-- 03_property_evidence_matrix.csv
+|       |-- 03_spec_code_traceability.json
+|       |-- 04_artifact_manifest.json
+|       |-- 04_generated_harness.c
+|       |-- 04_generated_harness.md
+|       |-- 04_harness_assumption_traceability.csv
+|       |-- 04_spec_grounded_assertion_plan.json
+|       |-- 04_spec_grounding_report.json
+|       |-- 05_assertion_algorithm_alignment.csv
+|       |-- 05_assumption_evidence_review.csv
+|       |-- 05_critic_review.json
+|       |-- 05_critic_review.md
+|       |-- 05_spec_grounding_review.json
+|       |-- 05_symbol_uncertainty_review.json
+|       |-- 06_cbmc_command.txt
+|       |-- 06_cbmc_diagnostics.json
+|       |-- 06_cbmc_output.txt
+|       |-- 06_cbmc_property_results.json
+|       |-- 06_cbmc_status.json
+|       |-- 06_cbmc_trace_summary.json
+|       |-- 06_critic_gate_decision.json
+|       |-- 06_failed_property_mapping.json
+|       |-- 06_property_mapping.csv
+|       |-- 06_tool_command_manifest.json
+|       |-- 06_tool_environment_snapshot.json
+|       |-- 06_tool_execution.md
+|       |-- 06_tool_execution_traceability.json
+|       |-- 09_checksums.sha256
+|       |-- 09_experiment_log.json
+|       |-- 09_experiment_log.md
+|       |-- 09_file_index.csv
+|       |-- 09_file_index.json
+|       |-- 10_evaluation_report.json
+|       |-- 10_evaluation_report.md
+|       |-- agent_status
+|       |   |-- 01_spec_extraction_status.json
+|       |   |-- 02_code_understanding_status.json
+|       |   |-- 03_property_discovery_status.json
+|       |   |-- 04_artifact_generation_status.json
+|       |   |-- 05_critic_review_status.json
+|       |   |-- 06_tool_execution_status.json
+|       |   |-- 09_experiment_logger_status.json
+|       |   `-- 10_evaluation_reporter_status.json
+|       |-- evaluation
+|       |   |-- algorithm_extraction_coverage.csv
+|       |   |-- evaluation_table.csv
+|       |   |-- failure_taxonomy.csv
+|       |   |-- human_review_checklist.md
+|       |   |-- parameter_extraction_confidence.csv
+|       |   |-- property_coverage.csv
+|       |   |-- run_quality_scorecard.json
+|       |   |-- spec_claim_human_review_status.csv
+|       |   |-- spec_parsing_quality.csv
+|       |   |-- spec_parsing_quality.json
+|       |   `-- symbol_extraction_coverage.csv
+|       |-- events.jsonl
+|       |-- final_report.md
+|       |-- final_run_summary.json
+|       |-- human_notes.md
+|       |-- input
+|       |   |-- fips203_clean.txt
+|       |   |-- poly.c
+|       |   `-- run_003_mlk_poly_add_agent_improved_cbmc.json
+|       |-- llm_outputs
+|       |-- llm_prompts
+|       |   |-- 01_spec_extraction_prompt.txt
+|       |   |-- 02_code_understanding_prompt.txt
+|       |   |-- 03_property_discovery_prompt.txt
+|       |   |-- 04_artifact_generation_prompt.txt
+|       |   |-- 05_critic_review_prompt.txt
+|       |   |-- 06_tool_execution_instruction.txt
+|       |   |-- 09_experiment_logger_prompt.txt
+|       |   `-- 10_evaluation_reporter_prompt.txt
+|       |-- run_003_key_files.sha256
+|       |-- run_003_result_summary.md
+|       |-- run_config.resolved.json
+|       |-- selected_spec_excerpt.txt
+|       |-- snapshots
+|       |   `-- iteration_00
+|       |       |-- 04_generated_harness.c
+|       |       |-- 05_critic_review.json
+|       |       |-- 06_cbmc_output.txt
+|       |       |-- 06_cbmc_status.json
+|       |       `-- status.json
+|       |-- status.json
+|       |-- stdout_stderr
+|       |   |-- artifact_generation_stderr.txt
+|       |   |-- artifact_generation_stdout.txt
+|       |   |-- code_understanding_stderr.txt
+|       |   |-- code_understanding_stdout.txt
+|       |   |-- critic_review_stderr.txt
+|       |   |-- critic_review_stdout.txt
+|       |   |-- evaluation_reporter_stderr.txt
+|       |   |-- evaluation_reporter_stdout.txt
+|       |   |-- experiment_logger_stderr.txt
+|       |   |-- experiment_logger_stdout.txt
+|       |   |-- property_discovery_stderr.txt
+|       |   |-- property_discovery_stdout.txt
+|       |   |-- spec_extraction_stderr.txt
+|       |   |-- spec_extraction_stdout.txt
+|       |   |-- tool_execution_stderr.txt
+|       |   `-- tool_execution_stdout.txt
+|       |-- tool_outputs
+|       |   `-- cbmc_output_iteration_00.txt
+|       `-- workflow_plan.json
+`-- tools
+    `-- smoke_tests
+        `-- cbmc_smoke.c
+
+55 directories, 494 files

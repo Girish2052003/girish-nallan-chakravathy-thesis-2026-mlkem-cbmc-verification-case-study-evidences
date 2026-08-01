@@ -1,0 +1,70 @@
+{
+  "schema_version": "2.0",
+  "target_function_requested": "mlk_poly_add",
+  "target_function_detected": "mlk_poly_add",
+  "signature": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+  "return_type": "MLK_INTERNAL_API void",
+  "parameter_count": 2,
+  "parameters": [
+    {
+      "index": 1,
+      "raw": "const mlk_poly *b",
+      "name": "b",
+      "type_guess": "const mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": true,
+      "is_array_syntax": false,
+      "direction_guess": "input_pointer_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "type_family": "poly_struct_or_alias",
+      "observed_written": false,
+      "observed_read": true,
+      "role_v2": "read_only_input",
+      "cbmc_object_setup_hint": "Create a concrete object for `b` and pass its address/pointer safely."
+    },
+    {
+      "index": 0,
+      "raw": "mlk_poly *r",
+      "name": "r",
+      "type_guess": "mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": false,
+      "is_array_syntax": false,
+      "direction_guess": "output_pointer_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "type_family": "poly_struct_or_alias",
+      "observed_written": true,
+      "observed_read": true,
+      "role_v2": "output_or_inout_pointer_written",
+      "cbmc_object_setup_hint": "Create a concrete object for `r` and pass its address/pointer safely."
+    }
+  ],
+  "aliasing_questions": [
+    {
+      "param_a": "b",
+      "param_b": "r",
+      "aliasing_question": "Can `b` and `r` refer to the same object?",
+      "default_for_harness": "do_not_assume_distinct_unless_code_or_spec_requires_it",
+      "human_review_required": true
+    }
+  ],
+  "function_evidence": {
+    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+    "start_line": 228,
+    "end_line": 242,
+    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+  },
+  "guardrail": "Parameter roles and aliasing questions are candidate interpretations requiring human/code review."
+}
