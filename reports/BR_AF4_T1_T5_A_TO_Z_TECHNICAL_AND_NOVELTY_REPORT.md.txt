@@ -1,0 +1,1237 @@
+# BR-AF4: A-to-Z Technical, Evidential, and Novelty Report
+
+## Full-domain CBMC theorem campaign for `mlk_barrett_reduce` in frozen `mlkem-native`
+
+**Campaign identifier:** BR-AF4  
+**Target function:** `mlk_barrett_reduce`  
+**Repository:** `pq-code-package/mlkem-native`  
+**Frozen commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
+**Frozen tree:** `54805daff6a91a010c05467ea678117c42a71559`  
+**Frozen `poly.c` SHA-256:** `f427dda46e29d53d3e33d683c9a8483bade3568eff43fb97b868a21bfd07c722`  
+**Recorded toolchain:** CBMC, `goto-cc`, and `goto-instrument` 6.9.0  
+**Parameter-set build configuration:** ML-KEM-768  
+**Report date:** 22 July 2026  
+**Document purpose:** Complete internal technical record suitable for supervisor/professor review  
+
+---
+
+## 1. Executive conclusion
+
+This campaign established, within the precisely stated source-level and CBMC modelling scope, that the frozen C implementation of `mlk_barrett_reduce` computes the exact centered representative modulo 3329 for every possible `int16_t` input. The strongest direct functional statement is T1.P4: the real frozen production function returns exactly the same value as an independently written Euclidean centered-modulo oracle over all 65,536 inputs.
+
+The work was then extended beyond ordinary output correctness into four additional families of implementation-specific properties:
+
+1. **T1 — Exact centered-residue refinement:** range, congruence, exact oracle equality, and unique closest `int16_t` representative.
+2. **T2 — Normalizer laws:** centered fixed point, idempotence, and residue-class invariance.
+3. **T3 — Exact quotient-cell partition:** the precise quotient computed by the magic-multiply-and-shift formula, its tight range, and the complete 21-cell partition of `int16_t`.
+4. **T4 — Unique safe multiplier:** `20159` is the unique multiplier in the complete declared nonnegative numerator-safe design space that gives exact centered reduction over all `int16_t` inputs, with offset and shift fixed.
+5. **T5 — Exact admissible offset interval:** with multiplier `20159` and shift `26` fixed, the exact set of full-domain-correct offsets in `[0,2^26-1]` is `[33548599,33560264]`.
+
+The complete campaign reports:
+
+| Evidence category | Result |
+|---|---:|
+| Distinct theorem families | 5 |
+| Named research properties | 23 PASS |
+| Concrete control assertions | 81 PASS |
+| Deliberately false mutants | 12 KILLED |
+| Principal-harness input assumptions | 0 |
+| Production-source modifications | 0 |
+| Frozen-worktree integrity | PASS |
+
+The theorem evidence is strong, but its meaning must remain scoped. It is a bit-precise source/GOTO-model result for the frozen commit under the recorded CBMC semantics, including arithmetic right shift of negative signed integers. It is not a proof of all possible C implementations, all compiler outputs, timing or side-channel security, fault resistance, or the full ML-KEM cryptosystem.
+
+The novelty review found no public source that states or machine-checks the **exact combined BR-AF4 suite** for the frozen `mlkem-native` C function, especially the T3 21-cell partition, T4 unique safe multiplier theorem, and T5 exact offset interval. However, universal nonexistence cannot be certified. Barrett reduction, centered modular representatives, reciprocal multiplication, and tight constant-division bounds are established mathematics. The defensible contribution is therefore an **implementation-specific theorem suite and reproducible CBMC evidence campaign**, not a claim that new modular arithmetic was invented.
+
+---
+
+## 2. What was being verified
+
+### 2.1 Frozen production implementation
+
+The examined function is a file-local C function in `mlkem/src/poly.c`. Its core arithmetic is:
+
+```c
+const int32_t magic = 20159;
+const int32_t t = (magic * a + ((int32_t)1 << 25)) >> 26;
+int16_t res = (int16_t)(a - t * MLKEM_Q);
+```
+
+For the frozen build, `MLKEM_Q = 3329`. Defining
+
+\[
+q=3329,\qquad M=20159,\qquad B=2^{25}=33554432,\qquad S=26,
+\]
+
+the implementation calculates
+
+\[
+t(a)=\operatorname{ashr}_{26}(M a+B)
+\]
+
+and returns
+
+\[
+R(a)=a-q\,t(a).
+\]
+
+The source documentation says that the function computes the centered representative congruent to the input modulo `q`. The checked-in function contract is weaker and directly enforces only the centered output range:
+
+```c
+ensures(return_value > -MLKEM_Q_HALF &&
+        return_value <  MLKEM_Q_HALF)
+```
+
+For `q=3329`, this is exactly
+
+\[
+-1664\le R(a)\le1664.
+\]
+
+The source also explicitly records a portability assumption: right shift of a negative signed integer is implementation-defined by the C standard, and the implementation assumes a sign-preserving arithmetic right shift.
+
+### 2.2 Independent mathematical reference
+
+The principal independent oracle was deliberately written without the production multiplier, rounding offset, or shift:
+
+```c
+static int32_t centered_oracle(int16_t a)
+{
+    int32_t u = (int32_t)a % 3329;
+    if (u < 0) u += 3329;
+    if (u > 1664) u -= 3329;
+    return u;
+}
+```
+
+This oracle first computes a Euclidean residue in `[0,3328]` and then maps residues `1665..3328` into the centered interval by subtracting 3329. Its independence is important: comparing the production function with a second copy of the same magic-multiply formula would provide weak circular evidence.
+
+### 2.3 Meaning of “full domain”
+
+The input type is `int16_t`, so the complete domain contains exactly 65,536 values:
+
+\[
+-32768\le a\le32767.
+\]
+
+CBMC represented nondeterministic `int16_t` inputs symbolically and translated the assertions into bit-vector/SAT obligations. This was not random testing and did not sample a subset of inputs. For the declared finite source-level model, a successful run means CBMC found no counterexample for any value in that complete domain.
+
+For relational and parameterized theorems, more than one symbolic variable was used. The reported pair counts describe the mathematical domain represented by those variables; they do not mean that a conventional loop concretely enumerated trillions of test cases.
+
+---
+
+## 3. Baseline in the frozen `mlkem-native` repository
+
+### 3.1 Native harness
+
+The repository-provided Barrett harness is minimal:
+
+```c
+int16_t mlk_barrett_reduce(int16_t a);
+
+void harness(void)
+{
+    int16_t a;
+    int16_t r;
+    r = mlk_barrett_reduce(a);
+}
+```
+
+Its Makefile sets:
+
+- `CHECK_FUNCTION_CONTRACTS=mlk_barrett_reduce`;
+- `USE_DYNAMIC_FRAMES=1`;
+- `APPLY_LOOP_CONTRACTS=on`;
+- an SMT backend;
+- the real `mlkem/src/poly.c` as a project source.
+
+This is a legitimate repository proof harness, but it has no independent functional oracle and no explicit assertions for congruence, exact centered equality, normalizer laws, quotient cells, multiplier uniqueness, or offset robustness. Its direct checked target is the existing function contract and the surrounding CBMC safety instrumentation.
+
+### 3.2 Why the new harnesses are genuinely distinct
+
+The BR-AF4 harnesses are not cosmetic copies of the repository harness. They add new formal objects and obligations:
+
+| Dimension | Native repository harness | BR-AF4 campaign |
+|---|---|---|
+| Direct input | Uninitialized symbolic `int16_t` | Explicit nondeterministic symbolic variables |
+| Functional oracle | None | Independent Euclidean centered-modulo oracle |
+| Explicit named claims | None in harness | 23 named research properties |
+| Relational properties | None | Two-call and two-input laws |
+| Parameter-space variables | None | Symbolic multiplier and symbolic offset |
+| Exact quotient structure | Not asserted | Full 21-cell theorem |
+| Parameter uniqueness | Not asserted | Unique safe multiplier theorem |
+| Offset robustness | Not asserted | Exact admissible interval theorem |
+| Non-vacuity controls | Native infrastructure only | 81 concrete controls |
+| Mutation testing | Not part of native Barrett harness | 12 false mutants killed |
+| Evidence packaging | Repository proof infrastructure | Per-stage logs, GOTO models, manifests, archives, verdicts |
+| Production modification | None | None |
+
+The campaign retained the real production body. It did not replace `mlk_barrett_reduce` by a stub, a mathematical model, or its contract. It also did not edit the frozen repository source. New harnesses and isolated mutant copies were created outside the frozen worktree.
+
+### 3.3 What overlaps with the upstream intent
+
+Distinctness does not mean every mathematical sentence is novel. The upstream source comment already says that the result is centered and congruent to the input. Therefore:
+
+- T1.P2 corresponds closely to the checked range contract.
+- T1.P3 formalizes a statement already present in source documentation, but not in the checked function postcondition.
+- T1.P4 strengthens both by proving exact equality to an independent canonical oracle.
+- T1.P5 and T2–T5 go beyond the checked-in Barrett contract.
+
+The correct contribution statement is that BR-AF4 **strengthened and structurally characterized** the existing implementation; it did not discover that modular reduction exists.
+
+---
+
+## 4. Research and evidence methodology
+
+### 4.1 Core rules
+
+The campaign followed these controls:
+
+1. Freeze the repository commit and tree before proof construction.
+2. Record `poly.c` and tool hashes/versions.
+3. Keep production source unchanged.
+4. Write a verification-intent record before authoritative execution.
+5. Use an independent oracle where semantic equality is claimed.
+6. Use zero `__CPROVER_assume` statements in the principal theorem harnesses.
+7. Encode restricted domains using logical implications rather than path-pruning assumptions.
+8. Retain the actual target body in the GOTO model.
+9. Avoid contract replacement and target-body removal.
+10. Preserve failed/aborted attempts rather than rewriting history.
+11. Add concrete boundary controls to support reachability and non-vacuity.
+12. Add deliberately false mutants and require targeted failures.
+13. Recheck the frozen Git worktree after execution.
+14. Hash every evidence file and freeze theorem packets.
+15. Separate proof validity from novelty claims.
+
+### 4.2 Evidence hierarchy
+
+The campaign used the following evidence hierarchy:
+
+1. **Frozen source identity** — commit, tree, source hash.
+2. **Verification intent** — declared property, domain, assumptions, expected outcome.
+3. **Harness source** — exact assertions and oracle.
+4. **Build and link logs** — target and harness construction.
+5. **GOTO model and model dump** — confirms target body, constants, and assertions are present.
+6. **Property inventory** — exact named properties seen by CBMC.
+7. **Authoritative CBMC output** — exit status and `VERIFICATION SUCCESSFUL` or intended failure.
+8. **Controls and mutations** — non-vacuity and discrimination evidence.
+9. **Post-run source-integrity check** — no source drift.
+10. **SHA-256 manifests and archives** — evidence preservation.
+11. **Independent forensic review** — archive safety, manifest verification, and attribution checks.
+
+### 4.3 Important failed or blocked attempts
+
+The record includes unsuccessful setup/execution attempts:
+
+- The repository-native `make` flow was blocked because `litani` was unavailable. This was an environment failure, not a theorem counterexample.
+- T1 Run 1 used a CBMC option, `--uninitialized-check`, unsupported by CBMC 6.9.0.
+- T1 Run 2 encountered a pruned-model namespace problem.
+- T1 Run 3 selected the preserved pre-pruning model, revalidated the target body and properties, and became the authoritative successful execution.
+
+Preserving these attempts is methodologically valuable. It shows how the final command and model were selected and prevents an artificially perfect execution narrative.
+
+---
+
+## 5. T1 — Full-domain exact centered-residue refinement
+
+### 5.1 Purpose
+
+T1 answers the foundational question:
+
+> Does the real frozen C function return the exact centered representative modulo 3329 for every `int16_t` input?
+
+### 5.2 Properties
+
+#### T1.P2 — Centered output range
+
+\[
+-1664\le R(a)\le1664.
+\]
+
+This confirms the checked-in range contract over the complete input domain.
+
+#### T1.P3 — Congruence modulo 3329
+
+\[
+a-R(a)\equiv0\pmod{3329}.
+\]
+
+The harness asserted:
+
+```c
+((a - r) % 3329) == 0
+```
+
+with widening to `int32_t` before subtraction.
+
+#### T1.P4 — Independent centered-oracle equivalence
+
+\[
+R(a)=C(a),
+\]
+
+where `C(a)` is the independent Euclidean oracle. This is the strongest direct functional-correctness statement in the campaign.
+
+#### T1.P5 — Unique closest `int16_t` representative
+
+For symbolic `int16_t` values `a` and `y`, when `y` is congruent to `a` modulo 3329, the returned result is no farther from zero than `y`, with equality only when `y` is the same representative. The direct CBMC quantification is over `int16_t` representatives, not all unbounded mathematical integers.
+
+### 5.3 Domains and assumptions
+
+- P2–P4: all 65,536 `int16_t` values.
+- P5: all `int16_t × int16_t` pairs, a symbolic domain of 4,294,967,296 pairs.
+- Principal input assumptions: zero.
+- Production body: present.
+- Contract replacement: not used.
+- `drop-unused-functions` on authoritative model: not used.
+
+### 5.4 Results
+
+All T1 properties passed. The authoritative P2–P4 run returned exit status 0 and `VERIFICATION SUCCESSFUL`; P5 passed separately.
+
+### 5.5 C1 boundary controls
+
+Nine concrete witnesses were checked:
+
+| Input | Expected result | Rationale |
+|---:|---:|---|
+| `INT16_MIN = -32768` | `522` | Negative extreme |
+| `INT16_MAX = 32767` | `-523` | Positive extreme |
+| `-3329` | `0` | Negative modulus |
+| `0` | `0` | Identity at zero |
+| `3329` | `0` | Positive modulus |
+| `-1665` | `1664` | Just below centered interval |
+| `-1664` | `-1664` | Lower centered endpoint |
+| `1664` | `1664` | Upper centered endpoint |
+| `1665` | `-1664` | Just above centered interval |
+
+All 9 passed.
+
+### 5.6 T1 mutants
+
+| Mutant | Change | Result | Representative evidence |
+|---|---|---|---|
+| T1-M1 | `20159 → 20158` | KILLED | At `a=-14981`, mutant produced `-1665`, oracle `1664`; native range also failed |
+| T1-M2 | Removed `2^25` offset | KILLED | At `a=-24`, mutant produced `3305`, oracle `-24`; native range also failed |
+| T1-M3 | False oracle threshold `1664 → 1663` | KILLED | At `a=-31626`, real result `1664`, false oracle `-1665` |
+
+The final ledger uses the actually executed labels: M1 is the magic-constant mutation and M2 is offset removal. An early plan had the labels reversed; that was a naming issue, not an execution or theorem issue.
+
+### 5.7 T1 conclusion
+
+T1 proves, under the recorded model, that the production function is not merely range-safe. It is exactly equal to an independent centered-modulo specification for every possible input of its declared type.
+
+---
+
+## 6. T2 — Normalizer laws
+
+### 6.1 Purpose
+
+T2 treats `mlk_barrett_reduce` as a canonicalization function and checks laws expected from a correct centered modular normalizer.
+
+### 6.2 Properties
+
+#### T2.P6 — Centered fixed point
+
+\[
+a\in[-1664,1664]\Longrightarrow R(a)=a.
+\]
+
+#### T2.P7 — Idempotence
+
+\[
+R(R(a))=R(a).
+\]
+
+#### T2.P8 — Residue-class invariance
+
+\[
+a\equiv b\pmod{3329}\Longrightarrow R(a)=R(b).
+\]
+
+The conditional properties were encoded as implications. No assumption was used to eliminate non-centered or non-congruent inputs.
+
+### 6.3 Domain
+
+- `a`: all 65,536 `int16_t` values.
+- `b`: all 65,536 `int16_t` values.
+- Pair domain: 4,294,967,296 symbolic pairs.
+- Assumptions: zero.
+
+For P8, the whole pair domain is symbolically represented, but only pairs for which the congruence antecedent is true are constrained by the consequent. It would be inaccurate to say that 2^32 pairs were concretely loop-enumerated.
+
+### 6.4 Results and controls
+
+P6, P7, and P8 passed. Eight C2 controls also passed, covering centered endpoints, idempotence at integer extremes, and representative congruent pairs such as `(0,3329)`, `(-3329,0)`, `(1665,-1664)`, and `(-1665,1664)`.
+
+### 6.5 T2 limitation
+
+T2 did not receive a dedicated mutation campaign. Its laws are well supported by the successful symbolic run and concrete controls, and they are logical consequences of T1.P4, but they do not have theorem-specific mutation evidence comparable with T1 and T3–T5. This must be reported rather than hidden.
+
+### 6.6 T2 conclusion
+
+The real function behaves as a canonical representative map: it fixes already centered inputs, is stable under repetition, and maps every represented residue class to one centered value.
+
+---
+
+## 7. T3 — Exact quotient-cell partition
+
+### 7.1 Purpose
+
+T1 proves the returned remainder. T3 characterizes the internal quotient produced by the production magic-multiply-and-shift expression.
+
+Define:
+
+\[
+t(a)=\operatorname{ashr}_{26}(20159a+2^{25}).
+\]
+
+### 7.2 Properties
+
+#### T3.P9 — Exact quotient equivalence
+
+\[
+t(a)=\frac{a-C(a)}{3329}.
+\]
+
+Because `C(a)` is congruent to `a`, this quotient is integral.
+
+#### T3.P10 — Production affine decomposition
+
+\[
+R(a)=a-3329t(a).
+\]
+
+This property links the actual production return value to the characterized formula quotient.
+
+#### T3.P11 — Tight quotient range
+
+\[
+-10\le t(a)\le10.
+\]
+
+#### T3.P12 — Exact and unique quotient-cell membership
+
+For a valid quotient cell index `k`:
+
+\[
+3329k-1664\le a\le3329k+1664
+\Longrightarrow t(a)=k.
+\]
+
+The harness used a symbolic `candidate_k` over all `int32_t` values and guarded valid cells with a logical implication.
+
+#### T3.P13 — Clipped endpoint-cell characterization
+
+The extreme quotient values occur exactly at the clipped ends of the `int16_t` domain:
+
+\[
+t(a)=-10\iff a\le-31626,
+\]
+
+\[
+t(a)=10\iff a\ge31626,
+\]
+
+and the interior quotients `-9..9` occur exactly for `-31625..31625`.
+
+### 7.3 Complete cell table
+
+| Quotient | Input interval | Size |
+|---:|---:|---:|
+| -10 | -32768 .. -31626 | 1143 |
+| -9 | -31625 .. -28297 | 3329 |
+| -8 | -28296 .. -24968 | 3329 |
+| -7 | -24967 .. -21639 | 3329 |
+| -6 | -21638 .. -18310 | 3329 |
+| -5 | -18309 .. -14981 | 3329 |
+| -4 | -14980 .. -11652 | 3329 |
+| -3 | -11651 .. -8323 | 3329 |
+| -2 | -8322 .. -4994 | 3329 |
+| -1 | -4993 .. -1665 | 3329 |
+| 0 | -1664 .. 1664 | 3329 |
+| 1 | 1665 .. 4993 | 3329 |
+| 2 | 4994 .. 8322 | 3329 |
+| 3 | 8323 .. 11651 | 3329 |
+| 4 | 11652 .. 14980 | 3329 |
+| 5 | 14981 .. 18309 | 3329 |
+| 6 | 18310 .. 21638 | 3329 |
+| 7 | 21639 .. 24967 | 3329 |
+| 8 | 24968 .. 28296 | 3329 |
+| 9 | 28297 .. 31625 | 3329 |
+| 10 | 31626 .. 32767 | 1142 |
+
+There are 19 complete interior cells of size 3329 and two clipped endpoint cells.
+
+### 7.4 Results and C3 controls
+
+All five T3 properties passed. C3 checked both sides of all 20 quotient transitions plus `INT16_MIN` and `INT16_MAX`, giving 42 concrete assertions; all passed.
+
+### 7.5 T3 mutants
+
+| Mutant | Change | Intended killer | Result |
+|---|---|---|---|
+| T3-M1 | Shift `26 → 25` in isolated production copy | P10 | KILLED; additional conversion/range checks also failed |
+| T3-M2 | Shift `26 → 27` in isolated production copy | P10 | KILLED; native range check also failed |
+| T3-M3 | False left endpoint `-31626 → -31625` | P13 | KILLED by P13 only |
+
+The M3 selectivity is particularly useful: P9–P12 remained successful while the precise endpoint theorem failed.
+
+### 7.6 T3 conclusion
+
+T3 gives a complete structural account of how the implementation converts every signed 16-bit input into one of 21 quotient regions. This is substantially more specific than ordinary congruence and output-bound proofs.
+
+---
+
+## 8. T4 — Unique multiplier in the declared safe design space
+
+### 8.1 Purpose and design space
+
+T4 asks why the multiplier is `20159`. Offset `2^25`, shift `26`, modulus `3329`, and the full `int16_t` input domain are fixed.
+
+A symbolic multiplier `M` is considered in the declared design domain:
+
+\[
+0\le M\le64513.
+\]
+
+This is the complete nonnegative interval for which
+
+\[
+M a+2^{25}
+\]
+
+is representable as signed `int32_t` for every `int16_t a`. `64514` is the first unsafe value; at `a=32767`, its numerator is `2147484670`, which exceeds `INT32_MAX`.
+
+### 8.2 Candidate function
+
+\[
+t_M(a)=\operatorname{ashr}_{26}(Ma+2^{25}),
+\]
+
+\[
+R_M(a)=a-3329t_M(a).
+\]
+
+### 8.3 Properties
+
+#### T4.P14 — Complete numerator-safe multiplier domain
+
+For every `M` in `0..64513` and every `int16_t a`, the numerator is signed-`int32_t` representable, and wide (`int64_t`) and narrowed (`int32_t`) arithmetic shifts agree.
+
+#### T4.P15 — Sufficiency and production binding of 20159
+
+\[
+R_{20159}(a)=C(a)=R(a)
+\]
+
+for all `int16_t a`.
+
+#### T4.P16 — Exclusion of every smaller safe multiplier
+
+\[
+0\le M<20159\Longrightarrow
+R_M(-31626)\ne C(-31626).
+\]
+
+#### T4.P17 — Exclusion of every larger safe multiplier
+
+\[
+20159<M\le64513\Longrightarrow
+R_M(-31625)\ne C(-31625).
+\]
+
+#### T4.P18 — Two-witness uniqueness
+
+Within the safe design domain:
+
+\[
+\bigl(R_M(-31626)=C(-31626)\ \land\
+R_M(-31625)=C(-31625)\bigr)
+\iff M=20159.
+\]
+
+P15 supplies full-domain existence. P16 and P17 supply complete exclusion on either side. Together they prove uniqueness in the declared domain.
+
+### 8.4 Results and C4 controls
+
+P14–P18 passed. Ten controls covered zero, neighboring multipliers `20158/20159/20160`, the maximum safe value, the first unsafe value, and production binding at `INT16_MIN` and `INT16_MAX`.
+
+### 8.5 T4 mutants
+
+| Mutant | False change | Result |
+|---|---|---|
+| T4-M1 | Claim unique multiplier is 20158 | P18 failed; P14–P17 remained successful |
+| T4-M2 | Replace lower discriminator `-31626` with `-31625` | P16 failed; P18 failed consequentially |
+| T4-M3 | Replace upper discriminator `-31625` with `-31626` | P17 failed; P18 failed consequentially |
+
+### 8.6 Exact scope of uniqueness
+
+The result does **not** claim that 20159 is unique among:
+
+- negative multipliers;
+- different offsets;
+- different shifts;
+- wider or arbitrary intermediate types;
+- different input domains;
+- every possible Barrett-reduction construction.
+
+It proves uniqueness in the explicitly defined nonnegative numerator-safe domain with the remaining parameters fixed.
+
+### 8.7 T4 conclusion
+
+Within that precise design space, `20159` is not merely a conventional choice: it is the only multiplier that yields exact centered reduction for every signed 16-bit input.
+
+---
+
+## 9. T5 — Exact admissible rounding-offset interval
+
+### 9.1 Purpose and design space
+
+T5 fixes:
+
+- modulus `q=3329`;
+- multiplier `M=20159`;
+- arithmetic shift `S=26`;
+- all `int16_t` inputs.
+
+The symbolic offset `B` ranges over:
+
+\[
+0\le B<2^{26},
+\]
+
+that is, `0..67108863`.
+
+Define:
+
+\[
+t_B(a)=\operatorname{ashr}_{26}(20159a+B),
+\]
+
+\[
+R_B(a)=a-3329t_B(a).
+\]
+
+### 9.2 Exact result
+
+The complete set of full-domain-correct offsets is:
+
+\[
+33548599\le B\le33560264.
+\]
+
+The interval contains:
+
+\[
+33560264-33548599+1=11666
+\]
+
+integer offsets.
+
+The production offset is:
+
+\[
+2^{25}=33554432,
+\]
+
+with exact margins:
+
+\[
+33554432-33548599=5833,
+\]
+
+\[
+33560264-33554432=5832.
+\]
+
+### 9.3 Properties
+
+#### T5.P19 — Complete offset-domain numerator safety
+
+Every offset in `0..67108863`, combined with every `int16_t` input, produces a signed-`int32_t`-representable numerator, and wide and narrowed arithmetic shifts agree.
+
+#### T5.P20 — Full-domain sufficiency of the interval
+
+\[
+33548599\le B\le33560264
+\Longrightarrow
+\forall a\in\texttt{int16},\ R_B(a)=C(a).
+\]
+
+#### T5.P21 — Necessity below the interval
+
+\[
+0\le B<33548599
+\Longrightarrow
+R_B(-31625)\ne C(-31625).
+\]
+
+#### T5.P22 — Necessity above the interval
+
+\[
+33560264<B\le67108863
+\Longrightarrow
+R_B(31625)\ne C(31625).
+\]
+
+#### T5.P23 — Exact two-witness interval characterization
+
+Within the design domain, passing both endpoint witnesses is equivalent to interval membership.
+
+#### T5.P24 — Production offset sufficiency and binding
+
+\[
+R_{33554432}(a)=C(a)=R(a)
+\]
+
+for every `int16_t a`.
+
+### 9.4 Domain interpretation
+
+The symbolic pair domain is:
+
+\[
+2^{16}\times2^{26}=2^{42}
+=4,398,046,511,104
+\]
+
+input-offset pairs. This is a statement about the complete finite model represented symbolically, not a claim that a conventional program concretely ran more than four trillion tests.
+
+### 9.5 Results and C5 controls
+
+P19–P24 passed. Twelve controls checked:
+
+- each interval endpoint;
+- each immediate outside value;
+- production-offset witnesses;
+- exact margin values;
+- interval count;
+- minimum and maximum design-domain numerators;
+- production binding at both `int16_t` endpoints.
+
+All 12 passed.
+
+### 9.6 T5 mutants
+
+| Mutant | False claim | CBMC result |
+|---|---|---|
+| T5-M1 | Lower endpoint widened to `33548598` | P20 failed only; witness `B=33548598`, `a=-31625` |
+| T5-M2 | Upper endpoint widened to `33560265` | P20 failed only; witness `B=33560265`, `a=31625` |
+| T5-M3 | Only production offset `33554432` is valid | P23 failed only; CBMC found valid non-production `B=33558528` |
+
+The preregistered M3 witness `33548599` also remains valid; CBMC was free to find a different counterexample.
+
+### 9.7 T5 conclusion
+
+The production offset is not uniquely required. It lies near the center of an exact 11,666-value robustness interval, with one more admissible value below than above. T5 establishes both sufficiency and necessity, so the interval is exact within the declared design domain.
+
+---
+
+## 10. How the five theorem families relate
+
+The five families are distinct, but not logically unrelated:
+
+| Family | Main object quantified | Main question |
+|---|---|---|
+| T1 | Input and alternative representative | What exact centered result is returned? |
+| T2 | Inputs and repeated applications | Does the function behave as a canonical normalizer? |
+| T3 | Input and quotient cell | What quotient and decision region does the formula use? |
+| T4 | Multiplier parameter | Why is 20159 forced in the safe fixed-offset/shift design? |
+| T5 | Offset parameter | Exactly which offsets work with multiplier/shift fixed? |
+
+T2 follows mathematically from exact canonicalization in T1, but it is valuable as an explicit regression-law family. T3 refines the internal structure. T4 and T5 move from verifying one fixed implementation to characterizing portions of its parameter design space.
+
+It would be incorrect to describe all 23 properties as wholly independent theorems. The accurate wording is: **five distinct theorem families containing 23 named, machine-checked properties**.
+
+---
+
+## 11. Complete property ledger
+
+| Family | ID | Property | Result |
+|---|---|---|---|
+| T1 | P2 | Centered range `[-1664,1664]` | PASS |
+| T1 | P3 | Congruence modulo 3329 | PASS |
+| T1 | P4 | Equality to independent centered oracle | PASS |
+| T1 | P5 | Unique closest `int16_t` representative | PASS |
+| T2 | P6 | Centered fixed point | PASS |
+| T2 | P7 | Idempotence | PASS |
+| T2 | P8 | Residue-class invariance | PASS |
+| T3 | P9 | Formula quotient equals oracle-derived quotient | PASS |
+| T3 | P10 | Production affine decomposition | PASS |
+| T3 | P11 | Quotient range `[-10,10]` | PASS |
+| T3 | P12 | Exact and unique quotient-cell membership | PASS |
+| T3 | P13 | Clipped endpoint-cell characterization | PASS |
+| T4 | P14 | Complete nonnegative numerator-safe multiplier domain | PASS |
+| T4 | P15 | Multiplier 20159 sufficiency and production binding | PASS |
+| T4 | P16 | Every smaller safe multiplier rejected | PASS |
+| T4 | P17 | Every larger safe multiplier rejected | PASS |
+| T4 | P18 | Two witnesses uniquely identify 20159 | PASS |
+| T5 | P19 | Complete offset-domain numerator safety | PASS |
+| T5 | P20 | Admissible interval full-domain sufficiency | PASS |
+| T5 | P21 | Every lower offset rejected | PASS |
+| T5 | P22 | Every upper offset rejected | PASS |
+| T5 | P23 | Two witnesses exactly characterize interval | PASS |
+| T5 | P24 | Production offset sufficiency and production binding | PASS |
+
+---
+
+## 12. Complete controls and mutation ledger
+
+### 12.1 Controls
+
+| Control set | Purpose | Count | Result |
+|---|---|---:|---:|
+| C1 | T1 critical centered boundaries and extremes | 9 | 9/9 PASS |
+| C2 | T2 normalizer witnesses | 8 | 8/8 PASS |
+| C3 | T3 transition pairs and endpoints | 42 | 42/42 PASS |
+| C4 | T4 multiplier boundaries/witnesses | 10 | 10/10 PASS |
+| C5 | T5 interval boundaries/margins/safety | 12 | 12/12 PASS |
+| **Total** |  | **81** | **81 PASS** |
+
+### 12.2 Mutants
+
+| Family | Mutant | Result |
+|---|---|---|
+| T1 | Magic `20159 → 20158` | KILLED |
+| T1 | Remove rounding offset | KILLED |
+| T1 | False oracle threshold | KILLED |
+| T3 | Shift `26 → 25` | KILLED |
+| T3 | Shift `26 → 27` | KILLED |
+| T3 | False quotient-cell endpoint | KILLED |
+| T4 | False unique multiplier 20158 | KILLED |
+| T4 | Corrupt lower witness | KILLED |
+| T4 | Corrupt upper witness | KILLED |
+| T5 | Widen lower interval endpoint by one | KILLED |
+| T5 | Widen upper interval endpoint by one | KILLED |
+| T5 | False unique production offset | KILLED |
+
+Mutation testing does not prove correctness by itself. Its role is to demonstrate that the harnesses are sensitive to meaningful false changes and that successful positive proofs are not obviously vacuous or disconnected from the stated property.
+
+---
+
+## 13. Assumptions, trusted base, and proof boundaries
+
+### 13.1 No input assumptions versus modelling assumptions
+
+The principal harnesses contain zero `__CPROVER_assume` statements. That means input domains were not silently reduced by assumptions. It does **not** mean the work is assumption-free in an absolute philosophical sense.
+
+The result depends on the following explicit modelling and trusted-base assumptions:
+
+1. **CBMC correctness:** CBMC 6.9.0, its bit-vector encoding, SAT/SMT machinery, and GOTO transformation are assumed sufficiently faithful and sound for the checked model.
+2. **Source-model fidelity:** the compiled GOTO model is assumed to represent the selected preprocessed C build correctly.
+3. **Integer widths:** `int16_t`, `int32_t`, and `int64_t` have the exact widths modelled by the toolchain.
+4. **Signed right shift:** negative signed right shift is interpreted as arithmetic/sign-preserving in the recorded environment. This is not a universal ISO C portability proof.
+5. **Frozen build configuration:** the recorded compile defines, include paths, and ML-KEM-768 configuration correctly expose the examined function.
+6. **Source identity:** the frozen commit, tree, and `poly.c` hash identify the intended implementation.
+7. **Oracle adequacy:** the independently written Euclidean oracle correctly formalizes the intended centered residue.
+8. **Assertion adequacy:** the named properties capture the intended claims without missing a crucial condition.
+9. **No binary refinement claim:** source/GOTO correctness is not automatically a proof that every optimizing compiler emits equivalent machine code.
+10. **No hardware model:** processor faults, transient execution, undefined hardware behavior, and physical leakage are outside scope.
+
+### 13.2 Property-specific scope restrictions
+
+- P5 directly quantifies over alternative `int16_t` representatives, not unbounded integers.
+- P8 constrains congruent pairs through a logical implication.
+- T4 covers only nonnegative multipliers in `0..64513`, with offset and shift fixed.
+- T5 covers offsets in `0..2^26-1`, with multiplier and shift fixed.
+- T4 and T5 do not jointly synthesize multiplier, offset, and shift.
+- The campaign does not prove that the constants are globally optimal according to every possible performance, area, leakage, or compiler criterion.
+
+### 13.3 Security properties not proved
+
+The campaign does not establish:
+
+- constant-time behavior of generated machine code;
+- cache, branch, power, EM, or timing leakage resistance;
+- masking security;
+- fault-injection resistance;
+- compiler correctness;
+- memory zeroization;
+- correctness of unrelated ML-KEM functions;
+- end-to-end ML-KEM encapsulation/decapsulation correctness;
+- IND-CCA security;
+- conformance of an entire library build to FIPS 203.
+
+Those are different claims requiring different specifications and tools.
+
+---
+
+## 14. Did the campaign really prove `mlk_barrett_reduce` correct?
+
+### 14.1 Answer within the declared scope
+
+**Yes.** The campaign proved a precise source-level functional statement:
+
+> For every `int16_t` input, the real body of `mlk_barrett_reduce` at frozen commit `af4c5abd...` returns exactly the independent centered representative modulo 3329, under the signed-arithmetic-right-shift semantics represented by the recorded CBMC environment.
+
+T1.P4 is sufficient for this conclusion. T1.P2 and P3 are then explicit supporting properties; T1.P5 strengthens the characterization. T2 confirms canonicalization laws. T3–T5 explain the exact quotient structure and the relevant fixed-parameter design spaces.
+
+### 14.2 Why this is stronger than testing
+
+A passing test suite demonstrates correctness only for executed examples. The T1 harness gives `a` an unrestricted symbolic `int16_t` value, and CBMC checks the assertion for every bit pattern in that type. The target has no unbounded loop, so there is no incomplete loop-unwinding caveat for the core function. The full finite input domain is represented.
+
+### 14.3 Why this is not universal truth about all executions everywhere
+
+The proof is conditional on the model and trusted base. In particular, the C source acknowledges that signed right shift is implementation-defined for negative values. A platform using a different shift behavior would not be covered by this theorem. Likewise, machine-code compilation and side-channel behavior were not verified.
+
+The accurate wording is **“proved correct within the recorded formal model and stated scope”**, not “proved absolutely correct under all conceivable environments.”
+
+---
+
+## 15. Evidence and archive status
+
+### 15.1 Frozen/candidate archive hashes
+
+| Artefact | SHA-256 | Status |
+|---|---|---|
+| T1 final freeze | `410a9c651a9bd37983ca7a56e0cabfab2c0a3dba182170af8b295cb6b4044e27` | Frozen accepted |
+| T2 final freeze | `1c841699e27d55d92b981a8668434637f5c3acb8b0e4abaf08811843079760c1` | Frozen accepted |
+| T3 final freeze | `70715958a32ea031cde196d9cdb69556acc0a9fa84d09c021151dbe05c5c5154` | Frozen accepted |
+| T4 final freeze | `46e9ad14ce4f73cd99242a77b5a12ebf1f1666d55b33c6d1b4cecc2eda884435` | Frozen accepted |
+| T5 final freeze | `aa5e9f225796ef0777a5c6b110513968d842f2d81576e96ab9c83d032f401592` | Locally generated after reviewed T5 candidate |
+| Complete T1–T5 family candidate | `543effac08e18f09ab5c0b32609f9aae3fec5e4988be7480ff443315bfb00664` | Locally generated; external combined-packet review pending |
+
+### 15.2 Uploaded theorem packets independently inspected in this work session
+
+The uploaded local packets had these independently recalculated hashes:
+
+| Uploaded packet | SHA-256 | Archive safety |
+|---|---|---|
+| T1 freeze candidate | `9ed6a383ce4ca68e7d0deccea1a0d79a33951ab7a72815cbb56da2e07e568d1c` | No unsafe paths/links |
+| T2 final freeze | `1c841699e27d55d92b981a8668434637f5c3acb8b0e4abaf08811843079760c1` | No unsafe paths/links |
+| T3 freeze candidate | `cc1215fdaa592cda60ba63112e05d0e8c99be80f77a4eb217418a3db00eb60d7` | No unsafe paths/links |
+| T4 freeze candidate | `14834c4348735c2ac60ef157366f85729541b0678d23164b8bdc3a5f58763fd5` | No unsafe paths/links |
+| T5 freeze candidate | `6302acc9e3e4e47dceeacad4e243d817411af7c323503ac0a3036990da65d9cb` | No unsafe paths/links |
+
+The final combined family archive was reported in terminal output but was not uploaded with this documentation request. Therefore this report does not claim independent byte-level review of that top-level combined candidate.
+
+### 15.3 Portability note
+
+Some earlier sidecars and nested manifests preserve absolute `/home/girish/...` paths. Their digest values were valid and could be verified by path remapping, but direct `sha256sum -c` on another machine may require adjusting paths. The final family packaging procedure was designed to add basename-only archive sidecars and a relative top-level manifest while preserving original evidence byte-for-byte inside individual archives.
+
+---
+
+## 16. Novelty review
+
+### 16.1 What “novel” can and cannot mean
+
+No finite literature search can prove that an equivalent result has never existed in an unpublished note, private repository, non-indexed thesis, or inaccessible source. Therefore this report does not make a “1000% novel” or unconditional world-first claim.
+
+Novelty is assessed at three levels:
+
+1. **Mathematical novelty:** whether a new general theorem in modular arithmetic or constant division was discovered.
+2. **Implementation-specific theorem novelty:** whether this exact property has been publicly reported for the frozen `mlkem-native` C function and domain.
+3. **Method/evidence novelty:** whether the combined CBMC, control, mutation, source-binding, and forensic workflow is a distinct research contribution.
+
+The campaign is strongest at levels 2 and 3. It is deliberately conservative at level 1.
+
+### 16.2 Search scope used for this review
+
+The review, updated through 22 July 2026, covered public material discoverable through web search and primary/authoritative sources, including:
+
+- the current/frozen `mlkem-native` source and proof structure;
+- NIST FIPS 203;
+- Cryspen/libcrux hax/F* Barrett verification material;
+- the CRYPTO 2024 EasyCrypt/Jasmin ML-KEM proof and artifact;
+- Amazon’s description of `mlkem-native` verification;
+- Apple’s 2026 top-to-bottom corecrypto ML-KEM verification release;
+- public ML-KEM/Kyber implementation and hardware literature using Barrett constants;
+- general literature on division by invariant constants and tight reciprocal-multiplication bounds;
+- exact-string searches for `33548599`, `33560264`, `20159` with uniqueness terminology, quotient-cell terminology, and the critical witness values.
+
+Representative exact searches included:
+
+```text
+"mlk_barrett_reduce" "20159" proof
+"20159" "unique multiplier" 3329 Barrett
+"33548599" "33560264"
+"33548599" ML-KEM
+"21-cell" Barrett reduction
+Barrett rounding offset admissible interval
+ML-KEM Barrett multiplier uniqueness
+```
+
+Exact-number searches produced no relevant mathematical or verification match for the T5 interval endpoints. This is useful negative search evidence but not proof of universal absence.
+
+### 16.3 Prior work and overlap
+
+#### `mlkem-native`
+
+Public descriptions characterize the C proofs primarily as memory and type safety based on function/loop contracts, while functional correctness of important assembly routines is handled separately.[2][3] The native Barrett source comment says centered congruence, and its contract enforces the centered range. No exact T3–T5 parameter theorem was identified in the frozen repository.
+
+**Overlap:** T1.P2 and the documented intent of P3.  
+**No exact match identified:** P4/P5 as this frozen full-domain CBMC suite, T3 quotient partition, T4 safe-multiplier uniqueness, or T5 exact offset interval.
+
+#### Cryspen/libcrux hax/F*
+
+The public Barrett example uses `q=3329`, multiplier `20159`, shift `26`, and offset `2^25`. It proves panic freedom and a functional postcondition consisting of congruence and a result bound for a bounded signed-`i32` input range.[4][5]
+
+**Overlap:** fixed implementation formula, arithmetic safety, congruence, and a looser output bound.  
+**No exact match identified:** equality to the unique centered oracle over frozen C `int16_t`; exact 21 quotient cells; uniqueness of 20159 in the BR-AF4 domain; complete exact interval `[33548599,33560264]`.
+
+#### EasyCrypt/Jasmin “Formally Verifying Kyber: Episode V”
+
+This work proves ML-KEM correctness/security at specification level and functional equivalence of two Jasmin implementations.[6]
+
+**Overlap:** broad ML-KEM functional correctness and formal modular-arithmetic reasoning.  
+**No exact match identified:** the examined frozen C function and BR-AF4 parameter-space properties.
+
+#### Apple corecrypto formal verification
+
+Apple reports top-to-bottom functional-correctness proofs connecting its C/ARM64 implementation to FIPS specifications.[7]
+
+**Overlap:** high-assurance ML-KEM implementation correctness.  
+**No exact match identified:** `mlkem-native` commit `af4c5abd` or the BR-AF4 theorem suite.
+
+#### General constant-division literature
+
+Research on division by invariant constants provides general necessary/sufficient and optimally tight bounds for multiplication-and-shift quotient/remainder computations.[8][9] This is significant prior mathematics and prevents a claim that T4 or T5 invents general reciprocal-multiplication parameter theory.
+
+**Overlap:** general methods for deriving tight multiplier/shift/addition bounds.  
+**BR-AF4 distinction:** signed centered reduction for the exact ML-KEM formula, finite `int16_t` domain, explicit safe-domain definition, exact numerical interval, frozen C target binding, and CBMC/mutation evidence.
+
+#### Hardware and implementation papers
+
+Kyber/ML-KEM implementation papers commonly use the same fixed constants (`20159`, `2^25`, shift `26`) or alternative Barrett variants.[4][5][10]
+
+**Overlap:** use of established constants and Barrett architecture.  
+**No exact match identified:** the exact uniqueness and offset-interval claims.
+
+### 16.4 Novelty potency by theorem family
+
+| Family | Mathematical novelty | Frozen-implementation novelty potential | Overall assessment |
+|---|---|---|---|
+| T1 P2/P3 | Low; standard and partly documented upstream | Low–moderate | Validation/strengthening, not new mathematics |
+| T1 P4/P5 | Low mathematical novelty; canonical residue is classical | Moderate | Strong exact implementation refinement |
+| T2 | Low; classical consequences of canonicalization | Moderate engineering value | Useful explicit regression laws |
+| T3 | Classical arithmetic basis | High | Exact full-domain 21-cell characterization not found publicly |
+| T4 | General magic-number theory exists | Very high implementation-specific potential | Exact uniqueness in declared safe domain not found publicly |
+| T5 | General reciprocal/rounding theory exists | Very high implementation-specific potential | Exact endpoints/count/margins not found publicly |
+| Campaign method | Not a new model-checking algorithm | High | Distinct source-bound, zero-assumption, mutation-controlled evidence package |
+
+### 16.5 Novelty conclusion
+
+The strongest defensible conclusion is:
+
+> As of the documented public-source search completed on 22 July 2026, no prior work was identified that reports the exact BR-AF4 CBMC theorem suite for the frozen `mlkem-native` C implementation, particularly the complete 21-cell quotient partition, uniqueness of `20159` in the declared nonnegative numerator-safe multiplier domain, and the exact admissible offset interval `[33548599,33560264]`. The underlying centered-residue mathematics, Barrett reduction, reciprocal multiplication, and general tight-bound theory are classical and are not claimed as new.
+
+This is a **high novelty-potential, implementation-specific result**, not a certified universal world-first in mathematics.
+
+### 16.6 Claims that must not be used
+
+The following statements would be too strong:
+
+- “This is the first proof of Barrett reduction.”
+- “No one has ever proved these facts.”
+- “The multiplier 20159 is universally unique.”
+- “The offset 2^25 is uniquely correct.”
+- “The entire ML-KEM implementation is proved correct.”
+- “The proof is independent of compiler and platform semantics.”
+- “All 23 properties are independent new mathematical theorems.”
+
+### 16.7 Recommended thesis claim
+
+> This work contributes an independently designed, source-bound CBMC verification campaign for `mlk_barrett_reduce` at frozen `mlkem-native` commit `af4c5abd`. It strengthens the checked-in range contract with full-domain exact refinement to an independent centered-modulo oracle, explicit normalizer laws, an exact 21-cell quotient characterization, uniqueness of the production multiplier within a declared numerator-safe domain, and the complete admissible rounding-offset interval. The evidence is supported by boundary controls, mutation testing, source-integrity checks, and reproducible cryptographic manifests. To the author’s knowledge, no prior public work identified in the documented search reports this exact theorem suite for the examined frozen C implementation. The underlying modular and reciprocal-multiplication mathematics is classical.
+
+---
+
+## 17. Threats to validity
+
+### 17.1 Specification validity
+
+The independent oracle is concise and conventional, but a human still selected the intended centered interval and threshold. A mistaken specification could be proved faithfully. Mitigation: compare it with source documentation, FIPS-level modulus facts, boundary controls, and alternate properties.
+
+### 17.2 Tool/model validity
+
+CBMC and the GOTO transformation are part of the trusted computing base. Mitigation: preserve model dumps, property inventories, tool versions, and exact commands; use simple finite arithmetic obligations; add independent deterministic cross-checks.
+
+### 17.3 Build validity
+
+Preprocessor definitions and exposure of a file-local function could accidentally change semantics. Mitigation: retain source paths in model dumps, compare source hashes, avoid editing production source, and bind production output directly in P4, P10, P15, and P24.
+
+### 17.4 Vacuity risk
+
+Implications can pass when antecedents are unreachable. Mitigation: no input assumptions, concrete controls for antecedents/boundaries, symbolic full domains, and mutants that target exact bounds and witnesses.
+
+### 17.5 Mutation representativeness
+
+Twelve mutants do not exhaust all possible faults. They demonstrate targeted sensitivity, not complete fault-detection capability. T2 lacks dedicated mutants.
+
+### 17.6 External validity
+
+The results are tied to one frozen source commit, build configuration, and recorded shift semantics. A later commit or different platform requires revalidation.
+
+### 17.7 Novelty-search completeness
+
+The public search cannot cover unpublished, private, unindexed, non-English, or inaccessible work. The originality statement must remain qualified.
+
+---
+
+## 18. Reproducibility checklist
+
+A reviewer should be able to verify the campaign by checking:
+
+1. Commit and tree match the frozen identity.
+2. `poly.c` SHA-256 matches the recorded value.
+3. CBMC/GOTO versions are 6.9.0.
+4. The real `mlk_barrett_reduce` body appears in each relevant GOTO dump.
+5. The constants `20159`, `33554432`, shift `26`, and modulus `3329` appear where expected.
+6. The independent oracle contains no production multiplier/offset/shift formula.
+7. Principal harnesses contain no `__CPROVER_assume`.
+8. Property inventories contain exactly the named campaign assertions.
+9. Positive results show exit 0 and `VERIFICATION SUCCESSFUL`.
+10. Mutants show the expected nonzero verification-failure exit and named failed property.
+11. Concrete controls all pass.
+12. Git status/diff show no frozen source modification.
+13. Internal SHA-256 manifests verify.
+14. Archive sidecars verify against the exact archives.
+15. Claim limitations and novelty status are included with the evidence.
+
+---
+
+## 19. Professor-facing questions and precise answers
+
+### “Did you modify the C function to make CBMC pass?”
+
+No. The frozen production worktree remained clean. Mutated C copies were isolated outside that worktree and were used only as negative controls.
+
+### “Did CBMC prove only the contract?”
+
+The native repository harness primarily checks the contract. The BR-AF4 principal harnesses retain the real body and add explicit semantic assertions, including exact equality to an independent oracle and production bindings in T1, T3, T4, and T5.
+
+### “Did assumptions force the result?”
+
+No input-path assumptions were used in the principal harnesses. Restricted parameter sets were expressed with implications. There are still explicit modelling assumptions, especially signed right shift and CBMC/source-model fidelity.
+
+### “Is this just exhaustive testing?”
+
+No. Independent Python enumeration was used only as a cross-check/discovery aid. The authoritative result is a symbolic, bit-precise CBMC proof over the complete finite domains.
+
+### “Why are T4 and T5 meaningful if general division-by-constant theory exists?”
+
+General theory explains how reciprocal-multiplication bounds can be derived. T4 and T5 instantiate and machine-check exact parameter-space claims for a specific signed centered-reduction formula, domain, C implementation, and tool semantics, including source binding and mutation evidence.
+
+### “Is 2^25 the only correct offset?”
+
+No. T5 proves exactly the opposite: 11,666 offsets are full-domain correct in the declared design domain. `2^25` lies within the interval with margins 5,833 below and 5,832 above.
+
+### “Is 20159 universally unique?”
+
+No. It is unique only in T4’s declared nonnegative numerator-safe multiplier domain with modulus, offset, shift, intermediate model, and input domain fixed.
+
+### “Did this prove all of ML-KEM?”
+
+No. It proves a detailed theorem suite for one low-level modular-reduction function. Whole-algorithm correctness and cryptographic security are separate claims.
+
+---
+
+## 20. Final campaign status
+
+| Item | Status |
+|---|---|
+| Frozen source identity | Established |
+| T1 theorem family | Frozen accepted |
+| T2 theorem family | Frozen accepted |
+| T3 theorem family | Frozen accepted |
+| T4 theorem family | Frozen accepted |
+| T5 theorem family | Positive and mutation evidence forensically reviewed; final local freeze generated |
+| Complete T1–T5 family candidate | Generated locally; combined archive external review pending |
+| Five-family property result | 23/23 PASS |
+| Controls | 81/81 PASS |
+| Mutants | 12/12 KILLED |
+| Production modifications | None |
+| Principal input assumptions | None |
+| Frozen-repository overlap audit | Completed per T3–T5 packets |
+| Public novelty review | Completed to a qualified, non-universal conclusion |
+| Formal database-by-database search log for thesis appendix | Recommended final scholarly hardening step |
+
+---
+
+## 21. Final conclusion
+
+The BR-AF4 campaign provides strong evidence that the frozen `mlk_barrett_reduce` C implementation is functionally correct for its entire declared `int16_t` domain under the recorded CBMC semantics. The proof is anchored by exact equality to an independent centered-modulo oracle and reinforced by algebraic laws, structural quotient characterization, parameter-space theorems, concrete controls, targeted mutants, source-integrity checks, and cryptographic evidence manifests.
+
+The most defensible research contribution is not a new Barrett algorithm or new modular arithmetic. It is a reproducible, implementation-specific formal characterization that goes materially beyond the checked-in range contract. T3, T4, and T5 have particularly strong originality potential because no exact public match was found for their numerical and source-bound statements. This novelty remains appropriately qualified rather than presented as an impossible absolute guarantee.
+
+---
+
+# Appendix A — Core formulas
+
+## Production function
+
+\[
+R(a)=a-3329\cdot\operatorname{ashr}_{26}(20159a+33554432).
+\]
+
+## Independent centered oracle
+
+\[
+C(a)=
+\begin{cases}
+(a\bmod3329)+3329, & a\bmod3329<0,\\
+(a\bmod3329)-3329, & a\bmod3329>1664,\\
+a\bmod3329, & \text{otherwise},
+\end{cases}
+\]
+
+with implementation sequencing that first normalizes to `[0,3328]` and then centers.
+
+## T3 cell
+
+\[
+I_k=[3329k-1664,\ 3329k+1664]\cap[-32768,32767].
+\]
+
+## T4 parameterized multiplier
+
+\[
+R_M(a)=a-3329\cdot\operatorname{ashr}_{26}(Ma+2^{25}).
+\]
+
+## T5 parameterized offset
+
+\[
+R_B(a)=a-3329\cdot\operatorname{ashr}_{26}(20159a+B).
+\]
+
+---
+
+# Appendix B — Reference and overlap sources
+
+The following sources informed the novelty assessment. Access dates should be updated when the thesis is submitted.
+
+1. **NIST (2024), FIPS 203: Module-Lattice-Based Key-Encapsulation Mechanism Standard.**  
+   <https://doi.org/10.6028/NIST.FIPS.203>
+
+2. **PQ Code Package, `mlkem-native`.** Secure, portable C90 implementation and formal-verification artefacts.  
+   <https://github.com/pq-code-package/mlkem-native>
+
+3. **Becker, Chapman and Kostic (2026), “Verifying and optimizing post-quantum cryptography at Amazon.”** Describes CBMC memory/type-safety contracts in `mlkem-native` and separate functional proofs for optimized assembly.  
+   <https://www.amazon.science/blog/verifying-and-optimizing-post-quantum-cryptography-at-amazon>
+
+4. **Cryspen, “Verifying Libcrux’s ML-KEM.”** Public hax/F* account including a fixed-constant Barrett proof.  
+   <https://cryspen.com/post/ml-kem-verification/>
+
+5. **hax manual, “Proving properties.”** Barrett example with multiplier 20159, shift 26, congruence, and output bounds.  
+   <https://hax.cryspen.com/manual/fstar/tutorial/properties/>
+
+6. **Almeida et al. (2024), “Formally Verifying Kyber: Episode V: Machine-checked IND-CCA security and correctness of ML-KEM in EasyCrypt.”** CRYPTO 2024 and artifact.  
+   <https://artifacts.iacr.org/crypto/2024/a3/>
+
+7. **Apple Security Research (2026), “A blueprint for formal verification of Apple corecrypto.”** Reports top-to-bottom ML-KEM/ML-DSA implementation proofs for Apple’s separate implementation.  
+   <https://security.apple.com/blog/formal-verification-corecrypto/>
+
+8. **Lemire, Bartlett and Kaser (2021), “Integer division by constants: optimal bounds.”** Heliyon 7(6), e07442. General necessary/sufficient and tight-bound theory for multiplication-and-shift quotient/remainder computation.  
+   <https://doi.org/10.1016/j.heliyon.2021.e07442>
+
+9. **Granlund and Montgomery (1994), “Division by Invariant Integers Using Multiplication.”** Foundational constant-division work, cited by later tight-bound literature.
+
+10. **Kyber on ARM64: Compact.** Discusses centered Barrett reduction for `q=3329` in optimized implementation work.  
+    <https://eudl.eu/pdf/10.1007/978-3-030-90022-9_23>
+
+---
+
+# Appendix C — Recommended citation-safe originality wording
+
+> The underlying centered modular arithmetic and reciprocal-multiplication method are classical. The originality claimed in this thesis is implementation-specific: an independently constructed and reproducibly packaged CBMC theorem campaign for the exact frozen `mlkem-native` C implementation. Based on the documented public-source search completed on 22 July 2026, no prior work was identified that reports the same combined property suite, particularly the complete 21-cell quotient partition, the unique multiplier result in the declared nonnegative numerator-safe domain, and the exact admissible offset interval. This statement is qualified by the limits of literature and repository search and is not an unconditional world-first claim.
