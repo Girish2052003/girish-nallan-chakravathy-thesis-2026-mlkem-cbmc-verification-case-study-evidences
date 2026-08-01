@@ -1,4 +1,4 @@
-# CBMC `mlk_poly_frommsg` Verification Finding — Professor Review Package
+# CBMC `mlk_poly_frommsg` Verification Finding — Review Package
 
 ## summary
 
@@ -6,13 +6,12 @@ A frozen direct-body CBMC campaign verified the selected binary-embedding proper
 
 ## Recommended review order
 
-1. The original professor-email file is not included in this publication derivative.
-2. `01_EXECUTIVE_REVIEW/02_VERIFICATION_NOTE.md`
-3. `01_EXECUTIVE_REVIEW/03_FINAL_SCIENTIFIC_CLASSIFICATION.txt`
-4. `01_EXECUTIVE_REVIEW/04_EVIDENCE_INDEX.md`
-5. `02_MINIMAL_REPRODUCER/`
-6. Frozen evidence packets under `03_FROZEN_CORE_EVIDENCE/`
-7. Integrity manifest under `07_INTEGRITY/`
+1. `01_EXECUTIVE_REVIEW/02_VERIFICATION_NOTE.md`
+2. `01_EXECUTIVE_REVIEW/03_FINAL_SCIENTIFIC_CLASSIFICATION.txt`
+3. `01_EXECUTIVE_REVIEW/04_EVIDENCE_INDEX.md`
+4. `02_MINIMAL_REPRODUCER/`
+5. Frozen evidence packets under `03_FROZEN_CORE_EVIDENCE/`
+6. Integrity manifest under `07_INTEGRITY/`
 
 ## Important evidence boundary
 
@@ -24,13 +23,6 @@ This package contains complete, independently hash-bound evidence for the direct
 
 This directory is a reconciled publication derivative of
 `CBMC_FROMMSG_PROFESSOR_VERIFICATION_PACKAGE_FINAL_20260727`.
-
-The source directory supplied for publication contained 26 files. It did not
-contain the professor-email file referenced by the original package inventory,
-and that correspondence has not been reconstructed or published. The retained
-verification note is byte-identical to the originally recorded note and is
-published under the shortened path
-`01_EXECUTIVE_REVIEW/02_VERIFICATION_NOTE.md`.
 
 The file inventory, package statistics, and SHA-256 manifest were regenerated
 for this 26-file publication tree at `2026-08-01T06:15:05Z`. The frozen TAR.GZ
