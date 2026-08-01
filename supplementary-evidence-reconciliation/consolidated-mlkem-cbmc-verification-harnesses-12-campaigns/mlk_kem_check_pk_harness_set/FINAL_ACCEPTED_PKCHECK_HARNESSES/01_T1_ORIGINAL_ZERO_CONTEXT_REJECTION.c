@@ -1,0 +1,138 @@
+/*
+ * PKCHECK-01C
+ *
+ * Repaired actual-body admission shard for mlk_kem_check_pk.
+ *
+ * One symbolic non-canonical 12-bit coefficient is inserted into an
+ * otherwise-zero polynomial-vector encoding. All index arithmetic occurs
+ * after the domain assumptions and is accompanied by explicit assertions.
+ *
+ * Actual production bodies required:
+ *   - mlk_kem_check_pk
+ *   - mlk_polyvec_frombytes
+ *   - mlk_poly_frombytes / mlk_poly_frombytes_c
+ *   - mlk_polyvec_reduce
+ *   - mlk_poly_reduce / mlk_poly_reduce_c
+ *   - mlk_polyvec_tobytes
+ *   - mlk_poly_tobytes / mlk_poly_tobytes_c
+ */
+
+#include <stdint.h>
+
+#include <cbmc.h>
+#include <kem.h>
+#include <params.h>
+
+#define PKCHECK_COEFFICIENT_COUNT \
+  ((unsigned)MLKEM_K * (unsigned)MLKEM_N)
+
+#define PKCHECK_POLYVEC_BYTE_COUNT \
+  ((unsigned)MLKEM_POLYVECBYTES)
+
+#define PKCHECK_UINT12_LIMIT 4096u
+
+void harness(void)
+{
+  uint8_t pk[MLKEM_INDCCA_PUBLICKEYBYTES] = {0};
+
+  unsigned coefficient_index = 0u;
+  unsigned pair_index;
+  unsigned byte_index;
+
+  uint16_t malformed_value = (uint16_t)MLKEM_Q;
+  uint32_t value32;
+  uint16_t independently_decoded;
+
+  int result;
+
+  __CPROVER_havoc_object(&coefficient_index);
+  __CPROVER_havoc_object(&malformed_value);
+
+  __CPROVER_assume(
+      coefficient_index < PKCHECK_COEFFICIENT_COUNT);
+
+  __CPROVER_assume(
+      malformed_value >= (uint16_t)MLKEM_Q);
+
+  __CPROVER_assume(
+      malformed_value < (uint16_t)PKCHECK_UINT12_LIMIT);
+
+  pair_index = coefficient_index / 2u;
+
+  __CPROVER_assert(
+      pair_index < (PKCHECK_COEFFICIENT_COUNT / 2u),
+      "PKCHECK-01C.INDEX_PAIR_BOUND: pair index is in range");
+
+  byte_index = pair_index * 3u;
+
+  __CPROVER_assert(
+      byte_index <= PKCHECK_POLYVEC_BYTE_COUNT - 3u,
+      "PKCHECK-01C.INDEX_BYTE_BOUND: three-byte block is in range");
+
+  value32 = (uint32_t)malformed_value;
+
+  /*
+   * Independent ByteEncode_12 insertion.
+   *
+   * The unrelated nibble in the shared middle byte is preserved.
+   */
+  if ((coefficient_index & 1u) == 0u)
+  {
+    pk[byte_index] =
+        (uint8_t)(value32 & UINT32_C(0xFF));
+
+    pk[byte_index + 1u] =
+        (uint8_t)(
+            ((uint32_t)pk[byte_index + 1u] &
+             UINT32_C(0xF0)) |
+            ((value32 >> 8) & UINT32_C(0x0F)));
+  }
+  else
+  {
+    pk[byte_index + 1u] =
+        (uint8_t)(
+            ((uint32_t)pk[byte_index + 1u] &
+             UINT32_C(0x0F)) |
+            ((value32 & UINT32_C(0x0F)) << 4));
+
+    pk[byte_index + 2u] =
+        (uint8_t)((value32 >> 4) & UINT32_C(0xFF));
+  }
+
+  /*
+   * Independent ByteDecode_12 oracle for the same coefficient.
+   */
+  if ((coefficient_index & 1u) == 0u)
+  {
+    independently_decoded =
+        (uint16_t)(
+            (uint16_t)pk[byte_index] |
+            ((uint16_t)(
+                 pk[byte_index + 1u] & UINT8_C(0x0F))
+             << 8));
+  }
+  else
+  {
+    independently_decoded =
+        (uint16_t)(
+            ((uint16_t)pk[byte_index + 1u] >> 4) |
+            ((uint16_t)pk[byte_index + 2u] << 4));
+  }
+
+  __CPROVER_assert(
+      independently_decoded == malformed_value,
+      "PKCHECK-01C.ORACLE_PACKING: independently packed coefficient decodes exactly");
+
+  result = mlk_kem_check_pk(
+      pk,
+      NULL /* context removed by preprocessing */);
+
+  /*
+   * Allocation success must produce rejection. Allocation failure is the
+   * only additional result permitted by the CBMC custom-allocation config.
+   */
+  __CPROVER_assert(
+      result == MLK_ERR_FAIL ||
+          result == MLK_ERR_OUT_OF_MEMORY,
+      "PKCHECK-01C.REJECTION: one non-canonical coefficient cannot be accepted");
+}
