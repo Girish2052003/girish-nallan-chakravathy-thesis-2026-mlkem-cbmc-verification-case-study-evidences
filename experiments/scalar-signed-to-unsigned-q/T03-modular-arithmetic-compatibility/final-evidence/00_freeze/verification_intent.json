@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "campaign": {
+    "id": "CANON",
+    "stage": "CANON-00B",
+    "name": "Signed-to-Unsigned Canonicalization Campaign",
+    "target_function": "mlk_scalar_signed_to_unsigned_q",
+    "composition_function": "mlk_barrett_reduce",
+    "pinned_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+    "primary_parameter_set": "MLKEM768",
+    "modulus_q": 3329
+  },
+  "domains": {
+    "target_domain": "-3328 <= c <= 3328",
+    "unsigned_canonical_domain": "0 <= u <= 3328",
+    "composition_input_domain": "all int16_t values",
+    "arithmetic_model": "bit-precise C arithmetic with mathematical comparisons evaluated in int32_t where specified"
+  },
+  "registered_obligations": {
+    "theorem_families": 4,
+    "semantic_properties": 17,
+    "control_properties": 6,
+    "total_properties": 23
+  },
+  "authoritative_body_policy": {
+    "target_body_required": true,
+    "copied_target_body_forbidden": true,
+    "target_stub_forbidden": true,
+    "target_contract_replacement_forbidden": true,
+    "barrett_body_required_for_T4": true,
+    "barrett_contract_replacement_for_T4": false,
+    "selector_and_mask_contracts_initially_permitted_for_T1_to_T3": true,
+    "actual_dependency_body_confirmation_required": true
+  },
+  "oracle_policy": {
+    "independent_oracle_required": true,
+    "oracle_output_domain": "0 <= result < 3329",
+    "oracle_must_not_call_target": true,
+    "oracle_must_not_call_barrett": true,
+    "oracle_must_not_call_selector_helpers": true,
+    "oracle_must_not_copy_target_conditional_selection_body": true,
+    "oracle_intermediate_type": "int32_t"
+  },
+  "forbidden_transformations": [
+    "modifying production C source",
+    "removing static or inline qualifiers from production source",
+    "copying the production target body into a harness",
+    "reimplementing the target and proving only the reimplementation",
+    "replacing the target with a stub or uninterpreted function",
+    "using assume(false)",
+    "using contradictory assumptions",
+    "using assertions whose antecedents are unreachable",
+    "using tautological assertions",
+    "disabling required overflow or undefined-behaviour checks",
+    "classifying timeout or resource exhaustion as PASS"
+  ],
+  "result_classification": {
+    "PASS": "CBMC completes successfully and all theorem, safety, reachability and binding checks succeed.",
+    "FAIL": "CBMC produces a reachable counterexample to a registered property.",
+    "INVALID": "The proof is vacuous, misbound, transformed, stubbed, contract-replaced contrary to policy, or otherwise fails integrity controls.",
+    "INCONCLUSIVE": "The proof times out, exhausts resources, crashes, or cannot be completed under the frozen configuration."
+  },
+  "timeout_policy": {
+    "initial_per_shard_seconds": 900,
+    "timeout_result": "INCONCLUSIVE"
+  },
+  "claim_boundary": {
+    "allowed": "Repository-distinct, implementation-specific CBMC characterization at the pinned revision.",
+    "forbidden": [
+      "world-first mathematical theorem",
+      "no native proof existed",
+      "canonical modular representatives were invented in this campaign",
+      "constant-time or side-channel security was proved by these functional properties"
+    ]
+  }
+}

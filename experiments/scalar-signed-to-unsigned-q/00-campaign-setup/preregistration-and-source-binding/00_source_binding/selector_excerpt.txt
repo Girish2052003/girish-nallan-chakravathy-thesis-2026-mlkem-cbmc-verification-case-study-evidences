@@ -1,0 +1,26 @@
+ * reference implementation @[REF]. Used as part of signed->unsigned
+ * conversion for modular representatives. This happens in `mlk_poly_reduce()`
+ * here, and as part of polynomial compression functions in @[REF]. See
+ * `mlk_poly_reduce()`. Barrier to reduce the risk of compiler-introduced
+ * branches. For `a = MLKEM_Q_HALF` and `b=0`, also embedded in
+ * `poly_frommsg()` from the reference implementation, which uses
+ * `cmov_int16()` instead.}
+ *
+ * @param a    First alternative.
+ * @param b    Second alternative.
+ * @param cond Condition variable.
+ *
+ * @return @p a if @p cond != 0, else @p b.
+ */
+static MLK_INLINE int16_t mlk_ct_sel_int16(int16_t a, int16_t b, uint16_t cond)
+__contract__(ensures(return_value == (cond ? a : b)))
+{
+  uint16_t au = mlk_cast_int16_to_uint16(a);
+  uint16_t bu = mlk_cast_int16_to_uint16(b);
+  uint16_t res = bu ^ (mlk_ct_cmask_nonzero_u16(cond) & (au ^ bu));
+  return mlk_cast_uint16_to_int16(res);
+}
+
+/**
+ * Functionally equivalent to cond ? a : b, but implemented with guards
+ * against compiler-introduced branches.

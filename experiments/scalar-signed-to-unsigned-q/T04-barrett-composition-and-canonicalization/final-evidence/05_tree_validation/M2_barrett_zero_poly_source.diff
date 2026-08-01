@@ -1,0 +1,11 @@
+--- baseline/mlkem/src/poly.c
++++ M2_barrett_zero/mlkem/src/poly.c
+@@ -99,7 +99,7 @@
+    * t is in -10 .. +10, so we need 32-bit math to
+    * evaluate t * MLKEM_Q and the subsequent subtraction
+    */
+-  int16_t res = (int16_t)(a - t * MLKEM_Q);
++  int16_t res = 0; /* CANON-T4 mutant M2: Barrett constant zero */
+ 
+   mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);
+   return res;

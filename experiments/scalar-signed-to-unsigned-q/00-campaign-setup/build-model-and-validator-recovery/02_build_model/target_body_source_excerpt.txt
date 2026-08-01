@@ -1,0 +1,91 @@
+148- * range [-(MLKEM_Q-1), MLKEM_Q-1] into unsigned representatives within
+149- * range [0, MLKEM_Q-1].
+150- *
+151- * @reference{Not present in the reference implementation @[REF]. Used here
+152- * to implement different semantics of `poly_reduce()`; see below. In the
+153- * reference implementation @[REF] this logic is part of all compression
+154- * functions (see `compress.c`).}
+155- *
+156- * @param c Signed coefficient to be converted.
+157- *
+158- * @return Unsigned representative in [0, MLKEM_Q).
+159- */
+160:static MLK_INLINE int16_t mlk_scalar_signed_to_unsigned_q(int16_t c)
+161-__contract__(
+162-  requires(c > -MLKEM_Q && c < MLKEM_Q)
+163-  ensures(return_value >= 0 && return_value < MLKEM_Q)
+164-  ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q)))
+165-{
+166-  mlk_assert_abs_bound(&c, 1, MLKEM_Q);
+167-
+168-  /* Add MLKEM_Q if c is negative, but in constant time.
+169-   *
+170-   * Note that c + MLKEM_Q does not overflow in int16_t,
+171-   * so the cast to uint16_t is safe. */
+172-  c = mlk_ct_sel_int16((int16_t)(c + MLKEM_Q), c, mlk_ct_cmask_neg_i16(c));
+173-
+174-  mlk_assert_bound(&c, 1, 0, MLKEM_Q);
+175-  return c;
+176-}
+177-
+178-/* Reference: `poly_reduce()` in the reference implementation @[REF]
+179- *            - We use _unsigned_ canonical outputs, while the reference
+180- *              implementation uses _signed_ canonical outputs.
+181- *              Accordingly, we need a conditional addition of MLKEM_Q
+182- *              here to go from signed to unsigned representatives.
+183- *              This conditional addition is then dropped from all
+184- *              polynomial compression functions instead (see `compress.c`). */
+185-MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r)
+186-__contract__(
+187-  requires(memory_no_alias(r, sizeof(mlk_poly)))
+188-  assigns(memory_slice(r, sizeof(mlk_poly)))
+189-  ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))
+190-)
+191-{
+192-  unsigned i;
+193-
+194-  for (i = 0; i < MLKEM_N; i++)
+195-  __loop__(
+196-    invariant(i <= MLKEM_N)
+197-    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))
+198-    decreases(MLKEM_N - i))
+199-  {
+200-    /* Barrett reduction, giving signed canonical representative */
+201-    int16_t t = mlk_barrett_reduce(r->coeffs[i]);
+202-    /* Conditional addition to get unsigned canonical representative */
+203:    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);
+204-  }
+205-
+206-  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+207-}
+208-
+209-MLK_INTERNAL_API
+210-void mlk_poly_reduce(mlk_poly *r)
+211-{
+212-#if defined(MLK_USE_NATIVE_POLY_REDUCE)
+213-  int ret;
+214-  ret = mlk_poly_reduce_native(r->coeffs);
+215-  if (ret == MLK_NATIVE_FUNC_SUCCESS)
+216-  {
+217-    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);
+218-    return;
+219-  }
+220-#endif /* MLK_USE_NATIVE_POLY_REDUCE */
+221-
+222-  mlk_poly_reduce_c(r);
+223-}
+224-
+225-/* Reference: `poly_add()` in the reference implementation @[REF].
+226- *            - We use destructive version (output=first input) to avoid
+227- *              reasoning about aliasing in the CBMC specification */
+228-MLK_INTERNAL_API
+229-void mlk_poly_add(mlk_poly *r, const mlk_poly *b)
+230-{
+231-  unsigned i;
+232-  for (i = 0; i < MLKEM_N; i++)
+233-  __loop__(
+234-    invariant(i <= MLKEM_N)
+235-    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))
+236-    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))
+237-    decreases(MLKEM_N - i))
+238-  {
