@@ -1,0 +1,128 @@
+{
+  "schema_version": "2.0",
+  "target_function": "mlk_poly_add",
+  "obligation_count": 5,
+  "obligations": [
+    {
+      "id": "I1",
+      "kind": "integer_or_bit_operation",
+      "operations": [
+        "addition"
+      ],
+      "statement": "for (i = 0; i < MLKEM_N; i++)",
+      "line": 230,
+      "risk_level": "high",
+      "suggested_cbmc_checks": [
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--undefined-shift-check"
+      ],
+      "spec_range_context_seen": true,
+      "human_review_required": true,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    },
+    {
+      "id": "I2",
+      "kind": "integer_or_bit_operation",
+      "operations": [
+        "multiplication",
+        "subtraction"
+      ],
+      "statement": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))",
+      "line": 233,
+      "risk_level": "high",
+      "suggested_cbmc_checks": [
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--undefined-shift-check"
+      ],
+      "spec_range_context_seen": true,
+      "human_review_required": true,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "id": "I3",
+      "kind": "integer_or_bit_operation",
+      "operations": [
+        "addition",
+        "multiplication",
+        "subtraction"
+      ],
+      "statement": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))",
+      "line": 234,
+      "risk_level": "high",
+      "suggested_cbmc_checks": [
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--undefined-shift-check"
+      ],
+      "spec_range_context_seen": true,
+      "human_review_required": true,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "id": "I4",
+      "kind": "integer_or_bit_operation",
+      "operations": [
+        "subtraction"
+      ],
+      "statement": "decreases(MLKEM_N - i))",
+      "line": 235,
+      "risk_level": "high",
+      "suggested_cbmc_checks": [
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--undefined-shift-check"
+      ],
+      "spec_range_context_seen": true,
+      "human_review_required": true,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 235,
+        "end_line": 235,
+        "text": "decreases(MLKEM_N - i))"
+      }
+    },
+    {
+      "id": "I5",
+      "kind": "integer_or_bit_operation",
+      "operations": [
+        "addition",
+        "subtraction"
+      ],
+      "statement": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+      "line": 238,
+      "risk_level": "high",
+      "suggested_cbmc_checks": [
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--undefined-shift-check"
+      ],
+      "spec_range_context_seen": true,
+      "human_review_required": true,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ],
+  "spec_range_context_seen": true,
+  "guardrail": "Integer range obligations must be justified by spec/code before becoming assumptions."
+}

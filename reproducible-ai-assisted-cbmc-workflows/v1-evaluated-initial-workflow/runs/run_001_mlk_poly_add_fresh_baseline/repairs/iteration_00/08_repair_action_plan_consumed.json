@@ -1,0 +1,2299 @@
+{
+  "created_at": "2026-07-09T02:34:37+00:00",
+  "agent": "repair_refinement_agent",
+  "agent_version": "2.0.0",
+  "repair_action_plan_present": true,
+  "repair_guidance_present": true,
+  "input_plan": {
+    "schema_version": "1.0",
+    "agent": "counterexample_analysis_agent",
+    "created_at": "2026-07-09T02:34:37+00:00",
+    "preferred_next_agent": "repair_agent",
+    "repair_required": true,
+    "primary_diagnosis_bucket": "harness_or_assumption",
+    "failed_property_mapping_file": "07_failed_property_mapping.json",
+    "actions": [
+      {
+        "step_id": "A8_REPAIR_01",
+        "action": "separate_overflow_from_functional_assertion",
+        "priority": "high",
+        "safe_for_automatic_repair": true,
+        "human_review_required": true,
+        "reason": "Overflow-related failures often come from too-broad nondeterministic inputs or arithmetic inside the assertion.",
+        "concrete_steps": [
+          "Do not silently narrow input bounds unless spec/code summary justifies them.",
+          "Move expected arithmetic into wider temporary types only when this matches the semantics being tested.",
+          "Create one harness for overflow safety and another harness for functional equality under documented preconditions.",
+          "Record every range assumption with evidence from 01_spec_summary.json, 02_code_summary.json, or human notes."
+        ],
+        "expected_agent9_use": "Repair Agent should add only evidence-backed range assumptions and keep them marked as candidate preconditions."
+      },
+      {
+        "step_id": "A8_REPAIR_02",
+        "action": "review_loop_bound_and_object_size",
+        "priority": "high",
+        "safe_for_automatic_repair": true,
+        "human_review_required": true,
+        "reason": "Bounds failure may mean the harness object size, macro definition, or unwind setting does not match the implementation.",
+        "concrete_steps": [
+          "Confirm the loop bound used by `mlk_poly_add` in 02_code_summary.json.",
+          "Ensure local objects allocated in the harness have the same struct type expected by the target function.",
+          "Ensure CBMC command uses --unwind equal to or larger than the real loop iterations and keeps --unwinding-assertions enabled."
+        ],
+        "expected_agent9_use": "Repair Agent should update manifest/config recommendation for CBMC unwind while keeping unwinding assertions enabled."
+      },
+      {
+        "step_id": "A8_REPAIR_03",
+        "action": "fix_pointer_object_setup",
+        "priority": "high",
+        "safe_for_automatic_repair": true,
+        "human_review_required": true,
+        "reason": "Pointer failures often occur when the harness passes invalid or uninitialized objects.",
+        "concrete_steps": [
+          "Use concrete local objects such as `poly r; poly a; poly b;` and pass their addresses.",
+          "Avoid nondeterministic raw pointers for first harnesses unless pointer-validity assumptions are explicitly added.",
+          "Initialize input object fields before calling the target function."
+        ],
+        "expected_agent9_use": "Repair Agent should create concrete objects and valid addresses rather than raw nondet pointers."
+      },
+      {
+        "step_id": "A8_REPAIR_04",
+        "action": "adjust_unwind_configuration",
+        "priority": "medium",
+        "safe_for_automatic_repair": true,
+        "human_review_required": true,
+        "reason": "Loop unwinding may be insufficient or mismatched with implementation loop bounds.",
+        "concrete_steps": [
+          "Set tool_execution_settings.unwind to the extracted implementation loop bound.",
+          "Keep --unwinding-assertions enabled so incomplete unwinding is not hidden."
+        ],
+        "expected_agent9_use": "Repair Agent should update manifest/config recommendation for CBMC unwind while keeping unwinding assertions enabled."
+      },
+      {
+        "step_id": "A8_REPAIR_05",
+        "action": "repair_harness_assumptions_and_assertions",
+        "priority": "medium",
+        "safe_for_automatic_repair": true,
+        "human_review_required": true,
+        "reason": "The selected property failed or was blocked under the current candidate assumptions/assertions.",
+        "concrete_steps": [
+          "List each assumption and link it to spec/code evidence before keeping it.",
+          "Split large assertions into smaller checkable assertions.",
+          "Avoid proving a trivial property by over-constraining inputs.",
+          "Keep failed and repaired harnesses in the log for thesis evaluation."
+        ],
+        "expected_agent9_use": "Repair Agent should add only evidence-backed range assumptions and keep them marked as candidate preconditions."
+      }
+    ],
+    "agent9_input_contract": {
+      "must_read": [
+        "07_counterexample_analysis.json",
+        "07_repair_guidance.json",
+        "07_repair_action_plan.json",
+        "07_failed_property_mapping.json",
+        "07_tool_vs_harness_vs_code_diagnosis.json"
+      ],
+      "must_preserve_guardrails": true
+    }
+  },
+  "input_guidance": {
+    "schema_version": "1.0",
+    "agent": "counterexample_analysis_agent",
+    "created_at": "2026-07-09T02:34:37+00:00",
+    "primary_classification": "pointer_validity_failure",
+    "repair_required": true,
+    "preferred_next_agent": "repair_agent",
+    "guidance": [
+      {
+        "action": "separate_overflow_from_functional_assertion",
+        "priority": "high",
+        "reason": "Overflow-related failures often come from too-broad nondeterministic inputs or arithmetic inside the assertion.",
+        "concrete_steps": [
+          "Do not silently narrow input bounds unless spec/code summary justifies them.",
+          "Move expected arithmetic into wider temporary types only when this matches the semantics being tested.",
+          "Create one harness for overflow safety and another harness for functional equality under documented preconditions.",
+          "Record every range assumption with evidence from 01_spec_summary.json, 02_code_summary.json, or human notes."
+        ],
+        "safe_for_automatic_repair": true,
+        "evidence": [],
+        "human_review_required": true
+      },
+      {
+        "action": "review_loop_bound_and_object_size",
+        "priority": "high",
+        "reason": "Bounds failure may mean the harness object size, macro definition, or unwind setting does not match the implementation.",
+        "concrete_steps": [
+          "Confirm the loop bound used by `mlk_poly_add` in 02_code_summary.json.",
+          "Ensure local objects allocated in the harness have the same struct type expected by the target function.",
+          "Ensure CBMC command uses --unwind equal to or larger than the real loop iterations and keeps --unwinding-assertions enabled."
+        ],
+        "safe_for_automatic_repair": true,
+        "evidence": [],
+        "human_review_required": true
+      },
+      {
+        "action": "fix_pointer_object_setup",
+        "priority": "high",
+        "reason": "Pointer failures often occur when the harness passes invalid or uninitialized objects.",
+        "concrete_steps": [
+          "Use concrete local objects such as `poly r; poly a; poly b;` and pass their addresses.",
+          "Avoid nondeterministic raw pointers for first harnesses unless pointer-validity assumptions are explicitly added.",
+          "Initialize input object fields before calling the target function."
+        ],
+        "safe_for_automatic_repair": true,
+        "evidence": [],
+        "human_review_required": true
+      },
+      {
+        "action": "adjust_unwind_configuration",
+        "priority": "medium",
+        "reason": "Loop unwinding may be insufficient or mismatched with implementation loop bounds.",
+        "concrete_steps": [
+          "Set tool_execution_settings.unwind to the extracted implementation loop bound.",
+          "Keep --unwinding-assertions enabled so incomplete unwinding is not hidden."
+        ],
+        "safe_for_automatic_repair": true,
+        "evidence": [],
+        "human_review_required": true
+      },
+      {
+        "action": "repair_harness_assumptions_and_assertions",
+        "priority": "medium",
+        "reason": "The selected property failed or was blocked under the current candidate assumptions/assertions.",
+        "concrete_steps": [
+          "List each assumption and link it to spec/code evidence before keeping it.",
+          "Split large assertions into smaller checkable assertions.",
+          "Avoid proving a trivial property by over-constraining inputs.",
+          "Keep failed and repaired harnesses in the log for thesis evaluation."
+        ],
+        "safe_for_automatic_repair": true,
+        "evidence": [],
+        "human_review_required": true
+      }
+    ],
+    "guardrails_for_repair_agent": [
+      "Do not remove a failing assertion only to force CBMC success.",
+      "Do not add assumptions unless justified by specification summary, code summary, traceability files, or human notes.",
+      "Do not claim a repaired harness proves full ML-KEM correctness.",
+      "Keep original failure evidence and repaired artifact both logged.",
+      "If critic gate blocked execution, fix critic issues before treating this as a CBMC counterexample."
+    ],
+    "signals_used": [
+      {
+        "signal_type": "integer_overflow_risk",
+        "severity": "high",
+        "confidence": 0.87,
+        "evidence": [
+          "cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions --trace"
+        ],
+        "explanation": "The failed check is related to arithmetic overflow. In ML-KEM polynomial code this often means the harness allowed input ranges that are too broad, or the assertion performs arithmetic in a type-sensitive way.",
+        "likely_source": "harness_assumption_or_integer_semantics_or_code_review",
+        "recommended_action": "Separate overflow-safety properties from functional-equality properties; add only spec/code-justified range assumptions."
+      },
+      {
+        "signal_type": "pointer_validity_failure",
+        "severity": "high",
+        "confidence": 0.84,
+        "evidence": [
+          "cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions --trace"
+        ],
+        "explanation": "CBMC reported a pointer/dereference-related failure. For generated harnesses this often means local objects or pointer assumptions were not set up correctly.",
+        "likely_source": "harness_pointer_setup_or_code_review",
+        "recommended_action": "Use concrete local objects and valid addresses; avoid nondeterministic raw pointers unless justified."
+      },
+      {
+        "signal_type": "unwinding_configuration_problem",
+        "severity": "medium",
+        "confidence": 0.78,
+        "evidence": [
+          "cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions --trace"
+        ],
+        "explanation": "The failure may involve loop unwinding. The unwind bound may be too low/high or the loop bound macro may not match the implementation loop.",
+        "likely_source": "tool_configuration_or_loop_bound",
+        "recommended_action": "Set unwind according to Agent 3 loop-bound evidence and keep --unwinding-assertions enabled."
+      },
+      {
+        "signal_type": "assertion_may_be_too_strong_or_type_sensitive",
+        "severity": "medium",
+        "confidence": 0.8,
+        "evidence": [
+          "harness line 61: assert(r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i])));"
+        ],
+        "explanation": "The harness assertion itself performs arithmetic. CBMC may be failing due to the assertion expression or missing input preconditions, not necessarily because the implementation is wrong.",
+        "likely_source": "harness_assertion_design",
+        "recommended_action": "Split assertion checks and use wider comparison expressions only when semantically justified."
+      },
+      {
+        "signal_type": "critic_prior_warning_assertion_not_aligned_with_parsed_algorithm",
+        "severity": "medium",
+        "confidence": 0.7,
+        "evidence": [
+          "The assertion `r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i]))` does not strongly match parsed algorithm assignments or Agent 5 assertion plan."
+        ],
+        "explanation": "The Critic Agent already identified this issue before tool execution, so it is relevant to the failure analysis.",
+        "likely_source": "critic_detected_artifact_quality_issue",
+        "recommended_action": "Repair the critic issue before relying on any tool result."
+      },
+      {
+        "signal_type": "critic_prior_warning_signed_overflow_risk_in_functional_assertion",
+        "severity": "medium",
+        "confidence": 0.7,
+        "evidence": [
+          "The coefficient equality assertion may involve signed small-integer addition, so CBMC may report signed overflow unless valid input bounds are justified."
+        ],
+        "explanation": "The Critic Agent already identified this issue before tool execution, so it is relevant to the failure analysis.",
+        "likely_source": "critic_detected_artifact_quality_issue",
+        "recommended_action": "Repair the critic issue before relying on any tool result."
+      },
+      {
+        "signal_type": "symbol_or_parameter_uncertainty",
+        "severity": "medium",
+        "confidence": 0.62,
+        "evidence": [
+          "{\"rich_context_files_seen\": {\"algorithm_blocks\": true, \"equations_constraints\": true, \"harness_assumption_traceability_csv_rows\": 4, \"parameter_table\": true, \"preconditions_postconditions\": true, \"spec_code_traceability\": true, \"spec_grounded_assertion_plan\": true, \"spec_grounding_report\": true, \"spec_to_code_hints\": true, \"symbol_table\": true}, \"symbol_misuse_findings\": [], \"uncertainty_review\": {\"markers_present\": [\"human review\", \"candidate\", \"critic\"], \"message\": \"17 uncertainty/limitation item(s) exist and artifact/manifest contains review markers.\", \"sample_uncertainties\": [\"{\\\"severity\\\": \\\"medium\\\", \\\"suggested_action\\\": \\\"Use a cleaned FIPS text source and ensure algorithm headings/Input/Output lines are preserved.\\\", \\\"uncertainty\\\": \\\"No algorithm-like block was detected. The selected section may be prose-only or converted text may need cleanup.\\\"}\", \"{\\\"severity\\\": \\\"normal\\\", \\\"suggested_action\\\": \\\"Use Agent 3 and Agent 4 to connect extracted spec facts to actual code beh"
+        ],
+        "explanation": "The critic/spec-grounding review recorded symbol or parameter uncertainty that may affect the harness assumptions/assertions.",
+        "likely_source": "spec_grounding_uncertainty",
+        "recommended_action": "Review symbols, constants, and parameter values before repairing assumptions."
+      }
+    ]
+  },
+  "actions_applied_or_considered": [
+    {
+      "action_id": "R001",
+      "category": "traceability",
+      "description": "Add repair provenance and research guardrail banner to the harness.",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Reproducibility requires repaired artifacts to be clearly marked.",
+      "evidence": [],
+      "human_review_note": "Banner does not affect verification semantics.",
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R_INC_LIMITS_H",
+      "category": "cbmc_compatibility",
+      "description": "Add missing include <limits.h>.",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Harness uses assertions, fixed-width integer casts, or INT16_MIN/INT16_MAX-style guards.",
+      "evidence": [],
+      "human_review_note": null,
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R002",
+      "category": "cbmc_compatibility",
+      "description": "Add external declarations for CBMC nondeterministic input functions used by the harness.",
+      "applied": false,
+      "confidence": "high",
+      "reason": "CBMC harnesses commonly use nondet_* symbols; explicit declarations reduce type/parsing problems.",
+      "evidence": [],
+      "human_review_note": null,
+      "source_stage": "agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R003",
+      "category": "assumption_transparency",
+      "description": "Annotate CPROVER assumptions as candidate preconditions requiring spec/code review.",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Generated assumptions can be too strong or unsupported; comments make the limitation explicit.",
+      "evidence": [
+        {
+          "assumptions_commented": 1
+        }
+      ],
+      "human_review_note": "Every generated assumption must be checked against selected specification and implementation context.",
+      "source_stage": "agent6_agent8_agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R003B",
+      "category": "assertion_transparency",
+      "description": "Annotate assertions as candidate assertions requiring property/spec review.",
+      "applied": true,
+      "confidence": "high",
+      "reason": "Candidate assertions need traceability to Agent 4 properties and Agent 5 assertion plan.",
+      "evidence": [
+        {
+          "assertions_commented": 1
+        }
+      ],
+      "human_review_note": "Every assertion must be checked against the selected candidate property and spec/code evidence.",
+      "source_stage": "agent5_agent6_agent8_agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R004",
+      "category": "assertion_rewrite",
+      "description": "Rewrite simple coefficient functional assertion with int32_t casts to reduce assertion-side overflow noise.",
+      "applied": false,
+      "confidence": "low",
+      "reason": "CBMC failures involving signed overflow/equality assertions often come from expression semantics or over-broad input ranges.",
+      "evidence": [],
+      "human_review_note": "This preserves the intended equality check shape but does not prove the specification-level property by itself.",
+      "source_stage": "agent7_agent8_agent9_v2",
+      "safety_level": "candidate_safe"
+    },
+    {
+      "action_id": "R006",
+      "category": "tool_command_recommendation",
+      "description": "Update or add CBMC unwinding recommendation in the artifact manifest.",
+      "applied": false,
+      "confidence": "medium",
+      "reason": "Loop-based harnesses need appropriate unwinding and unwinding assertions.",
+      "evidence": [
+        {
+          "before": {
+            "schema_version": "2.0",
+            "agent": "artifact_generation_agent",
+            "created_at": "2026-07-09T02:34:37+00:00",
+            "target_scheme": "ML-KEM",
+            "target_function": "mlk_poly_add",
+            "harness_function": "harness_mlk_poly_add",
+            "verification_tool": "CBMC",
+            "artifact_type": "CBMC harness",
+            "artifact_file": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c",
+            "input_files": {
+              "spec_summary": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/01_spec_summary.json",
+              "code_summary": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_summary.json",
+              "candidate_properties": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/03_candidate_properties.json",
+              "config": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/run_config.resolved.json",
+              "source_files": [
+                "/home/girish/thesis-agent-workflow/inputs/code/poly.c"
+              ],
+              "header_files": [
+                "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/common.h"
+              ]
+            },
+            "selected_properties_used": [
+              {
+                "id": "P4",
+                "type": "array_bounds",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "All detected array accesses in `mlk_poly_add` should stay within valid bounds.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--unwind",
+                  "--unwinding-assertions"
+                ],
+                "harness_guidance": [
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "array",
+                  "bounds"
+                ]
+              },
+              {
+                "id": "P1",
+                "type": "input_pointer_validity",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Input pointer `b` must be valid and readable when `mlk_poly_add` is called.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "code",
+                  "pointer"
+                ]
+              },
+              {
+                "id": "P5",
+                "type": "loop_bound",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Loop `i < MLKEM_N` in `mlk_poly_add` should be unwound sufficiently and should not drive array indices outside valid bounds.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 230,
+                    "end_line": 230,
+                    "text": "for (i = 0; i < MLKEM_N; i++)"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--unwind",
+                  "--unwinding-assertions"
+                ],
+                "harness_guidance": [
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "loop",
+                  "unwinding"
+                ]
+              },
+              {
+                "id": "P3",
+                "type": "memory_safety",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "All pointer field/dereference accesses inside `mlk_poly_add` should be memory-safe under documented harness assumptions.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function.",
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "memory_safety"
+                ]
+              },
+              {
+                "id": "P2",
+                "type": "output_pointer_validity",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Output/in-out pointer `r` must be valid and writable when `mlk_poly_add` writes through it.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "code",
+                  "pointer"
+                ]
+              },
+              {
+                "id": "P21",
+                "type": "parameter_consistency",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Parsed specification parameters/constants should match implementation macros/constants before using them in CBMC assumptions. Tracked parameters: human_review_required=True.",
+                "source_basis": "agent2v2_parameters_plus_code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+                    "start_line": 181,
+                    "end_line": 181,
+                    "text": "#define mlk_poly_add MLK_NAMESPACE(poly_add)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 22,
+                    "end_line": 22,
+                    "text": "#define MLKEM_N 256"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 23,
+                    "end_line": 23,
+                    "text": "#define MLKEM_Q 3329"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 33,
+                    "end_line": 33,
+                    "text": "#define MLKEM_POLYCOMPRESSEDBYTES_D4 128"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 22,
+                    "end_line": 22,
+                    "text": "#define __loop__(x) /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 30,
+                    "end_line": 30,
+                    "text": "#define __loop__(x) x /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 40,
+                    "end_line": 40,
+                    "text": "#define invariant(...) __CPROVER_loop_invariant(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 41,
+                    "end_line": 41,
+                    "text": "#define decreases(...) __CPROVER_decreases(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 88,
+                    "end_line": 88,
+                    "text": "#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 112,
+                    "end_line": 117,
+                    "text": "#define forall(qvar, qvar_lb, qvar_ub, predicate)                              \\\n  __CPROVER_forall                                                             \\\n  {                                                                            \\\n    uint32_t qvar;                                                             \\\n    ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) \\\n  }"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+                    "start_line": 26,
+                    "end_line": 26,
+                    "text": "#define MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+                    "start_line": 30,
+                    "end_line": 30,
+                    "text": "#define MLK_INTERNAL_API MLK_CONFIG_INTERNAL_API_QUALIFIER"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [
+                    {
+                      "start_line": 25,
+                      "end_line": 41
+                    },
+                    {
+                      "start_line": 81,
+                      "end_line": 81
+                    },
+                    {
+                      "start_line": 99,
+                      "end_line": 100
+                    },
+                    {
+                      "text": "true"
+                    }
+                  ],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "constant_consistency_check",
+                    "text": "Check that spec parameters such as n and q match code macros/constants before using them in assumptions/assertions."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "assert/static check constants",
+                  "review macros/headers"
+                ],
+                "harness_guidance": [
+                  "Do not generate q/n/k assumptions until parsed spec parameters match code constants."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "parameters"
+                ]
+              },
+              {
+                "id": "P58",
+                "type": "spec_code_alignment",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Agent 2 v2 spec-to-code hint should be checked: mlk_poly_add.",
+                "source_basis": "agent2v2_spec_to_code_hint",
+                "confidence": "medium",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 242,
+                    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": [
+                    {
+                      "text": "mlk_poly_add"
+                    }
+                  ]
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "traceability_check",
+                    "text": "Confirm selected FIPS algorithm/spec section corresponds to the selected C target function."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "traceability check",
+                  "critic review"
+                ],
+                "harness_guidance": [],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "traceability"
+                ]
+              },
+              {
+                "id": "P59",
+                "type": "spec_code_alignment",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Agent 2 v2 spec-to-code hint should be checked: {\"candidate_meanings\": [\"Error/noise vector or polynomial in ML-KEM/K-PKE descriptions.\"], \"group\": \"candidate_field_mappings\", \"possible_code_fields\": [\"coeffs\", \"vec\", \"polyvec\", \"bytes\"], \"spec_symbol\": \"e\"}.",
+                "source_basis": "agent2v2_spec_to_code_hint",
+                "confidence": "medium",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 242,
+                    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": [
+                    {
+                      "spec_symbol": "e",
+                      "candidate_meanings": [
+                        "Error/noise vector or polynomial in ML-KEM/K-PKE descriptions."
+                      ],
+                      "possible_code_fields": [
+                        "coeffs",
+                        "vec",
+                        "polyvec",
+                        "bytes"
+                      ],
+                      "group": "candidate_field_mappings"
+                    }
+                  ]
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "traceability_check",
+                    "text": "Confirm selected FIPS algorithm/spec section corresponds to the selected C target function."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "traceability check",
+                  "critic review"
+                ],
+                "harness_guidance": [],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "traceability"
+                ]
+              }
+            ],
+            "selected_property_types": [
+              "array_bounds",
+              "input_pointer_validity",
+              "loop_bound",
+              "memory_safety",
+              "output_pointer_validity",
+              "parameter_consistency",
+              "spec_code_alignment"
+            ],
+            "agent2v2_rich_spec_files_available": {
+              "selected_spec_excerpt": true,
+              "sections_index": true,
+              "algorithm_blocks": true,
+              "symbol_table": true,
+              "parameter_table": true,
+              "equations_constraints": true,
+              "preconditions_postconditions": true,
+              "spec_to_code_hints": true
+            },
+            "agent4v2_traceability_files_available": {
+              "spec_code_traceability": true,
+              "agent2v2_integration_report": true,
+              "property_evidence_matrix_csv": true
+            },
+            "spec_grounding_report": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_spec_grounding_report.json",
+            "spec_grounded_assertion_plan": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_spec_grounded_assertion_plan.json",
+            "assumption_traceability_csv": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_harness_assumption_traceability.csv",
+            "modulus_q_detected": null,
+            "algorithm_io_contract_detected": {
+              "inputs": [],
+              "outputs": [],
+              "source": "agent2v2_rich_spec",
+              "human_review_required": true
+            },
+            "candidate_algorithm_assignments_detected": [
+              {
+                "lhs": "(ek, dk)",
+                "rhs": "ML-KEM",
+                "source": "rich_spec_text",
+                "evidence": " (ek, dk) <- ML-KEM",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "(𝑐, 𝐾)",
+                "rhs": "ML-KEM",
+                "source": "rich_spec_text",
+                "evidence": " (𝑐, 𝐾) <- ML-KEM",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32",
+                "source": "rich_spec_text",
+                "evidence": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "txt 96 96 generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32",
+                "source": "rich_spec_text",
+                "evidence": "txt 96 96 generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚)",
+                "source": "rich_spec_text",
+                "evidence": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "txt 137 137 20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚)",
+                "source": "rich_spec_text",
+                "evidence": "txt 137 137 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "1. (ek, dk)",
+                "rhs": "ML-KEM.KeyGen()",
+                "source": "rich_spec_text",
+                "evidence": "1. (ek, dk) <- ML-KEM.KeyGen()",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "2. (𝑐, 𝐾)",
+                "rhs": "ML-KEM.Encaps(ek)",
+                "source": "rich_spec_text",
+                "evidence": "2. (𝑐, 𝐾) <- ML-KEM.Encaps(ek)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32 . A fresh string of random bytes",
+                "source": "rich_spec_text",
+                "evidence": "generation is denoted by a statement of the form 𝑚 <-- 𝔹32 . A fresh string of random bytes",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚). The purpose",
+                "source": "rich_spec_text",
+                "evidence": "20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚). The purpose",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              }
+            ],
+            "generation_strategy": "deterministic_template_backed_spec_grounded_cbmc_harness_v2",
+            "loop_bound_used": "256",
+            "loop_index_used": "i",
+            "parameters_used": [
+              {
+                "index": 0,
+                "raw": "mlk_poly *r",
+                "name": "r",
+                "type_guess": "mlk_poly *",
+                "is_pointer": true,
+                "is_const": false,
+                "pointer_depth": 1,
+                "direction_guess": "output_pointer_candidate"
+              },
+              {
+                "index": 1,
+                "raw": "const mlk_poly *b",
+                "name": "b",
+                "type_guess": "const mlk_poly *",
+                "is_pointer": true,
+                "is_const": true,
+                "pointer_depth": 1,
+                "direction_guess": "input_pointer_candidate"
+              }
+            ],
+            "field_types_inferred": {
+              "r.coeffs": {
+                "element_type_guess": "int16_t",
+                "basis": "header_field_detection_or_mlkem_coeffs_default",
+                "source_parameter": "r",
+                "context_guess": "write_candidate"
+              },
+              "b.coeffs": {
+                "element_type_guess": "int16_t",
+                "basis": "header_field_detection_or_mlkem_coeffs_default",
+                "source_parameter": "b",
+                "context_guess": "read_candidate"
+              }
+            },
+            "detected_assignment_for_functional_assertion": {
+              "lhs": "r->coeffs[i]",
+              "rhs": "(int16_t)(r->coeffs[i] + b->coeffs[i])"
+            },
+            "candidate_assumptions_inserted": [
+              {
+                "kind": "valid_output_object_by_local_allocation",
+                "target": "r",
+                "reason": "Harness declares a local object and passes its address, giving CBMC a valid output object candidate.",
+                "human_review_required": true
+              },
+              {
+                "kind": "no_default_coefficient_range_assumption",
+                "target": "b.coeffs",
+                "reason": "No coefficient range was inserted because q or N alone does not safely justify value bounds.",
+                "spec_modulus_q_context": null,
+                "spec_loop_bound_context": "256",
+                "human_review_required": true
+              },
+              {
+                "kind": "pointer_validity_by_local_object",
+                "parameter": "r",
+                "passed_argument": "&r",
+                "reason": "The harness passes the address of a stack/local object instead of an unconstrained raw pointer.",
+                "human_review_required": true
+              },
+              {
+                "kind": "pointer_validity_by_local_object",
+                "parameter": "b",
+                "passed_argument": "&b",
+                "reason": "The harness passes the address of a stack/local object instead of an unconstrained raw pointer.",
+                "human_review_required": true
+              }
+            ],
+            "candidate_assertions_inserted": [
+              {
+                "kind": "cbmc_builtin_checks",
+                "text": "Bounds, pointer, and overflow checks are primarily requested through CBMC command-line flags.",
+                "human_review_required": true
+              },
+              {
+                "kind": "spec_algorithm_assignment_reference",
+                "text": "Agent 2 v2 parsed algorithm assignment(s); recorded for Critic/Human review before converting into strong assertions.",
+                "count": 10,
+                "human_review_required": true
+              },
+              {
+                "kind": "functional_assertion",
+                "text": "assert(r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i])))",
+                "basis": "detected implementation assignment",
+                "warning": "If target storage type narrows the RHS, Critic Agent may need to revise this assertion or add justified range assumptions.",
+                "human_review_required": true
+              }
+            ],
+            "recommended_cbmc_command": "cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions",
+            "scientific_guardrails": {
+              "llm_outputs_are_candidates_only": true,
+              "formal_tool_is_final_checker": true,
+              "human_review_required": true,
+              "do_not_claim_full_mlkem_proof": true,
+              "critic_agent_must_review": true,
+              "repaired_artifact_is_candidate_only": true
+            },
+            "known_limitations": [
+              "No default coefficient range assumptions were inserted; this avoids unsupported assumptions but may make overflow/range properties fail.",
+              "Generated include paths may need adjustment depending on where CBMC is executed from.",
+              "The Critic Agent must check whether assertions are meaningful, non-vacuous, and connected to the selected specification."
+            ],
+            "next_required_agent": "review_critic_agent",
+            "harness_sha256": "c774dad4705d266129d98ca7b83352a680ab6db1dcdb47134ac0ec38469bae91",
+            "_manifest_path": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_artifact_manifest.json"
+          },
+          "after": {
+            "schema_version": "2.0",
+            "agent": "artifact_generation_agent",
+            "created_at": "2026-07-09T02:34:37+00:00",
+            "target_scheme": "ML-KEM",
+            "target_function": "mlk_poly_add",
+            "harness_function": "harness_mlk_poly_add",
+            "verification_tool": "CBMC",
+            "artifact_type": "CBMC harness",
+            "artifact_file": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c",
+            "input_files": {
+              "spec_summary": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/01_spec_summary.json",
+              "code_summary": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_summary.json",
+              "candidate_properties": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/03_candidate_properties.json",
+              "config": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/run_config.resolved.json",
+              "source_files": [
+                "/home/girish/thesis-agent-workflow/inputs/code/poly.c"
+              ],
+              "header_files": [
+                "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                "/home/girish/thesis-agent-workflow/inputs/code/common.h"
+              ]
+            },
+            "selected_properties_used": [
+              {
+                "id": "P4",
+                "type": "array_bounds",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "All detected array accesses in `mlk_poly_add` should stay within valid bounds.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--unwind",
+                  "--unwinding-assertions"
+                ],
+                "harness_guidance": [
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "array",
+                  "bounds"
+                ]
+              },
+              {
+                "id": "P1",
+                "type": "input_pointer_validity",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Input pointer `b` must be valid and readable when `mlk_poly_add` is called.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "code",
+                  "pointer"
+                ]
+              },
+              {
+                "id": "P5",
+                "type": "loop_bound",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Loop `i < MLKEM_N` in `mlk_poly_add` should be unwound sufficiently and should not drive array indices outside valid bounds.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 230,
+                    "end_line": 230,
+                    "text": "for (i = 0; i < MLKEM_N; i++)"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--unwind",
+                  "--unwinding-assertions"
+                ],
+                "harness_guidance": [
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "loop",
+                  "unwinding"
+                ]
+              },
+              {
+                "id": "P3",
+                "type": "memory_safety",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "All pointer field/dereference accesses inside `mlk_poly_add` should be memory-safe under documented harness assumptions.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 234,
+                    "end_line": 234,
+                    "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 238,
+                    "end_line": 238,
+                    "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 233,
+                    "end_line": 233,
+                    "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "loop_unwinding_bound",
+                    "text": "CBMC unwind bound must cover loop condition `i < MLKEM_N`.",
+                    "justification_status": "derived_from_code_loop_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 230,
+                      "end_line": 230,
+                      "text": "for (i = 0; i < MLKEM_N; i++)"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--bounds-check",
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function.",
+                  "Set CBMC unwind bound from implementation loops and parsed algorithm loop bounds; use --unwinding-assertions."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "memory_safety"
+                ]
+              },
+              {
+                "id": "P2",
+                "type": "output_pointer_validity",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Output/in-out pointer `r` must be valid and writable when `mlk_poly_add` writes through it.",
+                "source_basis": "code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`b` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  },
+                  {
+                    "kind": "pointer_object_validity",
+                    "text": "`r` must refer to a valid object for `mlk_poly_add`.",
+                    "justification_status": "code_required_precondition_candidate",
+                    "evidence": {
+                      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                      "start_line": 228,
+                      "end_line": 228,
+                      "text": "MLK_INTERNAL_API"
+                    }
+                  }
+                ],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "cbmc_builtin_check",
+                    "text": "Use CBMC pointer/bounds checks with sufficient unwinding and valid harness object setup."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "--pointer-check"
+                ],
+                "harness_guidance": [
+                  "Create concrete harness objects for pointer parameters before calling the target function."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "code",
+                  "pointer"
+                ]
+              },
+              {
+                "id": "P21",
+                "type": "parameter_consistency",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Parsed specification parameters/constants should match implementation macros/constants before using them in CBMC assumptions. Tracked parameters: human_review_required=True.",
+                "source_basis": "agent2v2_parameters_plus_code",
+                "confidence": "high",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+                    "start_line": 181,
+                    "end_line": 181,
+                    "text": "#define mlk_poly_add MLK_NAMESPACE(poly_add)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 22,
+                    "end_line": 22,
+                    "text": "#define MLKEM_N 256"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 23,
+                    "end_line": 23,
+                    "text": "#define MLKEM_Q 3329"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+                    "start_line": 33,
+                    "end_line": 33,
+                    "text": "#define MLKEM_POLYCOMPRESSEDBYTES_D4 128"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 22,
+                    "end_line": 22,
+                    "text": "#define __loop__(x) /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 30,
+                    "end_line": 30,
+                    "text": "#define __loop__(x) x /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 40,
+                    "end_line": 40,
+                    "text": "#define invariant(...) __CPROVER_loop_invariant(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 41,
+                    "end_line": 41,
+                    "text": "#define decreases(...) __CPROVER_decreases(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 88,
+                    "end_line": 88,
+                    "text": "#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+                    "start_line": 112,
+                    "end_line": 117,
+                    "text": "#define forall(qvar, qvar_lb, qvar_ub, predicate)                              \\\n  __CPROVER_forall                                                             \\\n  {                                                                            \\\n    uint32_t qvar;                                                             \\\n    ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) \\\n  }"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+                    "start_line": 26,
+                    "end_line": 26,
+                    "text": "#define MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+                    "start_line": 30,
+                    "end_line": 30,
+                    "text": "#define MLK_INTERNAL_API MLK_CONFIG_INTERNAL_API_QUALIFIER"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [
+                    {
+                      "start_line": 25,
+                      "end_line": 41
+                    },
+                    {
+                      "start_line": 81,
+                      "end_line": 81
+                    },
+                    {
+                      "start_line": 99,
+                      "end_line": 100
+                    },
+                    {
+                      "text": "true"
+                    }
+                  ],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": []
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "constant_consistency_check",
+                    "text": "Check that spec parameters such as n and q match code macros/constants before using them in assumptions/assertions."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "assert/static check constants",
+                  "review macros/headers"
+                ],
+                "harness_guidance": [
+                  "Do not generate q/n/k assumptions until parsed spec parameters match code constants."
+                ],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "parameters"
+                ]
+              },
+              {
+                "id": "P58",
+                "type": "spec_code_alignment",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Agent 2 v2 spec-to-code hint should be checked: mlk_poly_add.",
+                "source_basis": "agent2v2_spec_to_code_hint",
+                "confidence": "medium",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 242,
+                    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": [
+                    {
+                      "text": "mlk_poly_add"
+                    }
+                  ]
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "traceability_check",
+                    "text": "Confirm selected FIPS algorithm/spec section corresponds to the selected C target function."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "traceability check",
+                  "critic review"
+                ],
+                "harness_guidance": [],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "traceability"
+                ]
+              },
+              {
+                "id": "P59",
+                "type": "spec_code_alignment",
+                "status": "candidate",
+                "priority": "high",
+                "formal_tool": "CBMC",
+                "description": "Agent 2 v2 spec-to-code hint should be checked: {\"candidate_meanings\": [\"Error/noise vector or polynomial in ML-KEM/K-PKE descriptions.\"], \"group\": \"candidate_field_mappings\", \"possible_code_fields\": [\"coeffs\", \"vec\", \"polyvec\", \"bytes\"], \"spec_symbol\": \"e\"}.",
+                "source_basis": "agent2v2_spec_to_code_hint",
+                "confidence": "medium",
+                "rationale": "Generated by combining selected specification information and code summary.",
+                "spec_evidence": [],
+                "code_evidence": [
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 242,
+                    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  },
+                  {
+                    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+                    "start_line": 228,
+                    "end_line": 228,
+                    "text": "MLK_INTERNAL_API"
+                  }
+                ],
+                "agent2v2_evidence": {
+                  "algorithm_blocks": [],
+                  "parameters": [],
+                  "equations_constraints": [],
+                  "preconditions_postconditions": [],
+                  "spec_to_code_hints": [
+                    {
+                      "spec_symbol": "e",
+                      "candidate_meanings": [
+                        "Error/noise vector or polynomial in ML-KEM/K-PKE descriptions."
+                      ],
+                      "possible_code_fields": [
+                        "coeffs",
+                        "vec",
+                        "polyvec",
+                        "bytes"
+                      ],
+                      "group": "candidate_field_mappings"
+                    }
+                  ]
+                },
+                "candidate_assumptions": [],
+                "candidate_assertions_or_checks": [
+                  {
+                    "kind": "traceability_check",
+                    "text": "Confirm selected FIPS algorithm/spec section corresponds to the selected C target function."
+                  }
+                ],
+                "recommended_cbmc_checks": [
+                  "traceability check",
+                  "critic review"
+                ],
+                "harness_guidance": [],
+                "human_review_required": true,
+                "critic_agent_must_check": [
+                  "assumptions are not too strong",
+                  "assertions are connected to selected spec and code",
+                  "Agent 2 v2 parsed evidence is correct",
+                  "property is not trivial/vacuous",
+                  "CBMC command and unwind bound are suitable"
+                ],
+                "tags": [
+                  "agent2v2",
+                  "traceability"
+                ]
+              }
+            ],
+            "selected_property_types": [
+              "array_bounds",
+              "input_pointer_validity",
+              "loop_bound",
+              "memory_safety",
+              "output_pointer_validity",
+              "parameter_consistency",
+              "spec_code_alignment"
+            ],
+            "agent2v2_rich_spec_files_available": {
+              "selected_spec_excerpt": true,
+              "sections_index": true,
+              "algorithm_blocks": true,
+              "symbol_table": true,
+              "parameter_table": true,
+              "equations_constraints": true,
+              "preconditions_postconditions": true,
+              "spec_to_code_hints": true
+            },
+            "agent4v2_traceability_files_available": {
+              "spec_code_traceability": true,
+              "agent2v2_integration_report": true,
+              "property_evidence_matrix_csv": true
+            },
+            "spec_grounding_report": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_spec_grounding_report.json",
+            "spec_grounded_assertion_plan": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_spec_grounded_assertion_plan.json",
+            "assumption_traceability_csv": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_harness_assumption_traceability.csv",
+            "modulus_q_detected": null,
+            "algorithm_io_contract_detected": {
+              "inputs": [],
+              "outputs": [],
+              "source": "agent2v2_rich_spec",
+              "human_review_required": true
+            },
+            "candidate_algorithm_assignments_detected": [
+              {
+                "lhs": "(ek, dk)",
+                "rhs": "ML-KEM",
+                "source": "rich_spec_text",
+                "evidence": " (ek, dk) <- ML-KEM",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "(𝑐, 𝐾)",
+                "rhs": "ML-KEM",
+                "source": "rich_spec_text",
+                "evidence": " (𝑐, 𝐾) <- ML-KEM",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32",
+                "source": "rich_spec_text",
+                "evidence": "62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "txt 96 96 generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32",
+                "source": "rich_spec_text",
+                "evidence": "txt 96 96 generation is denoted by a statement of the form 𝑚 <-- 𝔹32 ",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚)",
+                "source": "rich_spec_text",
+                "evidence": "62 math_constraint_regex True math_expression 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "txt 137 137 20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚)",
+                "source": "rich_spec_text",
+                "evidence": "txt 137 137 20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "1. (ek, dk)",
+                "rhs": "ML-KEM.KeyGen()",
+                "source": "rich_spec_text",
+                "evidence": "1. (ek, dk) <- ML-KEM.KeyGen()",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "2. (𝑐, 𝐾)",
+                "rhs": "ML-KEM.Encaps(ek)",
+                "source": "rich_spec_text",
+                "evidence": "2. (𝑐, 𝐾) <- ML-KEM.Encaps(ek)",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "generation is denoted by a statement of the form 𝑚",
+                "rhs": "- 𝔹32 . A fresh string of random bytes",
+                "source": "rich_spec_text",
+                "evidence": "generation is denoted by a statement of the form 𝑚 <-- 𝔹32 . A fresh string of random bytes",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              },
+              {
+                "lhs": "20, there was an additional step that performed the operation 𝑚",
+                "rhs": "𝐻(𝑚). The purpose",
+                "source": "rich_spec_text",
+                "evidence": "20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚). The purpose",
+                "status": "candidate_from_spec_algorithm",
+                "human_review_required": true
+              }
+            ],
+            "generation_strategy": "deterministic_template_backed_spec_grounded_cbmc_harness_v2",
+            "loop_bound_used": "256",
+            "loop_index_used": "i",
+            "parameters_used": [
+              {
+                "index": 0,
+                "raw": "mlk_poly *r",
+                "name": "r",
+                "type_guess": "mlk_poly *",
+                "is_pointer": true,
+                "is_const": false,
+                "pointer_depth": 1,
+                "direction_guess": "output_pointer_candidate"
+              },
+              {
+                "index": 1,
+                "raw": "const mlk_poly *b",
+                "name": "b",
+                "type_guess": "const mlk_poly *",
+                "is_pointer": true,
+                "is_const": true,
+                "pointer_depth": 1,
+                "direction_guess": "input_pointer_candidate"
+              }
+            ],
+            "field_types_inferred": {
+              "r.coeffs": {
+                "element_type_guess": "int16_t",
+                "basis": "header_field_detection_or_mlkem_coeffs_default",
+                "source_parameter": "r",
+                "context_guess": "write_candidate"
+              },
+              "b.coeffs": {
+                "element_type_guess": "int16_t",
+                "basis": "header_field_detection_or_mlkem_coeffs_default",
+                "source_parameter": "b",
+                "context_guess": "read_candidate"
+              }
+            },
+            "detected_assignment_for_functional_assertion": {
+              "lhs": "r->coeffs[i]",
+              "rhs": "(int16_t)(r->coeffs[i] + b->coeffs[i])"
+            },
+            "candidate_assumptions_inserted": [
+              {
+                "kind": "valid_output_object_by_local_allocation",
+                "target": "r",
+                "reason": "Harness declares a local object and passes its address, giving CBMC a valid output object candidate.",
+                "human_review_required": true
+              },
+              {
+                "kind": "no_default_coefficient_range_assumption",
+                "target": "b.coeffs",
+                "reason": "No coefficient range was inserted because q or N alone does not safely justify value bounds.",
+                "spec_modulus_q_context": null,
+                "spec_loop_bound_context": "256",
+                "human_review_required": true
+              },
+              {
+                "kind": "pointer_validity_by_local_object",
+                "parameter": "r",
+                "passed_argument": "&r",
+                "reason": "The harness passes the address of a stack/local object instead of an unconstrained raw pointer.",
+                "human_review_required": true
+              },
+              {
+                "kind": "pointer_validity_by_local_object",
+                "parameter": "b",
+                "passed_argument": "&b",
+                "reason": "The harness passes the address of a stack/local object instead of an unconstrained raw pointer.",
+                "human_review_required": true
+              }
+            ],
+            "candidate_assertions_inserted": [
+              {
+                "kind": "cbmc_builtin_checks",
+                "text": "Bounds, pointer, and overflow checks are primarily requested through CBMC command-line flags.",
+                "human_review_required": true
+              },
+              {
+                "kind": "spec_algorithm_assignment_reference",
+                "text": "Agent 2 v2 parsed algorithm assignment(s); recorded for Critic/Human review before converting into strong assertions.",
+                "count": 10,
+                "human_review_required": true
+              },
+              {
+                "kind": "functional_assertion",
+                "text": "assert(r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i])))",
+                "basis": "detected implementation assignment",
+                "warning": "If target storage type narrows the RHS, Critic Agent may need to revise this assertion or add justified range assumptions.",
+                "human_review_required": true
+              }
+            ],
+            "recommended_cbmc_command": "cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions",
+            "scientific_guardrails": {
+              "llm_outputs_are_candidates_only": true,
+              "formal_tool_is_final_checker": true,
+              "human_review_required": true,
+              "do_not_claim_full_mlkem_proof": true,
+              "critic_agent_must_review": true,
+              "repaired_artifact_is_candidate_only": true
+            },
+            "known_limitations": [
+              "No default coefficient range assumptions were inserted; this avoids unsupported assumptions but may make overflow/range properties fail.",
+              "Generated include paths may need adjustment depending on where CBMC is executed from.",
+              "The Critic Agent must check whether assertions are meaningful, non-vacuous, and connected to the selected specification."
+            ],
+            "next_required_agent": "review_critic_agent",
+            "harness_sha256": "c774dad4705d266129d98ca7b83352a680ab6db1dcdb47134ac0ec38469bae91",
+            "_manifest_path": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_artifact_manifest.json",
+            "repair_agent_updated_at": "2026-07-09T02:34:37+00:00",
+            "repair_agent_version": "2.0.0",
+            "latest_repaired_artifact": "08_repaired_harness.c"
+          },
+          "default_unwind": 256
+        }
+      ],
+      "human_review_note": null,
+      "source_stage": "agent3_agent7_agent8_agent9_v2",
+      "safety_level": "candidate_safe"
+    }
+  ],
+  "interpretation": "Agent 9 v2 consumed Agent 8 v2 guidance as repair evidence, but deterministic safety rules decided what could actually be applied."
+}

@@ -1,0 +1,215 @@
+You are the Review / Critic Agent v2 for an AI-assisted formal-verification artifact workflow.
+
+Task:
+1. Review the generated CBMC harness.
+2. Check whether assumptions are too strong or too weak.
+3. Check whether assumptions have actual FIPS/spec evidence or Agent 5 traceability.
+4. Check whether assertions match parsed algorithm assignments or assertion plans.
+5. Check whether the harness misuses symbols/constants such as q and N.
+6. Check whether uncertainty markers from previous agents were acknowledged.
+7. Check whether the harness calls the correct target function.
+8. Produce severity-labelled issues and recommended fixes.
+9. Do not claim the artifact is a proof.
+
+Target function: mlk_poly_add
+Harness function: harness_mlk_poly_add
+Artifact path: /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/08_repaired_harness.c
+
+Selected properties summary:
+[
+  {
+    "id": "P4",
+    "type": "array_bounds",
+    "priority": "high",
+    "description": "All detected array accesses in `mlk_poly_add` should stay within valid bounds."
+  },
+  {
+    "id": "P1",
+    "type": "input_pointer_validity",
+    "priority": "high",
+    "description": "Input pointer `b` must be valid and readable when `mlk_poly_add` is called."
+  },
+  {
+    "id": "P5",
+    "type": "loop_bound",
+    "priority": "high",
+    "description": "Loop `i < MLKEM_N` in `mlk_poly_add` should be unwound sufficiently and should not drive array indices outside valid bounds."
+  },
+  {
+    "id": "P3",
+    "type": "memory_safety",
+    "priority": "high",
+    "description": "All pointer field/dereference accesses inside `mlk_poly_add` should be memory-safe under documented harness assumptions."
+  },
+  {
+    "id": "P2",
+    "type": "output_pointer_validity",
+    "priority": "high",
+    "description": "Output/in-out pointer `r` must be valid and writable when `mlk_poly_add` writes through it."
+  },
+  {
+    "id": "P21",
+    "type": "parameter_consistency",
+    "priority": "high",
+    "description": "Parsed specification parameters/constants should match implementation macros/constants before using them in CBMC assumptions. Tracked parameters: human_review_required=True."
+  },
+  {
+    "id": "P58",
+    "type": "spec_code_alignment",
+    "priority": "high",
+    "description": "Agent 2 v2 spec-to-code hint should be checked: mlk_poly_add."
+  },
+  {
+    "id": "P59",
+    "type": "spec_code_alignment",
+    "priority": "high",
+    "description": "Agent 2 v2 spec-to-code hint should be checked: {\"candidate_meanings\": [\"Error/noise vector or polynomial in ML-KEM/K-PKE descriptions.\"], \"group\": \"candidate_field_mappings\", \"possible_code_fields\": [\"coeffs\", \"vec\", \"polyvec\", \"bytes\"], \"spec_symbol\": \"e\"}."
+  }
+]
+
+Rich v2 context:
+{
+  "algorithm_blocks_available": true,
+  "symbol_table_available": true,
+  "parameter_table_available": true,
+  "equations_constraints_available": true,
+  "preconditions_postconditions_available": true,
+  "spec_grounding_report_available": true,
+  "spec_grounded_assertion_plan_available": true,
+  "assumption_traceability_rows": 4
+}
+
+Spec constants:
+{
+  "th": 256
+}
+
+Code function summary:
+{
+  "requested_name": "mlk_poly_add",
+  "detected_name": "mlk_poly_add",
+  "matched_by": "exact_or_known_mlkem_variant",
+  "signature": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+  "return_type": "MLK_INTERNAL_API void",
+  "parameters_raw": "mlk_poly *r, const mlk_poly *b",
+  "parameters": [
+    {
+      "index": 0,
+      "raw": "mlk_poly *r",
+      "name": "r",
+      "type_guess": "mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": false,
+      "is_array_syntax": false,
+      "direction_guess": "output_pointer_candidate"
+    },
+    {
+      "index": 1,
+      "raw": "const mlk_poly *b",
+      "name": "b",
+      "type_guess": "const mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": true,
+      "is_array_syntax": false,
+      "direction_guess": "input_pointer_candidate"
+    }
+  ],
+  "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+  "start_line": 228,
+  "end_line": 242,
+  "body_hash_sha256": "f05eae6291cc47566ccc81c8d0e04e00a889e39ed52f840530daaaacc34480ed",
+  "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+  "evidence": {
+    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+    "start_line": 228,
+    "end_line": 242,
+    "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+  }
+}
+
+Artifact preview:
+```c
+/*
+ * [Repair Agent v2] Candidate repaired harness
+ * Agent: repair_refinement_agent v2.0.0
+ * Iteration: 0
+ * Target function: mlk_poly_add
+ * Generated at: 2026-07-09T02:34:37+00:00
+ *
+ * Research guardrail:
+ * This file is a candidate formal-verification artifact. It must still be
+ * checked by CBMC/formal tools and reviewed by a human researcher. It is not
+ * a proof of the full ML-KEM implementation.
+ */
+/*
+ * Generated by Agent 5: Formal Artifact Generation Agent
+ * Artifact: candidate CBMC harness
+ * Target function: mlk_poly_add
+ * Harness function: harness_mlk_poly_add
+ *
+ * SCIENTIFIC GUARDRAIL:
+ * This file is a candidate formal-verification artifact only.
+ * It does not prove ML-KEM and it must be reviewed by the Critic Agent,
+ * checked by CBMC, and inspected by the human researcher.
+ *
+ * Generation note: Configured for CBMC harness generation. Agent 2 v2 FIPS-aware outputs were available and used for grounding where safe. Agent 4 v2 traceability outputs were available and recorded.
+ * Selected candidate property types: array_bounds, input_pointer_validity, loop_bound, memory_safety, output_pointer_validity, parameter_consistency, spec_code_alignment
+ *
+ * This v2 generator may use Agent 2 v2 parsed FIPS algorithms, parameters,
+ * symbols, loop bounds, and constraints where available. Those extracted facts
+ * are still candidate verification inputs and must be reviewed.
+ *
+ * Recommended CBMC command saved in 04_artifact_manifest.json:
+ * cbmc /home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/04_generated_harness.c /home/girish/thesis-agent-workflow/inputs/code/poly.c -I /home/girish/thesis-agent-workflow/inputs/code --function harness_mlk_poly_add --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --unwind 256 --unwinding-assertions
+ */
+
+#include <assert.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "poly.h"
+#include "params.h"
+#include "cbmc.h"
+#include "common.h"
+#include <limits.h>
+
+#ifndef __CPROVER__
+/* [Repair Agent v2] Candidate precondition: keep only if justified by spec/code review. */
+#define __CPROVER_assume(cond) ((void)0)
+#endif
+
+/* Target signature observed by Code Understanding Agent: MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b) */
+/* Nondeterministic input functions for CBMC. */
+extern int16_t nondet_int16_t(void);
+
+void harness_mlk_poly_add(void) {
+  /* Local objects give pointer parameters valid objects for CBMC analysis. */
+  mlk_poly r;
+  mlk_poly b;
+
+  /* Initialize input field b.coeffs with nondeterministic values. */
+  for (unsigned int i = 0; i < 256; i++) {
+    b.coeffs[i] = nondet_int16_t();
+  }
+
+  /* Call the selected implementation function. */
+  mlk_poly_add(&r, &b);
+
+  /* CBMC built-in checks should cover pointer/bounds/overflow according to command flags. */
+  /* Candidate spec algorithm assignment(s) were parsed by Agent 2 v2. */
+  /* They are recorded in 04_spec_grounded_assertion_plan.json; this harness only inserts assertions when mapping is safe. */
+  /* Spec candidate: (ek, dk) := ML-KEM */
+  /* Spec candidate: (𝑐, 𝐾) := ML-KEM */
+  /* Spec candidate: 62 math_constraint_regex True math_expression generation is denoted by a statement of the form 𝑚 := - 𝔹32 */
+  /* Candidate functional-shape assertion derived from the implementation assignment. */
+  for (unsigned int i = 0; i < 256; i++) {
+    /* [Repair Agent v2] Candidate assertion: review against selected property and spec evidence. */
+    assert(r.coeffs[i] == ((int16_t)(r.coeffs[i] + b.coeffs[i])));
+  }
+}
+
+```
+
+Return a structured JSON review. This file records the deterministic critic task even when no external LLM is used.

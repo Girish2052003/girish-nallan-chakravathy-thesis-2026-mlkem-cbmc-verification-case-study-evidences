@@ -1,0 +1,1272 @@
+{
+  "schema_version": "2.0",
+  "target_scheme": "ML-KEM",
+  "target_function_requested": "mlk_poly_add",
+  "target_function_detected": "mlk_poly_add",
+  "verification_goal": "Generate and evaluate candidate CBMC-style artefacts for mlk_poly_add, covering pointer/object validity, array and loop bounds, memory safety, and simple coefficient-wise update behaviour under documented assumptions.",
+  "verification_tool": "CBMC",
+  "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+  "header_files": [
+    "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+    "/home/girish/thesis-agent-workflow/inputs/code/common.h"
+  ],
+  "missing_header_files": [],
+  "function": {
+    "requested_name": "mlk_poly_add",
+    "detected_name": "mlk_poly_add",
+    "matched_by": "exact_or_known_mlkem_variant",
+    "signature": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+    "return_type": "MLK_INTERNAL_API void",
+    "parameters_raw": "mlk_poly *r, const mlk_poly *b",
+    "parameters": [
+      {
+        "index": 0,
+        "raw": "mlk_poly *r",
+        "name": "r",
+        "type_guess": "mlk_poly *",
+        "is_pointer": true,
+        "pointer_depth": 1,
+        "is_const": false,
+        "is_array_syntax": false,
+        "direction_guess": "output_pointer_candidate"
+      },
+      {
+        "index": 1,
+        "raw": "const mlk_poly *b",
+        "name": "b",
+        "type_guess": "const mlk_poly *",
+        "is_pointer": true,
+        "pointer_depth": 1,
+        "is_const": true,
+        "is_array_syntax": false,
+        "direction_guess": "input_pointer_candidate"
+      }
+    ],
+    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+    "start_line": 228,
+    "end_line": 242,
+    "body_hash_sha256": "f05eae6291cc47566ccc81c8d0e04e00a889e39ed52f840530daaaacc34480ed",
+    "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+    "evidence": {
+      "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+      "start_line": 228,
+      "end_line": 242,
+      "text": "MLK_INTERNAL_API\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}"
+    }
+  },
+  "implementation_summary": "The function `mlk_poly_add` appears to be a C implementation function with return type `MLK_INTERNAL_API void`. It receives parameters: r, b. The const pointer parameters b are likely read-only inputs. The mutable pointer/value parameters r may be outputs or in/out values and require validity assumptions. It contains for-loop with condition `i < MLKEM_N`. It performs 1 detected assignment/write statement(s), including `r->coeffs[i]`. It calls helper/candidate functions such as __loop__, invariant, invariant, forall, loop_entry, invariant. This is an implementation summary only; the later formal tool and human review must confirm whether the behavior satisfies the intended specification.",
+  "inputs": [
+    {
+      "index": 1,
+      "raw": "const mlk_poly *b",
+      "name": "b",
+      "type_guess": "const mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": true,
+      "is_array_syntax": false,
+      "direction_guess": "input_pointer_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "type_family": "poly_struct_or_alias",
+      "observed_written": false,
+      "observed_read": true,
+      "role_v2": "read_only_input",
+      "cbmc_object_setup_hint": "Create a concrete object for `b` and pass its address/pointer safely."
+    }
+  ],
+  "outputs_or_inouts": [
+    {
+      "index": 0,
+      "raw": "mlk_poly *r",
+      "name": "r",
+      "type_guess": "mlk_poly *",
+      "is_pointer": true,
+      "pointer_depth": 1,
+      "is_const": false,
+      "is_array_syntax": false,
+      "direction_guess": "output_pointer_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "type_family": "poly_struct_or_alias",
+      "observed_written": true,
+      "observed_read": true,
+      "role_v2": "output_or_inout_pointer_written",
+      "cbmc_object_setup_hint": "Create a concrete object for `r` and pass its address/pointer safely."
+    }
+  ],
+  "local_variables": [
+    {
+      "type": "unsigned",
+      "names": [
+        "i"
+      ],
+      "line": 229,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 229,
+        "end_line": 229,
+        "text": "unsigned i;"
+      }
+    }
+  ],
+  "loop_structure": [
+    {
+      "kind": "for",
+      "raw": "i = 0; i < MLKEM_N; i++",
+      "line": 230,
+      "init": "i = 0",
+      "condition": "i < MLKEM_N",
+      "increment": "i++",
+      "loop_variable_guess": "i",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    }
+  ],
+  "conditionals": [],
+  "array_accesses": [
+    {
+      "expression": "r->coeffs[k0]",
+      "base": "r->coeffs",
+      "index": "k0",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "coeffs[k0]",
+      "base": "coeffs",
+      "index": "k0",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "r->coeffs[k1]",
+      "base": "r->coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "coeffs[k1]",
+      "base": "coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "b->coeffs[k1]",
+      "base": "b->coeffs",
+      "index": "k1",
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "r->coeffs[i]",
+      "base": "r->coeffs",
+      "index": "i",
+      "line": 238,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "b->coeffs[i]",
+      "base": "b->coeffs",
+      "index": "i",
+      "line": 238,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ],
+  "pointer_accesses": [
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 233,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 234,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "b->coeffs",
+      "pointer": "b",
+      "field": "coeffs",
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "expression": "r->coeffs",
+      "pointer": "r",
+      "field": "coeffs",
+      "line": 238,
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "b->coeffs",
+      "pointer": "b",
+      "field": "coeffs",
+      "line": 238,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "expression": "*r",
+      "pointer": "r",
+      "field": null,
+      "line": 233,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "expression": "*r",
+      "pointer": "r",
+      "field": null,
+      "line": 234,
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    }
+  ],
+  "output_writes_and_assignments": [
+    {
+      "lhs": "r->coeffs[i]",
+      "operator": "=",
+      "rhs": "(int16_t)(r->coeffs[i] + b->coeffs[i])",
+      "line": 238,
+      "write_kind_guess": "assignment_write",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ],
+  "helper_function_or_macro_calls": [
+    {
+      "name": "__loop__",
+      "arguments_raw": "invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)",
+      "line": 231,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 231,
+        "end_line": 231,
+        "text": "__loop__("
+      }
+    },
+    {
+      "name": "invariant",
+      "arguments_raw": "i <= MLKEM_N",
+      "line": 232,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 232,
+        "end_line": 232,
+        "text": "invariant(i <= MLKEM_N)"
+      }
+    },
+    {
+      "name": "invariant",
+      "arguments_raw": "forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])",
+      "line": 233,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "name": "forall",
+      "arguments_raw": "k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]",
+      "line": 233,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "name": "loop_entry",
+      "arguments_raw": "*r",
+      "line": 233,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "name": "invariant",
+      "arguments_raw": "forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])",
+      "line": 234,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "name": "forall",
+      "arguments_raw": "k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]",
+      "line": 234,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "name": "loop_entry",
+      "arguments_raw": "*r",
+      "line": 234,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "name": "decreases",
+      "arguments_raw": "MLKEM_N - i",
+      "line": 235,
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 235,
+        "end_line": 235,
+        "text": "decreases(MLKEM_N - i))"
+      }
+    }
+  ],
+  "integer_and_bit_operations": [
+    {
+      "operations": [
+        "addition"
+      ],
+      "line": 230,
+      "statement": "for (i = 0; i < MLKEM_N; i++)",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    },
+    {
+      "operations": [
+        "multiplication",
+        "subtraction"
+      ],
+      "line": 233,
+      "statement": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "operations": [
+        "addition",
+        "multiplication",
+        "subtraction"
+      ],
+      "line": 234,
+      "statement": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      }
+    },
+    {
+      "operations": [
+        "subtraction"
+      ],
+      "line": 235,
+      "statement": "decreases(MLKEM_N - i))",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 235,
+        "end_line": 235,
+        "text": "decreases(MLKEM_N - i))"
+      }
+    },
+    {
+      "operations": [
+        "addition",
+        "subtraction"
+      ],
+      "line": 238,
+      "statement": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    }
+  ],
+  "return_statements": [],
+  "dependencies": {
+    "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+    "header_files": [
+      "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+      "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+      "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+      "/home/girish/thesis-agent-workflow/inputs/code/common.h"
+    ],
+    "includes_detected": [
+      {
+        "include": "\"common.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 20,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 20,
+          "end_line": 20,
+          "text": "#include \"common.h\""
+        }
+      },
+      {
+        "include": "\"cbmc.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 24,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 24,
+          "end_line": 24,
+          "text": "#include \"cbmc.h\""
+        }
+      },
+      {
+        "include": "\"debug.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 25,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 25,
+          "end_line": 25,
+          "text": "#include \"debug.h\""
+        }
+      },
+      {
+        "include": "\"poly.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 26,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 26,
+          "end_line": 26,
+          "text": "#include \"poly.h\""
+        }
+      },
+      {
+        "include": "\"sampling.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 27,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 27,
+          "end_line": 27,
+          "text": "#include \"sampling.h\""
+        }
+      },
+      {
+        "include": "\"symmetric.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 28,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 28,
+          "end_line": 28,
+          "text": "#include \"symmetric.h\""
+        }
+      },
+      {
+        "include": "\"verify.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 29,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 29,
+          "end_line": 29,
+          "text": "#include \"verify.h\""
+        }
+      },
+      {
+        "include": "\"zetas.inc\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "line": 263,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 263,
+          "end_line": 263,
+          "text": "#include \"zetas.inc\""
+        }
+      },
+      {
+        "include": "\"cbmc.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+        "line": 19,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+          "start_line": 19,
+          "end_line": 19,
+          "text": "#include \"cbmc.h\""
+        }
+      },
+      {
+        "include": "\"common.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+        "line": 20,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+          "start_line": 20,
+          "end_line": 20,
+          "text": "#include \"common.h\""
+        }
+      },
+      {
+        "include": "\"debug.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+        "line": 21,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+          "start_line": 21,
+          "end_line": 21,
+          "text": "#include \"debug.h\""
+        }
+      },
+      {
+        "include": "\"verify.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+        "line": 22,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+          "start_line": 22,
+          "end_line": 22,
+          "text": "#include \"verify.h\""
+        }
+      },
+      {
+        "include": "<stdint.h>",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 9,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 9,
+          "end_line": 9,
+          "text": "#include <stdint.h>"
+        }
+      },
+      {
+        "include": "\"mlkem_native_config.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 17,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 17,
+          "end_line": 17,
+          "text": "#include \"mlkem_native_config.h\""
+        }
+      },
+      {
+        "include": "\"params.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 20,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 20,
+          "end_line": 20,
+          "text": "#include \"params.h\""
+        }
+      },
+      {
+        "include": "\"sys.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 21,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 21,
+          "end_line": 21,
+          "text": "#include \"sys.h\""
+        }
+      },
+      {
+        "include": "\"native/api.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 136,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 136,
+          "end_line": 136,
+          "text": "#include \"native/api.h\""
+        }
+      },
+      {
+        "include": "\"fips202/native/api.h\"",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 148,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 148,
+          "end_line": 148,
+          "text": "#include \"fips202/native/api.h\""
+        }
+      },
+      {
+        "include": "<string.h>",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 167,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 167,
+          "end_line": 167,
+          "text": "#include <string.h>"
+        }
+      },
+      {
+        "include": "<string.h>",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "line": 172,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 172,
+          "end_line": 172,
+          "text": "#include <string.h>"
+        }
+      }
+    ],
+    "relevant_macros_or_constants": [
+      {
+        "name": "mlk_poly_add",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "MLK_NAMESPACE(poly_add)",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+        "start_line": 181,
+        "end_line": 181,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.h",
+          "start_line": 181,
+          "end_line": 181,
+          "text": "#define mlk_poly_add MLK_NAMESPACE(poly_add)"
+        }
+      },
+      {
+        "name": "MLKEM_N",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "256",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+        "start_line": 22,
+        "end_line": 22,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+          "start_line": 22,
+          "end_line": 22,
+          "text": "#define MLKEM_N 256"
+        }
+      },
+      {
+        "name": "MLKEM_Q",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "3329",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+        "start_line": 23,
+        "end_line": 23,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+          "start_line": 23,
+          "end_line": 23,
+          "text": "#define MLKEM_Q 3329"
+        }
+      },
+      {
+        "name": "MLKEM_POLYCOMPRESSEDBYTES_D4",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "128",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+        "start_line": 33,
+        "end_line": 33,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/params.h",
+          "start_line": 33,
+          "end_line": 33,
+          "text": "#define MLKEM_POLYCOMPRESSEDBYTES_D4 128"
+        }
+      },
+      {
+        "name": "__loop__",
+        "kind": "function_like_macro",
+        "arguments": [
+          "x"
+        ],
+        "value": "/* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 22,
+        "end_line": 22,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 22,
+          "end_line": 22,
+          "text": "#define __loop__(x) /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+        }
+      },
+      {
+        "name": "__loop__",
+        "kind": "function_like_macro",
+        "arguments": [
+          "x"
+        ],
+        "value": "x /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 30,
+        "end_line": 30,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 30,
+          "end_line": 30,
+          "text": "#define __loop__(x) x /* NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp) */"
+        }
+      },
+      {
+        "name": "invariant",
+        "kind": "function_like_macro",
+        "arguments": [
+          "..."
+        ],
+        "value": "__CPROVER_loop_invariant(__VA_ARGS__)",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 40,
+        "end_line": 40,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 40,
+          "end_line": 40,
+          "text": "#define invariant(...) __CPROVER_loop_invariant(__VA_ARGS__)"
+        }
+      },
+      {
+        "name": "decreases",
+        "kind": "function_like_macro",
+        "arguments": [
+          "..."
+        ],
+        "value": "__CPROVER_decreases(__VA_ARGS__)",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 41,
+        "end_line": 41,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 41,
+          "end_line": 41,
+          "text": "#define decreases(...) __CPROVER_decreases(__VA_ARGS__)"
+        }
+      },
+      {
+        "name": "loop_entry",
+        "kind": "function_like_macro",
+        "arguments": [
+          "..."
+        ],
+        "value": "__CPROVER_loop_entry(__VA_ARGS__)",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 88,
+        "end_line": 88,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 88,
+          "end_line": 88,
+          "text": "#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)"
+        }
+      },
+      {
+        "name": "forall",
+        "kind": "function_like_macro",
+        "arguments": [
+          "qvar",
+          "qvar_lb",
+          "qvar_ub",
+          "predicate"
+        ],
+        "value": "__CPROVER_forall                                                                {                                                                                 uint32_t qvar;                                                                  ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate)    }",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+        "start_line": 112,
+        "end_line": 117,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/cbmc.h",
+          "start_line": 112,
+          "end_line": 117,
+          "text": "#define forall(qvar, qvar_lb, qvar_ub, predicate)                              \\\n  __CPROVER_forall                                                             \\\n  {                                                                            \\\n    uint32_t qvar;                                                             \\\n    ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) \\\n  }"
+        }
+      },
+      {
+        "name": "MLK_INTERNAL_API",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "start_line": 26,
+        "end_line": 26,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 26,
+          "end_line": 26,
+          "text": "#define MLK_INTERNAL_API"
+        }
+      },
+      {
+        "name": "MLK_INTERNAL_API",
+        "kind": "object_like_macro",
+        "arguments": [],
+        "value": "MLK_CONFIG_INTERNAL_API_QUALIFIER",
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+        "start_line": 30,
+        "end_line": 30,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/common.h",
+          "start_line": 30,
+          "end_line": 30,
+          "text": "#define MLK_INTERNAL_API MLK_CONFIG_INTERNAL_API_QUALIFIER"
+        }
+      }
+    ],
+    "relevant_type_definitions": [],
+    "helper_function_or_macro_calls": [
+      {
+        "name": "__loop__",
+        "arguments_raw": "invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)",
+        "line": 231,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 231,
+          "end_line": 231,
+          "text": "__loop__("
+        }
+      },
+      {
+        "name": "invariant",
+        "arguments_raw": "i <= MLKEM_N",
+        "line": 232,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 232,
+          "end_line": 232,
+          "text": "invariant(i <= MLKEM_N)"
+        }
+      },
+      {
+        "name": "invariant",
+        "arguments_raw": "forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])",
+        "line": 233,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 233,
+          "end_line": 233,
+          "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+        }
+      },
+      {
+        "name": "forall",
+        "arguments_raw": "k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]",
+        "line": 233,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 233,
+          "end_line": 233,
+          "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+        }
+      },
+      {
+        "name": "loop_entry",
+        "arguments_raw": "*r",
+        "line": 233,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 233,
+          "end_line": 233,
+          "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+        }
+      },
+      {
+        "name": "invariant",
+        "arguments_raw": "forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])",
+        "line": 234,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 234,
+          "end_line": 234,
+          "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+        }
+      },
+      {
+        "name": "forall",
+        "arguments_raw": "k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]",
+        "line": 234,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 234,
+          "end_line": 234,
+          "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+        }
+      },
+      {
+        "name": "loop_entry",
+        "arguments_raw": "*r",
+        "line": 234,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 234,
+          "end_line": 234,
+          "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+        }
+      },
+      {
+        "name": "decreases",
+        "arguments_raw": "MLKEM_N - i",
+        "line": 235,
+        "evidence": {
+          "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+          "start_line": 235,
+          "end_line": 235,
+          "text": "decreases(MLKEM_N - i))"
+        }
+      }
+    ],
+    "dependency_warning": "The next agents must ensure CBMC receives all required source/header files or safe stubs for unresolved helpers."
+  },
+  "possible_properties_from_code": [
+    {
+      "id": "C1",
+      "type": "pointer_validity",
+      "description": "Pointer/output parameter `r` should refer to a valid object before `mlk_poly_add` writes through it.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "high",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      }
+    },
+    {
+      "id": "C2",
+      "type": "input_pointer_validity",
+      "description": "Input pointer parameter `b` should refer to a valid readable object for the duration of `mlk_poly_add`.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "high",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      }
+    },
+    {
+      "id": "C3",
+      "type": "array_bounds",
+      "description": "Every detected array access should stay within the valid bounds of its base object.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "high",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    },
+    {
+      "id": "C4",
+      "type": "loop_bound",
+      "description": "Loop condition `i < MLKEM_N` should restrict the loop variable to valid implementation bounds.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "high",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    },
+    {
+      "id": "C5",
+      "type": "integer_overflow",
+      "description": "Arithmetic operations should not trigger signed/unsigned overflow under documented preconditions.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "medium",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 230,
+        "end_line": 230,
+        "text": "for (i = 0; i < MLKEM_N; i++)"
+      }
+    },
+    {
+      "id": "C6",
+      "type": "functional_update_shape",
+      "description": "The write target(s) `r->coeffs[i]` should match the intended implementation-level update described by the selected property.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "medium",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      }
+    },
+    {
+      "id": "C7",
+      "type": "memory_safety",
+      "description": "Pointer field/dereference accesses should be memory-safe under the harness assumptions.",
+      "formal_tool_relevance": "CBMC",
+      "priority": "high",
+      "source": "code_understanding_agent_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      }
+    }
+  ],
+  "implementation_risks": [
+    {
+      "type": "pointer_validity",
+      "severity": "high",
+      "message": "The function uses pointer parameters or pointer dereferences; CBMC harnesses must create valid objects and pass valid addresses."
+    },
+    {
+      "type": "array_bounds",
+      "severity": "high",
+      "message": "The function contains array accesses; later properties should check bounds and unwind loops sufficiently."
+    },
+    {
+      "type": "integer_behavior",
+      "severity": "medium",
+      "message": "The function contains arithmetic/bit operations ['addition', 'multiplication', 'subtraction']; overflow and bit-width assumptions must be checked explicitly."
+    },
+    {
+      "type": "helper_dependency",
+      "severity": "medium",
+      "message": "The function calls helper functions/macros; the harness or CBMC command may need related source files or stubs."
+    }
+  ],
+  "cbmc_hints": {
+    "target_function_for_harness_call": "mlk_poly_add",
+    "suggested_cbmc_function": "harness_mlk_poly_add",
+    "object_setup_hints": [
+      "Create a concrete object for pointer parameter `b` and pass its address to `mlk_poly_add`.",
+      "Create a concrete object for pointer parameter `r` and pass its address to `mlk_poly_add`."
+    ],
+    "loop_bound_expressions": [
+      "i < MLKEM_N"
+    ],
+    "unwind_guess": 256,
+    "recommended_checks": [
+      "--bounds-check",
+      "--pointer-check",
+      "check return value against selected property if specification gives one",
+      "--signed-overflow-check",
+      "--unsigned-overflow-check"
+    ],
+    "helper_sources_or_stubs_may_be_needed": [
+      "__loop__",
+      "invariant",
+      "invariant",
+      "forall",
+      "loop_entry",
+      "invariant",
+      "forall",
+      "loop_entry",
+      "decreases"
+    ],
+    "assumption_warning": "Do not invent input ranges from code alone. Use spec summary + type definitions + human review before adding __CPROVER_assume constraints."
+  },
+  "uncertainties": [
+    "The exact struct/type definition used by the function signature was not confidently resolved from the provided headers/source.",
+    "This code summary is not a proof. Later CBMC execution and human review must validate candidate properties and assumptions."
+  ],
+  "rejected_or_unsupported_claims": [
+    {
+      "claim": "The selected implementation is correct.",
+      "reason": "Code understanding is not formal proof; correctness must be checked by formal tools and human review."
+    },
+    {
+      "claim": "The full ML-KEM implementation is automatically proved by this workflow.",
+      "reason": "The thesis scope is selected components and candidate artifacts, not full automatic ML-KEM proof."
+    },
+    {
+      "claim": "All input ranges are known from code alone.",
+      "reason": "Input bounds usually require specification context, type definitions, and human confirmation."
+    }
+  ],
+  "quality_flags": [],
+  "scientific_guardrails": {
+    "code_summary_is_candidate_understanding_only": true,
+    "formal_tool_is_not_replaced": true,
+    "human_review_required": true,
+    "no_claim_of_full_mlkem_proof": true,
+    "assumptions_must_be_justified_by_spec_and_code": true
+  },
+  "agent_runtime": {
+    "started_at": "2026-07-09T02:34:37+00:00",
+    "finished_at": "2026-07-09T02:34:37+00:00"
+  },
+  "analysis_method": "deterministic_static_code_analysis",
+  "created_at": "2026-07-09T02:34:37+00:00",
+  "agent_name": "code_understanding_agent",
+  "legacy_schema_compatibility": [
+    "1.0"
+  ],
+  "output_files": {
+    "json": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_summary.json",
+    "markdown": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_summary.md",
+    "prompt": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/llm_prompts/02_code_understanding_prompt.txt",
+    "status": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/agent_status/02_code_understanding_status.json",
+    "v2_outputs": {
+      "code_structure_index": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_structure_index.json",
+      "function_signature_analysis": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_function_signature_analysis.json",
+      "code_symbol_table": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_symbol_table.json",
+      "macro_constant_map": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_macro_constant_map.json",
+      "loop_bounds_array_accesses": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_loop_bounds_array_accesses.json",
+      "memory_safety_obligations": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_memory_safety_obligations.json",
+      "integer_range_obligations": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_integer_range_obligations.json",
+      "spec_code_mapping_candidates": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_spec_code_mapping_candidates.json",
+      "cbmc_harness_hints": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_cbmc_harness_hints.json",
+      "agent2v2_integration_report": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_agent2v2_integration_report.json",
+      "code_understanding_v2_report": "/home/girish/thesis-agent-workflow/runs/run_001_mlk_poly_add_fresh_baseline/02_code_understanding_v2_report.json"
+    }
+  },
+  "v2_outputs": {
+    "code_structure_index": "02_code_structure_index.json",
+    "function_signature_analysis": "02_function_signature_analysis.json",
+    "code_symbol_table": "02_code_symbol_table.json",
+    "macro_constant_map": "02_macro_constant_map.json",
+    "loop_bounds_array_accesses": "02_loop_bounds_array_accesses.json",
+    "memory_safety_obligations": "02_memory_safety_obligations.json",
+    "integer_range_obligations": "02_integer_range_obligations.json",
+    "spec_code_mapping_candidates": "02_spec_code_mapping_candidates.json",
+    "cbmc_harness_hints": "02_cbmc_harness_hints.json",
+    "agent2v2_integration_report": "02_agent2v2_integration_report.json",
+    "code_understanding_v2_report": "02_code_understanding_v2_report.json",
+    "macro_constant_map_csv": "02_macro_constant_map.csv",
+    "spec_code_mapping_candidates_csv": "02_spec_code_mapping_candidates.csv",
+    "memory_safety_obligations_csv": "02_memory_safety_obligations.csv",
+    "integer_range_obligations_csv": "02_integer_range_obligations.csv",
+    "loop_bound_analysis_csv": "02_loop_bound_analysis.csv"
+  }
+}

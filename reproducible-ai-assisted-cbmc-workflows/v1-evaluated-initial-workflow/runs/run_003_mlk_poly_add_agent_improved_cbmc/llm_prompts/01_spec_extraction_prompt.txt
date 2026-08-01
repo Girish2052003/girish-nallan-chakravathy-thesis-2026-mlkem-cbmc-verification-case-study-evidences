@@ -1,0 +1,93 @@
+You are assisting formal verification of PQC implementation code.
+
+        Agent: Specification Extraction Agent v2
+        Target scheme: ML-KEM
+        Target function: mlk_poly_add
+        Verification tool: CBMC
+        Mode: auto_search
+        Specification source: /home/girish/thesis-agent-workflow/inputs/specs/fips203_clean.txt
+
+        Task:
+        1. Extract constants/numeric parameters.
+        2. Extract FIPS-style algorithm blocks, inputs, outputs, steps, loops, assignments, returns.
+        3. Extract symbols and candidate meanings.
+        4. Extract equations, ranges, and constraints.
+        5. Extract preconditions and postconditions.
+        6. Produce candidate safety and functional properties.
+        7. Link claims to evidence lines.
+        8. Mark uncertainty and human-review needs.
+        9. Do not claim proof of full ML-KEM or full implementation correctness.
+
+        Scientific guardrail:
+        The extracted specification items are candidate verification inputs. They must not be treated as a complete proof or as a replacement for formal-tool checking and human review.
+
+        Selected excerpt preview:
+        --- SELECTED SECTION: MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM (lines 1475-1531, score 125.1) ---
+mechanism using the so-called Fujisaki-Okamoto (FO) transform [11, 12]. Due to certain properties of the FO transform, the resulting KEM provides security in a significantly more general
+attack model than the PKE scheme. As a result, ML-KEM is believed to satisfy so-called IND-CCA2
+security [1, 4, 13, 14].
+13
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+The specification of the ML-KEM algorithms in this standard will follow the same pattern. Specifically, this standard will first describe a public-key encryption scheme called K-PKE (in Section 5)
+and then use the algorithms of K-PKE as subroutines when describing the algorithms of ML-KEM
+(in Sections 6 and 7). The cryptographic transformation from K-PKE to ML-KEM is crucial for
+achieving IND-CCA2 security. The scheme K-PKE is not IND-CCA2-secure and shall not be used as
+a stand-alone scheme (see Section 3.3).
+A notable feature of ML-KEM is the use of the number-theoretic transform (NTT). The NTT
+̂ linear polynomials.
+converts a polynomial 𝑓  in  𝑅𝑞 to an alternative representation as a vector 𝑓 of
+Working with NTT representations enables significantly faster multiplication of polynomials.
+Other operations (e.g., addition, rounding, and sampling) can be done in either representation.
+ML-KEM satisfies the essential KEM property of correctness. This means that in the absence
+of corruption or interference, the process in Figure 1 will result in 𝐾 ′ = 𝐾 with overwhelming
+probability. ML-KEM also comes with a proof of asymptotic theoretical security in a certain
+heuristic model [4]. Each of the parameter sets of ML-KEM comes with an associated security
+strength that was estimated based on current cryptanalysis (see Section 8 for details).
+Parameter sets and algorithms. Recall that a KEM consists of algorithms KeyGen, Encaps, and
+Decaps, along with a collection of parameter sets. In the case of ML-KEM, the three aforementioned algorithms are:
+1. ML-KEM.KeyGen (Algorithm 19)
+2. ML-KEM.Encaps (Algorithm 20)
+3. ML-KEM.Decaps (Algorithm 21)
+These algorithms are described and discussed in detail in Section 7.
+ML-KEM comes equipped with three parameter sets:
+- ML-KEM-512 (security category 1)
+- ML-KEM-768 (security category 3)
+- ML-KEM-1024 (security category 5)
+These parameter sets are described and discussed in detail in Section 8. The security categories
+1-5 are defined in SP 800-57, Part 1 [7]. Each parameter set assigns a particular numerical value
+to five integer variables: 𝑘, 𝜂1 , 𝜂2 , 𝑑𝑢 , and 𝑑𝑣 . The values of these variables in each parameter
+set are given in Table 2 of Section 8. In addition to these five variable parameters, there are also
+two constants: 𝑛 = 256 and 𝑞 = 3329.
+Decapsulation failures. Provided that all inputs are well-formed and randomness generation is
+successful, the key establishment procedure of ML-KEM will never explicitly fail, meaning that
+both ML-KEM.Encaps and ML-KEM.Decaps will each output a 256-bit value. Moreover, if no
+corruption or interference is present, the two 256-bit values produced by ML-KEM.Encaps and
+ML-KEM.Decaps will be equal with overwhelming probability (i.e., 𝐾 ′ will equal 𝐾 in the process
+described in Figure 1). The event that 𝐾 ′ != 𝐾 under these conditions is called a decapsulation
+14
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+failure. Formally, the decapsulation failure probability is defined to be the probability (conditioned
+on no RGB failures) that the process
+1. (ek, dk) <- ML-KEM.KeyGen()
+2. (𝑐, 𝐾) <- ML-KEM.Encaps(ek)
+
+--- SELECTED SECTION: MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM (lines 1570-1617, score 101.6) ---
+may only be used as subroutines in the algorithms of ML-KEM. In particular, the algorithms
+K-PKE.KeyGen (Algorithm 13), K-PKE.Encrypt (Algorithm 14), and K-PKE.Decrypt (Algorithm 15)
+are not approved for use as a public-key encryption scheme.
+15
+
+
+FIPS 203
+
+MODULE-LA

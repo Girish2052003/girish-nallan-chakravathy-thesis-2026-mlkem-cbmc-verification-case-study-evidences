@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "agent": "counterexample_analysis_agent",
+  "created_at": "2026-07-09T02:34:37+00:00",
+  "preferred_next_agent": "repair_agent",
+  "repair_required": true,
+  "primary_diagnosis_bucket": "harness_or_assumption",
+  "failed_property_mapping_file": "07_failed_property_mapping.json",
+  "actions": [
+    {
+      "step_id": "A8_REPAIR_01",
+      "action": "separate_overflow_from_functional_assertion",
+      "priority": "high",
+      "safe_for_automatic_repair": true,
+      "human_review_required": true,
+      "reason": "Overflow-related failures often come from too-broad nondeterministic inputs or arithmetic inside the assertion.",
+      "concrete_steps": [
+        "Do not silently narrow input bounds unless spec/code summary justifies them.",
+        "Move expected arithmetic into wider temporary types only when this matches the semantics being tested.",
+        "Create one harness for overflow safety and another harness for functional equality under documented preconditions.",
+        "Record every range assumption with evidence from 01_spec_summary.json, 02_code_summary.json, or human notes."
+      ],
+      "expected_agent9_use": "Repair Agent should add only evidence-backed range assumptions and keep them marked as candidate preconditions."
+    },
+    {
+      "step_id": "A8_REPAIR_02",
+      "action": "review_loop_bound_and_object_size",
+      "priority": "high",
+      "safe_for_automatic_repair": true,
+      "human_review_required": true,
+      "reason": "Bounds failure may mean the harness object size, macro definition, or unwind setting does not match the implementation.",
+      "concrete_steps": [
+        "Confirm the loop bound used by `mlk_poly_add` in 02_code_summary.json.",
+        "Ensure local objects allocated in the harness have the same struct type expected by the target function.",
+        "Ensure CBMC command uses --unwind equal to or larger than the real loop iterations and keeps --unwinding-assertions enabled."
+      ],
+      "expected_agent9_use": "Repair Agent should update manifest/config recommendation for CBMC unwind while keeping unwinding assertions enabled."
+    },
+    {
+      "step_id": "A8_REPAIR_03",
+      "action": "fix_pointer_object_setup",
+      "priority": "high",
+      "safe_for_automatic_repair": true,
+      "human_review_required": true,
+      "reason": "Pointer failures often occur when the harness passes invalid or uninitialized objects.",
+      "concrete_steps": [
+        "Use concrete local objects such as `poly r; poly a; poly b;` and pass their addresses.",
+        "Avoid nondeterministic raw pointers for first harnesses unless pointer-validity assumptions are explicitly added.",
+        "Initialize input object fields before calling the target function."
+      ],
+      "expected_agent9_use": "Repair Agent should create concrete objects and valid addresses rather than raw nondet pointers."
+    },
+    {
+      "step_id": "A8_REPAIR_04",
+      "action": "adjust_unwind_configuration",
+      "priority": "medium",
+      "safe_for_automatic_repair": true,
+      "human_review_required": true,
+      "reason": "Loop unwinding may be insufficient or mismatched with implementation loop bounds.",
+      "concrete_steps": [
+        "Set tool_execution_settings.unwind to the extracted implementation loop bound.",
+        "Keep --unwinding-assertions enabled so incomplete unwinding is not hidden."
+      ],
+      "expected_agent9_use": "Repair Agent should update manifest/config recommendation for CBMC unwind while keeping unwinding assertions enabled."
+    },
+    {
+      "step_id": "A8_REPAIR_05",
+      "action": "repair_harness_assumptions_and_assertions",
+      "priority": "medium",
+      "safe_for_automatic_repair": true,
+      "human_review_required": true,
+      "reason": "The selected property failed or was blocked under the current candidate assumptions/assertions.",
+      "concrete_steps": [
+        "List each assumption and link it to spec/code evidence before keeping it.",
+        "Split large assertions into smaller checkable assertions.",
+        "Avoid proving a trivial property by over-constraining inputs.",
+        "Keep failed and repaired harnesses in the log for thesis evaluation."
+      ],
+      "expected_agent9_use": "Repair Agent should add only evidence-backed range assumptions and keep them marked as candidate preconditions."
+    }
+  ],
+  "agent9_input_contract": {
+    "must_read": [
+      "07_counterexample_analysis.json",
+      "07_repair_guidance.json",
+      "07_repair_action_plan.json",
+      "07_failed_property_mapping.json",
+      "07_tool_vs_harness_vs_code_diagnosis.json"
+    ],
+    "must_preserve_guardrails": true
+  }
+}

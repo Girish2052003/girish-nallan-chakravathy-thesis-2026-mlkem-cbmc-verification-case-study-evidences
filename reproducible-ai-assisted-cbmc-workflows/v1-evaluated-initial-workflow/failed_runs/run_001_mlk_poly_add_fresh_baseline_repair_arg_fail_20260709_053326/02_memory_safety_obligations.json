@@ -1,0 +1,255 @@
+{
+  "schema_version": "2.0",
+  "target_function": "mlk_poly_add",
+  "obligation_count": 16,
+  "obligations": [
+    {
+      "id": "M1",
+      "kind": "pointer_validity",
+      "description": "Parameter `b` must point to a valid object for the target call.",
+      "suggested_cbmc_check": "--pointer-check",
+      "suggested_harness_setup": "Create a concrete object for `b` and pass its address/pointer safely.",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M2",
+      "kind": "pointer_validity",
+      "description": "Parameter `r` must point to a valid object for the target call.",
+      "suggested_cbmc_check": "--pointer-check",
+      "suggested_harness_setup": "Create a concrete object for `r` and pass its address/pointer safely.",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 228,
+        "end_line": 228,
+        "text": "MLK_INTERNAL_API"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M3",
+      "kind": "array_bounds",
+      "description": "Array access `r->coeffs[k0]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "r->coeffs",
+      "index": "k0",
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M4",
+      "kind": "array_bounds",
+      "description": "Array access `coeffs[k0]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "coeffs",
+      "index": "k0",
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M5",
+      "kind": "array_bounds",
+      "description": "Array access `r->coeffs[k1]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "r->coeffs",
+      "index": "k1",
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M6",
+      "kind": "array_bounds",
+      "description": "Array access `coeffs[k1]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "coeffs",
+      "index": "k1",
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M7",
+      "kind": "array_bounds",
+      "description": "Array access `b->coeffs[k1]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "b->coeffs",
+      "index": "k1",
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M8",
+      "kind": "array_bounds",
+      "description": "Array access `r->coeffs[i]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "r->coeffs",
+      "index": "i",
+      "access_context_guess": "write_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M9",
+      "kind": "array_bounds",
+      "description": "Array access `b->coeffs[i]` must remain inside the allocated object bounds.",
+      "suggested_cbmc_check": "--bounds-check",
+      "base": "b->coeffs",
+      "index": "i",
+      "access_context_guess": "read_candidate",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M10",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `r->coeffs` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M11",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `r->coeffs` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M12",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `b->coeffs` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M13",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `r->coeffs` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M14",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `b->coeffs` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 238,
+        "end_line": 238,
+        "text": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M15",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `*r` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 233,
+        "end_line": 233,
+        "text": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    },
+    {
+      "id": "M16",
+      "kind": "pointer_dereference_or_field_access",
+      "description": "Pointer access `*r` must be valid under harness assumptions.",
+      "suggested_cbmc_check": "--pointer-check",
+      "evidence": {
+        "source_file": "/home/girish/thesis-agent-workflow/inputs/code/poly.c",
+        "start_line": 234,
+        "end_line": 234,
+        "text": "invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))"
+      },
+      "priority": "high",
+      "human_review_required": true
+    }
+  ],
+  "guardrail": "These are memory-safety obligations for harness generation; they are not proof results."
+}

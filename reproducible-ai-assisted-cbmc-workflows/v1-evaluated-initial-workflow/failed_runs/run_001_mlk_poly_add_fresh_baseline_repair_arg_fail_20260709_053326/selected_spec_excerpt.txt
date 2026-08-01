@@ -1,0 +1,154 @@
+--- SELECTED SECTION: MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM (lines 1475-1531, score 125.1) ---
+mechanism using the so-called Fujisaki-Okamoto (FO) transform [11, 12]. Due to certain properties of the FO transform, the resulting KEM provides security in a significantly more general
+attack model than the PKE scheme. As a result, ML-KEM is believed to satisfy so-called IND-CCA2
+security [1, 4, 13, 14].
+13
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+The specification of the ML-KEM algorithms in this standard will follow the same pattern. Specifically, this standard will first describe a public-key encryption scheme called K-PKE (in Section 5)
+and then use the algorithms of K-PKE as subroutines when describing the algorithms of ML-KEM
+(in Sections 6 and 7). The cryptographic transformation from K-PKE to ML-KEM is crucial for
+achieving IND-CCA2 security. The scheme K-PKE is not IND-CCA2-secure and shall not be used as
+a stand-alone scheme (see Section 3.3).
+A notable feature of ML-KEM is the use of the number-theoretic transform (NTT). The NTT
+̂ linear polynomials.
+converts a polynomial 𝑓  in  𝑅𝑞 to an alternative representation as a vector 𝑓 of
+Working with NTT representations enables significantly faster multiplication of polynomials.
+Other operations (e.g., addition, rounding, and sampling) can be done in either representation.
+ML-KEM satisfies the essential KEM property of correctness. This means that in the absence
+of corruption or interference, the process in Figure 1 will result in 𝐾 ′ = 𝐾 with overwhelming
+probability. ML-KEM also comes with a proof of asymptotic theoretical security in a certain
+heuristic model [4]. Each of the parameter sets of ML-KEM comes with an associated security
+strength that was estimated based on current cryptanalysis (see Section 8 for details).
+Parameter sets and algorithms. Recall that a KEM consists of algorithms KeyGen, Encaps, and
+Decaps, along with a collection of parameter sets. In the case of ML-KEM, the three aforementioned algorithms are:
+1. ML-KEM.KeyGen (Algorithm 19)
+2. ML-KEM.Encaps (Algorithm 20)
+3. ML-KEM.Decaps (Algorithm 21)
+These algorithms are described and discussed in detail in Section 7.
+ML-KEM comes equipped with three parameter sets:
+- ML-KEM-512 (security category 1)
+- ML-KEM-768 (security category 3)
+- ML-KEM-1024 (security category 5)
+These parameter sets are described and discussed in detail in Section 8. The security categories
+1-5 are defined in SP 800-57, Part 1 [7]. Each parameter set assigns a particular numerical value
+to five integer variables: 𝑘, 𝜂1 , 𝜂2 , 𝑑𝑢 , and 𝑑𝑣 . The values of these variables in each parameter
+set are given in Table 2 of Section 8. In addition to these five variable parameters, there are also
+two constants: 𝑛 = 256 and 𝑞 = 3329.
+Decapsulation failures. Provided that all inputs are well-formed and randomness generation is
+successful, the key establishment procedure of ML-KEM will never explicitly fail, meaning that
+both ML-KEM.Encaps and ML-KEM.Decaps will each output a 256-bit value. Moreover, if no
+corruption or interference is present, the two 256-bit values produced by ML-KEM.Encaps and
+ML-KEM.Decaps will be equal with overwhelming probability (i.e., 𝐾 ′ will equal 𝐾 in the process
+described in Figure 1). The event that 𝐾 ′ != 𝐾 under these conditions is called a decapsulation
+14
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+failure. Formally, the decapsulation failure probability is defined to be the probability (conditioned
+on no RGB failures) that the process
+1. (ek, dk) <- ML-KEM.KeyGen()
+2. (𝑐, 𝐾) <- ML-KEM.Encaps(ek)
+
+--- SELECTED SECTION: MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM (lines 1570-1617, score 101.6) ---
+may only be used as subroutines in the algorithms of ML-KEM. In particular, the algorithms
+K-PKE.KeyGen (Algorithm 13), K-PKE.Encrypt (Algorithm 14), and K-PKE.Decrypt (Algorithm 15)
+are not approved for use as a public-key encryption scheme.
+15
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+Controlled access to internal functions. The key-encapsulation mechanism ML-KEM makes use
+of internal, “derandomized” functions ML-KEM.KeyGen_internal, ML-KEM.Encaps_internal, and
+ML-KEM.Decaps_internal, specified in Section 6. The interfaces for these functions should not
+be made available to applications other than for testing purposes. In particular, the sampling of
+random values required for key generation (as specified in ML-KEM.KeyGen) and encapsulation
+(as specified in ML-KEM.Encaps) shall be performed by the cryptographic module.
+Equivalent implementations. For every algorithm that is specified in this standard, a conforming
+implementation may replace the given set of steps with any mathematically equivalent set of
+steps. In other words, the specified algorithm may be replaced with a different procedure that
+produces the correct output for every input (where “input” includes the specified input as well
+as all parameter values and all randomness).
+Approved usage of the shared secret key. If randomness generation is successful, the values
+𝐾 and 𝐾 ′ returned by ML-KEM.Encaps and ML-KEM.Decaps, respectively, are always 256-bit
+values. Under appropriate conditions (see Sections 3.1 and 3.2, and SP 800-227 [1]), these values
+match (i.e., 𝐾 ′ = 𝐾) and can be used directly as a shared secret key for symmetric cryptography.
+If further key derivation is needed, the final symmetric keys shall be derived from this 256-bit
+shared secret key in an approved manner, as specified in SP 800-108 and SP 800-56C [16, 17].
+As discussed in Section 3.2, ML-KEM is an IND-CCA2-secure KEM. However, a combined KEM
+that includes ML-KEM as a component might not meet IND-CCA2 security. Implementers should
+assess the security of any procedure in which the key derivation methods of SP 800-56C are
+applied to ML-KEM in combination with another key establishment procedure. More guidance
+regarding combined KEMs is given in SP 800-227 [1].
+Randomness generation. Two algorithms in this standard require the generation of randomness
+as an internal step: ML-KEM.KeyGen and ML-KEM.Encaps. In pseudocode, this randomness
+$
+generation is denoted by a statement of the form 𝑚 <-- 𝔹32 . A fresh string of random bytes
+must be generated for every such invocation. These random bytes shall be generated using an
+approved RBG, as prescribed in SP 800-90A, SP 800-90B, and SP 800-90C [18, 19, 20]. Moreover,
+this RBG shall have a security strength of at least 128 bits for ML-KEM-512, at least 192 bits for
+ML-KEM-768, and at least 256 bits for ML-KEM-1024.
+Input checking. The algorithms ML-KEM.Encaps and ML-KEM.Decaps require input checking.
+Implementers shall ensure that ML-KEM.Encaps and ML-KEM.Decaps are only executed on
+inputs that have been checked, as described in Section 7.
+Destruction of intermediate values. Data used in intermediate computation steps of KEM
+algorithms could be used by an adversary to compromise security. Therefore, implementers
+shall ensure that intermediate data is destroyed as soon as it is no longer needed. In particular,
+for ML-KEM.KeyGen, ML-KEM.Encaps, and ML-KEM.Decaps, only the designated output can be
+retained in memory after the algorithm terminates. All other data shall be destroyed prior to
+
+--- SELECTED SECTION: Appendix C - Differences From the CRYSTALS-Kyber Submission (lines 3638-3684, score 99.7) ---
+46
+
+
+FIPS 203
+
+MODULE-LATTICE-BASED KEY-ENCAPSULATION MECHANISM
+
+Appendix C - Differences From the CRYSTALS-Kyber Submission
+This appendix lists the differences between CRYSTALS-KYBER (as described in [4]) and the ML-KEM
+scheme (specified in this document) that result in differing input-output behavior of the main
+algorithms (i.e., KeyGen, Encaps, Decaps). Since a conforming implementation need only match
+the input-output behavior of these three algorithms (see “Implementations” and Section 3.3
+below), the list does not include any of the numerous differences in how the main algorithms actually produce outputs from inputs (e.g., via different computational steps or different subroutines),
+nor any differences in presentation between this standard and [4].
+
+C.1 Differences Between CRYSTALS-Kyber and FIPS 203 Initial Public Draft
+- In the third-round specification [4], the shared secret key was treated as a variable-length
+value whose length depended on how it would be used in the relevant application. In this
+specification, the length of the shared secret key is fixed to 256 bits. It can be used directly
+in applications as a symmetric key, or symmetric keys can be derived from it, as specified
+in Section 3.3.
+- The ML-KEM.Encaps and ML-KEM.Decaps algorithms in this specification use a different
+variant of the Fujisaki-Okamoto transform (see [24, 25]) than the third-round specification [4]. Specifically, ML-KEM.Encaps no longer includes a hash of the ciphertext in the
+derivation of the shared secret, and ML-KEM.Decaps has been adjusted to match this
+change.
+- In the third-round specification [4], the initial randomness 𝑚 in the ML-KEM.Encaps algorithm was first hashed before being used. Specifically, between lines 1 and 2 in Algorithm
+20, there was an additional step that performed the operation 𝑚 <- 𝐻(𝑚). The purpose
+of this step was to safeguard against the use of flawed randomness generation processes.
+As this standard requires the use of NIST-approved randomness generation, this step is
+unnecessary and is not performed in ML-KEM.
+- This specification includes explicit input checking steps that were not part of the third-round
+specification [4]. For example, ML-KEM.Encaps requires that the byte array containing the
+encapsulation key correctly decodes to an array of integers modulo 𝑞 without any modular
+reductions.
+
+C.2 Changes From FIPS 203 Initial Public Draft
+The differences between CRYSTALS-KYBER and ML-KEM as described in Appendix C were included
+in the initial public draft (ipd) of FIPS 203, which was posted on August 24, 2023. Based on
+comments submitted on the draft ML-KEM, domain separation was added to K-PKE.KeyGen to
+prevent the misuse of keys generated to target one security level from being used for a different
+security level when saving a key as a seed.
+Additionally, FIPS 203 ipd had inadvertently swapped the indices of matrix 𝐀̂ in K-PKE.KeyGen and
+K-PKE.Encrypt. This was changed back in the final version of ML-KEM to match CRYSTALS-KYBER.
+47

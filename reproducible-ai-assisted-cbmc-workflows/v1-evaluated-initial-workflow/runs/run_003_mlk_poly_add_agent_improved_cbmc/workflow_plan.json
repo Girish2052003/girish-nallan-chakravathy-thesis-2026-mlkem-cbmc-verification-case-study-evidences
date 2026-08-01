@@ -1,0 +1,130 @@
+{
+  "run_id": "run_003_mlk_poly_add_agent_improved_cbmc",
+  "target_scheme": "ML-KEM",
+  "target_function": "mlk_poly_add",
+  "verification_tool": "CBMC",
+  "artifact_type": "CBMC harness",
+  "max_iterations": 1,
+  "parallel_initial_agents": false,
+  "agent_order": [
+    "spec_extraction + code_understanding",
+    "property_discovery",
+    "artifact_generation",
+    "critic_review",
+    "tool_execution",
+    "if failure: counterexample_analysis -> repair -> tool_execution repeat",
+    "experiment_logger",
+    "evaluation_reporter"
+  ],
+  "agents": {
+    "spec_extraction": {
+      "name": "spec_extraction",
+      "script": "agents/spec_extraction_agent.py",
+      "expected_outputs": [
+        "01_spec_summary.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Extracts constants, assumptions, guarantees, safety properties, and uncertainties from selected spec excerpt."
+    },
+    "code_understanding": {
+      "name": "code_understanding",
+      "script": "agents/code_understanding_agent.py",
+      "expected_outputs": [
+        "02_code_summary.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Summarizes selected implementation code: inputs, outputs, loops, array accesses, helpers, risks, uncertainties."
+    },
+    "property_discovery": {
+      "name": "property_discovery",
+      "script": "agents/property_discovery_agent.py",
+      "expected_outputs": [
+        "03_candidate_properties.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Combines spec and code summaries to propose candidate formal properties."
+    },
+    "artifact_generation": {
+      "name": "artifact_generation",
+      "script": "agents/artifact_generation_agent.py",
+      "expected_outputs": [
+        "04_generated_harness.c",
+        "04_generated_artifact_notes.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Generates candidate CBMC harnesses, assumptions, assertions, and notes."
+    },
+    "critic_review": {
+      "name": "critic_review",
+      "script": "agents/review_critic_agent.py",
+      "expected_outputs": [
+        "05_critic_review.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Reviews generated artifact for unsupported assumptions, weak/strong assertions, wrong constants, trivial proofs, and edge cases."
+    },
+    "tool_execution": {
+      "name": "tool_execution",
+      "script": "agents/tool_execution_agent.py",
+      "expected_outputs": [
+        "06_cbmc_output.txt",
+        "06_cbmc_status.json"
+      ],
+      "required": true,
+      "timeout_seconds": 1800,
+      "description": "Runs CBMC or selected formal tool and stores output/status."
+    },
+    "counterexample_analysis": {
+      "name": "counterexample_analysis",
+      "script": "agents/counterexample_analysis_agent.py",
+      "expected_outputs": [
+        "07_counterexample_analysis.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Explains failed CBMC/tool result and classifies failure source."
+    },
+    "repair": {
+      "name": "repair",
+      "script": "agents/repair_agent.py",
+      "expected_outputs": [
+        "08_repaired_harness.c",
+        "08_repair_notes.json"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Repairs/refines candidate artifact based on critic and counterexample analysis."
+    },
+    "experiment_logger": {
+      "name": "experiment_logger",
+      "script": "agents/experiment_logger.py",
+      "expected_outputs": [
+        "experiment_log_index.json"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Optional external logger finalization. Internal JSONL logging always runs even if this script does not exist."
+    },
+    "evaluation_reporter": {
+      "name": "evaluation_reporter",
+      "script": "agents/evaluation_reporter.py",
+      "expected_outputs": [
+        "final_report.md",
+        "evaluation_table.csv"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Generates final evaluation report and table from the run folder."
+    }
+  },
+  "positioning": {
+    "claim": "Agents generate candidate formal-verification artifacts and evidence for evaluation.",
+    "non_claim": "The workflow does not claim to fully prove ML-KEM automatically.",
+    "authority": "CBMC/formal tools and human researcher remain final correctness authority."
+  }
+}
