@@ -1,0 +1,598 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-10T23:31:33.669574+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-2026-03-05",
+  "attempt": 1,
+  "elapsed_seconds": 28.964797258377075,
+  "request_snapshot_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "136f69a2b098b297311e56d831fd9b4af23059c67e614c7630934b542c957bc3",
+  "response_id": "resp_092ce3b3db3d8a52006a5180bffc0081a2bf46a5f8da35e7a2",
+  "usage": {
+    "input_tokens": "[REDACTED]",
+    "input_tokens_details": "[REDACTED]",
+    "output_tokens": "[REDACTED]",
+    "output_tokens_details": "[REDACTED]",
+    "total_tokens": "[REDACTED]"
+  },
+  "response_text": "{\"stage\":\"06_review_critic\",\"mock\":false,\"llm_call_executed\":true,\"reviewed_artefacts\":{\"target_function\":\"mlk_poly_add\",\"deterministic_recommended_gate\":\"needs_human_review\"},\"overall_assessment\":\"The candidate artefact is narrow, non-trivial, and evidence-linked. It targets a local machine-level property that matches the source contract of mlk_poly_add: under explicit per-coefficient INT16-range assumptions and contract-aligned fresh-object assumptions, the in-place update should preserve the mathematical sum and avoid out-of-range int16_t stores. The harness contains a real old-state snapshot, calls the target function, and avoids circular post/post comparison. Primary source evidence supports the selected property and the claim boundary is appropriately narrow. However, the harness entry symbol appears mismatched with the deterministic build configuration, which names cbmc_function as \\\"harness\\\" while the rendered C defines \\\"harness_mlk_poly_add_int16_safe_sum\\\". This unresolved tool-entry dependency should be fixed before execution. There is also a moderate warning that the freshness assumptions mirror a strong CBMC-specific contract predicate and may over-constrain concrete aliasing behaviors, but that is acceptable for a contract-aligned local check if stated as conditional. Because of the entry-point mismatch, the artefact is not yet ready for Agent 7 unchanged.\",\"gate_recommendation\":\"needs_revision_before_tool_execution\",\"blocking_issues\":[{\"issue\":\"The deterministic formal build plan selects CBMC entry function \\\"harness\\\", but the rendered C harness defines \\\"void harness_mlk_poly_add_int16_safe_sum(void)\\\" and no function named \\\"harness\\\" is evidenced.\",\"impact\":\"Agent 7 tool execution may fail to locate the entry point or run the wrong target configuration, so the artefact is not execution-ready as handed off.\"}],\"warnings\":[{\"issue\":\"The harness assumes memory_no_alias(r, sizeof(mlk_poly)) and memory_no_alias(b, sizeof(mlk_poly)), which maps to __CPROVER_is_fresh and is stronger than ordinary non-null/non-overlap reasoning.\",\"impact\":\"This can over-constrain the explored behaviors and should be understood as a contract-aligned proof scope rather than a universal behavioral claim about all concrete aliasing cases.\"},{\"issue\":\"The selected property is conditional on explicit per-coefficient INT16_MIN..INT16_MAX sum assumptions and does not derive those assumptions from real callers.\",\"impact\":\"A successful run would establish only the local conditional property, not that all real call sites satisfy the assumptions.\"}],\"minor_issues\":[{\"issue\":\"The second assertion largely follows from the first assertion plus the pre-assumed INT16 range, so it adds limited independent checking value.\",\"impact\":\"Not unsound, but somewhat redundant and may slightly increase proof burden.\"},{\"issue\":\"The old_state_snapshot_plan field in the prior artefact plan uses a free-form value for \\\"required\\\" rather than a simple boolean-like status.\",\"impact\":\"Schema/style inconsistency in prior planning text may confuse downstream validators, though it does not invalidate the rendered harness itself.\"}],\"assumption_review\":{\"status\":\"warning\",\"findings\":[{\"issue\":\"Pointer assumptions are explicit and traceable to the mlk_poly_add contract, but they adopt the strong freshness semantics of memory_no_alias/__CPROVER_is_fresh.\",\"impact\":\"Reasonable for contract-aligned verification, but stronger than minimal C execution assumptions.\"},{\"issue\":\"Arithmetic assumptions exactly mirror the source preconditions that every coefficient-wise sum fits in int16_t when evaluated in int32_t.\",\"impact\":\"Good local alignment with source intent, but any downstream interpretation must remain conditional.\"}]},\"assertion_review\":{\"status\":\"pass_with_minor_issues\",\"findings\":[{\"issue\":\"Assertions compare post-state r against a genuine pre-state snapshot old_r plus current b, matching the source ensures relation and avoiding self-comparison.\",\"impact\":\"This is a meaningful non-circular local functional/range check.\"},{\"issue\":\"The second assertion on (int32_t)r->coeffs[k] == expected is stronger-looking but becomes close to redundant once expected is assumed in INT16 range and the first assertion holds.\",\"impact\":\"Minor redundancy only; not a blocking flaw.\"}]},\"old_state_new_state_review\":{\"status\":\"pass\",\"findings\":[{\"issue\":\"Because mlk_poly_add mutates r in place, a pre-call snapshot is required; the harness takes memcpy(&old_r, r, sizeof(mlk_poly)) before the call.\",\"impact\":\"This correctly supports old/new-state reasoning and avoids the common post/post comparison mistake.\"},{\"issue\":\"The harness does not snapshot b, but b is only read and not targeted by assertions that require an old-state copy.\",\"impact\":\"Acceptable for the selected property.\"}]},\"contract_review\":{\"status\":\"pass_with_warning\",\"findings\":[{\"issue\":\"The harness is consistent with the existing native function contract in poly.h: freshness requirements, int16-safe sum preconditions, and post-state additive relation.\",\"impact\":\"Good evidence alignment for a standard_cbmc_harness attempt.\"},{\"issue\":\"No native function or loop contract instrumentation is being added, which matches the selected strategy and deterministic plan stating contract_mode none / apply_loop_contracts false.\",\"impact\":\"No strategy mismatch, but proof scope remains harness-only.\"}]},\"verification_strategy_review\":{\"status\":\"warning\",\"findings\":[{\"issue\":\"The selected strategy standard_cbmc_harness matches the artefact manifest and build-plan metadata.\",\"impact\":\"Strategy selection itself is coherent.\"},{\"issue\":\"The build configuration names cbmc_function as \\\"harness\\\", but the actual harness symbol evidenced in C is different.\",\"impact\":\"This is an execution-readiness mismatch that blocks clean approval for tool execution.\"}]},\"independence_review\":{\"status\":\"pass_with_warning\",\"findings\":[{\"issue\":\"The supplied independence audit reports low similarity risk (combined similarity 0.1487) and no required human similarity review.\",\"impact\":\"No copying block is evidenced by the available audit.\"},{\"issue\":\"Some structural similarities are unavoidable because the artefact must use exact repository identifiers, CBMC primitives, and an old-state snapshot for an in-place accumulator function.\",\"impact\":\"Similarity from required identifiers and proof shape does not by itself indicate impermissible copying.\"}]},\"scope_and_overclaim_review\":{\"status\":\"pass\",\"findings\":[{\"issue\":\"The artefact plan explicitly excludes claims about canonical modulo-q output, full ML-KEM correctness, FIPS compliance, cryptographic security, and caller-side proof of assumptions.\",\"impact\":\"Scope is appropriately narrow and avoids overclaiming.\"},{\"issue\":\"The selected property is framed as a local machine-level conditional check, which matches primary code evidence that mlk_poly_add performs unreduced addition and later callers apply reduction separately.\",\"impact\":\"Good claim discipline relative to the implementation.\"}]},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"used_as_fallible_diagnostic_and_measured_build_metadata_only\",\"warning\":\"Deterministic material was used for measured facts about file existence/build-plan configuration and as a non-authoritative review hint. The main substantive assessment was checked against raw source/header/spec evidence. One deterministic claim prompting concern—the recommended human review gate—was downgraded because the primary evidence and independence audit do not themselves show a copying problem; the stronger primary issue is the harness entry-point mismatch in the measured build plan.\",\"disagreements\":[{\"deterministic_claim\":\"Recommended gate: needs_human_review.\",\"primary_evidence_finding\":\"The available primary evidence and the supplied independence audit do not show a similarity crisis or missing independence evidence requiring human review; instead, the concrete blocking problem is an execution-readiness mismatch between the configured CBMC entry symbol and the actual harness symbol.\",\"resolution\":\"Reject the deterministic gate recommendation as too broad and recommend needs_revision_before_tool_execution instead.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/validation/04_independence_audit.json\",\"locator\":\"highest_similarity / requires_human_similarity_review\",\"excerpt\":\"combined_similarity 0.1487 ... requires_human_similarity_review: false\",\"supports_claim\":\"Similarity evidence does not itself require human review.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json\",\"locator\":\"content.cbmc_function\",\"excerpt\":\"\\\"cbmc_function\\\": \\\"harness\\\"\",\"supports_claim\":\"Measured build configuration expects a harness symbol named harness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"function definition\",\"excerpt\":\"void harness_mlk_poly_add_int16_safe_sum(void)\",\"supports_claim\":\"Rendered harness defines a different entry-point symbol.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract block\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"Primary evidence for the harness assumptions and intended post-state additive relation.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body and loop annotation\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Primary evidence that the function performs in-place coefficient-wise addition with an explicit int16_t cast.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"Primary evidence for object shape and coefficient storage type used by the harness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"macro definitions\",\"excerpt\":\"#define MLKEM_N 256\\n#define MLKEM_Q 3329\",\"supports_claim\":\"Primary evidence for loop extent and q value context.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias and forall macros\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__) ... #define forall(qvar, qvar_lb, qvar_ub, predicate) __CPROVER_forall\",\"supports_claim\":\"Primary evidence for the strength and meaning of the harness assumptions under CBMC.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/indcpa.c\",\"locator\":\"mlk_indcpa_enc arithmetic sequence\",\"excerpt\":\"mlk_poly_add(v, epp); mlk_poly_add(v, k); ... mlk_poly_reduce(v);\",\"supports_claim\":\"Primary evidence that mlk_poly_add is used before later reduction, so canonical modulo-q output should not be asserted locally.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"full harness body\",\"excerpt\":\"The harness assumes memory_no_alias on r and b, assumes per-index INT16 bounds, snapshots old_r with memcpy, calls mlk_poly_add(r, b), and asserts post-state equalities against expected sums.\",\"supports_claim\":\"Candidate artefact under review contains explicit assumptions, snapshot, target-function call, and non-circular assertions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json\",\"locator\":\"content.cbmc_function and content.harness.path\",\"excerpt\":\"\\\"cbmc_function\\\": \\\"harness\\\" ... harness path points to 04_generated_harness.c\",\"supports_claim\":\"Measured build-plan evidence for the entry-point mismatch concern.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/validation/04_independence_audit.json\",\"locator\":\"max_similarity_score / requires_human_similarity_review\",\"excerpt\":\"max_similarity_score: 0.1487 ... requires_human_similarity_review: false\",\"supports_claim\":\"Available independence evidence does not itself block progression for similarity reasons.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5 and Section 3.3\",\"excerpt\":\"Addition in R_q and T_q is done coordinate-wise ... a conforming implementation may replace the given set of steps with any mathematically equivalent set of steps.\",\"supports_claim\":\"Specification supports cautious traceability for coefficient-wise addition while allowing non-literal implementation structure.\",\"confidence\":\"high\"}],\"limitations\":[\"This review is not a proof result and does not claim CBMC success.\",\"Only the provided evidence was reviewed; no actual compilation or tool execution result is available here.\",\"The previous LLM-stage artefacts were treated as candidate context, not formal truth.\",\"The FIPS excerpt is truncated later in Section 7, but the relevant Section 2.4.3-2.4.5 evidence for polynomial addition is available.\",\"Execution-readiness assessment relies partly on deterministic measured build metadata for the configured entry symbol; that metadata is authoritative only as a logged fact, not as proof of eventual tool behavior.\"]}",
+  "response_object": {
+    "id": "resp_092ce3b3db3d8a52006a5180bffc0081a2bf46a5f8da35e7a2",
+    "created_at": 1783726272.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-2026-03-05",
+    "object": "response",
+    "output": [
+      {
+        "id": "msg_092ce3b3db3d8a52006a5180c16ab081a29ffd8d118740d838",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"stage\":\"06_review_critic\",\"mock\":false,\"llm_call_executed\":true,\"reviewed_artefacts\":{\"target_function\":\"mlk_poly_add\",\"deterministic_recommended_gate\":\"needs_human_review\"},\"overall_assessment\":\"The candidate artefact is narrow, non-trivial, and evidence-linked. It targets a local machine-level property that matches the source contract of mlk_poly_add: under explicit per-coefficient INT16-range assumptions and contract-aligned fresh-object assumptions, the in-place update should preserve the mathematical sum and avoid out-of-range int16_t stores. The harness contains a real old-state snapshot, calls the target function, and avoids circular post/post comparison. Primary source evidence supports the selected property and the claim boundary is appropriately narrow. However, the harness entry symbol appears mismatched with the deterministic build configuration, which names cbmc_function as \\\"harness\\\" while the rendered C defines \\\"harness_mlk_poly_add_int16_safe_sum\\\". This unresolved tool-entry dependency should be fixed before execution. There is also a moderate warning that the freshness assumptions mirror a strong CBMC-specific contract predicate and may over-constrain concrete aliasing behaviors, but that is acceptable for a contract-aligned local check if stated as conditional. Because of the entry-point mismatch, the artefact is not yet ready for Agent 7 unchanged.\",\"gate_recommendation\":\"needs_revision_before_tool_execution\",\"blocking_issues\":[{\"issue\":\"The deterministic formal build plan selects CBMC entry function \\\"harness\\\", but the rendered C harness defines \\\"void harness_mlk_poly_add_int16_safe_sum(void)\\\" and no function named \\\"harness\\\" is evidenced.\",\"impact\":\"Agent 7 tool execution may fail to locate the entry point or run the wrong target configuration, so the artefact is not execution-ready as handed off.\"}],\"warnings\":[{\"issue\":\"The harness assumes memory_no_alias(r, sizeof(mlk_poly)) and memory_no_alias(b, sizeof(mlk_poly)), which maps to __CPROVER_is_fresh and is stronger than ordinary non-null/non-overlap reasoning.\",\"impact\":\"This can over-constrain the explored behaviors and should be understood as a contract-aligned proof scope rather than a universal behavioral claim about all concrete aliasing cases.\"},{\"issue\":\"The selected property is conditional on explicit per-coefficient INT16_MIN..INT16_MAX sum assumptions and does not derive those assumptions from real callers.\",\"impact\":\"A successful run would establish only the local conditional property, not that all real call sites satisfy the assumptions.\"}],\"minor_issues\":[{\"issue\":\"The second assertion largely follows from the first assertion plus the pre-assumed INT16 range, so it adds limited independent checking value.\",\"impact\":\"Not unsound, but somewhat redundant and may slightly increase proof burden.\"},{\"issue\":\"The old_state_snapshot_plan field in the prior artefact plan uses a free-form value for \\\"required\\\" rather than a simple boolean-like status.\",\"impact\":\"Schema/style inconsistency in prior planning text may confuse downstream validators, though it does not invalidate the rendered harness itself.\"}],\"assumption_review\":{\"status\":\"warning\",\"findings\":[{\"issue\":\"Pointer assumptions are explicit and traceable to the mlk_poly_add contract, but they adopt the strong freshness semantics of memory_no_alias/__CPROVER_is_fresh.\",\"impact\":\"Reasonable for contract-aligned verification, but stronger than minimal C execution assumptions.\"},{\"issue\":\"Arithmetic assumptions exactly mirror the source preconditions that every coefficient-wise sum fits in int16_t when evaluated in int32_t.\",\"impact\":\"Good local alignment with source intent, but any downstream interpretation must remain conditional.\"}]},\"assertion_review\":{\"status\":\"pass_with_minor_issues\",\"findings\":[{\"issue\":\"Assertions compare post-state r against a genuine pre-state snapshot old_r plus current b, matching the source ensures relation and avoiding self-comparison.\",\"impact\":\"This is a meaningful non-circular local functional/range check.\"},{\"issue\":\"The second assertion on (int32_t)r->coeffs[k] == expected is stronger-looking but becomes close to redundant once expected is assumed in INT16 range and the first assertion holds.\",\"impact\":\"Minor redundancy only; not a blocking flaw.\"}]},\"old_state_new_state_review\":{\"status\":\"pass\",\"findings\":[{\"issue\":\"Because mlk_poly_add mutates r in place, a pre-call snapshot is required; the harness takes memcpy(&old_r, r, sizeof(mlk_poly)) before the call.\",\"impact\":\"This correctly supports old/new-state reasoning and avoids the common post/post comparison mistake.\"},{\"issue\":\"The harness does not snapshot b, but b is only read and not targeted by assertions that require an old-state copy.\",\"impact\":\"Acceptable for the selected property.\"}]},\"contract_review\":{\"status\":\"pass_with_warning\",\"findings\":[{\"issue\":\"The harness is consistent with the existing native function contract in poly.h: freshness requirements, int16-safe sum preconditions, and post-state additive relation.\",\"impact\":\"Good evidence alignment for a standard_cbmc_harness attempt.\"},{\"issue\":\"No native function or loop contract instrumentation is being added, which matches the selected strategy and deterministic plan stating contract_mode none / apply_loop_contracts false.\",\"impact\":\"No strategy mismatch, but proof scope remains harness-only.\"}]},\"verification_strategy_review\":{\"status\":\"warning\",\"findings\":[{\"issue\":\"The selected strategy standard_cbmc_harness matches the artefact manifest and build-plan metadata.\",\"impact\":\"Strategy selection itself is coherent.\"},{\"issue\":\"The build configuration names cbmc_function as \\\"harness\\\", but the actual harness symbol evidenced in C is different.\",\"impact\":\"This is an execution-readiness mismatch that blocks clean approval for tool execution.\"}]},\"independence_review\":{\"status\":\"pass_with_warning\",\"findings\":[{\"issue\":\"The supplied independence audit reports low similarity risk (combined similarity 0.1487) and no required human similarity review.\",\"impact\":\"No copying block is evidenced by the available audit.\"},{\"issue\":\"Some structural similarities are unavoidable because the artefact must use exact repository identifiers, CBMC primitives, and an old-state snapshot for an in-place accumulator function.\",\"impact\":\"Similarity from required identifiers and proof shape does not by itself indicate impermissible copying.\"}]},\"scope_and_overclaim_review\":{\"status\":\"pass\",\"findings\":[{\"issue\":\"The artefact plan explicitly excludes claims about canonical modulo-q output, full ML-KEM correctness, FIPS compliance, cryptographic security, and caller-side proof of assumptions.\",\"impact\":\"Scope is appropriately narrow and avoids overclaiming.\"},{\"issue\":\"The selected property is framed as a local machine-level conditional check, which matches primary code evidence that mlk_poly_add performs unreduced addition and later callers apply reduction separately.\",\"impact\":\"Good claim discipline relative to the implementation.\"}]},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"used_as_fallible_diagnostic_and_measured_build_metadata_only\",\"warning\":\"Deterministic material was used for measured facts about file existence/build-plan configuration and as a non-authoritative review hint. The main substantive assessment was checked against raw source/header/spec evidence. One deterministic claim prompting concern—the recommended human review gate—was downgraded because the primary evidence and independence audit do not themselves show a copying problem; the stronger primary issue is the harness entry-point mismatch in the measured build plan.\",\"disagreements\":[{\"deterministic_claim\":\"Recommended gate: needs_human_review.\",\"primary_evidence_finding\":\"The available primary evidence and the supplied independence audit do not show a similarity crisis or missing independence evidence requiring human review; instead, the concrete blocking problem is an execution-readiness mismatch between the configured CBMC entry symbol and the actual harness symbol.\",\"resolution\":\"Reject the deterministic gate recommendation as too broad and recommend needs_revision_before_tool_execution instead.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/validation/04_independence_audit.json\",\"locator\":\"highest_similarity / requires_human_similarity_review\",\"excerpt\":\"combined_similarity 0.1487 ... requires_human_similarity_review: false\",\"supports_claim\":\"Similarity evidence does not itself require human review.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json\",\"locator\":\"content.cbmc_function\",\"excerpt\":\"\\\"cbmc_function\\\": \\\"harness\\\"\",\"supports_claim\":\"Measured build configuration expects a harness symbol named harness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"function definition\",\"excerpt\":\"void harness_mlk_poly_add_int16_safe_sum(void)\",\"supports_claim\":\"Rendered harness defines a different entry-point symbol.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract block\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"Primary evidence for the harness assumptions and intended post-state additive relation.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body and loop annotation\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Primary evidence that the function performs in-place coefficient-wise addition with an explicit int16_t cast.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"Primary evidence for object shape and coefficient storage type used by the harness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"macro definitions\",\"excerpt\":\"#define MLKEM_N 256\\n#define MLKEM_Q 3329\",\"supports_claim\":\"Primary evidence for loop extent and q value context.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias and forall macros\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__) ... #define forall(qvar, qvar_lb, qvar_ub, predicate) __CPROVER_forall\",\"supports_claim\":\"Primary evidence for the strength and meaning of the harness assumptions under CBMC.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/indcpa.c\",\"locator\":\"mlk_indcpa_enc arithmetic sequence\",\"excerpt\":\"mlk_poly_add(v, epp); mlk_poly_add(v, k); ... mlk_poly_reduce(v);\",\"supports_claim\":\"Primary evidence that mlk_poly_add is used before later reduction, so canonical modulo-q output should not be asserted locally.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"full harness body\",\"excerpt\":\"The harness assumes memory_no_alias on r and b, assumes per-index INT16 bounds, snapshots old_r with memcpy, calls mlk_poly_add(r, b), and asserts post-state equalities against expected sums.\",\"supports_claim\":\"Candidate artefact under review contains explicit assumptions, snapshot, target-function call, and non-circular assertions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json\",\"locator\":\"content.cbmc_function and content.harness.path\",\"excerpt\":\"\\\"cbmc_function\\\": \\\"harness\\\" ... harness path points to 04_generated_harness.c\",\"supports_claim\":\"Measured build-plan evidence for the entry-point mismatch concern.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/validation/04_independence_audit.json\",\"locator\":\"max_similarity_score / requires_human_similarity_review\",\"excerpt\":\"max_similarity_score: 0.1487 ... requires_human_similarity_review: false\",\"supports_claim\":\"Available independence evidence does not itself block progression for similarity reasons.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5 and Section 3.3\",\"excerpt\":\"Addition in R_q and T_q is done coordinate-wise ... a conforming implementation may replace the given set of steps with any mathematically equivalent set of steps.\",\"supports_claim\":\"Specification supports cautious traceability for coefficient-wise addition while allowing non-literal implementation structure.\",\"confidence\":\"high\"}],\"limitations\":[\"This review is not a proof result and does not claim CBMC success.\",\"Only the provided evidence was reviewed; no actual compilation or tool execution result is available here.\",\"The previous LLM-stage artefacts were treated as candidate context, not formal truth.\",\"The FIPS excerpt is truncated later in Section 7, but the relevant Section 2.4.3-2.4.5 evidence for polynomial addition is available.\",\"Execution-readiness assessment relies partly on deterministic measured build metadata for the configured entry symbol; that metadata is authoritative only as a logged fact, not as proof of eventual tool behavior.\"]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783726298.0,
+    "conversation": null,
+    "max_output_tokens": "[REDACTED]",
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "none",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "06_review_critic_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "06_review_critic"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "reviewed_artefacts": {
+              "type": "object",
+              "properties": {
+                "target_function": {
+                  "type": "string"
+                },
+                "deterministic_recommended_gate": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "target_function",
+                "deterministic_recommended_gate"
+              ],
+              "additionalProperties": false
+            },
+            "overall_assessment": {
+              "type": "string"
+            },
+            "gate_recommendation": {
+              "type": "string",
+              "enum": [
+                "approved_for_tool_execution",
+                "approved_for_analysis_only",
+                "needs_revision_before_tool_execution",
+                "blocked_due_to_critical_issue",
+                "human_review_required"
+              ]
+            },
+            "blocking_issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "issue",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "warnings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "issue",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "minor_issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "issue",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "assumption_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "assertion_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "old_state_new_state_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "contract_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "verification_strategy_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "independence_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "scope_and_overclaim_review": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "issue": {
+                        "type": "string"
+                      },
+                      "impact": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "issue",
+                      "impact"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_path": {
+                    "type": "string",
+                    "description": "File or handoff path containing the supporting evidence."
+                  },
+                  "locator": {
+                    "type": "string",
+                    "description": "Line, section, algorithm, symbol, property, or record locator."
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "description": "Short evidence excerpt or faithful summary."
+                  },
+                  "supports_claim": {
+                    "type": "string",
+                    "description": "The exact claim this evidence supports."
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "source_path",
+                  "locator",
+                  "excerpt",
+                  "supports_claim",
+                  "confidence"
+                ],
+                "additionalProperties": false,
+                "description": "Traceable evidence reference for one claim."
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "reviewed_artefacts",
+            "overall_assessment",
+            "gate_recommendation",
+            "blocking_issues",
+            "warnings",
+            "minor_issues",
+            "assumption_review",
+            "assertion_review",
+            "old_state_new_state_review",
+            "contract_review",
+            "verification_strategy_review",
+            "independence_review",
+            "scope_and_overclaim_review",
+            "deterministic_reference_assessment",
+            "evidence_references",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 6 critic review and pre-tool gate recommendation. Not a proof result."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": "[REDACTED]",
+      "input_tokens_details": "[REDACTED]",
+      "output_tokens": "[REDACTED]",
+      "output_tokens_details": "[REDACTED]",
+      "total_tokens": "[REDACTED]"
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": "[REDACTED]",
+        "input_tokens_details": "[REDACTED]",
+        "output_tokens": "[REDACTED]",
+        "output_tokens_details": "[REDACTED]",
+        "total_tokens": "[REDACTED]"
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}

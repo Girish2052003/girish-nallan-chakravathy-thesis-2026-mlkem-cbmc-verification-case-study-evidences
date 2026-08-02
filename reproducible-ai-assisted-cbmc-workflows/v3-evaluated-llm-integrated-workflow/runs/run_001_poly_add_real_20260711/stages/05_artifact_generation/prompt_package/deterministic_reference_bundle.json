@@ -1,0 +1,401 @@
+{
+  "schema_version": "deterministic_reference_bundle.v1",
+  "created_utc": "2026-07-10T23:30:13.795836+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "04_selected_property.deterministic": {
+      "selection": {
+        "selected": true,
+        "selection_method": "configured_campaign_preferred_category",
+        "property": {
+          "property_id": "P16-mlk_poly_add-001",
+          "property_family_id": "P16",
+          "title": "Array-index safety for coefficient-wise in-place addition loop",
+          "category": "array_bounds",
+          "verification_strategy": "standard_cbmc_harness",
+          "proof_obligation_kind": "safety",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "bounded_loop_unwinding",
+            "pointer_object_bounds",
+            "array_bounds_checking"
+          ],
+          "candidate_statement": "Under assumptions that r and b each designate a valid mlk_poly object, every access performed by mlk_poly_add stays within coeffs[0..MLKEM_N-1]; in particular, the single loop only reads and writes r->coeffs[i] and b->coeffs[i] for 0 <= i < MLKEM_N, with MLKEM_N = 256.",
+          "supporting_evidence": [
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+              "locator": "mlk_poly_add loop header and body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The implementation uses index i only while i is strictly less than MLKEM_N and accesses coeffs at index i.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+              "locator": "mlk_poly typedef",
+              "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+              "supports_claim": "The accessed arrays have extent MLKEM_N within mlk_poly.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+              "locator": "macro definition",
+              "excerpt": "#define MLKEM_N 256",
+              "supports_claim": "The concrete loop bound and array length are 256.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and Section 2.4.4",
+              "excerpt": "n denotes the integer 256... an element f of R_q ... represented ... by the array (f0, f1, … , f255) in Z_q^256.",
+              "supports_claim": "A 256-coefficient representation matches the implementation loop extent.",
+              "confidence": "high"
+            }
+          ],
+          "required_assumptions": [
+            "r points to a valid allocated object of type mlk_poly.",
+            "b points to a valid allocated object of type mlk_poly.",
+            "CBMC harness models complete mlk_poly objects rather than undersized buffers."
+          ],
+          "cbmc_feasibility": "high",
+          "risk_level": "low",
+          "expected_artifact_type": "standard_cbmc_harness with object-allocation assumptions and bounds assertions",
+          "out_of_scope_boundaries": [
+            "Does not claim coefficient arithmetic correctness.",
+            "Does not claim modular reduction or canonical output range.",
+            "Does not claim anything about callers beyond valid object shape."
+          ],
+          "uncertainty": "Low; this is directly supported by the loop bound and struct definition.",
+          "limitations": [
+            "Relies on harness assumptions for pointer validity.",
+            "Outside-CBMC runtime builds do not enforce these assumptions automatically."
+          ]
+        }
+      },
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "04_artifact_generation_plan.deterministic": {
+      "stage": "05_artifact_generation",
+      "mode": "deterministic_reference_only",
+      "target_function": "mlk_poly_add",
+      "target_topic": "ML-KEM polynomial addition",
+      "selected_property": {
+        "property_id": "P16-mlk_poly_add-001",
+        "property_family_id": "P16",
+        "title": "Array-index safety for coefficient-wise in-place addition loop",
+        "category": "array_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "bounded_loop_unwinding",
+          "pointer_object_bounds",
+          "array_bounds_checking"
+        ],
+        "candidate_statement": "Under assumptions that r and b each designate a valid mlk_poly object, every access performed by mlk_poly_add stays within coeffs[0..MLKEM_N-1]; in particular, the single loop only reads and writes r->coeffs[i] and b->coeffs[i] for 0 <= i < MLKEM_N, with MLKEM_N = 256.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop header and body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The implementation uses index i only while i is strictly less than MLKEM_N and accesses coeffs at index i.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+            "supports_claim": "The accessed arrays have extent MLKEM_N within mlk_poly.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "macro definition",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The concrete loop bound and array length are 256.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3 and Section 2.4.4",
+            "excerpt": "n denotes the integer 256... an element f of R_q ... represented ... by the array (f0, f1, … , f255) in Z_q^256.",
+            "supports_claim": "A 256-coefficient representation matches the implementation loop extent.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "r points to a valid allocated object of type mlk_poly.",
+          "b points to a valid allocated object of type mlk_poly.",
+          "CBMC harness models complete mlk_poly objects rather than undersized buffers."
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "standard_cbmc_harness with object-allocation assumptions and bounds assertions",
+        "out_of_scope_boundaries": [
+          "Does not claim coefficient arithmetic correctness.",
+          "Does not claim modular reduction or canonical output range.",
+          "Does not claim anything about callers beyond valid object shape."
+        ],
+        "uncertainty": "Low; this is directly supported by the loop bound and struct definition.",
+        "limitations": [
+          "Relies on harness assumptions for pointer validity.",
+          "Outside-CBMC runtime builds do not enforce these assumptions automatically."
+        ]
+      },
+      "assumption_plan": [
+        {
+          "assumption_id": "A_TYPES_001",
+          "description": "Use the actual C types, macros, and function signature from raw source/header evidence.",
+          "risk": "high_if_guessed",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assumption_id": "A_MEMORY_001",
+          "description": "Use explicit pointer validity and object-size assumptions where pointer parameters are present.",
+          "risk": "medium",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assumption_id": "A_OLDSTATE_001",
+          "description": "If the target mutates an object in place, snapshot old state before calling the function.",
+          "risk": "medium",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "assertion_plan": [
+        {
+          "assertion_id": "AS_SCOPE_001",
+          "description": "Assertions must check only the selected local property, not full ML-KEM correctness.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assertion_id": "AS_NO_TRIVIAL_001",
+          "description": "Avoid assertions that are made trivially true by over-strong assumptions.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "required_outputs": [
+        "04_artifact_plan.json",
+        "04_generated_harness.c",
+        "04_artifact_manifest.json",
+        "04_independence_audit.json"
+      ],
+      "warning": "This deterministic plan is advisory only. The LLM must independently produce the authoritative artefact plan.",
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "04_spec_grounded_assertion_plan.deterministic": {
+      "selected_property": {
+        "property_id": "P16-mlk_poly_add-001",
+        "property_family_id": "P16",
+        "title": "Array-index safety for coefficient-wise in-place addition loop",
+        "category": "array_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "bounded_loop_unwinding",
+          "pointer_object_bounds",
+          "array_bounds_checking"
+        ],
+        "candidate_statement": "Under assumptions that r and b each designate a valid mlk_poly object, every access performed by mlk_poly_add stays within coeffs[0..MLKEM_N-1]; in particular, the single loop only reads and writes r->coeffs[i] and b->coeffs[i] for 0 <= i < MLKEM_N, with MLKEM_N = 256.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop header and body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The implementation uses index i only while i is strictly less than MLKEM_N and accesses coeffs at index i.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+            "supports_claim": "The accessed arrays have extent MLKEM_N within mlk_poly.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "macro definition",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The concrete loop bound and array length are 256.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3 and Section 2.4.4",
+            "excerpt": "n denotes the integer 256... an element f of R_q ... represented ... by the array (f0, f1, … , f255) in Z_q^256.",
+            "supports_claim": "A 256-coefficient representation matches the implementation loop extent.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "r points to a valid allocated object of type mlk_poly.",
+          "b points to a valid allocated object of type mlk_poly.",
+          "CBMC harness models complete mlk_poly objects rather than undersized buffers."
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "standard_cbmc_harness with object-allocation assumptions and bounds assertions",
+        "out_of_scope_boundaries": [
+          "Does not claim coefficient arithmetic correctness.",
+          "Does not claim modular reduction or canonical output range.",
+          "Does not claim anything about callers beyond valid object shape."
+        ],
+        "uncertainty": "Low; this is directly supported by the loop bound and struct definition.",
+        "limitations": [
+          "Relies on harness assumptions for pointer validity.",
+          "Outside-CBMC runtime builds do not enforce these assumptions automatically."
+        ]
+      },
+      "candidate_assertion_plan": [
+        {
+          "assertion_id": "AS_SCOPE_001",
+          "description": "Assertions must check only the selected local property, not full ML-KEM correctness.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assertion_id": "AS_NO_TRIVIAL_001",
+          "description": "Avoid assertions that are made trivially true by over-strong assumptions.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "spec_summary_available": true,
+      "code_summary_available": true,
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "04_harness_assumption_traceability.deterministic": {
+      "selected_property": {
+        "property_id": "P16-mlk_poly_add-001",
+        "property_family_id": "P16",
+        "title": "Array-index safety for coefficient-wise in-place addition loop",
+        "category": "array_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "bounded_loop_unwinding",
+          "pointer_object_bounds",
+          "array_bounds_checking"
+        ],
+        "candidate_statement": "Under assumptions that r and b each designate a valid mlk_poly object, every access performed by mlk_poly_add stays within coeffs[0..MLKEM_N-1]; in particular, the single loop only reads and writes r->coeffs[i] and b->coeffs[i] for 0 <= i < MLKEM_N, with MLKEM_N = 256.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop header and body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The implementation uses index i only while i is strictly less than MLKEM_N and accesses coeffs at index i.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+            "supports_claim": "The accessed arrays have extent MLKEM_N within mlk_poly.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "macro definition",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The concrete loop bound and array length are 256.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3 and Section 2.4.4",
+            "excerpt": "n denotes the integer 256... an element f of R_q ... represented ... by the array (f0, f1, … , f255) in Z_q^256.",
+            "supports_claim": "A 256-coefficient representation matches the implementation loop extent.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "r points to a valid allocated object of type mlk_poly.",
+          "b points to a valid allocated object of type mlk_poly.",
+          "CBMC harness models complete mlk_poly objects rather than undersized buffers."
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "standard_cbmc_harness with object-allocation assumptions and bounds assertions",
+        "out_of_scope_boundaries": [
+          "Does not claim coefficient arithmetic correctness.",
+          "Does not claim modular reduction or canonical output range.",
+          "Does not claim anything about callers beyond valid object shape."
+        ],
+        "uncertainty": "Low; this is directly supported by the loop bound and struct definition.",
+        "limitations": [
+          "Relies on harness assumptions for pointer validity.",
+          "Outside-CBMC runtime builds do not enforce these assumptions automatically."
+        ]
+      },
+      "assumptions": [
+        {
+          "assumption_id": "A_TYPES_001",
+          "description": "Use the actual C types, macros, and function signature from raw source/header evidence.",
+          "risk": "high_if_guessed",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assumption_id": "A_MEMORY_001",
+          "description": "Use explicit pointer validity and object-size assumptions where pointer parameters are present.",
+          "risk": "medium",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "assumption_id": "A_OLDSTATE_001",
+          "description": "If the target mutates an object in place, snapshot old state before calling the function.",
+          "risk": "medium",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "04_generated_harness.deterministic.c": "/*\n * DETERMINISTIC ADVISORY TEMPLATE ONLY — DO NOT TREAT AS AUTHORITATIVE.\n * This file is stored as deterministic/prohibited-copy reference material.\n * The LLM must independently generate an artefact plan from primary evidence.\n *\n * Target function: mlk_poly_add\n * Candidate property: Array-index safety for coefficient-wise in-place addition loop\n */\n\n#include <assert.h>\n#include <stdint.h>\n#include \"params.h\"\n#include \"poly.h\"\n\nvoid harness(void)\n{\n  /*\n   * Advisory sketch only:\n   * - allocate target inputs using real implementation types,\n   * - state explicit assumptions,\n   * - snapshot old state before in-place mutation,\n   * - call mlk_poly_add,\n   * - assert the selected local property.\n   *\n   * This template intentionally omits final assertions because Agent 5's\n   * authoritative plan must be produced by the LLM and reviewed later.\n   */\n}\n",
+    "previous_stage_input_status": {
+      "agent2_spec_summary": {
+        "producer_stage": "02_spec_extraction",
+        "output_key": "spec_summary",
+        "available": true,
+        "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+        "warning": null
+      },
+      "agent3_code_summary": {
+        "producer_stage": "03_code_understanding",
+        "output_key": "code_summary",
+        "available": true,
+        "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/03_code_understanding/llm_authoritative/02_code_summary.json",
+        "warning": null
+      },
+      "agent4_candidate_properties": {
+        "producer_stage": "04_property_discovery",
+        "output_key": "candidate_properties",
+        "available": true,
+        "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/04_property_discovery/llm_authoritative/03_candidate_properties.json",
+        "warning": null
+      }
+    },
+    "prohibited_copy_reference_index": {
+      "schema_version": "prohibited_copy_reference_index.v1",
+      "created_utc": "2026-07-10T23:30:13.788599+00:00",
+      "reference_count": 1,
+      "entries": [
+        {
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/deterministic_reference/04_generated_harness.deterministic.c",
+          "name": "04_generated_harness.deterministic.c",
+          "suffix": ".c",
+          "size_bytes": 870,
+          "sha256": "480994d8e4e09d7965cb9079e59f38c17d84832cee66e571e749d78fe98866fb",
+          "text_sha256_truncated_or_full": "480994d8e4e09d7965cb9079e59f38c17d84832cee66e571e749d78fe98866fb",
+          "line_count_used": 28,
+          "normalized_line_count": 26,
+          "role": "prohibited_copy_or_similarity_reference",
+          "warning": "Do not copy verbatim or near-verbatim from this file."
+        }
+      ],
+      "policy": {
+        "copying_allowed": false,
+        "required_identifiers_allowed": true,
+        "purpose": "comparison_and_similarity_audit_only",
+        "warning": "Existing harnesses, deterministic templates, and previous generated artefacts must not be copied. Required implementation identifiers may be reused."
+      }
+    }
+  }
+}

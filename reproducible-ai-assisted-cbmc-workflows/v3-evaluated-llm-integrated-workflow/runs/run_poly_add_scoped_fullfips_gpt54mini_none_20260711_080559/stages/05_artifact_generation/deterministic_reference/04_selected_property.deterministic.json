@@ -1,0 +1,64 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-11T05:19:44.365588+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "selection": {
+      "selected": true,
+      "selection_method": "configured_campaign_preferred_category",
+      "property": {
+        "property_id": "P16_MLK_POLY_ADD_003",
+        "property_family_id": "P16",
+        "title": "Coefficient-array bounds safety over the full 256-iteration loop",
+        "category": "array_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "standard_cbmc_harness"
+        ],
+        "candidate_statement": "The loop in mlk_poly_add iterates i from 0 to MLKEM_N-1 with MLKEM_N = 256, so a candidate CBMC harness can check that r->coeffs[i] and b->coeffs[i] are always accessed within the declared coefficient array bounds for all iterations.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop header",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+            "supports_claim": "The loop covers exactly the 256 coefficient indices in order.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct\n{\n  int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */\n} MLK_ALIGN mlk_poly;",
+            "supports_claim": "The coefficient storage is a fixed-size MLKEM_N-element array.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "MLKEM_N definition",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The array length parameter is 256.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "The harness should use the same compiled configuration in which MLKEM_N resolves to 256.",
+          "r and b must each point to a valid mlk_poly object with at least MLKEM_N coefficients accessible."
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "Bounded-loop CBMC harness or direct contract check for coefficient indexing",
+        "out_of_scope_boundaries": [
+          "Do not extend this into any claim about polynomial multiplication, NTT correctness, or serialization size.",
+          "Do not infer anything about coefficient values beyond index safety from this property alone."
+        ],
+        "uncertainty": "Index safety is strongly supported by the fixed array type and loop bound, but the harness still depends on valid object allocation and the CBMC configuration being consistent with the headers.",
+        "limitations": [
+          "This property checks access safety, not arithmetic correctness.",
+          "It is a local property of mlk_poly_add only."
+        ]
+      }
+    },
+    "trust_boundary": "deterministic_reference_advisory_only"
+  }
+}

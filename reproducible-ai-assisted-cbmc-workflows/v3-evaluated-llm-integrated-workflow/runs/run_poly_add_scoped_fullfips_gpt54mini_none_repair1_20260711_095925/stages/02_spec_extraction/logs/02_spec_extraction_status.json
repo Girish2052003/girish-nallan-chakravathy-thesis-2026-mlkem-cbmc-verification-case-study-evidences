@@ -1,0 +1,1328 @@
+{
+  "schema_version": "agent_status.v1",
+  "stage": "02_spec_extraction",
+  "started_utc": "2026-07-11T07:43:24.028526+00:00",
+  "completed_utc": "2026-07-11T07:44:43.403407+00:00",
+  "success": true,
+  "llm_call_executed": true,
+  "handoff_available": true,
+  "errors": [],
+  "warnings": [],
+  "llm_mode": "real",
+  "llm_success": true,
+  "llm_result": {
+    "stage": "02_spec_extraction",
+    "mode": "real",
+    "success": true,
+    "llm_call_executed": true,
+    "output_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+    "raw_response_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/llm_authoritative/api_responses/attempt_01_response.json",
+    "validation_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/validation/llm_call_validation.json",
+    "prompt_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/prompt_package/02_spec_extraction_prompt.txt",
+    "metadata_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/prompt_package/prompt_metadata.json",
+    "attempts": 1,
+    "error": null,
+    "parsed_json": {
+      "stage": "02_spec_extraction",
+      "mock": false,
+      "llm_call_executed": true,
+      "source_scope": {
+        "primary_sources_used": [
+          "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt"
+        ],
+        "provided_material_complete": true,
+        "missing_or_unavailable_material": []
+      },
+      "spec_facts": [
+        {
+          "fact_id": "SF01",
+          "category": "definitions",
+          "statement": "FIPS 203 defines the ring R_q as Z_q[X]/(X^n + 1), with n = 256 and q = 3329, and represents an element f of R_q as a length-256 coefficient array (f_0, ..., f_255) in Z_q^256.",
+          "verification_relevance": "candidate specification fact for later range checking and array-shape alignment for polynomial operations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3, 2.4.4; lines around 519-529 and 677-688",
+              "excerpt": "n denotes 256; q denotes 3329; R_q = Z_q[X]/(X^n + 1); an element f = f_0 + ... + f_255 X^255 is represented by (f_0,...,f_255) in Z_q^256 and f[i] = f_i.",
+              "supports_claim": "R_q, n, q, and the coefficient-array representation of a polynomial.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF02",
+          "category": "definitions",
+          "statement": "FIPS 203 defines T_q as the image of R_q under the NTT; elements of T_q are called NTT representations of polynomials in R_q, and are represented in pseudocode as length-256 arrays of integers modulo q.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for NTT-domain polynomial addition inputs and outputs.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and 2.4.4; lines around 533-543, 689-721",
+              "excerpt": "T_q is the image of R_q under the NTT; an NTT representation is a tuple of 128 degree-one polynomials, represented as a length-256 array in Z_q^256 with g[2i]=g_{i,0} and g[2i+1]=g_{i,1}.",
+              "supports_claim": "Definition and representation of T_q elements.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF03",
+          "category": "definitions",
+          "statement": "The standard states that the algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise, and that addition of two NTT representations is performed in pseudocode by a statement of the form ĥ ← f̂ + ĝ.",
+          "verification_relevance": "candidate algorithmic meaning for later addition correctness and per-coefficient assertions.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5; lines around 727-735",
+              "excerpt": "Addition and scalar multiplication in R_q and T_q are done coordinate-wise; the addition of two NTT representations in pseudocode is performed by ĥ ← f̂ + ĝ.",
+              "supports_claim": "Coordinate-wise addition semantics for polynomial and NTT representations.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF04",
+          "category": "definitions",
+          "statement": "The standard interprets array operations on Z_m^ℓ as coordinate-wise: Z ← a·X and W ← X + Y produce arrays whose entries satisfy Z[i] = a·X[i] and W[i] = X[i] + Y[i] for all i.",
+          "verification_relevance": "candidate specification fact for later C-level assertions on elementwise polynomial addition/subtraction behavior.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.3; lines around 659-667",
+              "excerpt": "Statements on arrays Z and W result in Z[i] = a·X[i] and W[i] = X[i] + Y[i] for all i.",
+              "supports_claim": "Elementwise array semantics that underlie polynomial coefficient addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF05",
+          "category": "definitions",
+          "statement": "The standard says that array indices begin at zero and that the coefficient mapping for an NTT representation uses g[2i] = ĝ_{i,0} and g[2i+1] = ĝ_{i,1} for i in {0,...,127}.",
+          "verification_relevance": "candidate indexing fact for later harness and representation checks.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and 2.4.4; lines around 718-721",
+              "excerpt": "Overloading notation, ĝ is represented by an array in Z_q^256; g[2i]=ĝ_{i,0} and g[2i+1]=ĝ_{i,1}.",
+              "supports_claim": "NTT array indexing convention.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF06",
+          "category": "definitions",
+          "statement": "The ring R_q uses arithmetic modulo X^n + 1, with n = 256, so polynomial objects are always understood in that quotient ring rather than as unrestricted integer polynomials.",
+          "verification_relevance": "candidate algebraic background fact relevant to later specification-driven reasoning about polynomial coefficient operations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3, 4.3; lines around 529-531 and 1486-1488",
+              "excerpt": "R_q = Z_q[X]/(X^n + 1) with ring operations defined by arithmetic modulo X^n + 1; later text reiterates R_q = Z_q[X]/(X^256 + 1).",
+              "supports_claim": "Quotient-ring setting for polynomial arithmetic.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF07",
+          "category": "definitions",
+          "statement": "The standard explicitly distinguishes the coefficient-array representation from the underlying polynomial and states that the pseudocode is agnostic regarding how integers modulo q are represented in actual implementations.",
+          "verification_relevance": "candidate caution for later C-level modeling: representation details are implementation-specific except for the specified abstract behavior.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.1; lines around 622-629",
+              "excerpt": "Reduction modulo m takes place whenever assignment is made to a variable in Z_m; the pseudocode is agnostic regarding how an integer modulo m is represented in actual implementations or how modular reduction is computed.",
+              "supports_claim": "Implementation representation is abstracted away in pseudocode.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF08",
+          "category": "algorithms_or_steps",
+          "statement": "Algorithm 13 K-PKE.KeyGen constructs the matrix Â using SampleNTT(ρ‖j‖i), samples secret vectors s and e with SamplePolyCBD using PRF_η1, computes ŝ ← NTT(s), ê ← NTT(e), and then forms t̂ ← Â ∘ ŝ + ê before encoding the encryption and decryption keys.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for any later investigation of polynomial addition in K-PKE key generation.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 13; lines around 1734-1775",
+              "excerpt": "Key generation samples Â, s, e; computes ŝ and ê via NTT; then t̂ ← Â ∘ ŝ + ê; ekPKE ← ByteEncode12(t̂)‖ρ; dkPKE ← ByteEncode12(ŝ).",
+              "supports_claim": "Algorithm 13 computation involving vector/matrix arithmetic and addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF09",
+          "category": "algorithms_or_steps",
+          "statement": "Algorithm 14 K-PKE.Encrypt computes u ← NTT^{-1}(Â ∘ ŷ) + e1 and v ← NTT^{-1}(t̂^T ∘ ŷ) + e2 + μ, then compresses and encodes the results into the ciphertext components.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for later polynomial addition/subtraction checks in encryption.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 14; lines around 1803-1856",
+              "excerpt": "Encrypt derives y, e1, e2; computes u ← NTT^{-1}(Â ∘ ŷ) + e1 and v ← NTT^{-1}(t̂^T ∘ ŷ) + e2 + μ; then compresses and serializes.",
+              "supports_claim": "Encryption step containing addition of polynomial/vector terms.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF10",
+          "category": "algorithms_or_steps",
+          "statement": "Algorithm 15 K-PKE.Decrypt reconstructs u′ and v′ from the ciphertext, decodes the decryption key as ŝ, and computes w ← v′ − NTT^{-1}(ŝ^T ∘ NTT(u′)); the plaintext is then recovered by ByteEncode1(Compress1(w)).",
+          "verification_relevance": "candidate subtraction-bound relevant fact for later local coefficient reasoning, though this stage is about addition/subtraction bounds and not proof.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 15; lines around 1900-1916",
+              "excerpt": "Decrypt computes w ← v′ − NTT^{-1}(ŝ^T ∘ NTT(u′)) and outputs m ← ByteEncode1(Compress1(w)).",
+              "supports_claim": "Algorithmic subtraction in decryption relevant to polynomial bounds context.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF11",
+          "category": "algorithms_or_steps",
+          "statement": "The standard states that NTT and NTT^{-1} act on arrays of coefficients and are applied coordinate-wise to matrices and vectors by running NTT on each entry.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for any later reasoning about preservation of coefficient-wise bounds under transformed representations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.8 and 4.3; lines around 723-725, 765-781, 1504-1511",
+              "excerpt": "NTT and NTT^{-1} act on arrays of coefficients; applying NTT to a vector runs NTT k times, once per entry.",
+              "supports_claim": "Coordinate-wise application of NTT to vectors and matrices.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF12",
+          "category": "equations_and_bounds",
+          "statement": "For arrays Z and W over Z_m^ℓ, the specification asserts Z[i] = a·X[i] and W[i] = X[i] + Y[i] for all i, and states that multiplication of arrays in Z_m^ℓ is only meaningful when m = q and ℓ = n = 256.",
+          "verification_relevance": "candidate bound relevant to later C-level assertions on coefficient-domain operations and array length assumptions.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.3; lines around 663-669",
+              "excerpt": "Z[i] = a·X[i] and W[i] = X[i] + Y[i] for all i; multiplication of arrays in Z_m^ℓ only meaningful when m = q and ℓ = n = 256.",
+              "supports_claim": "Coordinate-wise array equation and the n=256, q condition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF13",
+          "category": "equations_and_bounds",
+          "statement": "The specification defines Compress_d(x) = ⌈(2^d / q)·x⌋ mod 2^d and Decompress_d(y) = ⌈(q / 2^d)·y⌋ for d < 12, and notes that division and rounding are performed over the rational numbers, not floating point.",
+          "verification_relevance": "candidate arithmetic-bound context for later implementation checks involving encoding/compression, which may interact with polynomial coefficient ranges.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.2.1; lines around 1328-1338",
+              "excerpt": "For d < 12, Compress_d and Decompress_d are defined using rounded rational expressions; division and rounding are performed in the set of rational numbers and floating-point computations shall not be used.",
+              "supports_claim": "Exact compression/decompression equations and no-floating-point requirement.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF14",
+          "category": "equations_and_bounds",
+          "statement": "Algorithm 12 BaseCaseMultiply computes c0 ← a0·b0 + a1·b1·γ and c1 ← a0·b1 + a1·b0, with arithmetic done modulo q in the surrounding specification context.",
+          "verification_relevance": "candidate local algebraic fact for the multiplication primitive used alongside coefficient-array addition in T_q.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 12; lines around 1669-1676",
+              "excerpt": "BaseCaseMultiply inputs a0,a1,b0,b1,γ in Z_q and outputs c0,c1 in Z_q, with c0 ← a0·b0 + a1·b1·γ and c1 ← a0·b1 + a1·b0.",
+              "supports_claim": "Base-case multiplication equations used within NTT multiplication.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF15",
+          "category": "candidate_preconditions",
+          "statement": "For ML-KEM.Encaps, the encapsulation key must be a checked input of length 384k + 32 bytes, and the type check and modulus check require that ByteEncode12(ByteDecode12(ek[0:384k])) equals ek[0:384k].",
+          "verification_relevance": "candidate precondition suggested by the specification for later harness assumptions; relevant because downstream code may rely on well-formed coefficient ranges before polynomial addition/subtraction is exercised.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 7.2; lines around 2130-2142 and Algorithm 20",
+              "excerpt": "Encapsulation key check requires type length 384k+32 and test ← ByteEncode12(ByteDecode12(ek[0:384k])); if test ≠ ek[0:384k], input checking failed.",
+              "supports_claim": "Encapsulation-key input-checking precondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF16",
+          "category": "candidate_preconditions",
+          "statement": "For ML-KEM.Decaps, the ciphertext must be a byte array of length 32(du k + dv), the decapsulation key must be length 768k + 96, and the hash check requires H(dk[384k:768k+32]) to equal dk[768k+32:768k+64].",
+          "verification_relevance": "candidate precondition suggested by the specification for later harness assumptions and boundary checking.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 7.3; lines around 2177-2195 and Algorithm 21",
+              "excerpt": "Decapsulation input check covers ciphertext length, decapsulation-key length, and a hash check on dk components.",
+              "supports_claim": "Decapsulation input-checking precondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF17",
+          "category": "candidate_postconditions",
+          "statement": "Algorithm 21 ML-KEM.Decaps returns a shared secret key K′ of 32 bytes, and Algorithm 20 ML-KEM.Encaps returns a shared secret key K of 32 bytes together with a ciphertext.",
+          "verification_relevance": "candidate postcondition for output-shape checking in later harness generation.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithms 20 and 21; lines around 2157-2168 and 2204-2210",
+              "excerpt": "ML-KEM.Encaps outputs K ∈ B^32 and c; ML-KEM.Decaps outputs K′ ∈ B^32.",
+              "supports_claim": "Output sizes for encapsulation and decapsulation.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF18",
+          "category": "candidate_postconditions",
+          "statement": "The specification says that under appropriate conditions and successful randomness generation, the shared secret keys produced by encapsulation and decapsulation match, and the decapsulation failure event is defined when K′ ≠ K in the process KeyGen → Encaps → Decaps.",
+          "verification_relevance": "candidate postcondition and contextual property, but not a proof claim; useful for downstream specification mapping.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 3.2; lines around 1035-1058",
+              "excerpt": "Provided that inputs are well-formed and randomness succeeds, ML-KEM.Encaps and ML-KEM.Decaps each output a 256-bit value; if no corruption or interference is present, the values are equal with overwhelming probability.",
+              "supports_claim": "Contextual equality/failure framing for K and K′.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF19",
+          "category": "terminology_to_preserve",
+          "statement": "The specification uses the exact terms encapsulation key, decapsulation key, encryption key, decryption key, shared secret key, NTT representation, and input checking.",
+          "verification_relevance": "candidate terminology-preservation rule for downstream artefact generation and claim alignment.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.1, 2.3",
+              "excerpt": "Key terminology is explicitly defined and the standard avoids the generic public/private key terms.",
+              "supports_claim": "Terminology to preserve verbatim in downstream work.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "SF20",
+          "category": "limitations",
+          "statement": "The provided specification material does not include implementation source for mlk_poly_add, so this stage can only extract specification-level facts and cannot cross-check source-level coefficient bounds for the target C function directly.",
+          "verification_relevance": "limits the strength of later code-aligned claims and suggests downstream agents must rely on repository source once available.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Scope of provided primary evidence",
+              "excerpt": "Only the FIPS 203 specification text is provided here; no implementation files are included in the supplied primary evidence.",
+              "supports_claim": "Material completeness limitation for source-level verification.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No implementation source/header files were provided in the primary evidence set.",
+            "No CBMC output or formal-tool results were provided in the primary evidence set."
+          ]
+        }
+      ],
+      "constants_and_parameters": [
+        {
+          "fact_id": "CP01",
+          "category": "constants",
+          "statement": "The document sets n = 256 throughout and q = 3329 throughout.",
+          "verification_relevance": "candidate constant values for later range and array-length checks.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and Section 7/8; lines around 519-520, 1031-1033, 2223-2225",
+              "excerpt": "n denotes 256; q denotes 3329; later sections reiterate these are the two constants.",
+              "supports_claim": "Global constants n and q.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP02",
+          "category": "parameters",
+          "statement": "The variable parameters are k, eta1, eta2, du, and dv; Table 2 gives their values for ML-KEM-512, ML-KEM-768, and ML-KEM-1024.",
+          "verification_relevance": "candidate parameter-set data for later harness specialization.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 8, Table 2; lines around 2223-2245",
+              "excerpt": "The three parameter sets each comprise k, eta1, eta2, du, dv; Table 2 lists their values.",
+              "supports_claim": "Parameter families and their per-set values.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP03",
+          "category": "parameters",
+          "statement": "Table 2 specifies ML-KEM-512 as k=2, eta1=3, eta2=2, du=10, dv=4; ML-KEM-768 as k=3, eta1=2, eta2=2, du=10, dv=4; and ML-KEM-1024 as k=4, eta1=2, eta2=2, du=11, dv=5.",
+          "verification_relevance": "candidate concrete parameter data for downstream test generation and size calculations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Table 2; lines around 2242-2245",
+              "excerpt": "Table 2 lists the numerical parameter values for all three parameter sets.",
+              "supports_claim": "Exact parameter values per ML-KEM set.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP04",
+          "category": "parameters",
+          "statement": "Table 2 also lists required RBG strengths of 128 bits for ML-KEM-512, 192 bits for ML-KEM-768, and 256 bits for ML-KEM-1024.",
+          "verification_relevance": "candidate environmental parameter relevant to randomness-generation assumptions, though not directly to polynomial addition bounds.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Table 2; lines around 2242-2245",
+              "excerpt": "Table 2 includes required RBG strength values for each parameter set.",
+              "supports_claim": "RBG-strength values.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP05",
+          "category": "parameters",
+          "statement": "The standard states that PRF_eta takes eta in {2,3}, one 32-byte input, and one 1-byte input, and produces 64·eta bytes via PRF_eta(s,b) := SHAKE256(s||b, 8·64·eta).",
+          "verification_relevance": "candidate parameter fact for later sampling/range context, though not central to polynomial addition bounds.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.1; lines around 1208-1210 and 4.3",
+              "excerpt": "PRF_eta(s,b) is defined using SHAKE256 and outputs 64·eta bytes for eta in {2,3}.",
+              "supports_claim": "PRF parameterization and output length.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP06",
+          "category": "parameters",
+          "statement": "The standard defines H(s) := SHA3-256(s), J(s) := SHAKE256(s, 8·32), and G(c) := SHA3-512(c).",
+          "verification_relevance": "candidate hash-function parameterization for later checking of key and decapsulation-key structure.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.1; lines around 1218-1220 and 1185-1192",
+              "excerpt": "H and J are 32-byte outputs; G is SHA3-512; XOF output lengths are specified in bits.",
+              "supports_claim": "Hash-function instantiations and output sizes.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP07",
+          "category": "parameters",
+          "statement": "ByteEncode_d and ByteDecode_d are specified for 1 <= d <= 12; for d=12, ByteDecode12 uses modulus q rather than modulus 2^12.",
+          "verification_relevance": "candidate encoding-parameter fact for later range and bounds checking around polynomial coefficient serialization.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.2.1; lines around 1344-1363",
+              "excerpt": "Valid range 1 ≤ d ≤ 12; for d=12, ByteDecode12 produces integers modulo q and ByteEncode12 receives integers modulo q.",
+              "supports_claim": "ByteEncode/Decode parameter constraints and special d=12 behavior.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP08",
+          "category": "parameters",
+          "statement": "Compress_d and Decompress_d are defined only for d < 12, with Compress_d mapping Z_q to Z_{2^d} and Decompress_d mapping Z_{2^d} to Z_q.",
+          "verification_relevance": "candidate parameter fact for later bounds relating compressed coefficients to polynomial addition/subtraction pipelines.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.2.1; lines around 1328-1334",
+              "excerpt": "For d < 12, Compress_d and Decompress_d are defined as maps between Z_q and Z_{2^d}.",
+              "supports_claim": "Domain/codomain of compression functions.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP09",
+          "category": "parameters",
+          "statement": "Algorithm 7 SampleNTT takes a 34-byte input B, and Algorithm 8 SamplePolyCBD_eta takes a 64·eta-byte input B.",
+          "verification_relevance": "candidate input-size facts for harness preconditions unrelated to polynomial addition itself but relevant to surrounding specification steps.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithms 7 and 8; lines around 1424-1464",
+              "excerpt": "SampleNTT input: B in B^34; SamplePolyCBD_eta input: B in B^{64 eta}.",
+              "supports_claim": "Sampling input sizes.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "CP10",
+          "category": "parameters",
+          "statement": "Algorithm 13 and Algorithm 14 use the parameter k to determine matrix dimensions and the lengths of vectors s, e, y, and e1; the text says k is one of the parameters selected by the parameter set.",
+          "verification_relevance": "candidate dimension fact for later array-shape reasoning in any code aligned to these algorithms.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 5 and 8; lines around 1696-1699 and 2227-2235",
+              "excerpt": "k determines dimensions of Â and vectors s, e, y, and e1.",
+              "supports_claim": "Role of k in dimensions.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        }
+      ],
+      "algorithms_or_steps": [
+        {
+          "fact_id": "AS01",
+          "category": "algorithm",
+          "statement": "Algorithm 9 NTT(f) computes the NTT representation of an input polynomial by copying f to f̂ and performing staged butterfly updates; Algorithm 10 NTT^{-1}(f̂) performs the inverse transformation and multiplies every entry by 3303 mod q at the end.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for later representation-preserving polynomial operations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithms 9 and 10; lines around 1569-1616",
+              "excerpt": "NTT copies input to output, iterates len from 128 down to 2, and inverse NTT multiplies every entry by 3303 ≡ 128^{-1} mod q.",
+              "supports_claim": "NTT and inverse NTT step structure.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS02",
+          "category": "algorithm",
+          "statement": "Algorithm 11 MultiplyNTTs applies BaseCaseMultiply independently to each of the 128 coordinates of two NTT representations, using the precomputed quadratic-modulus constants ζ^{2BitRev7(i)+1} mod q.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for the product primitive that coexists with coordinate-wise addition in T_q.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.3.1 and Algorithm 11; lines around 1632-1668",
+              "excerpt": "Multiplication in T_q is independent across 128 coordinates; Algorithm 11 calls BaseCaseMultiply once per coordinate.",
+              "supports_claim": "Per-coordinate multiplication in T_q.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS03",
+          "category": "algorithm",
+          "statement": "Algorithm 13 K-PKE.KeyGen uses G(d‖k) to derive (ρ,σ), samples Â with SampleNTT(ρ‖j‖i), and produces ekPKE and dkPKE by ByteEncode12 on t̂ and ŝ, respectively.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for the generation of polynomial-array inputs whose later addition bounds may matter.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 13; lines around 1734-1775",
+              "excerpt": "G expands d‖k into ρ and σ; Â is sampled by SampleNTT; t̂ and ŝ are encoded with ByteEncode12.",
+              "supports_claim": "K-PKE key-generation step structure.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS04",
+          "category": "algorithm",
+          "statement": "Algorithm 14 K-PKE.Encrypt derives y, e1, and e2 from PRF outputs, computes u and v from transformed linear forms and noise terms, and then compresses and encodes these into ciphertext components c1 and c2.",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for later local bounds on polynomial/vector addition.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 14; lines around 1803-1856",
+              "excerpt": "Encrypt uses sampled y, e1, e2; forms u and v with transformed matrix/vector arithmetic; compresses and encodes the result.",
+              "supports_claim": "Encryption step structure with addition of terms.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS05",
+          "category": "algorithm",
+          "statement": "Algorithm 15 K-PKE.Decrypt reconstructs u′ and v′ from ciphertext, decodes ŝ from the decryption key, computes w from v′ and a transformed inner product, and then recovers the plaintext by ByteEncode1(Compress1(w)).",
+          "verification_relevance": "candidate algorithm-to-code cross-reference for later polynomial subtraction and coefficient-range reasoning.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 15; lines around 1900-1916",
+              "excerpt": "Decrypt forms w from v′ and NTT^{-1}(ŝ^T ∘ NTT(u′)) and then outputs m via ByteEncode1(Compress1(w)).",
+              "supports_claim": "Decryption step structure involving subtraction.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS06",
+          "category": "algorithm",
+          "statement": "ML-KEM.KeyGen_internal is deterministic, accepts 32-byte seeds d and z, calls K-PKE.KeyGen(d), and constructs the decapsulation key as dkPKE‖ek‖H(ek)‖z.",
+          "verification_relevance": "candidate specification fact for key-structure checks and downstream input assumptions.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 6.1 and Algorithm 16; lines around 1945-1964",
+              "excerpt": "KeyGen_internal accepts d and z, runs K-PKE.KeyGen, sets ek := ekPKE, and dk := dkPKE‖ek‖H(ek)‖z.",
+              "supports_claim": "Deterministic internal key-generation structure.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS07",
+          "category": "algorithm",
+          "statement": "ML-KEM.Encaps_internal derives (K,r) from G(m‖H(ek)) and then calls K-PKE.Encrypt(ek,m,r).",
+          "verification_relevance": "candidate structure fact for the encapsulation path and its data dependencies.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 6.2 and Algorithm 17; lines around 1977-1985",
+              "excerpt": "Encaps_internal computes (K,r) ← G(m‖H(ek)) and c ← K-PKE.Encrypt(ek,m,r).",
+              "supports_claim": "Encapsulation internal step structure.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS08",
+          "category": "algorithm",
+          "statement": "ML-KEM.Decaps_internal parses dk into dkPKE, ekPKE, h, and z, decrypts c to m′, recomputes (K′,r′) from G(m′‖h), re-encrypts m′, and if the ciphertexts differ assigns K′ ← J(z‖c).",
+          "verification_relevance": "candidate specification fact for downstream checking of input/data-flow assumptions; not a proof claim.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 6.3 and Algorithm 18; lines around 1998-2045",
+              "excerpt": "Decaps_internal parses the key, decrypts c, recomputes K′ and r′, re-encrypts, compares ciphertexts, and may replace K′ with J(z‖c).",
+              "supports_claim": "Internal decapsulation control flow.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "AS09",
+          "category": "algorithm",
+          "statement": "The standard says that all inputs to subroutines are passed by value, not by reference, and that algorithms invoking arrays or matrices apply the underlying operation to each entry when the input is an array or matrix type.",
+          "verification_relevance": "candidate implementation-model fact for later harness semantics and aliasing assumptions.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4 and 2.4.8; lines around 583-588 and 844-893",
+              "excerpt": "Subroutine inputs are passed by value; when algorithms are invoked on array or matrix inputs, the operation is applied repeatedly to each entry.",
+              "supports_claim": "Pass-by-value and lifted-array semantics.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        }
+      ],
+      "equations_and_bounds": [
+        {
+          "fact_id": "EB01",
+          "category": "equation",
+          "statement": "The polynomial ring R_q uses modulus X^n + 1 with n = 256, and the NTT domain T_q is built from 128 quadratic factors X^2 - ζ^{2BitRev7(i)+1} over q; the factorization of X^256 + 1 is explicitly given in Equation (4.10).",
+          "verification_relevance": "candidate algebraic structure fact for later relation between polynomial coefficients and transformed representations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.3; equations (4.10)-(4.13)",
+              "excerpt": "X^256 + 1 factors into 128 degree-2 polynomials modulo q; T_q is the direct sum of corresponding quadratic extensions; f̂ is represented as coefficient pairs.",
+              "supports_claim": "NTT factorization and representation equations.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB02",
+          "category": "equation",
+          "statement": "The specification defines the coordinate-wise addition of NTT representations by ĥ ← f̂ + ĝ, and the coordinate-wise scalar multiplication by a·f in R_q is equivalent to a·f_i mod q on each coefficient.",
+          "verification_relevance": "candidate local arithmetic equation for later coefficient-bound checks of polynomial addition/subtraction.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5; lines around 728-735",
+              "excerpt": "Addition and scalar multiplication in R_q and T_q are done coordinate-wise; addition of two NTT representations is ĥ ← f̂ + ĝ.",
+              "supports_claim": "Coordinate-wise arithmetic in R_q and T_q.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB03",
+          "category": "equation",
+          "statement": "The base-case multiplication equation in T_q is (a0 + a1 X)(b0 + b1 X) mod (X^2 - γ), yielding c0 = a0b0 + a1b1γ and c1 = a0b1 + a1b0.",
+          "verification_relevance": "candidate companion algebraic equation for any later reasoning combining addition and multiplication within the same ring representation.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.3.1 and Algorithm 12; lines around 1632-1676",
+              "excerpt": "Equation (4.14) and Algorithm 12 define the degree-one product with coefficients c0 and c1.",
+              "supports_claim": "Quadratic-modulus multiplication formula.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB04",
+          "category": "equation",
+          "statement": "For d < 12, Compress_d(x) = ⌈(2^d / q)·x⌋ mod 2^d and Decompress_d(y) = ⌈(q / 2^d)·y⌋, and the specification states Compress_d(Decompress_d(y)) = y for all y in Z_{2^d}.",
+          "verification_relevance": "candidate bound/rounding fact that can matter when later tracking coefficient ranges across encoding and decoding stages.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.2.1; lines around 1328-1342",
+              "excerpt": "Compression and decompression definitions plus the property that decompression followed by compression preserves the input.",
+              "supports_claim": "Compression/decompression equations and identity property.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB05",
+          "category": "equation",
+          "statement": "Algorithm 7 SampleNTT generates 3-byte blocks C and computes d1 = C[0] + 256·(C[1] mod 16) and d2 = floor(C[1]/16) + 16·C[2], each satisfying 0 ≤ d1,d2 < 2^12, and accepts values less than q.",
+          "verification_relevance": "candidate range fact for later reasoning about sampled coefficient bounds in NTT representations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 7; lines around 1424-1448",
+              "excerpt": "SampleNTT computes d1 and d2 from 3-byte blocks, with 0 ≤ d1 < 2^12 and 0 ≤ d2 < 2^12, accepting only values below q.",
+              "supports_claim": "SampleNTT acceptance and intermediate bounds.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB06",
+          "category": "equation",
+          "statement": "Algorithm 8 SamplePolyCBD_eta sets each coefficient f[i] to x − y mod q, where x and y are sums of eta bits and therefore satisfy 0 ≤ x,y ≤ eta; the text states 0 ≤ f[i] ≤ eta or q − eta ≤ f[i] ≤ q − 1.",
+          "verification_relevance": "candidate coefficient-range fact for later input-assumption and result-bound checking around noise polynomials.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 8; lines around 1461-1473",
+              "excerpt": "x and y are bit-sums bounded by eta, and f[i] is x − y mod q with the stated resulting range.",
+              "supports_claim": "Centered binomial distribution coefficient range statement.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB07",
+          "category": "equation",
+          "statement": "The NTT inverse scales the result by 3303 mod q, with the specification noting 3303 ≡ 128^{-1} mod q.",
+          "verification_relevance": "candidate algebraic fact for later representation-preservation checks in transformed polynomial arithmetic.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 10; lines around 1596-1616",
+              "excerpt": "Line 14 multiplies every entry by 3303 mod q, annotated as 3303 ≡ 128^{-1} mod q.",
+              "supports_claim": "Inverse NTT scaling factor.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "EB08",
+          "category": "equation",
+          "statement": "The specification gives the NTT representation as f̂ = (f mod (X^2 - ζ^{2BitRev7(0)+1}), ..., f mod (X^2 - ζ^{2BitRev7(127)+1})).",
+          "verification_relevance": "candidate exact-definition fact for later traceability between polynomial coefficients and NTT coefficients.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.3; equation (4.12)",
+              "excerpt": "The NTT representation f̂ is defined as the vector of residues modulo the 128 quadratic factors.",
+              "supports_claim": "Explicit formula for NTT representation.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        }
+      ],
+      "candidate_preconditions": [
+        {
+          "fact_id": "PC01",
+          "category": "precondition",
+          "statement": "For polynomial coefficient-array operations, the specification implicitly assumes arrays have the declared length n = 256 and entries in Z_q when representing elements of R_q or T_q.",
+          "verification_relevance": "candidate precondition for later C-level assertions on array length and coefficient-domain membership.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3, 2.4.4, 2.4.5",
+              "excerpt": "Elements of R_q and T_q are represented by length-256 arrays of integers modulo q.",
+              "supports_claim": "Array-shape and coefficient-domain precondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PC02",
+          "category": "precondition",
+          "statement": "For the polynomial addition semantics in Section 2.4.5, the operands must be valid coefficient arrays representing elements of R_q or T_q; the standard then interprets + coordinate-wise modulo q.",
+          "verification_relevance": "candidate precondition for later harness assumptions about exact representation before invoking mlk_poly_add.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5",
+              "excerpt": "Addition and scalar multiplication in R_q and T_q are done coordinate-wise on coefficient arrays.",
+              "supports_claim": "Valid representation prerequisite for polynomial addition semantics.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PC03",
+          "category": "precondition",
+          "statement": "For ML-KEM.Encaps, the encapsulation key must pass the explicit type check and modulus check before the algorithm may be run.",
+          "verification_relevance": "candidate precondition for later use of public-key-derived polynomial data in a harness.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 7.2",
+              "excerpt": "Encapsulation key check requires length 384k+32 and ByteEncode12(ByteDecode12(...)) identity on the first 384k bytes.",
+              "supports_claim": "Encaps input precondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PC04",
+          "category": "precondition",
+          "statement": "For ML-KEM.Decaps, both the ciphertext and decapsulation key must be checked; the ciphertext check is required every execution, while the key check may be performed separately as assurance.",
+          "verification_relevance": "candidate precondition for downstream test orchestration and input validation expectations.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 7.3",
+              "excerpt": "Ciphertext checking shall be performed with every execution of ML-KEM.Decaps.",
+              "supports_claim": "Required decapsulation input checking.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "This is an algorithm-level precondition, not a direct precondition for mlk_poly_add."
+          ]
+        },
+        {
+          "fact_id": "PC05",
+          "category": "precondition",
+          "statement": "The specification states that K-PKE.KeyGen, K-PKE.Encrypt, and K-PKE.Decrypt are not approved for stand-alone use and are intended only as ML-KEM subroutines.",
+          "verification_relevance": "candidate context precondition for any later code mapping to subroutine use.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 3.3 and Section 5",
+              "excerpt": "K-PKE shall not be used as a stand-alone cryptographic scheme; it may only be used as subroutines in ML-KEM.",
+              "supports_claim": "Subroutine-only usage constraint.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        }
+      ],
+      "candidate_postconditions": [
+        {
+          "fact_id": "PO01",
+          "category": "postcondition",
+          "statement": "For addition in Z_m^ℓ, the output array entries satisfy W[i] = X[i] + Y[i] for all i; for polynomial and NTT representations, addition is coordinate-wise over coefficient arrays with results again represented as length-256 arrays modulo q.",
+          "verification_relevance": "candidate postcondition for later assertions about mlk_poly_add preserving exact representation and local coefficient bounds.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.3 and 2.4.5",
+              "excerpt": "W[i] = X[i] + Y[i] for all i; addition in R_q and T_q is done coordinate-wise on coefficient arrays.",
+              "supports_claim": "Elementwise postcondition for polynomial addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PO02",
+          "category": "postcondition",
+          "statement": "The standard’s abstract representation implies that adding two valid coefficient arrays for R_q or T_q yields another valid length-256 coefficient array over Z_q, with each coordinate reduced modulo q by the abstract data-type convention.",
+          "verification_relevance": "candidate postcondition for later range-checking of polynomial addition outputs at the C level.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.1, 2.4.3, 2.4.5",
+              "excerpt": "Reduction modulo m takes place whenever assignment is made to a variable in Z_m; arrays in Z_q^ℓ are acted on coordinate-wise.",
+              "supports_claim": "Modulo-q closure of array addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PO03",
+          "category": "postcondition",
+          "statement": "Algorithm 13’s computation t̂ ← Â ∘ ŝ + ê produces the noisy linear-system term t̂ that is then encoded into the encryption key, so the addition occurs before ByteEncode12 serialization.",
+          "verification_relevance": "candidate postcondition for later code-to-spec tracing around polynomial-array output formation.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 13",
+              "excerpt": "t̂ is formed by Â ∘ ŝ + ê and then ByteEncode12(t̂) is used in ekPKE.",
+              "supports_claim": "Addition result feeding serialization.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PO04",
+          "category": "postcondition",
+          "statement": "Algorithm 14 forms ciphertext components by compressing u and v after their respective arithmetic computations, so any later reasoning about mlk_poly_add must account for the fact that the specification’s output format is post-computation compression/encoding rather than raw polynomial arrays.",
+          "verification_relevance": "candidate postcondition/context for harness design and trace separation between abstract polynomial addition and serialized outputs.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Algorithm 14",
+              "excerpt": "u and v are computed first, then c1 ← ByteEncode_du(Compress_du(u)) and c2 ← ByteEncode_dv(Compress_dv(v)).",
+              "supports_claim": "Serialization postcondition following arithmetic.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "PO05",
+          "category": "postcondition",
+          "statement": "The specification states that ML-KEM.Encaps and ML-KEM.Decaps each output a 256-bit shared secret value when randomness generation is successful, and that under appropriate conditions these values match.",
+          "verification_relevance": "contextual postcondition for the broader scheme, not a direct claim about mlk_poly_add.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 3.2 and Section 3.3",
+              "excerpt": "ML-KEM.Encaps and ML-KEM.Decaps each output a 256-bit value; under appropriate conditions the values match.",
+              "supports_claim": "Shared-secret output postcondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "Not directly about polynomial addition; included for surrounding specification context only."
+          ]
+        }
+      ],
+      "candidate_verification_relevance": [
+        {
+          "fact_id": "VR01",
+          "category": "verification_relevance",
+          "statement": "The key relevance for later polynomial-addition verification is that the spec models polynomial and NTT objects as length-256 arrays over Z_q, with addition performed coordinate-wise modulo q.",
+          "verification_relevance": "direct candidate relevance for later range assertions and exact-representation checking of mlk_poly_add.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.3, 2.4.4, 2.4.5",
+              "excerpt": "Arrays in Z_q^256 represent polynomial coefficients and addition is coordinate-wise.",
+              "supports_claim": "Core verification-relevant model for polynomial addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "VR02",
+          "category": "verification_relevance",
+          "statement": "Because the standard uses abstract modulo-q arrays and explicitly abstracts away implementation representation details, later C verification should treat bounds and normalization as obligations of the implementation rather than infer hidden representation rules from the spec.",
+          "verification_relevance": "direct candidate relevance for harness assumptions and range-check design.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.1",
+              "excerpt": "The pseudocode is agnostic regarding how an integer modulo m is represented in actual implementations or how modular reduction is computed.",
+              "supports_claim": "Implementation-agnostic representation guidance.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "VR03",
+          "category": "verification_relevance",
+          "statement": "The spec’s explicit input checking for ML-KEM.Encaps and ML-KEM.Decaps is relevant as surrounding context for any later property about a concrete helper such as mlk_poly_add, because the helper may be reached only from checked higher-level inputs in the intended call chain.",
+          "verification_relevance": "candidate contextual relevance for downstream call-graph or harness assumptions.",
+          "confidence": "medium",
+          "uncertainty": "The specification does not name mlk_poly_add; this relevance is inferred from the surrounding ML-KEM/K-PKE call structure.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 7.2 and 7.3",
+              "excerpt": "Encaps and Decaps require input checking; ciphertext checking is required every execution of Decaps.",
+              "supports_claim": "Higher-level checked-input context that may constrain helper usage.",
+              "confidence": "medium"
+            }
+          ],
+          "limitations": [
+            "Indirect relevance only; no direct spec mention of mlk_poly_add."
+          ]
+        },
+        {
+          "fact_id": "VR04",
+          "category": "verification_relevance",
+          "statement": "The specification’s coordinate-wise arithmetic statements provide a clear candidate boundary for later proving local coefficient bounds on addition/subtraction: if inputs are valid Z_q coefficients, each output coordinate should be the coordinate-wise sum/difference modulo q in the abstract model.",
+          "verification_relevance": "candidate bound relevant to later C-level assertions.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.1, 2.4.3, 2.4.5",
+              "excerpt": "Reduction modulo m happens on assignment to Z_m; addition in R_q and T_q is coordinate-wise.",
+              "supports_claim": "Local coefficient-bound framing for addition/subtraction.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "fact_id": "VR05",
+          "category": "verification_relevance",
+          "statement": "The NTT and NTT^{-1} algorithms preserve the 256-entry coefficient-array structure and are applied coordinate-wise to vectors and matrices, which makes them relevant context if mlk_poly_add operates on transformed or nested polynomial objects.",
+          "verification_relevance": "candidate algorithm-to-code trace item.",
+          "confidence": "high",
+          "uncertainty": "",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.4, 2.4.8, 4.3",
+              "excerpt": "NTT/NTT^{-1} act on coefficient arrays and can be lifted coordinate-wise to matrices/vectors.",
+              "supports_claim": "Preservation of array shape under representation transforms.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": []
+        }
+      ],
+      "terminology_to_preserve": [
+        {
+          "term": "R_q",
+          "meaning": "The ring Z_q[X]/(X^n + 1) with n=256 and coefficient-array representation in Z_q^256.",
+          "preservation_rule": "Preserve the exact symbol R_q and its ring-theoretic meaning; do not rename it to a generic polynomial ring.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and 2.4.4",
+              "excerpt": "R_q is defined as Z_q[X]/(X^n + 1) and represented by coefficient arrays.",
+              "supports_claim": "Exact meaning of R_q.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "T_q",
+          "meaning": "The image of R_q under the NTT; its elements are NTT representations of polynomials in R_q.",
+          "preservation_rule": "Preserve the exact symbol T_q and its role as the NTT image of R_q.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3 and 4.3",
+              "excerpt": "T_q is the image of R_q under the NTT.",
+              "supports_claim": "Exact meaning of T_q.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "ByteEncode12 / ByteDecode12",
+          "meaning": "The 12-bit encoding/decoding pair, where ByteDecode12 maps to integers modulo q and ByteEncode12 expects integers modulo q.",
+          "preservation_rule": "Preserve the exact names and the special d=12 behavior because it is materially different from d<12.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Section 4.2.1",
+              "excerpt": "For d=12, ByteDecode12 produces integers modulo q and ByteEncode12 receives integers modulo q.",
+              "supports_claim": "Special 12-bit encoding semantics.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "input checking",
+          "meaning": "The specification’s term for validation of candidate inputs before ML-KEM.Encaps and ML-KEM.Decaps.",
+          "preservation_rule": "Preserve this exact phrase when discussing preconditions; do not replace it with a weaker informal phrase unless explicitly noted.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 3.3, 7.2, 7.3",
+              "excerpt": "Encaps and Decaps require input checking.",
+              "supports_claim": "Terminology for validation requirements.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "coordinate-wise",
+          "meaning": "The specification’s rule that array, polynomial, and NTT addition/scalar multiplication happen entry by entry.",
+          "preservation_rule": "Preserve as the primary semantic descriptor for polynomial-array addition.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.3 and 2.4.5",
+              "excerpt": "Addition and scalar multiplication are done coordinate-wise.",
+              "supports_claim": "Coordinate-wise semantics.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "deterministic_reference_assessment": {
+        "used": true,
+        "status": "accepted_as_advisory_only_with_independent_verification",
+        "warning": "Deterministic advisory material was consulted only to locate relevant sections; all substantive claims were verified against the provided FIPS 203 primary evidence. No deterministic claim was accepted without primary-evidence support.",
+        "disagreements": []
+      },
+      "uncertainties": [
+        {
+          "issue": "No implementation source/header for mlk_poly_add was supplied in the primary evidence.",
+          "impact": "Cannot directly bind specification facts to the concrete C function or confirm any source-level coefficient bounds for that function in this stage."
+        },
+        {
+          "issue": "The provided material does not identify mlk_poly_add by name in the FIPS text.",
+          "impact": "Any linkage to mlk_poly_add remains a candidate trace inference rather than a spec-named function mapping."
+        },
+        {
+          "issue": "The property boundary mentions exact representation and input assumptions for local coefficient bounds, but the spec does not state a dedicated standalone polynomial-addition lemma with explicit numeric bounds beyond modulo-q coordinate-wise semantics.",
+          "impact": "Downstream agents may need to infer the concrete bound shape from the abstract modulo-q model and the implementation source, if available."
+        }
+      ],
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+          "locator": "Sections 2.3-2.4.5, 4.2.1, 4.3, 5, 7, 8",
+          "excerpt": "Core specification text defining n=256, q=3329, R_q, T_q, coordinate-wise arithmetic, NTT, compression, and ML-KEM input checks.",
+          "supports_claim": "Primary evidence base for all extracted specification facts.",
+          "confidence": "high"
+        }
+      ],
+      "limitations": [
+        "Only the FIPS 203 specification text was available as primary evidence.",
+        "No implementation source files, headers, build files, proof scripts, or CBMC output were provided.",
+        "This output is candidate specification extraction only; it is not proof, verification, or compliance determination."
+      ]
+    },
+    "validation": {
+      "schema_version": "llm_stage_validation.v1",
+      "created_utc": "2026-07-11T07:44:43.396304+00:00",
+      "stage": "02_spec_extraction",
+      "mode": "real",
+      "llm_call_executed": true,
+      "valid": true,
+      "attempts": 1,
+      "schema_validation": {
+        "schema_validation_enabled": true,
+        "validator": "jsonschema",
+        "valid": true,
+        "errors": []
+      },
+      "model": "gpt-5.4-mini",
+      "elapsed_seconds_last_attempt": 79.083984375,
+      "final_request_snapshot_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/prompt_package/api_requests/attempt_01_request.json",
+      "final_response_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/llm_authoritative/api_responses/attempt_01_response.json",
+      "request_sha256": "4f64d6eb671a7ac1b8b914b2f478f5baf7a602ba0289c2c104ab75a99b343870",
+      "primary_evidence_complete": true,
+      "primary_evidence_transmission_manifest": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/prompt_package/primary_evidence_transmission_manifest.json",
+      "exact_input_summary": {
+        "schema_version": "responses_api_input_summary.v1",
+        "input_text_block_count": 1,
+        "input_text_chars": 352865,
+        "input_text_utf8_bytes": 370180,
+        "input_text_sha256": "d74c33889f0aac11bd195b6714b500968c9bb3c974b7e383ec96c56b831c5d6b",
+        "input_file_count": 0,
+        "input_files": [],
+        "canonical_input_sha256": "554d78c8b3a8710f926d70372b4ad7b11ca4adcb48c702993fc8e3ef9ed54064",
+        "contains_primary_truncation_marker": false
+      },
+      "provider_usage": {
+        "input_tokens": 102647,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 13416,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 116063
+      }
+    }
+  }
+}

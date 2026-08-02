@@ -1,0 +1,198 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-10T23:31:04.633274+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "schema_version": "deterministic_critic_review.v1",
+    "created_utc": "2026-07-10T23:31:04.632362+00:00",
+    "target_function": "mlk_poly_add",
+    "verification_strategy": "standard_cbmc_harness",
+    "analysis_only": false,
+    "contract_validation": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "enabled": false
+    },
+    "property_campaign_validation": {
+      "schema_version": "property_campaign_artifact_plan_validation.v2",
+      "valid": true,
+      "valid_for_real_experiment": true,
+      "mock_wiring_only": false,
+      "legacy_compatibility_default": false,
+      "errors": [],
+      "warnings": [],
+      "configured_property_family_id": "P16",
+      "configured_property_family_title": "Polynomial addition/subtraction bounds",
+      "configured_verification_strategy": "standard_cbmc_harness",
+      "selected_property_family_id": "P16",
+      "selected_property_strategy": "standard_cbmc_harness",
+      "contract_validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "enabled": false
+      },
+      "claim_boundary": "Strategy-plan compatibility does not prove the contract, harness, relation, or property."
+    },
+    "harness_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+    "artifact_plan_available": true,
+    "artifact_manifest_available": true,
+    "independence_audit_available": true,
+    "assertions_detected": [
+      {
+        "line": 30,
+        "raw_text": "__CPROVER_assert(r->coeffs[k] == (int16_t)expected,",
+        "trivial_true": false,
+        "trivial_false": false,
+        "possible_self_comparison": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      },
+      {
+        "line": 32,
+        "raw_text": "__CPROVER_assert((int32_t)r->coeffs[k] == expected,",
+        "trivial_true": false,
+        "trivial_false": false,
+        "possible_self_comparison": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      }
+    ],
+    "assumptions_detected": [
+      {
+        "line": 13,
+        "raw_text": "__CPROVER_assume(memory_no_alias(r, sizeof(mlk_poly)));",
+        "possible_overstrong_range": false,
+        "possible_assertion_hiding": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      },
+      {
+        "line": 14,
+        "raw_text": "__CPROVER_assume(memory_no_alias(b, sizeof(mlk_poly)));",
+        "possible_overstrong_range": false,
+        "possible_assertion_hiding": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      },
+      {
+        "line": 18,
+        "raw_text": "__CPROVER_assume(((int32_t)r->coeffs[k] + (int32_t)b->coeffs[k]) <= INT16_MAX);",
+        "possible_overstrong_range": false,
+        "possible_assertion_hiding": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      },
+      {
+        "line": 19,
+        "raw_text": "__CPROVER_assume(((int32_t)r->coeffs[k] + (int32_t)b->coeffs[k]) >= INT16_MIN);",
+        "possible_overstrong_range": false,
+        "possible_assertion_hiding": false,
+        "trust_boundary": "deterministic_review_diagnostic"
+      }
+    ],
+    "old_state_pattern_check": {
+      "old_state_terms_detected": true,
+      "old_state_related_terms": [
+        "old_"
+      ],
+      "warning": null,
+      "trust_boundary": "deterministic_review_diagnostic"
+    },
+    "checks": [
+      {
+        "check": "contains_target_function",
+        "passed": true,
+        "details": "mlk_poly_add"
+      },
+      {
+        "check": "contains_no_todo_or_fallback_marker",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "check": "property_campaign_artifact_plan_valid",
+        "passed": true,
+        "details": {
+          "schema_version": "property_campaign_artifact_plan_validation.v2",
+          "valid": true,
+          "valid_for_real_experiment": true,
+          "mock_wiring_only": false,
+          "legacy_compatibility_default": false,
+          "errors": [],
+          "warnings": [],
+          "configured_property_family_id": "P16",
+          "configured_property_family_title": "Polynomial addition/subtraction bounds",
+          "configured_verification_strategy": "standard_cbmc_harness",
+          "selected_property_family_id": "P16",
+          "selected_property_strategy": "standard_cbmc_harness",
+          "contract_validation": {
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "enabled": false
+          },
+          "claim_boundary": "Strategy-plan compatibility does not prove the contract, harness, relation, or property."
+        }
+      },
+      {
+        "check": "strategy_specific_plans_valid",
+        "passed": true,
+        "details": {
+          "valid": true,
+          "verification_strategy": "standard_cbmc_harness",
+          "contract_plan": {
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "enabled": false
+          },
+          "relational_plan": {
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "enabled": false
+          },
+          "analysis_only_plan": {
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "enabled": false
+          },
+          "errors": [],
+          "warnings": []
+        }
+      },
+      {
+        "check": "independence_audit_available",
+        "passed": true,
+        "details": "low_similarity_risk"
+      },
+      {
+        "check": "cbmc_or_harness_marker_present",
+        "passed": true,
+        "details": [
+          "__CPROVER",
+          "assert",
+          "harness",
+          "void harness"
+        ]
+      }
+    ],
+    "issues": [],
+    "warnings": [
+      {
+        "severity": "minor",
+        "check": "ambiguous_old_state_snapshot_requirement",
+        "message": "Artefact plan used an unrecognised old-state snapshot requirement value.",
+        "value": "reason: in-place mutation means post-call r cannot be compared to itself; the selected property needs the pre-state of r for meaningful assertions.",
+        "blocks_tool_execution": false
+      }
+    ],
+    "blocking_issue_count": 0,
+    "warning_count": 1,
+    "recommended_gate": "needs_human_review",
+    "trust_boundary": "deterministic_review_diagnostic_not_authoritative_critic_reasoning",
+    "limitations": [
+      "This is deterministic pattern-based review, not proof.",
+      "It can miss semantic errors.",
+      "LLM critic and human review are still required."
+    ]
+  }
+}

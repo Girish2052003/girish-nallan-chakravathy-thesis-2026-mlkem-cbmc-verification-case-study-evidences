@@ -1,0 +1,162 @@
+agents/common/llm_client.py: original (3f8d09e30a78e2178182522e36a09855aa983a2ae2a23ad5c1d0924c694ef258)
+preflight_first_api.py: original (56bd2ceaa92adadc3be638de5dc9ae9ea5e5efefce5085d9b1b6fe25d705e823)
+agents/common/formal_build.py: original (0c04e21cfb5abd84c119d578110bc4f45a4bead5f1854cf116a740a52f915734)
+agents/tool_execution_agent.py: original (343bd8c2e1e885344a79ee0a66310c196f7fb5044c1a18fa4d53994915effaed)
+tests/verify_central_llm_profile.py: original (34282840116047e6631fbc2b5c6ce76dd8bf83bdd6d27ac1c50339da8696f658)
+tests/verify_deployment_gate.py: original (25630b2d085599fc57af74d405e952e165f9634050cde4b68a29c2ddcb379aed)
+agents/artifact_generation_agent.py: protected PASS (254da1364effb68bfb9e2cfe01cb994f6fa1f5d4041bb4316f993fafac50216e)
+tests/verify_live_harness_hardening.py: protected PASS (5ca85ae80aa66984c7444270861c4e977fb8d4c748924e79d215e73ed4bee6d1)
+PATCH_STATE=ready
+Patch files installed. Backup: /home/girish/thesis-agent-workflow-26-property-test/backups/central_fail_closed_hardening_20260711_062615
+PATCH HASH VERIFICATION PASSED
+
+================================================================
+PYTHON SYNTAX
+================================================================
+
+================================================================
+LIVE HARNESS HARDENING
+================================================================
+LIVE HARNESS HARDENING REGRESSION TEST PASSED
+
+================================================================
+CENTRAL FAIL-CLOSED HARDENING
+================================================================
+[1/6] Primary evidence truncation fails closed...
+  PASS
+[2/6] Runtime blocks an incomplete exact stage request before the API call...
+  PASS
+[3/6] Complete primary evidence reaches the exact shared input without markers...
+  PASS
+[4/6] Live preflight uses full evidence and records provider input tokens...
+  PASS
+[5/6] Formal-build binding rejects Run 001 entry and target-call defects...
+  PASS
+[6/6] Formal-build binding rejects null-plus-freshness and accepts hardened shape...
+  PASS
+
+CENTRAL FAIL-CLOSED HARDENING REGRESSION PASSED
+
+================================================================
+CENTRAL LLM PROFILE
+================================================================
+[1/8] Shared profile resolution and run-specific override preservation...
+  PASS one profile controls model/reasoning while recent per-run evidence limits remain intact
+[2/8] Ambiguous or protected duplicate configuration fails closed...
+  PASS split-brain model settings cannot silently bypass the one-place profile
+[3/8] Runtime request carries reasoning, verbosity, storage, and strict schema together...
+  PASS verbosity is merged with—not substituted for—strict Structured Outputs
+[4/8] Preflight and runtime derive controls/client routing from the same helpers...
+  PASS shared preflight builder preserves controls, token cap, and provider input-token recording
+[5/8] Orchestrator snapshots and freezes the resolved profile per run...
+  PASS future profile edits affect new runs only; existing/resumed runs stay reproducible
+[6/8] Frozen embedded profile tampering is detected...
+  PASS resolved profile hash prevents silent mid-run model substitution
+[7/8] Legacy inline llm configs remain supported...
+  PASS old mock/baseline configurations are not forced into the new profile system
+[8/8] Recent live-hardening agent functionality remains outside this patch...
+  PASS recent artifact-generation and live-hardening patch files remain present and untouched
+
+CENTRAL LLM PROFILE REGRESSION PASSED
+
+================================================================
+DEPLOYMENT GATE
+================================================================
+[1/8] Actual OpenAI SDK path, retries, exact request/response evidence...
+  PASS
+[2/8] Agent roles and global prompt/evidence contract...
+  PASS
+[3/8] Formal build plan, binding, and old-state review semantics...
+  PASS
+[4/8] Anti-copy similarity and critic blocking...
+  PASS
+[5/8] Canonical layout, stable control hashes, failed-run provenance...
+  PASS
+[6/8] Logger manifest resolution for iteration evidence...
+  PASS
+[7/8] Operational first-API preflight...
+  PASS
+[8/8] Installable package and pinned dependency contract...
+  PASS
+
+FINAL DEPLOYMENT GATE PASSED
+
+================================================================
+OPTIONAL EXISTING REGRESSION: tests/verify_26_property_contract_extension.py
+================================================================
+[1/11] Canonical 26-property catalogue...
+  PASS exactly 26 unique, strategy-bounded property families
+[2/11] Every property family normalizes and validates...
+  PASS all P01-P26 configs are canonical, explicit and claim-bounded
+[3/11] Invalid strategy combinations and unsafe P19 claims fail closed...
+  PASS constant-time support cannot be mislabeled as a CBMC proof
+[4/11] Native loop-contract rendering preserves production source...
+  PASS exact-anchor annotation occurs only in a hash-recorded copied source
+[5/11] Unsafe/trivial/ambiguous loop contracts are rejected...
+  PASS trivial invariants and non-unique source anchors fail closed
+[6/11] Native function-contract header and DFCC metadata...
+  PASS requires/ensures/assigns plus optional DFCC are represented explicitly
+[7/11] Direct, relational, loop, function and analysis profiles build correctly...
+  PASS each proof strategy receives the correct deterministic execution profile
+[8/11] Sequential GOTO pipeline records and hashes every intermediate model...
+  PASS goto-cc → goto-instrument → CBMC execution is auditable and hash-preserving
+[9/11] Contract transformation failure and analysis-only outcomes remain honest...
+  PASS setup failures and analysis-only campaigns never masquerade as formal success
+[10/11] Original 17cbc compatibility default remains ordinary direct CBMC...
+  PASS old configs retain the approved direct-CBMC behavior byte-for-byte in intent
+[11/11] Strategy-specific live-preflight contract smoke routing...
+  PASS preflight exercises loop, function/DFCC, or both according to campaign strategy
+
+26-PROPERTY + NATIVE CONTRACT EXTENSION PASSED
+
+================================================================
+OPTIONAL EXISTING REGRESSION: tests/verify_26_property_repair_and_claim_boundaries.py
+================================================================
+[1/10] Baseline provenance and complete property catalogue...
+  PASS 26 unique property families, strategies, and claim boundaries
+[2/10] Canonical property-campaign configuration and backwards compatibility...
+  PASS strategy routing, P19 guard, and legacy direct-CBMC behavior
+[3/10] Strict schemas include complete contract-aware repair artefacts...
+  PASS strict artefact and repair schemas
+[4/10] Native loop/function contract validation and fail-closed guards...
+  PASS useful-clause, history-variable, and controlled-patch checks
+[5/10] Controlled source annotation never changes repository evidence...
+  PASS exact-anchor copy, diff/hash evidence, and path confinement
+[6/10] Direct, relational, loop, function/DFCC, hybrid, and analysis execution profiles...
+  PASS all six strategy profiles and command routing
+[7/10] Multi-step GOTO execution preserves intermediate models and hashes...
+  PASS sequential execution, output existence checks, and model hashing
+[8/10] Contract-aware Agent 9 repair bundle remains review-gated...
+  PASS complete repaired plan/manifest, controlled copies, and mandatory re-review
+[9/10] Claim boundaries are explicit for all twenty-six families...
+  PASS no property family is represented as automatically or universally proved
+[10/10] Semantic campaign gates fail closed for real mismatches and preserve mock wiring...
+  PASS Agent 4/5/9 semantic handoff compatibility and mock-vs-real boundary
+
+PROPERTY-26 AND NATIVE-CONTRACT EXTENSION PASSED
+
+================================================================
+OPTIONAL EXISTING REGRESSION: tests/verify_eight_session_conformance.py
+================================================================
+[1/5] Frozen agent roles, exact Agent 11 structure, and structured disagreements...
+  PASS
+[2/5] Session 8 one-physical-file iteration manifest pointers...
+  PASS
+[3/5] Agent 11 raw-evidence grounding and fail-closed authoritative handoff...
+  PASS
+[4/5] Reporting counts and mock-narrative promotion precision...
+  PASS
+[5/5] Agent 9 production-code and silent-overwrite guard...
+  PASS
+
+EIGHT-SESSION ARCHITECTURE CONFORMANCE PASSED
+PATCH HASH VERIFICATION PASSED
+
+================================================================
+CENTRAL FAIL-CLOSED HARDENING PATCH APPLIED AND VERIFIED
+================================================================
+No live OpenAI request was made.
+No preflight or pipeline run was launched.
+Backup: /home/girish/thesis-agent-workflow-26-property-test/backups/central_fail_closed_hardening_20260711_062615
+Log: /home/girish/thesis-agent-workflow-26-property-test/diagnostics/central_fail_closed_hardening_20260711_062615.log
+Next step: create a fresh run config from the existing profile-backed poly-add config, changing only run_id, then run the new full-input preflight.

@@ -1,0 +1,40 @@
+{
+  "schema_version": "handoff_manifest.v1",
+  "created_utc": "2026-07-11T08:06:22.819106+00:00",
+  "stage_id": "02",
+  "stage_key": "02_spec_extraction",
+  "stage_name": "Specification Extraction Agent",
+  "stage_type": "llm_backed",
+  "authoritative_source": "llm_authoritative",
+  "handoff_outputs": {
+    "spec_summary": "llm_authoritative/01_spec_summary.json",
+    "spec_summary_validation": "validation/llm_call_validation.json",
+    "selected_spec_excerpt_advisory": "deterministic_reference/selected_spec_excerpt.txt"
+  },
+  "checksums_sha256": {
+    "spec_summary": "0bf5cdde1dd718acefc563cab278d5d839655033d3417ac58d1414d11c0826c1",
+    "spec_summary_validation": "1f8926b15aaa10851fb87fb0c461b63df2c7d62b622c2a38abdcb95f540c0d4d",
+    "selected_spec_excerpt_advisory": "e2b3a81b6218086812e7060ef8c522d86a00ea7f371eef76ce733fc3263db0b3"
+  },
+  "next_stage_consumers": [
+    "03_code_understanding",
+    "04_property_discovery",
+    "05_artifact_generation",
+    "06_review_critic",
+    "11_evaluation_reporter"
+  ],
+  "trust_boundary": {
+    "deterministic_reference": "advisory_only_not_authoritative",
+    "llm_output": "authoritative_stage_candidate_not_formal_truth",
+    "primary_evidence": "raw_spec_code_or_tool_outputs_outweigh_hints",
+    "formal_truth": "not_claimed_by_llm"
+  },
+  "iteration": null,
+  "iteration_reason": null,
+  "notes": {
+    "handoff_policy": "spec_summary is LLM-authoritative stage candidate output. selected_spec_excerpt_advisory is deterministic advisory evidence only.",
+    "llm_mode": "mock",
+    "llm_call_executed": false,
+    "mock_output": true
+  }
+}

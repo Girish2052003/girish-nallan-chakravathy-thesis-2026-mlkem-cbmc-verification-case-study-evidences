@@ -1,0 +1,827 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-10T23:27:40.286339+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "trust_boundary": "previous_llm_stage_candidate_context_not_formal_truth",
+    "spec_summary_status": {
+      "producer_stage": "02_spec_extraction",
+      "output_key": "spec_summary",
+      "available": true,
+      "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+      "warning": null
+    },
+    "spec_summary_excerpt": {
+      "schema_version": "llm_authoritative_stage_output.v1",
+      "created_utc": "2026-07-10T23:27:39.236983+00:00",
+      "trust_boundary": "authoritative_stage_candidate_not_formal_truth",
+      "content": {
+        "stage": "02_spec_extraction",
+        "mock": false,
+        "llm_call_executed": true,
+        "source_scope": {
+          "primary_sources_used": [
+            "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt"
+          ],
+          "provided_material_complete": false,
+          "missing_or_unavailable_material": [
+            "Later portions of Section 7 and Section 8 are truncated in the provided raw primary evidence excerpt, so direct primary evidence for exact Section 7 input-checking details and Table 2 parameter values is unavailable in this handoff.",
+            "No implementation source/header files for the target function mlk_poly_add were provided in this stage input, so no implementation cross-reference can be confirmed from primary code evidence."
+          ]
+        },
+        "spec_facts": [
+          {
+            "fact_id": "SF-PA-001",
+            "category": "definition",
+            "statement": "In FIPS 203 pseudocode, arrays of integers modulo m are added coordinate-wise: for X,Y in Z_m^l, the statement W <- X + Y yields W[i] = X[i] + Y[i] for all i.",
+            "verification_relevance": "candidate specification fact for later range checking and candidate algorithm-to-code trace item for polynomial addition loops.",
+            "confidence": "high",
+            "uncertainty": "None from the cited text.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.3, equations (2.2)-(2.3) and explanatory text",
+                "excerpt": "The statements Z <- a·X and W <- X + Y will result in two arrays Z,W in Z_m^l, with the property that Z[i] = a·X[i] and W[i] = X[i] + Y[i] for all i.",
+                "supports_claim": "Arrays of integers modulo m are added coordinate-wise in pseudocode.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "SF-PA-002",
+            "category": "definition",
+            "statement": "A polynomial in R_q is represented in pseudocode by a length-256 coefficient array over Z_q, with entry f[i] equal to the i-th polynomial coefficient f_i.",
+            "verification_relevance": "candidate specification fact for later C-level array-shape assumptions and coefficient-wise reasoning.",
+            "confidence": "high",
+            "uncertainty": "None from the cited text.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equations (2.4)-(2.5) and following sentence",
+                "excerpt": "An element f of R_q is a polynomial ... and will be represented in pseudocode by the array (f0, f1, …, f255) in Z_q^256 ... The i-th entry of the array f will thus contain the i-th coefficient of the polynomial f (i.e., f[i] = f_i).",
+                "supports_claim": "A polynomial in R_q is represented as a length-256 coefficient array over Z_q.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "SF-PA-003",
+            "category": "definition",
+            "statement": "An element of T_q is also represented in pseudocode by a length-256 coefficient array over Z_q, with index mapping ghat[2i] = ghat_{i,0} and ghat[2i+1] = ghat_{i,1}.",
+            "verification_relevance": "candidate specification fact for later reuse of the same coefficient-wise addition rule in NTT form.",
+            "confidence": "high",
+            "uncertainty": "None from the cited text.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equations (2.6)-(2.7) and mapping sentence",
+                "excerpt": "Such an algebraic object will be represented in pseudocode by the array ... in Z_q^256 ... the mapping between array entries and coefficients is ghat[2i] = ghat_i,0 and ghat[2i+1] = ghat_i,1.",
+                "supports_claim": "An element of T_q is represented as a length-256 coefficient array over Z_q with the stated index mapping.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "SF-PA-004",
+            "category": "operation_rule",
+            "statement": "Addition in both R_q and T_q is done coordinate-wise, and in pseudocode this is performed by addition of the corresponding coefficient arrays as in equation (2.3).",
+            "verification_relevance": "candidate specification fact for later polynomial-addition correctness interpretation and candidate algorithm-to-code trace item.",
+            "confidence": "high",
+            "uncertainty": "None from the cited text.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5, first paragraph",
+                "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise... In pseudocode, elements of both R_q and T_q are represented by coefficient arrays... The algebraic operations of addition and scalar multiplication are thus performed by addition and scalar multiplication of the corresponding coefficient arrays, as in (2.3) and (2.2).",
+                "supports_claim": "Addition in R_q and T_q is coordinate-wise and implemented by coefficient-array addition.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "SF-PA-005",
+            "category": "bound",
+            "statement": "Because polynomial and NTT coefficients are elements of Z_q, each exact coefficient in the specification-level representation lies in the canonical modular range 0 through q-1 after assignment to a Z_q variable.",
+            "verification_relevance": "candidate bound relevant to later C-level assertions for exact-representation coefficient ranges.",
+            "confidence": "high",
+            "uncertainty": "This is a specification-level statement about the abstract Z_q data type, not a claim about any specific machine integer representation before reduction in code.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol Z_m",
+                "excerpt": "Z_m: the ring of integers modulo m (i.e., the set {0, 1, … , m−1} equipped with the operations of addition and multiplication modulo m.)",
+                "supports_claim": "Elements of Z_q have canonical values in 0..q-1.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.1, equation (2.1) discussion",
+                "excerpt": "It is implicit that reduction modulo m takes place whenever an assignment is made to a variable in Z_m.",
+                "supports_claim": "Assignment to a Z_q-typed variable yields a reduced modular value.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Does not provide unreduced intermediate bounds for a concrete C implementation using wider signed integers."
+            ]
+          },
+          {
+            "fact_id": "SF-PA-006",
+            "category": "bound",
+            "statement": "For two exact-representation polynomial coefficients x,y in Z_q, the specification-level sum is x+y mod q, so the resulting exact coefficient remains in Z_q and therefore in 0..q-1.",
+            "verification_relevance": "candidate bound relevant to later C-level assertions under a model where mlk_poly_add returns exact modular coefficients.",
+            "confidence": "high",
+            "uncertainty": "This is a bound for the abstract modular result, not for an implementation that may delay reduction or use a non-canonical but equivalent representation.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.1 and Section 2.4.3",
+                "excerpt": "Reduction modulo m takes place whenever an assignment is made to a variable in Z_m... W[i] = X[i] + Y[i] for all i.",
+                "supports_claim": "Adding coefficients in Z_q yields a modular result still in Z_q.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5",
+                "excerpt": "The algebraic operations of addition ... in R_q and T_q are done coordinate-wise... performed by addition of the corresponding coefficient arrays.",
+                "supports_claim": "Polynomial addition is coefficient-wise modular addition.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Not sufficient to infer unreduced integer bounds such as 0..6656 or signed-centered ranges unless implementation-specific assumptions are added later."
+            ]
+          },
+          {
+            "fact_id": "SF-PA-007",
+            "category": "usage_context",
+            "statement": "K-PKE and ML-KEM algorithms use vector and matrix additions over entries in T_q and R_q, so the same coordinate-wise addition rule applies when adding polynomial entries inside higher-level objects.",
+            "verification_relevance": "candidate algorithm-to-code trace item showing that low-level polynomial addition is reused inside higher-level linear algebra operations.",
+            "confidence": "high",
+            "uncertainty": "The statement is about the specification's arithmetic model, not a direct mention of the target function name mlk_poly_add.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.7, equations (2.10)-(2.11) and explanation",
+                "excerpt": "Addition and scalar multiplication are performed coordinate-wise... zhat <- uhat + vhat ... with zhat[i] = uhat[i] + vhat[i] for all i.",
+                "supports_claim": "Higher-level vector addition reuses coordinate-wise addition of polynomial/NTT entries.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 5, introductory text before Algorithm 13",
+                "excerpt": "Linear-algebraic arithmetic with such vectors and matrices ... is performed as described in Sections 2.4.7 and 4.3.1.",
+                "supports_claim": "K-PKE higher-level arithmetic relies on the coordinate-wise rules from Section 2.4.7.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "SF-PA-008",
+            "category": "implementation_requirement",
+            "statement": "FIPS 203 allows mathematically equivalent implementations to replace the given steps, so a concrete function implementing polynomial addition need not literally mirror pseudocode as long as it produces the correct output for every input.",
+            "verification_relevance": "candidate verification relevance note about proof scope: later checking should target mathematical equivalence or local bounds, not textual identity to pseudocode.",
+            "confidence": "high",
+            "uncertainty": "This does not by itself specify which representation an implementation may use internally.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Announcement item 7 and Section 3.3 'Equivalent implementations'",
+                "excerpt": "For every computational procedure that is specified in this standard, a conforming implementation may replace the given set of steps with any mathematically equivalent set of steps... the specified algorithm may be replaced with a different procedure that produces the correct output for every input.",
+                "supports_claim": "Equivalent implementations are permitted.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "This weakens any claim that exact internal coefficient ranges are mandated unless the implementation chooses exact canonical representation."
+            ]
+          }
+        ],
+        "constants_and_parameters": [
+          {
+            "fact_id": "CP-001",
+            "category": "constant",
+            "statement": "The standard uses n = 256 throughout the document.",
+            "verification_relevance": "candidate constant relevant to later C-level loop bounds and array-size assumptions for polynomial addition.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol n",
+                "excerpt": "n denotes the integer 256 throughout this document.",
+                "supports_claim": "n = 256.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4",
+                "excerpt": "All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329.",
+                "supports_claim": "n is a global constant used by algorithms.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "CP-002",
+            "category": "constant",
+            "statement": "The standard uses q = 3329 throughout the document, and q is prime.",
+            "verification_relevance": "candidate constant relevant to later coefficient bounds and modular arithmetic assertions.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol q",
+                "excerpt": "q denotes the prime integer 3329 = 2^8 * 13 + 1 throughout this document.",
+                "supports_claim": "q = 3329 and is prime.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4",
+                "excerpt": "All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329.",
+                "supports_claim": "q is a global constant used by algorithms.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "CP-003",
+            "category": "type_parameter",
+            "statement": "Polynomial coefficients in exact R_q and T_q pseudocode representations are elements of Z_q.",
+            "verification_relevance": "candidate type fact for later range-checking assumptions on inputs and outputs of a polynomial-add routine under exact representation.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equations (2.5) and (2.7)",
+                "excerpt": "Polynomial and NTT representations are represented by arrays in Z_q^256.",
+                "supports_claim": "Exact coefficient arrays are over Z_q.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "CP-004",
+            "category": "global_variables",
+            "statement": "The global variables k, eta1, eta2, d_u, and d_v vary by parameter set, but they are not directly needed to define local coefficient-wise polynomial addition itself.",
+            "verification_relevance": "candidate scoping fact to separate polynomial-add local reasoning from parameter-set-dependent serialization and compression logic.",
+            "confidence": "medium",
+            "uncertainty": "The first part is directly evidenced; the second part is an inference from the addition rule sections not referring to these variables.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4 and Section 3.2",
+                "excerpt": "There are also five global integer variables: k, eta1, eta2, d_u, and d_v... The five global variables are set to particular values when a parameter set is selected.",
+                "supports_claim": "These variables vary by parameter set.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5",
+                "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+                "supports_claim": "The polynomial addition rule itself is stated independently of parameter-set-specific variables.",
+                "confidence": "medium"
+              }
+            ],
+            "limitations": [
+              "Exact Table 2 values are not available in the provided truncated primary evidence excerpt."
+            ]
+          }
+        ],
+        "algorithms_or_steps": [
+          {
+            "fact_id": "ALG-001",
+            "category": "algorithm_rule",
+            "statement": "To add two polynomials or two NTT representations in the specification, add the corresponding coefficient arrays coordinate-wise, with results assigned in Z_q.",
+            "verification_relevance": "candidate algorithm-to-code trace item for a later mlk_poly_add loop and candidate specification fact for later range checking.",
+            "confidence": "high",
+            "uncertainty": "The spec states the rule declaratively rather than as a standalone algorithm named polynomial addition.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5 with references to (2.3) and example hhat <- fhat + ghat",
+                "excerpt": "The algebraic operations of addition ... are thus performed by addition ... of the corresponding coefficient arrays, as in (2.3)... the addition of two NTT representations in pseudocode is performed by a statement of the form hhat <- fhat + ghat.",
+                "supports_claim": "Specification-level addition is coefficient-array addition in Z_q.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "ALG-002",
+            "category": "algorithm_rule",
+            "statement": "When an algorithm defined on one polynomial is invoked on a vector or matrix, it is applied entry-wise to each element of the array or matrix.",
+            "verification_relevance": "candidate trace item if later verification must justify repeated use of polynomial addition inside vector/matrix operations.",
+            "confidence": "high",
+            "uncertainty": "None from the cited examples.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.8, introductory paragraph and examples",
+                "excerpt": "When the pseudocode invokes such an algorithm on an array or matrix input, it is implied that the algorithm is invoked repeatedly and applied to each entry of the input.",
+                "supports_claim": "Algorithms are lifted entry-wise to array/matrix structures.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "ALG-003",
+            "category": "algorithm_context",
+            "statement": "K-PKE.KeyGen computes t-hat <- A-hat o s-hat + e-hat, which includes coordinate-wise addition of NTT-domain polynomial arrays after matrix-vector multiplication.",
+            "verification_relevance": "candidate use-site showing where polynomial addition semantics matter in the standard.",
+            "confidence": "high",
+            "uncertainty": "This is a context example rather than the generic polynomial-add definition itself.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Algorithm 13, line 18",
+                "excerpt": "t-hat <- A-hat o s-hat + e-hat.",
+                "supports_claim": "A K-PKE use-site performs addition on T_q-valued vector entries.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.7",
+                "excerpt": "Addition and scalar multiplication are performed coordinate-wise.",
+                "supports_claim": "The addition inside this use-site is governed by coordinate-wise rules.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "ALG-004",
+            "category": "algorithm_context",
+            "statement": "K-PKE.Encrypt computes v <- NTT^{-1}(t-hat^T o y-hat) + e2 + mu and u <- NTT^{-1}(A-hat^T o y-hat) + e1, showing polynomial additions in exact R_q representation after inverse NTT.",
+            "verification_relevance": "candidate use-site showing both polynomial-plus-polynomial and chained additions in the standard.",
+            "confidence": "high",
+            "uncertainty": "This is a contextual use-site, not an isolated addition algorithm.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Algorithm 14, lines 19-21",
+                "excerpt": "u <- NTT^{-1}(A-hat^T o y-hat) + e1 ... v <- NTT^{-1}(t-hat^T o y-hat) + e2 + mu.",
+                "supports_claim": "K-PKE.Encrypt contains additions of polynomials in R_q representation.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5",
+                "excerpt": "The algebraic operations of addition ... in R_q and T_q are done coordinate-wise.",
+                "supports_claim": "The additions in Algorithm 14 use the coordinate-wise addition rule.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "ALG-005",
+            "category": "algorithm_context",
+            "statement": "K-PKE.Decrypt computes w <- v' - NTT^{-1}(s-hat^T o NTT(u')), so subtraction is also relevant to the same coefficient-wise modular arithmetic family as addition.",
+            "verification_relevance": "candidate specification fact for the configured property family P16, which mentions addition/subtraction bounds.",
+            "confidence": "high",
+            "uncertainty": "The spec text provided explicitly defines addition; subtraction follows through Z_q arithmetic and appears directly in algorithms, but no standalone subtraction section is given.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Algorithm 15, line 6",
+                "excerpt": "w <- v' - NTT^{-1}(s-hat^T o NTT(u')).",
+                "supports_claim": "Subtraction appears as part of polynomial arithmetic in ML-KEM algorithms.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.1, equation (2.1) discussion",
+                "excerpt": "It is implicit that reduction modulo m takes place whenever an assignment is made to a variable in Z_m.",
+                "supports_claim": "Subtraction results assigned to Z_q-typed values are interpreted modulo q.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "The specification excerpt does not separately tabulate subtraction bounds."
+            ]
+          }
+        ],
+        "equations_and_bounds": [
+          {
+            "fact_id": "EQ-001",
+            "category": "equation",
+            "statement": "Equation (2.3) defines array addition: W <- X + Y, with W[i] = X[i] + Y[i] for all i.",
+            "verification_relevance": "candidate core equation for later derivation of coefficient-wise assertions.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.3, equation (2.3) and explanatory sentence",
+                "excerpt": "W <- X + Y ... with the property that W[i] = X[i] + Y[i] for all i.",
+                "supports_claim": "Equation (2.3) gives coefficient-wise array addition.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "EQ-002",
+            "category": "equation",
+            "statement": "Equation (2.5) identifies the exact polynomial representation as an array in Z_q^256.",
+            "verification_relevance": "candidate equation-to-data-layout trace for later array-length and element-domain assumptions.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equation (2.5)",
+                "excerpt": "(f0, f1, … , f255) in Z_q^256.",
+                "supports_claim": "Exact polynomial representation is an array in Z_q^256.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "EQ-003",
+            "category": "equation",
+            "statement": "Equation (2.7) identifies the exact NTT representation as an array in Z_q^256.",
+            "verification_relevance": "candidate equation-to-data-layout trace if the target function later operates on NTT-form coefficients instead of standard polynomial form.",
+            "confidence": "high",
+            "uncertainty": "None.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equation (2.7)",
+                "excerpt": "... in Z_q^256.",
+                "supports_claim": "NTT representation is also an array in Z_q^256.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "EQ-004",
+            "category": "bound",
+            "statement": "For exact specification values, each coefficient before and after polynomial addition lies in the abstract set Z_q = {0,1,...,q-1}, where q = 3329.",
+            "verification_relevance": "candidate bound relevant to later C-level assertions for exact-representation local coefficient bounds.",
+            "confidence": "high",
+            "uncertainty": "Only holds directly for canonical abstract values after modular assignment, not necessarily for temporary unreduced implementation values.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol Z_m and symbol q",
+                "excerpt": "Z_m is the set {0,1,...,m-1} with operations modulo m; q denotes 3329.",
+                "supports_claim": "Z_q has canonical range 0..3328.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.1",
+                "excerpt": "Reduction modulo m takes place whenever an assignment is made to a variable in Z_m.",
+                "supports_claim": "Assigned exact results remain within Z_q.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Does not establish signed-centered ranges such as [-q+1,q-1] or implementation-specific widened bounds."
+            ]
+          }
+        ],
+        "candidate_preconditions": [
+          {
+            "fact_id": "PRE-001",
+            "category": "candidate_precondition",
+            "statement": "Candidate precondition suggested by the specification: inputs to exact polynomial addition are coefficient arrays of length 256.",
+            "verification_relevance": "candidate precondition suggested by the specification for later harness assumptions on array bounds.",
+            "confidence": "high",
+            "uncertainty": "The spec defines the mathematical representation but does not name a standalone addition API.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4, equations (2.5) and (2.7)",
+                "excerpt": "Both R_q and T_q representations use arrays in Z_q^256.",
+                "supports_claim": "Exact coefficient-array inputs have length 256.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "PRE-002",
+            "category": "candidate_precondition",
+            "statement": "Candidate precondition suggested by the specification: each input coefficient to exact polynomial addition is a Z_q value, i.e., already reduced modulo q if the routine claims exact specification representation.",
+            "verification_relevance": "candidate precondition suggested by the specification for local coefficient-range assumptions in later verification.",
+            "confidence": "high",
+            "uncertainty": "This is only appropriate if the implementation function is intended to operate on exact canonical representation rather than lazy or signed representation.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4 and Section 2.4.1",
+                "excerpt": "Representations are arrays in Z_q^256 ... reduction modulo m takes place whenever an assignment is made to a variable in Z_m.",
+                "supports_claim": "Exact representation uses Z_q-valued coefficients.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Need implementation evidence later to know whether mlk_poly_add uses exact or non-canonical internal representation."
+            ]
+          },
+          {
+            "fact_id": "PRE-003",
+            "category": "candidate_precondition",
+            "statement": "Candidate precondition suggested by the specification: the relevant parameter set has been selected so that global constants and variables are fixed consistently before invoking higher-level ML-KEM arithmetic.",
+            "verification_relevance": "candidate environment precondition for later harness setup, though not specific to local addition arithmetic.",
+            "confidence": "medium",
+            "uncertainty": "This is a general ML-KEM invocation precondition, not a polynomial-add-specific one.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4 and Section 7 introductory text",
+                "excerpt": "The five global variables are set to particular values when a parameter set is selected... one must select a parameter set.",
+                "supports_claim": "ML-KEM arithmetic is parameterized by selected globals.",
+                "confidence": "medium"
+              }
+            ],
+            "limitations": [
+              "Section 7 text is truncated before full algorithm details in the provided raw evidence."
+            ]
+          }
+        ],
+        "candidate_postconditions": [
+          {
+            "fact_id": "POST-001",
+            "category": "candidate_postcondition",
+            "statement": "Candidate postcondition suggested by the specification: for each index i in 0..255, the result coefficient equals input_a[i] + input_b[i] mod q.",
+            "verification_relevance": "candidate postcondition for later local functional assertions about mlk_poly_add under exact representation assumptions.",
+            "confidence": "high",
+            "uncertainty": "This is the direct specification rule, but later implementation mapping to mlk_poly_add still needs code evidence.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.3, equation (2.3) explanation",
+                "excerpt": "W[i] = X[i] + Y[i] for all i.",
+                "supports_claim": "Each output coefficient is the modular sum of the corresponding inputs.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5",
+                "excerpt": "Addition in R_q and T_q is done coordinate-wise and performed by addition of the corresponding coefficient arrays.",
+                "supports_claim": "Polynomial addition is coefficient-wise modular addition.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "POST-002",
+            "category": "candidate_postcondition",
+            "statement": "Candidate postcondition suggested by the specification: if the output is stored in exact Z_q representation, each result coefficient is in 0..3328.",
+            "verification_relevance": "candidate bound relevant to later C-level assertions for exact output normalization.",
+            "confidence": "high",
+            "uncertainty": "Only applies if the concrete function returns exact canonical coefficients rather than delayed-reduction values.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, Z_m and q; Section 2.4.1",
+                "excerpt": "Z_m is {0,...,m-1} ... reduction modulo m takes place whenever assignment is made to a variable in Z_m.",
+                "supports_claim": "Exact Z_q output coefficients lie in 0..q-1.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Implementation may use a different but mathematically equivalent internal/output representation."
+            ]
+          }
+        ],
+        "candidate_verification_relevance": [
+          {
+            "fact_id": "VR-001",
+            "category": "candidate_verification_relevance",
+            "statement": "The strongest directly supported local specification fact for polynomial addition is coefficient-wise modular addition over arrays in Z_q^256; this is a candidate basis for later range and functional checks.",
+            "verification_relevance": "candidate specification fact for later range checking and local functional assertions.",
+            "confidence": "high",
+            "uncertainty": "Need implementation evidence later to connect this fact to mlk_poly_add specifically.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Sections 2.4.3-2.4.5",
+                "excerpt": "Array addition is coordinate-wise; polynomial and NTT additions are performed by addition of the corresponding coefficient arrays.",
+                "supports_claim": "Coefficient-wise modular addition is the core addition specification.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "VR-002",
+            "category": "candidate_verification_relevance",
+            "statement": "For the configured thesis boundary 'Local coefficient bounds for the exact representation and input assumptions,' the directly supported exact-representation bound is canonical Z_q range 0..3328 for inputs and outputs.",
+            "verification_relevance": "candidate bound relevant to later C-level assertions under exact-representation assumptions.",
+            "confidence": "high",
+            "uncertainty": "This does not justify broader implementation-specific ranges without code-level evidence.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3 and Section 2.4.1",
+                "excerpt": "Z_q is the set {0,...,q-1}; reduction modulo m takes place upon assignment to Z_m.",
+                "supports_claim": "Canonical exact coefficients are within 0..q-1.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "Does not confirm whether mlk_poly_add keeps exact canonical form at every program point."
+            ]
+          },
+          {
+            "fact_id": "VR-003",
+            "category": "candidate_verification_relevance",
+            "statement": "Because FIPS 203 permits mathematically equivalent implementations, later verification may need to distinguish specification-level exact postconditions from implementation-level intermediate bounds or alternative representations.",
+            "verification_relevance": "candidate scoping note for later proof obligation design.",
+            "confidence": "high",
+            "uncertainty": "None about the equivalence allowance; uncertainty remains about the implementation's chosen representation.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 3.3, Equivalent implementations",
+                "excerpt": "A conforming implementation may replace the given set of steps with any mathematically equivalent set of steps.",
+                "supports_claim": "Implementation may differ from literal pseudocode while remaining conforming.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": []
+          },
+          {
+            "fact_id": "VR-004",
+            "category": "candidate_verification_relevance",
+            "statement": "The specification evidence in this stage is sufficient to support candidate assertions about exact modular results, array length 256, and coefficient domain Z_q, but not enough to support claims about concrete overflow safety, signedness, or unreduced machine-integer bounds for mlk_poly_add.",
+            "verification_relevance": "candidate boundary note to prevent overclaiming in later artefact generation.",
+            "confidence": "high",
+            "uncertainty": "None about evidence gap; exact implementation facts are absent in this stage.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Sections 2.3-2.4.5",
+                "excerpt": "The specification defines abstract modular arithmetic and array representations, but not C integer widths or implementation-specific temporaries.",
+                "supports_claim": "Spec supports abstract bounds but not machine-level overflow claims.",
+                "confidence": "high"
+              }
+            ],
+            "limitations": [
+              "No implementation files were provided in this stage input."
+            ]
+          }
+        ],
+        "terminology_to_preserve": [
+          {
+            "term": "R_q",
+            "meaning": "The ring Z_q[X]/(X^n + 1) of polynomials with coefficients in Z_q.",
+            "preservation_rule": "Preserve exactly as R_q and do not replace with informal paraphrases when stating polynomial-domain facts.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol R_q",
+                "excerpt": "R_q: The ring Z_q[X]/(X^n + 1)...",
+                "supports_claim": "Meaning of R_q.",
+                "confidence": "high"
+              }
+            ]
+          },
+          {
+            "term": "T_q",
+            "meaning": "The image of R_q under the number-theoretic transform; elements are NTT representations.",
+            "preservation_rule": "Preserve exactly as T_q when distinguishing standard polynomial representation from NTT representation.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol T_q",
+                "excerpt": "T_q: The image of R_q under the number-theoretic transform.",
+                "supports_claim": "Meaning of T_q.",
+                "confidence": "high"
+              }
+            ]
+          },
+          {
+            "term": "Z_q",
+            "meaning": "Integers modulo q, i.e., canonical values 0..q-1 with modular operations.",
+            "preservation_rule": "Preserve exact modular-domain wording; do not silently substitute signed integer ranges.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.3, symbol Z_m",
+                "excerpt": "Z_m is the set {0,1,...,m-1} equipped with addition and multiplication modulo m.",
+                "supports_claim": "Meaning of Z_q as a modular domain.",
+                "confidence": "high"
+              }
+            ]
+          },
+          {
+            "term": "coordinate-wise",
+            "meaning": "Addition and scalar multiplication are applied coefficient-by-coefficient to arrays representing R_q or T_q elements.",
+            "preservation_rule": "Use the phrase coordinate-wise when describing specification arithmetic; it is the standard's chosen term.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.5",
+                "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+                "supports_claim": "Meaning of coordinate-wise for these operations.",
+                "confidence": "high"
+              }
+            ]
+          },
+          {
+            "term": "NTT representation",
+            "meaning": "An element of T_q corresponding to a polynomial in R_q.",
+            "preservation_rule": "Preserve exact phrase when referring to T_q-form objects.",
+            "evidence_references": [
+              {
+                "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+                "locator": "Section 2.4.4 and Section 4.3",
+                "excerpt": "An element (sometimes called 'NTT representation') ghat of T_q ...",
+                "supports_claim": "Meaning of NTT representation.",
+                "confidence": "high"
+              }
+            ]
+          }
+        ],
+        "deterministic_reference_assessment": {
+          "used": true,
+          "status": "used_only_as_navigation_hint",
+          "warning": "Deterministic advisory material was used only to locate likely relevant sections (2.4.3-2.4.8, 4.3, Algorithms 13-15). All substantive claims above were checked against the raw primary evidence. No deterministic-only claim was adopted without primary support.",
+          "disagreements": []
+        },
+        "uncertainties": [
+          {
+            "issue": "The target implementation function mlk_poly_add is not present in provided primary evidence, so no direct mapping from FIPS addition rules to that exact function name can be confirmed in this stage.",
+            "impact": "Later stages need implementation source evidence before asserting that mlk_poly_add implements exact R_q addition, T_q addition, or some equivalent non-canonical representation."
+          },
+          {
+            "issue": "The provided primary evidence is truncated before the full text of Section 7 and all of Section 8.",
+            "impact": "This stage cannot cite primary evidence for exact parameter-set table entries or the full input-checking text referenced in Section 3.3."
+          },
+          {
+            "issue": "FIPS 203 defines abstract modular arithmetic but does not specify C integer widths, signedness, temporary storage ranges, or whether a concrete implementation normalizes immediately after each coefficient addition.",
+            "impact": "Later C-level range proofs or overflow checks require implementation files and possibly representation-specific assumptions beyond this specification extraction."
+          },
+          {
+            "issue": "The configured property family mentions addition/subtraction bounds, but the provided specification excerpts explicitly define addition more directly than subtraction.",
+            "impact": "Later subtraction-bound claims should be phrased cautiously and tied either to modular Z_q semantics or to implementation evidence."
+          }
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3",
+            "excerpt": "Defines n = 256, q = 3329, Z_m, R_q, T_q.",
+            "supports_claim": "Core constants and domains used in this extraction.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Sections 2.4.1-2.4.5",
+            "excerpt": "Defines modular assignment semantics, array arithmetic, representations of R_q and T_q, and coordinate-wise addition.",
+            "supports_claim": "Primary basis for polynomial-addition specification facts.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Sections 2.4.7-2.4.8",
+            "excerpt": "Defines lifted vector/matrix arithmetic and application of algorithms to arrays.",
+            "supports_claim": "Context for reuse of polynomial addition in higher-level algorithms.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Algorithms 13-15",
+            "excerpt": "K-PKE algorithms include additions such as t-hat <- A-hat o s-hat + e-hat and v <- ... + e2 + mu.",
+            "supports_claim": "Use-sites showing relevance of polynomial addition in ML-KEM computations.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 3.3",
+            "excerpt": "Equivalent implementations may replace specified steps with any mathematically equivalent set of steps.",
+            "supports_claim": "Important caveat for relating specification facts to concrete implementation routines.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "This output is candidate specification analysis only, not proof or compliance determination.",
+          "Claims are restricted to the provided FIPS 203 primary evidence and do not incorporate absent implementation source files.",
+          "No assertion is made here about mlk_poly_add correctness, overflow safety, normalization policy, or exact representation without implementation evidence.",
+          "The raw evidence was truncated, so some later-section facts remain unavailable for direct citation."
+        ]
+      }
+    }
+  }
+}

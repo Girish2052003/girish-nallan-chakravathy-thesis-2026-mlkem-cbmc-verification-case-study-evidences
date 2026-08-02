@@ -1,0 +1,92 @@
+{
+  "schema_version": "run_manifest.v1",
+  "created_or_updated_utc": "2026-07-11T05:16:37.185448+00:00",
+  "run_dir": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559",
+  "layout_policy": {
+    "one_file_one_location": true,
+    "root_level_stage_outputs_allowed": false,
+    "handoff_uses_manifest_pointers": true,
+    "deterministic_reference_is_authoritative": false,
+    "llm_output_is_authoritative_stage_candidate": true,
+    "formal_truth_not_claimed_by_llm": true
+  },
+  "stages": [
+    {
+      "stage_id": "01",
+      "stage_key": "01_master_orchestrator",
+      "stage_name": "Master Orchestrator",
+      "stage_type": "deterministic_only",
+      "description": "Controls run setup, stage order, manifests, and status."
+    },
+    {
+      "stage_id": "02",
+      "stage_key": "02_spec_extraction",
+      "stage_name": "Specification Extraction Agent",
+      "stage_type": "llm_backed",
+      "description": "Extracts specification-level facts. LLM output is authoritative stage candidate output."
+    },
+    {
+      "stage_id": "03",
+      "stage_key": "03_code_understanding",
+      "stage_name": "Code Understanding Agent",
+      "stage_type": "llm_backed",
+      "description": "Extracts implementation-level facts. LLM output is authoritative stage candidate output."
+    },
+    {
+      "stage_id": "04",
+      "stage_key": "04_property_discovery",
+      "stage_name": "Property Discovery Agent",
+      "stage_type": "llm_backed",
+      "description": "Proposes candidate CBMC-style properties from spec/code evidence."
+    },
+    {
+      "stage_id": "05",
+      "stage_key": "05_artifact_generation",
+      "stage_name": "Formal Artefact Generation Agent",
+      "stage_type": "mixed",
+      "description": "LLM generates the candidate artefact plan; Python renders and validates controlled concrete files."
+    },
+    {
+      "stage_id": "06",
+      "stage_key": "06_review_critic",
+      "stage_name": "Review / Critic Agent",
+      "stage_type": "llm_backed",
+      "description": "Reviews candidate properties and artefacts before tool execution."
+    },
+    {
+      "stage_id": "07",
+      "stage_key": "07_tool_execution",
+      "stage_name": "Formal Tool Execution Agent",
+      "stage_type": "tool_execution",
+      "description": "Runs CBMC and records exact tool evidence."
+    },
+    {
+      "stage_id": "08",
+      "stage_key": "08_counterexample_analysis",
+      "stage_name": "Counterexample Analysis Agent",
+      "stage_type": "llm_backed",
+      "description": "Explains CBMC failures/success boundaries and proposes repair directions."
+    },
+    {
+      "stage_id": "09",
+      "stage_key": "09_repair_refinement",
+      "stage_name": "Repair / Refinement Agent",
+      "stage_type": "mixed",
+      "description": "LLM proposes candidate repairs; Python controls patch application and records lineage."
+    },
+    {
+      "stage_id": "10",
+      "stage_key": "10_experiment_logger",
+      "stage_name": "Experiment Logger Agent",
+      "stage_type": "deterministic_only",
+      "description": "Indexes files, checksums, run evidence, and human notes."
+    },
+    {
+      "stage_id": "11",
+      "stage_key": "11_evaluation_reporter",
+      "stage_name": "Evaluation Reporter Agent",
+      "stage_type": "mixed",
+      "description": "Python computes facts; LLM may produce cautious thesis-facing interpretation."
+    }
+  ]
+}

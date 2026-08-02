@@ -1,0 +1,44 @@
+{
+  "schema_version": "handoff_manifest.v1",
+  "created_utc": "2026-07-10T23:29:01.376585+00:00",
+  "stage_id": "03",
+  "stage_key": "03_code_understanding",
+  "stage_name": "Code Understanding Agent",
+  "stage_type": "llm_backed",
+  "authoritative_source": "llm_authoritative",
+  "handoff_outputs": {
+    "code_summary": "llm_authoritative/02_code_summary.json",
+    "code_summary_validation": "validation/llm_call_validation.json",
+    "function_signature_analysis_advisory": "deterministic_reference/02_function_signature_analysis.deterministic.json",
+    "cbmc_harness_hints_advisory": "deterministic_reference/02_cbmc_harness_hints.deterministic.json"
+  },
+  "checksums_sha256": {
+    "code_summary": "f65baa8240f839936fa6f85d17a4f73137a6f13531e469a7a72a247e56151008",
+    "code_summary_validation": "622245f84c7723d681680d5089c5d3577335ecd8aa215a4b70b4fc263023ec25",
+    "function_signature_analysis_advisory": "a51090f075768252880598bde481e017c85fefe64d40fd3a5d5c3f068fe7e553",
+    "cbmc_harness_hints_advisory": "a7aeba8005f2ce8fb888be85035764fa74aacaafd714b6fe46a125b063390cb8"
+  },
+  "next_stage_consumers": [
+    "04_property_discovery",
+    "05_artifact_generation",
+    "06_review_critic",
+    "08_counterexample_analysis",
+    "09_repair_refinement",
+    "11_evaluation_reporter"
+  ],
+  "trust_boundary": {
+    "deterministic_reference": "advisory_only_not_authoritative",
+    "llm_output": "authoritative_stage_candidate_not_formal_truth",
+    "primary_evidence": "raw_spec_code_or_tool_outputs_outweigh_hints",
+    "formal_truth": "not_claimed_by_llm"
+  },
+  "iteration": null,
+  "iteration_reason": null,
+  "notes": {
+    "handoff_policy": "code_summary is LLM-authoritative stage candidate output. advisory handoff files are deterministic references only.",
+    "llm_mode": "real",
+    "llm_call_executed": true,
+    "mock_output": false,
+    "agent2_spec_summary_available": true
+  }
+}

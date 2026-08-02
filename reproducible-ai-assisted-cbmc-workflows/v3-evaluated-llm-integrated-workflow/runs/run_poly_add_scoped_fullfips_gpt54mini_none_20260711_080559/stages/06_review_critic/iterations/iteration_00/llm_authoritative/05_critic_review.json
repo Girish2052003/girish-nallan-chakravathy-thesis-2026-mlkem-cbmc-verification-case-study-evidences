@@ -1,0 +1,270 @@
+{
+  "schema_version": "llm_authoritative_stage_output.v1",
+  "created_utc": "2026-07-11T05:20:45.580244+00:00",
+  "trust_boundary": "authoritative_stage_candidate_not_formal_truth",
+  "content": {
+    "stage": "06_review_critic",
+    "mock": false,
+    "llm_call_executed": true,
+    "reviewed_artefacts": {
+      "target_function": "mlk_poly_add",
+      "deterministic_recommended_gate": "needs_human_review"
+    },
+    "overall_assessment": "The Agent 5 artefact set is evidence-linked, narrow, and non-trivial, and it stays within a local coefficient-array bounds-safety framing rather than overclaiming modular or full-ML-KEM correctness. The generated harness calls the target function exactly once, uses concrete objects, and includes coefficient-index assertions. However, the artefact plan contains a minor internal inconsistency in the old-state snapshot requirement label, and the harness/plan combination still merits human similarity review because it is structurally close to the unavoidable CBMC pattern for this function even though the reported similarity score is low. On balance, this is suitable for tool execution only after minor cleanup or explicit human confirmation, not a clean approval without reservation.",
+    "gate_recommendation": "human_review_required",
+    "blocking_issues": [],
+    "warnings": [
+      {
+        "issue": "The artefact plan contains an unrecognized old-state snapshot requirement value `: partial` in `old_state_snapshot_plan.required`.",
+        "impact": "This is not a semantic proof problem, but it is a plan-quality inconsistency that should be normalized before relying on the artefact for downstream automation."
+      },
+      {
+        "issue": "The generated harness includes a post-call relation assertion using `pre_r[i] + b->coeffs[i]` even though the selected property is stated as bounds safety rather than functional correctness.",
+        "impact": "This does not appear to contradict the source, but it broadens the check beyond the narrow selected property and could blur the intended scope for Agent 7."
+      },
+      {
+        "issue": "The independence audit reports low similarity risk, but the harness necessarily shares many fixed identifiers and CBMC primitives with the repository’s contract style.",
+        "impact": "This is not a copying finding, but it is enough similarity context to justify human review before treating the artefact as a final candidate variant."
+      }
+    ],
+    "minor_issues": [
+      {
+        "issue": "The harness does not explicitly assert or model `memory_no_alias`, instead using `__CPROVER_assume(r != b)` on concrete local objects.",
+        "impact": "This is acceptable for a local harness, but it is weaker than the repository contract wording and should be checked against the intended CBMC interpretation."
+      },
+      {
+        "issue": "The selected property is array-bounds safety, yet the harness also stores and uses a full `pre_r` snapshot.",
+        "impact": "The snapshot is not harmful, but it is not needed for the selected property and may give the impression of a stronger postcondition than the property name suggests."
+      },
+      {
+        "issue": "The harness includes `b` only through direct use after the call and does not separately assert frame preservation for `b`.",
+        "impact": "That is consistent with the selected bounds property, but if the next stage wants frame checking, the current harness would need extension."
+      }
+    ],
+    "assumption_review": {
+      "status": "pass_with_caveats",
+      "findings": [
+        {
+          "issue": "The non-aliasing assumption is explicit in the source contract, but the harness uses a direct object-distinctness assumption rather than the repository macro `memory_no_alias`.",
+          "impact": "This is workable for the current local harness, but it is a semantic simplification that should be preserved consciously rather than treated as equivalent proof of the contract."
+        },
+        {
+          "issue": "The overflow-free arithmetic assumptions in the source contract are not encoded as explicit harness assumptions.",
+          "impact": "That is appropriate for the selected bounds-only property, but it means the harness is not checking the full local contract and should not be interpreted that way."
+        },
+        {
+          "issue": "The harness relies on concrete stack objects `r_obj` and `b_obj` being valid mlk_poly instances.",
+          "impact": "This is consistent with the provided source/type evidence, but it should be preserved if Agent 7 rewrites the harness."
+        }
+      ]
+    },
+    "assertion_review": {
+      "status": "pass_with_caveats",
+      "findings": [
+        {
+          "issue": "The assertion `i < MLKEM_N` inside the loop is trivially true given the loop header.",
+          "impact": "It is not harmful, but it adds little value beyond documenting the intended bound and may be considered redundant."
+        },
+        {
+          "issue": "The post-call equality assertion `r->coeffs[i] == (int16_t)(pre_r[i] + b->coeffs[i])` is a functional relation, not a pure bounds assertion.",
+          "impact": "This assertion is supported by the source contract, but it expands the harness beyond the selected array-bounds property and should be treated as an intentional scope choice rather than the property itself."
+        },
+        {
+          "issue": "No assertion explicitly checks that the loop body is the only source of mutation to `r` or that `b` remains unchanged.",
+          "impact": "That is acceptable for the selected property, but it means the harness does not exercise the full frame-condition story present in the header."
+        }
+      ]
+    },
+    "old_state_new_state_review": {
+      "status": "pass",
+      "findings": [
+        {
+          "issue": "The harness snapshots `pre_r[i]` before the function call, which is consistent with the source’s `old(*r)` / `loop_entry(*r)` pattern.",
+          "impact": "This supports the post-call relation assertion if that relation remains in scope."
+        },
+        {
+          "issue": "There is no full-object pre-state snapshot for `r`, only a coefficient array snapshot.",
+          "impact": "For the current harness this is sufficient for coefficient-wise comparisons, but it is narrower than the source’s history-variable style and would need adjustment if the harness is later extended."
+        },
+        {
+          "issue": "The current selected property does not inherently require old-state reasoning.",
+          "impact": "The snapshot is admissible but should be treated as auxiliary structure rather than the core proof obligation."
+        }
+      ]
+    },
+    "contract_review": {
+      "status": "pass_with_caveats",
+      "findings": [
+        {
+          "issue": "The artifact plan correctly keeps `contract_plan.enabled` false, avoiding accidental claim that native contracts are being enforced or replaced.",
+          "impact": "This is appropriate for a standard CBMC harness run."
+        },
+        {
+          "issue": "The plan acknowledges the source contract’s non-aliasing and overflow preconditions but does not attempt to reproduce them as a native contract artifact.",
+          "impact": "That matches the selected harness strategy, which is acceptable, but it means the harness is not a contract-verification artefact."
+        },
+        {
+          "issue": "The source contract is strong enough to support a local functional check, but the chosen harness is still a harness, not a DFCC-style contract proof.",
+          "impact": "This is fine, provided the downstream stage does not overread it as proving the header contract in full."
+        }
+      ]
+    },
+    "verification_strategy_review": {
+      "status": "pass",
+      "findings": [
+        {
+          "issue": "`standard_cbmc_harness` is consistent with the selected property and with the source’s simple bounded loop over 256 coefficients.",
+          "impact": "The strategy is a good fit for a local array-index safety check."
+        },
+        {
+          "issue": "The plan explicitly avoids relational, analysis-only, and contract-enforcement modes.",
+          "impact": "This keeps the artefact narrow and avoids strategy mismatch."
+        },
+        {
+          "issue": "The harness targets one direct call to `mlk_poly_add` and does not require source instrumentation.",
+          "impact": "This is appropriate for a first CBMC attempt on a small local property."
+        }
+      ]
+    },
+    "independence_review": {
+      "status": "pass_with_caveats",
+      "findings": [
+        {
+          "issue": "The heuristic similarity score is low (`0.21`), and the audit marks copying risk as low.",
+          "impact": "That is reassuring, but it is not originality proof."
+        },
+        {
+          "issue": "The harness necessarily shares required identifiers and CBMC primitives with any credible `mlk_poly_add` harness.",
+          "impact": "These similarities are unavoidable and do not by themselves imply copying."
+        },
+        {
+          "issue": "The audit itself says human similarity review is not required, yet the broader stage instructions still ask to flag copying-risk situations.",
+          "impact": "Given the close alignment with the repository contract style and the deterministic template influence, a human glance is still prudent before tool execution if the workflow is operating conservatively."
+        }
+      ]
+    },
+    "scope_and_overclaim_review": {
+      "status": "pass",
+      "findings": [
+        {
+          "issue": "The artefact explicitly rejects full ML-KEM correctness, FIPS compliance, cryptographic security, and modular normalization claims.",
+          "impact": "This is the right scope for the selected local property."
+        },
+        {
+          "issue": "The source-level distinction between FIPS modular semantics and the C routine’s plain `int16_t` addition is preserved in the plan.",
+          "impact": "This avoids a major semantic overclaim."
+        },
+        {
+          "issue": "The selected property is intentionally narrower than the source contract and narrower than the FIPS math semantics.",
+          "impact": "That is acceptable for a bounds-safety harness, but it means the harness should not be repurposed as evidence for broader correctness claims."
+        }
+      ]
+    },
+    "deterministic_reference_assessment": {
+      "used": true,
+      "status": "advisory_only_verified_against_primary_evidence",
+      "warning": "Deterministic review material was useful as a locator and sanity check, but the final judgment here is based on the raw FIPS 203 text and the repository source/header evidence. Where deterministic material suggested a more permissive gate, I downgraded it because the artefact plan has a minor inconsistency and the harness is close enough to the template-like CBMC pattern to merit human confirmation.",
+      "disagreements": [
+        {
+          "deterministic_claim": "The candidate harness is ready to continue with no human review because similarity risk is low and validation passes.",
+          "primary_evidence_finding": "The manifest and audit are positive, but the plan contains an internally inconsistent old-state requirement value (`: partial`), and the harness includes an auxiliary post-state equality assertion that broadens the scope beyond the selected bounds property.",
+          "resolution": "Treat the artefact as promising and likely executable, but route through human review before tool execution rather than giving a clean approval.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/llm_authoritative/04_artifact_plan.json",
+              "locator": "old_state_snapshot_plan.required",
+              "excerpt": "\"required\": \": partial\"",
+              "supports_claim": "Plan inconsistency in the old-state snapshot requirement field.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+              "locator": "post-call assertion block",
+              "excerpt": "__CPROVER_assert(r->coeffs[i] == (int16_t)(pre_r[i] + b->coeffs[i]), \"post-state coefficient relation\");",
+              "supports_claim": "Harness includes a stronger functional assertion than pure index bounds.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/validation/04_independence_audit.json",
+              "locator": "highest_similarity / recommended_action",
+              "excerpt": "\"combined_similarity\": 0.21 ... \"recommended_action\": \"record_and_continue\"",
+              "supports_claim": "Similarity risk is low, but the audit is heuristic only.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "deterministic_claim": "The harness structure is a safe, simple bounded-loop model with concrete objects and a pre-state snapshot.",
+          "primary_evidence_finding": "That is broadly correct, but the artifact should not be treated as semantically closed because the same harness also encodes a post-state equality relation and does not explicitly encode the repository’s no-alias macro semantics.",
+          "resolution": "Use the deterministic structure as a baseline only; keep the pre-state snapshot idea but recognize the harness is slightly broader than the selected property and still needs a human check.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+              "locator": "entire harness",
+              "excerpt": "Concrete stack objects r_obj and b_obj, pre_r snapshot, one call to mlk_poly_add, and post-call assertions.",
+              "supports_claim": "The harness is concretely modeled and bounded-loop based.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+              "locator": "mlk_poly_add contract",
+              "excerpt": "requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))",
+              "supports_claim": "Source contract includes explicit no-alias requirements not mirrored verbatim in the harness.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ]
+    },
+    "evidence_references": [
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+        "locator": "mlk_poly_add declaration/comment and contract",
+        "excerpt": "/* Add two polynomials in place. ... The coefficients of @p r and @p b must be such that the addition does not overflow. Otherwise, the behaviour of this function is undefined. ... @param[in,out] r Input-output polynomial to be added to. @param[in]     b Input polynomial that should be added to @p r. Must be disjoint from @p r. */ ... requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))",
+        "supports_claim": "The source contract supports in-place addition, no-aliasing, overflow preconditions, and old-state postcondition.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "locator": "mlk_poly_add body and loop invariants",
+        "excerpt": "for (i = 0; i < MLKEM_N; i++) __loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+        "supports_claim": "Loop traversal and coefficient-wise update semantics.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+        "locator": "MLKEM_N definition",
+        "excerpt": "#define MLKEM_N 256",
+        "supports_claim": "The polynomial array length is 256.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+        "locator": "memory_no_alias / memory_slice / forall / old / loop_entry macros",
+        "excerpt": "#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\n#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__)\n#define forall(qvar, qvar_lb, qvar_ub, predicate) __CPROVER_forall { uint32_t qvar; ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) }\n#define old(...) __CPROVER_old(__VA_ARGS__)\n#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)",
+        "supports_claim": "Semantics of the CBMC macros used by the source contract.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+        "locator": "Section 2.4.4 and 2.4.5",
+        "excerpt": "An element f of R_q ... represented in pseudocode by the array (f_0, ..., f_255) ∈ Z_q^256 ... The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+        "supports_claim": "Specification-level coordinate-wise array semantics for addition.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/validation/04_independence_audit.json",
+        "locator": "highest_similarity / recommended_action",
+        "excerpt": "\"combined_similarity\": 0.21 ... \"recommended_action\": \"record_and_continue\"",
+        "supports_claim": "Heuristic similarity screening indicates low similarity risk.",
+        "confidence": "high"
+      }
+    ],
+    "limitations": [
+      "This is a critic review, not a proof result.",
+      "No CBMC execution output was provided for this stage.",
+      "The artifact is promising but not fully clean because of the old-state-plan inconsistency and the auxiliary post-state assertion breadth.",
+      "The deterministic review data were treated as advisory only and were independently checked against the raw source/header/FIPS evidence."
+    ]
+  }
+}

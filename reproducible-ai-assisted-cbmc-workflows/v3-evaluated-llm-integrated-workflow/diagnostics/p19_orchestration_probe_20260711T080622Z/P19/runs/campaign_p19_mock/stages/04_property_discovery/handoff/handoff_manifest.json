@@ -1,0 +1,45 @@
+{
+  "schema_version": "handoff_manifest.v1",
+  "created_utc": "2026-07-11T08:06:24.583827+00:00",
+  "stage_id": "04",
+  "stage_key": "04_property_discovery",
+  "stage_name": "Property Discovery Agent",
+  "stage_type": "llm_backed",
+  "authoritative_source": "llm_authoritative",
+  "handoff_outputs": {
+    "candidate_properties": "llm_authoritative/03_candidate_properties.json",
+    "candidate_properties_validation": "validation/llm_call_validation.json",
+    "property_evidence_matrix_advisory": "deterministic_reference/03_property_evidence_matrix.deterministic.json",
+    "spec_code_traceability_advisory": "deterministic_reference/03_spec_code_traceability.deterministic.json",
+    "property_risk_register_advisory": "deterministic_reference/03_property_risk_register.deterministic.json"
+  },
+  "checksums_sha256": {
+    "candidate_properties": "72f4139308d7d912fb4ec67e481b61ddde9888cd52fa40338304b7b459d47866",
+    "candidate_properties_validation": "603f492b4f7dbff14b3f600266619b4d0c543b3137d0d0afd1e66cca024a2dda",
+    "property_evidence_matrix_advisory": "91e9d89b9ece2f67606689b613aeebcffb8c767874325691a00ba568590d2dc7",
+    "spec_code_traceability_advisory": "2b66f5192dc48c93d44fae059039836e5981140f78655f87f66d63260bcddc3a",
+    "property_risk_register_advisory": "25276a8cbc1eb0bd6961a86c79fef632a925be09c7eb78a97a847749eab06eae"
+  },
+  "next_stage_consumers": [
+    "05_artifact_generation",
+    "06_review_critic",
+    "11_evaluation_reporter"
+  ],
+  "trust_boundary": {
+    "deterministic_reference": "advisory_only_not_authoritative",
+    "llm_output": "authoritative_stage_candidate_not_formal_truth",
+    "primary_evidence": "raw_spec_code_or_tool_outputs_outweigh_hints",
+    "formal_truth": "not_claimed_by_llm"
+  },
+  "iteration": null,
+  "iteration_reason": null,
+  "notes": {
+    "handoff_policy": "candidate_properties is LLM-authoritative stage candidate output. advisory handoff files are deterministic references only.",
+    "llm_mode": "mock",
+    "llm_call_executed": false,
+    "mock_output": true,
+    "agent2_spec_summary_available": true,
+    "agent3_code_summary_available": true,
+    "scope_policy": "CBMC-realistic local properties only; broad crypto/FIPS/full-correctness claims must be rejected or downgraded."
+  }
+}

@@ -1,0 +1,701 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-11T07:47:01.465009+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-mini",
+  "attempt": 1,
+  "elapsed_seconds": 46.695921182632446,
+  "request_snapshot_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/04_property_discovery/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "8fa8bea6ed160b86be82780f29cf8d1522df79d9fef96f12e93fdf03a7166cdb",
+  "response_id": "resp_04b31757734f1868016a51f4c8bcb0819eb7e6c4bf16f13444",
+  "usage": {
+    "input_tokens": "[REDACTED]",
+    "input_tokens_details": "[REDACTED]",
+    "output_tokens": "[REDACTED]",
+    "output_tokens_details": "[REDACTED]",
+    "total_tokens": "[REDACTED]"
+  },
+  "exact_input_summary": {
+    "schema_version": "responses_api_input_summary.v1",
+    "input_text_block_count": 1,
+    "input_text_chars": 546615,
+    "input_text_utf8_bytes": 555821,
+    "input_text_sha256": "99a40dc4024b32d3b2433b036f75f47dc10fd076f1643f6d1bcc68a4078f9b4b",
+    "input_file_count": 0,
+    "input_files": [],
+    "canonical_input_sha256": "794520c71633a75c0561bdabbe06bbc802feb4361238dabd4addc14b320e7b7e",
+    "contains_primary_truncation_marker": false
+  },
+  "primary_evidence_transmission_manifest": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/04_property_discovery/prompt_package/primary_evidence_transmission_manifest.json",
+  "response_text": "{\"stage\":\"04_property_discovery\",\"mock\":false,\"llm_call_executed\":true,\"source_scope\":{\"previous_spec_summary_available\":true,\"previous_code_summary_available\":true,\"provided_material_complete\":false,\"missing_or_unavailable_material\":[\"No build/proof configuration files were provided in the primary evidence set.\",\"No CBMC or other formal-tool output was provided in the primary evidence set.\",\"No repository files beyond the provided specification/source/header files were provided in the primary evidence set.\"]},\"candidate_properties\":[{\"property_id\":\"P16_CAND_001\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add preserves exact coefficient-wise addition under overflow-safe inputs\",\"category\":\"polynomial_add_sub_bounds\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"functional\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"For each coefficient index i in [0, MLKEM_N), if the harness assumes the header preconditions for mlk_poly_add and valid mlk_poly objects, then after mlk_poly_add(r, b) returns, the updated r->coeffs[i] equals old(r->coeffs[i]) + b->coeffs[i] for every i, with no modular reduction performed by this helper.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration block\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The contract explicitly states the exact per-coefficient postcondition, the signed-range preconditions, the no-alias requirement, and the write footprint.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body and loop invariants\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) __loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"The implementation performs a simple coefficient-wise raw addition and its loop invariants align with the exact postcondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.3 and 2.4.5\",\"excerpt\":\"Elements of Z_q^256 are represented as coefficient arrays, and addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The abstract mathematical model for coefficient-wise addition that motivates a local exact-sum property.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must model mlk_poly as a 256-element int16_t coefficient array.\",\"The harness must assume the declared contract preconditions for overflow safety and non-aliasing.\",\"Any old-state comparison must snapshot the pre-state of r before the call.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with old-state snapshot and per-index assertions\",\"out_of_scope_boundaries\":[\"No claim that the helper performs modulo-q normalization.\",\"No claim of full ML-KEM or FIPS 203 correctness.\",\"No claim about side-channel behavior or cryptographic security.\",\"No claim about behavior when the signed-range preconditions are violated.\"],\"uncertainty\":\"This property is strongly supported by the header contract and the implementation body, but it remains a candidate for later CBMC checking rather than a proven result.\",\"limitations\":[\"The exact harness shape is not yet generated.\",\"No formal-tool output was available to confirm provability under a specific CBMC configuration.\"]},{\"property_id\":\"P16_CAND_002\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add is memory-safe on the declared polynomial object footprint\",\"category\":\"memory_safety\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"safety\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"Assuming the function is called on valid, writable mlk_poly objects of size sizeof(mlk_poly), mlk_poly_add should not perform out-of-bounds accesses or write outside the footprint of r; the function body only touches r->coeffs[i] and b->coeffs[i] for i = 0..MLKEM_N-1, and the contract restricts the assigned footprint to r.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and mlk_poly_add contract\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly; ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The polynomial object is a fixed-size 256-element coefficient array and the declared write footprint is limited to r.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The implementation accesses one coefficient per iteration and writes only into r.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_slice and memory_no_alias macros\",\"excerpt\":\"#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__) ... #define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"Interprets the CBMC contract macros used for footprint and freshness assumptions.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"r and b point to distinct fresh mlk_poly objects, as required by the contract.\",\"The harness must provide sufficient writable memory for r and readable memory for b.\",\"The CBMC model must honor the memory_slice and memory_no_alias predicates in the checked contract.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"standard CBMC harness with pointer-validity assumptions and footprint checking\",\"out_of_scope_boundaries\":[\"No attempt to prove general heap safety beyond this helper's declared footprint.\",\"No proof that the call chain always supplies valid pointers.\",\"No claim about aliasing beyond the contract-required non-overlap condition.\"],\"uncertainty\":\"The direct evidence for safe access is strong, but the exact pointer-validity assumptions still need to be encoded in the later harness.\",\"limitations\":[\"This is a local safety property only.\",\"No build configuration or translation-unit context was provided beyond the inspected files.\"]},{\"property_id\":\"P16_CAND_003\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add maintains the loop-processed prefix and untouched suffix shape\",\"category\":\"loop_contract\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"loop_contract\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"A loop-invariant candidate for mlk_poly_add is that at each iteration i, coefficients in the processed prefix [0, i) equal loop_entry(*r).coeffs[k] + b->coeffs[k], while coefficients in the unprocessed suffix [i, MLKEM_N) remain equal to loop_entry(*r).coeffs[k].\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\",\"supports_claim\":\"The source already contains a loop invariant matching the prefix/suffix structure needed for a loop-contract candidate.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"loop_entry and forall macros\",\"excerpt\":\"#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__) ... #define forall(qvar, qvar_lb, qvar_ub, predicate)\",\"supports_claim\":\"The meaning of the history-variable and quantifier syntax used in the invariant.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"Addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The abstract coordinate-wise semantics that make the per-prefix/per-suffix invariant natural.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must use CBMC loop annotations or an equivalent modeling approach for loop-entry history.\",\"The invariant should be checked over the exact 256-iteration loop shape.\",\"The harness must not weaken the contract by assuming modular reduction or normalization.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with loop invariants\",\"out_of_scope_boundaries\":[\"No claim that this invariant proves global ML-KEM correctness.\",\"No claim that the helper normalizes coefficients into Z_q canonical form.\",\"No claim that the prefix/suffix invariant automatically generalizes to other helpers.\"],\"uncertainty\":\"The invariant is already present in the source, so the main uncertainty is not about the semantic shape but about how best to encode it in a standalone harness for later review.\",\"limitations\":[\"This is a loop-contract candidate, not a final proof.\",\"If the later harness omits loop-entry history variables, the property will not be expressible in the same form.\"]},{\"property_id\":\"P16_CAND_004\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add requires overflow-safe signed 16-bit coefficient ranges\",\"category\":\"integer_overflow_or_range\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"range\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"If the harness assumes the header's coefficient-range preconditions, CBMC can check that the expression (int16_t)(r->coeffs[i] + b->coeffs[i]) does not overflow the signed 16-bit range before the cast for any coefficient index i.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"The declared preconditions are exactly the signed-range conditions needed to avoid overflow.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop body comment and assignment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The implementation explicitly relies on those preconditions for overflow safety.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.1 and 2.4.5\",\"excerpt\":\"The pseudocode is agnostic regarding how an integer modulo m is represented in actual implementations ... addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The spec gives abstract coordinate-wise addition, but not the C signed-width bound; thus the C overflow obligation is an implementation-level property.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must assume the declared coefficient-range preconditions as explicit assumptions.\",\"The model must use C signed-integer overflow semantics consistent with CBMC's configuration.\",\"No aliasing between r and b, as required by the contract, so the range reasoning is not invalidated by self-aliasing.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with overflow assertions\",\"out_of_scope_boundaries\":[\"No claim that the function reduces modulo q after addition.\",\"No claim that the resulting coefficients are canonical representatives in [0, q-1].\",\"No claim about arithmetic outside the int16_t domain or about undefined-behavior-free execution if the assumptions are violated.\"],\"uncertainty\":\"The overflow obligation is directly supported by source contracts, but the exact CBMC encoding will depend on the harness and compiler-model settings.\",\"limitations\":[\"This is a local range-safety property only.\",\"The spec does not itself provide the signed-width bound; it comes from the implementation contract.\"]},{\"property_id\":\"P16_CAND_005\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add is a destructive accumulator helper that leaves the addend unchanged\",\"category\":\"frame\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"frame\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"A frame-condition candidate is that mlk_poly_add mutates only r and leaves b unchanged, consistent with the assigns clause and the const-qualified addend parameter.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add signature and contract\",\"excerpt\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b) ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The API and contract designate r as mutable and limit writes to r's footprint.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkhem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The body writes only to r, not to b.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must provide non-overlapping objects so that the frame condition is meaningful in the CBMC model.\",\"The addend pointer b is treated as readable but not writable.\",\"Any proof of unchanged b should be limited to the declared function scope.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"standard CBMC harness with frame-condition assertions\",\"out_of_scope_boundaries\":[\"No claim about aliasing if the harness violates the no-alias contract.\",\"No claim about other call sites or interprocedural side effects outside the function.\",\"No claim that the function is pure; it is intentionally destructive on r.\"],\"uncertainty\":\"The property is straightforward, but there is a typo in one evidence path in the source summary; the primary raw file evidence for the function body and assigns clause is still sufficient and authoritative.\",\"limitations\":[\"This is a narrow frame property only.\",\"The evidence path typo was corrected by relying on the raw source/header files.\"]},{\"property_id\":\"P16_CAND_006\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add remains a local polynomial-array operation rather than a modular reduction step\",\"category\":\"analysis_only_no_formal_claim\",\"verification_strategy\":\"analysis_only_no_formal_claim\",\"proof_obligation_kind\":\"analysis_only\",\"support_classification\":\"analysis_only\",\"required_tool_capabilities\":[\"analysis_only_no_formal_claim\"],\"candidate_statement\":\"The target function should be treated as a raw coefficient-wise integer-addition helper, not as a normalization or modular-reduction primitive; any later conversion to canonical Z_q representatives must be handled by a separate helper such as mlk_poly_reduce.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The helper performs only casted addition, with no reduction call.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_reduce declaration and mlk_poly_add comment\",\"excerpt\":\"Convert a polynomial to unsigned canonical representatives ... Add two polynomials in place. The coefficients of r and b must be such that the addition does not overflow.\",\"supports_claim\":\"A separate normalization primitive exists, distinct from mlk_poly_add.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.1 and 2.4.5\",\"excerpt\":\"Reduction modulo m takes place whenever assignment is made to a variable in Z_m ... addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The abstract spec is coordinate-wise, but does not name this helper as a reducer.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"This is an interpretive note, not a proof obligation.\",\"Any later formal property must not silently replace this helper with mlk_poly_reduce.\",\"The relationship to canonical Z_q representatives is outside the scope of this helper.\"],\"cbmc_feasibility\":\"unknown\",\"risk_level\":\"low\",\"expected_artifact_type\":\"analysis note for later harness scoping\",\"out_of_scope_boundaries\":[\"No claim of proof or verification.\",\"No claim that the helper implements modular reduction.\",\"No claim of full FIPS or ML-KEM correctness.\"],\"uncertainty\":\"The separation between raw addition and normalization is clear in the source, but the downstream use sites were not exhaustively analyzed.\",\"limitations\":[\"Analysis only; no formal assertion is intended.\",\"This property is intentionally not a CBMC proof obligation.\"]}],\"rejected_or_downgraded_properties\":[{\"property_id\":\"BROAD_001\",\"title\":\"Full ML-KEM correctness\",\"reason\":\"Rejected/downgraded as too broad for a local CBMC harness on mlk_poly_add; the available evidence supports only a local coefficient-wise helper property, not whole-scheme correctness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract and surrounding comments\",\"excerpt\":\"The function is a local accumulator helper with a per-coefficient exact-sum contract and a narrow write footprint.\",\"supports_claim\":\"The helper scope is local, which is inconsistent with whole-scheme correctness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Sections 3.2, 7.1-7.3\",\"excerpt\":\"The specification discusses overall ML-KEM KeyGen/Encaps/Decaps behavior, which is much broader than mlk_poly_add.\",\"supports_claim\":\"The broad scheme-level property is out of scope for this stage.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_002\",\"title\":\"Full FIPS 203 compliance\",\"reason\":\"Rejected/downgraded because a selected-function CBMC case study cannot establish overall standard compliance; only local, function-scoped obligations are realistic here.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"The function contract is local and does not mention the broader standard beyond a spec citation in a comment.\",\"supports_claim\":\"The evidence supports local alignment, not full compliance.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"Addition in R_q and T_q is coordinate-wise, but the standard does not identify mlk_poly_add by name.\",\"supports_claim\":\"The spec can motivate traceability, not compliance of the entire implementation.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_003\",\"title\":\"Cryptographic security / IND-CCA security\",\"reason\":\"Rejected/downgraded because security proofs are outside the chosen CBMC property family and not supported by a local arithmetic helper harness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 3.2\",\"excerpt\":\"The standard discusses security assumptions and claims at the scheme level, not at the raw coefficient-addition helper level.\",\"supports_claim\":\"Security properties are not local helper properties.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_004\",\"title\":\"Full side-channel resistance\",\"reason\":\"Rejected/downgraded because no primary evidence in the provided files supports a constant-time proof for mlk_poly_add, and CBMC is not being used here for side-channel verification.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"The body contains a simple loop and casted addition but no formal side-channel annotations.\",\"supports_claim\":\"No side-channel claim is supported by the source evidence.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_005\",\"title\":\"Whole-program correctness\",\"reason\":\"Rejected/downgraded because the evidence base is limited to the target helper and a few supporting files; no whole-program model or build configuration was provided.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"The contract is function-local and does not model the entire program.\",\"supports_claim\":\"Local contract scope only.\",\"confidence\":\"high\"}]}],\"assumptions_catalogue\":[{\"assumption_id\":\"A01\",\"statement\":\"The harness will model mlk_poly as a struct containing exactly 256 signed 16-bit coefficients.\",\"justification\":\"Directly supported by the typedef and by FIPS 203's array representation of R_q/T_q elements.\",\"risk_if_wrong\":\"Array bounds and coefficient-wise assertions could be mis-specified, leading to false positives or missed bugs.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"Concrete C layout of mlk_poly.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Sections 2.3 and 2.4.4\",\"excerpt\":\"R_q and T_q are represented as length-256 arrays of coefficients modulo q.\",\"supports_claim\":\"Abstract 256-entry array representation.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A02\",\"statement\":\"The harness will assume memory_no_alias for both r and b, matching the source contract.\",\"justification\":\"The source contract explicitly requires non-aliasing/freshness and the implementation comment says the destructive form was chosen to avoid aliasing reasoning.\",\"risk_if_wrong\":\"Aliasing could invalidate frame and old-state reasoning and make any candidate property unsound relative to the contract.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Explicit non-aliasing requirement.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"comment above mlk_poly_add\",\"excerpt\":\"We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification\",\"supports_claim\":\"Implementation rationale for no-alias setup.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A03\",\"statement\":\"The harness will snapshot the pre-state of r before calling mlk_poly_add if it wants to check the exact-sum postcondition or loop-entry-style invariants.\",\"justification\":\"The contract uses old(*r) and the loop invariants use loop_entry(*r).\",\"risk_if_wrong\":\"Without a pre-state snapshot, the exact postcondition cannot be checked cleanly in a standalone harness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"Need for old-state snapshot.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(... loop_entry(*r) ... )\",\"supports_claim\":\"Loop-entry snapshot used in source invariants.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A04\",\"statement\":\"The harness will assume the signed-range preconditions exactly as written in the header if it wants the overflow-safety property to be checkable.\",\"justification\":\"The implementation comment says the preconditions imply the addition stays within int16_t, and the contract spells out the range conditions.\",\"risk_if_wrong\":\"The raw addition cast could overflow or produce undefined behavior, making the proof invalid.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"Explicit overflow-avoidance conditions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body comment\",\"excerpt\":\"The preconditions imply that the addition stays within int16_t.\",\"supports_claim\":\"Implementation relies on those conditions.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A05\",\"statement\":\"Any property relating mlk_poly_add to the FIPS 203 abstract model should be scoped to local coordinate-wise addition only, not to modular reduction or canonicalization.\",\"justification\":\"The source helper is a raw signed addition routine; reduction is handled by separate code such as mlk_poly_reduce.\",\"risk_if_wrong\":\"A too-strong property could fail because mlk_poly_add does not normalize coefficients.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add and mlk_poly_reduce comments\",\"excerpt\":\"Add two polynomials in place ... Convert a polynomial to unsigned canonical representatives.\",\"supports_claim\":\"Addition and reduction are distinct helpers.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"No normalization occurs inside the addition helper.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A06\",\"statement\":\"Any later harness should treat CBMC's forall/loop_entry/memory_no_alias macros according to the definitions in cbmc.h, including exclusive upper bounds for quantified ranges.\",\"justification\":\"The proof obligations and invariants in the source are written using those macros.\",\"risk_if_wrong\":\"Misinterpreting the macros would distort the property or the harness semantics.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"forall and loop_entry macro definitions\",\"excerpt\":\"#define forall(qvar, qvar_lb, qvar_ub, predicate) ... exclusive upper bound ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)\",\"supports_claim\":\"Macro semantics for contract and history variables.\",\"confidence\":\"high\"}]}],\"feasibility_ranking\":[{\"property_id\":\"P16_CAND_001\",\"rank\":1,\"feasibility\":\"high\",\"rationale\":\"Best-supported direct contract-and-body property: exact coefficient-wise postcondition, loop structure, and signed-range preconditions are all explicitly present in primary evidence.\"},{\"property_id\":\"P16_CAND_002\",\"rank\":2,\"feasibility\":\"high\",\"rationale\":\"Very likely to succeed as a local memory-safety/footprint check because the body is a single bounded loop over a fixed-size array and the contract restricts the write footprint.\"},{\"property_id\":\"P16_CAND_004\",\"rank\":3,\"feasibility\":\"high\",\"rationale\":\"Signed-range overflow safety is explicitly stated in the source contract and directly matches the casted addition in the body.\"},{\"property_id\":\"P16_CAND_003\",\"rank\":4,\"feasibility\":\"high\",\"rationale\":\"The source already contains the intended loop invariant shape; a harness can likely encode or reuse it, though loop reasoning adds moderate proof complexity.\"},{\"property_id\":\"P16_CAND_005\",\"rank\":5,\"feasibility\":\"high\",\"rationale\":\"Frame-condition reasoning is straightforward and well supported by the const addend plus assigns clause.\"},{\"property_id\":\"P16_CAND_006\",\"rank\":6,\"feasibility\":\"unknown\",\"rationale\":\"This is intentionally analysis-only rather than a formal CBMC claim; it is useful for scoping but not for direct proof generation.\"}],\"uncertainty_register\":[{\"issue\":\"No formal-tool output was provided.\",\"impact\":\"No property can be elevated from candidate status to verified status in this stage.\"},{\"issue\":\"The target function is not named in FIPS 203.\",\"impact\":\"The spec linkage is a candidate trace from source comments and coordinate-wise semantics, not an explicit spec-to-function name match.\"},{\"issue\":\"The provided material did not include build/proof configuration files.\",\"impact\":\"The exact CBMC environment, translation unit, and compiler-model settings remain uncertain.\"},{\"issue\":\"The raw source uses both contract annotations and implementation comments.\",\"impact\":\"These are strong evidence, but still implementation artifacts; later stages should avoid overstating them as proof of correctness.\"},{\"issue\":\"One evidence path in the code summary contained a typo in a non-primary summary reference.\",\"impact\":\"The typo is harmless because the raw primary evidence was used instead; nonetheless, downstream automation should rely on the raw file paths shown above.\"}],\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"accepted_as_advisory_only_with_independent_verification\",\"warning\":\"Deterministic hints were used only as a starting point for candidate discovery. All substantive claims here were independently checked against the raw FIPS 203 and repository source/header evidence. Where the deterministic hints were too broad or unsupported, they were downgraded or rejected.\",\"disagreements\":[{\"deterministic_claim\":\"The deterministic advisory material framed the main property as a broad 'polynomial addition/subtraction bounds' obligation without committing to the exact local postcondition shape.\",\"primary_evidence_finding\":\"The primary source evidence is more specific: mlk_poly_add has an exact per-coefficient old-state postcondition and explicit signed-range preconditions, so the candidate should be narrowed to those exact local obligations.\",\"resolution\":\"Refined the property into a narrow exact-sum / overflow-safe / local frame candidate instead of a broad statement.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) ... requires(... <= INT16_MAX) ... requires(... >= INT16_MIN)\",\"supports_claim\":\"Exact narrowing basis from primary evidence.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration block\",\"excerpt\":\"Add two polynomials in place. ... requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(forall(... <= INT16_MAX)) ... requires(forall(... >= INT16_MIN)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"Primary contract evidence for the target helper.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add function body and nearby comments\",\"excerpt\":\"Reference: `poly_add()` in the reference implementation @[REF]. - We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Primary implementation evidence for in-place raw addition and alias-aware design.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and surrounding comments\",\"excerpt\":\"Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial coeffs[0] + X*coeffs[1] + ... + X^{n-1}*coeffs[n-1].\",\"supports_claim\":\"Polynomial array shape and element type context.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.3 and 2.4.5\",\"excerpt\":\"Arrays in Z_q^256 represent polynomial coefficients and addition is coordinate-wise.\",\"supports_claim\":\"Abstract specification context for coordinate-wise addition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"lines 21-24\",\"excerpt\":\"#define MLKEM_N 256 ... #define MLKEM_Q 3329 ... #define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */\",\"supports_claim\":\"Key numeric constants used by the target function and related helpers.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"lines 87-118 and 147-192\",\"excerpt\":\"#define old(...) __CPROVER_old(__VA_ARGS__) ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__) ... #define forall(...) ... #define array_abs_bound(...) ...\",\"supports_claim\":\"Semantics of contract/invariant/history macros used in the function contract.\",\"confidence\":\"high\"}],\"limitations\":[\"No proof, verification, or compliance result is claimed.\",\"No CBMC harness was generated in this stage.\",\"The analysis is limited to the provided files and does not establish behavior outside the inspected code paths.\"]}",
+  "response_object": {
+    "id": "resp_04b31757734f1868016a51f4c8bcb0819eb7e6c4bf16f13444",
+    "created_at": 1783755976.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-mini-2026-03-17",
+    "object": "response",
+    "output": [
+      {
+        "id": "msg_04b31757734f1868016a51f4caa960819ea06290e476972569",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"stage\":\"04_property_discovery\",\"mock\":false,\"llm_call_executed\":true,\"source_scope\":{\"previous_spec_summary_available\":true,\"previous_code_summary_available\":true,\"provided_material_complete\":false,\"missing_or_unavailable_material\":[\"No build/proof configuration files were provided in the primary evidence set.\",\"No CBMC or other formal-tool output was provided in the primary evidence set.\",\"No repository files beyond the provided specification/source/header files were provided in the primary evidence set.\"]},\"candidate_properties\":[{\"property_id\":\"P16_CAND_001\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add preserves exact coefficient-wise addition under overflow-safe inputs\",\"category\":\"polynomial_add_sub_bounds\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"functional\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"For each coefficient index i in [0, MLKEM_N), if the harness assumes the header preconditions for mlk_poly_add and valid mlk_poly objects, then after mlk_poly_add(r, b) returns, the updated r->coeffs[i] equals old(r->coeffs[i]) + b->coeffs[i] for every i, with no modular reduction performed by this helper.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration block\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The contract explicitly states the exact per-coefficient postcondition, the signed-range preconditions, the no-alias requirement, and the write footprint.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body and loop invariants\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) __loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"The implementation performs a simple coefficient-wise raw addition and its loop invariants align with the exact postcondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.3 and 2.4.5\",\"excerpt\":\"Elements of Z_q^256 are represented as coefficient arrays, and addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The abstract mathematical model for coefficient-wise addition that motivates a local exact-sum property.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must model mlk_poly as a 256-element int16_t coefficient array.\",\"The harness must assume the declared contract preconditions for overflow safety and non-aliasing.\",\"Any old-state comparison must snapshot the pre-state of r before the call.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with old-state snapshot and per-index assertions\",\"out_of_scope_boundaries\":[\"No claim that the helper performs modulo-q normalization.\",\"No claim of full ML-KEM or FIPS 203 correctness.\",\"No claim about side-channel behavior or cryptographic security.\",\"No claim about behavior when the signed-range preconditions are violated.\"],\"uncertainty\":\"This property is strongly supported by the header contract and the implementation body, but it remains a candidate for later CBMC checking rather than a proven result.\",\"limitations\":[\"The exact harness shape is not yet generated.\",\"No formal-tool output was available to confirm provability under a specific CBMC configuration.\"]},{\"property_id\":\"P16_CAND_002\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add is memory-safe on the declared polynomial object footprint\",\"category\":\"memory_safety\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"safety\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"Assuming the function is called on valid, writable mlk_poly objects of size sizeof(mlk_poly), mlk_poly_add should not perform out-of-bounds accesses or write outside the footprint of r; the function body only touches r->coeffs[i] and b->coeffs[i] for i = 0..MLKEM_N-1, and the contract restricts the assigned footprint to r.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and mlk_poly_add contract\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly; ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The polynomial object is a fixed-size 256-element coefficient array and the declared write footprint is limited to r.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The implementation accesses one coefficient per iteration and writes only into r.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_slice and memory_no_alias macros\",\"excerpt\":\"#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__) ... #define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"Interprets the CBMC contract macros used for footprint and freshness assumptions.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"r and b point to distinct fresh mlk_poly objects, as required by the contract.\",\"The harness must provide sufficient writable memory for r and readable memory for b.\",\"The CBMC model must honor the memory_slice and memory_no_alias predicates in the checked contract.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"standard CBMC harness with pointer-validity assumptions and footprint checking\",\"out_of_scope_boundaries\":[\"No attempt to prove general heap safety beyond this helper's declared footprint.\",\"No proof that the call chain always supplies valid pointers.\",\"No claim about aliasing beyond the contract-required non-overlap condition.\"],\"uncertainty\":\"The direct evidence for safe access is strong, but the exact pointer-validity assumptions still need to be encoded in the later harness.\",\"limitations\":[\"This is a local safety property only.\",\"No build configuration or translation-unit context was provided beyond the inspected files.\"]},{\"property_id\":\"P16_CAND_003\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add maintains the loop-processed prefix and untouched suffix shape\",\"category\":\"loop_contract\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"loop_contract\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"A loop-invariant candidate for mlk_poly_add is that at each iteration i, coefficients in the processed prefix [0, i) equal loop_entry(*r).coeffs[k] + b->coeffs[k], while coefficients in the unprocessed suffix [i, MLKEM_N) remain equal to loop_entry(*r).coeffs[k].\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\",\"supports_claim\":\"The source already contains a loop invariant matching the prefix/suffix structure needed for a loop-contract candidate.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"loop_entry and forall macros\",\"excerpt\":\"#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__) ... #define forall(qvar, qvar_lb, qvar_ub, predicate)\",\"supports_claim\":\"The meaning of the history-variable and quantifier syntax used in the invariant.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"Addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The abstract coordinate-wise semantics that make the per-prefix/per-suffix invariant natural.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must use CBMC loop annotations or an equivalent modeling approach for loop-entry history.\",\"The invariant should be checked over the exact 256-iteration loop shape.\",\"The harness must not weaken the contract by assuming modular reduction or normalization.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with loop invariants\",\"out_of_scope_boundaries\":[\"No claim that this invariant proves global ML-KEM correctness.\",\"No claim that the helper normalizes coefficients into Z_q canonical form.\",\"No claim that the prefix/suffix invariant automatically generalizes to other helpers.\"],\"uncertainty\":\"The invariant is already present in the source, so the main uncertainty is not about the semantic shape but about how best to encode it in a standalone harness for later review.\",\"limitations\":[\"This is a loop-contract candidate, not a final proof.\",\"If the later harness omits loop-entry history variables, the property will not be expressible in the same form.\"]},{\"property_id\":\"P16_CAND_004\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add requires overflow-safe signed 16-bit coefficient ranges\",\"category\":\"integer_overflow_or_range\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"range\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"If the harness assumes the header's coefficient-range preconditions, CBMC can check that the expression (int16_t)(r->coeffs[i] + b->coeffs[i]) does not overflow the signed 16-bit range before the cast for any coefficient index i.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"The declared preconditions are exactly the signed-range conditions needed to avoid overflow.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop body comment and assignment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The implementation explicitly relies on those preconditions for overflow safety.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.1 and 2.4.5\",\"excerpt\":\"The pseudocode is agnostic regarding how an integer modulo m is represented in actual implementations ... addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The spec gives abstract coordinate-wise addition, but not the C signed-width bound; thus the C overflow obligation is an implementation-level property.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must assume the declared coefficient-range preconditions as explicit assumptions.\",\"The model must use C signed-integer overflow semantics consistent with CBMC's configuration.\",\"No aliasing between r and b, as required by the contract, so the range reasoning is not invalidated by self-aliasing.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"medium\",\"expected_artifact_type\":\"standard CBMC harness with overflow assertions\",\"out_of_scope_boundaries\":[\"No claim that the function reduces modulo q after addition.\",\"No claim that the resulting coefficients are canonical representatives in [0, q-1].\",\"No claim about arithmetic outside the int16_t domain or about undefined-behavior-free execution if the assumptions are violated.\"],\"uncertainty\":\"The overflow obligation is directly supported by source contracts, but the exact CBMC encoding will depend on the harness and compiler-model settings.\",\"limitations\":[\"This is a local range-safety property only.\",\"The spec does not itself provide the signed-width bound; it comes from the implementation contract.\"]},{\"property_id\":\"P16_CAND_005\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add is a destructive accumulator helper that leaves the addend unchanged\",\"category\":\"frame\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"frame\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"A frame-condition candidate is that mlk_poly_add mutates only r and leaves b unchanged, consistent with the assigns clause and the const-qualified addend parameter.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add signature and contract\",\"excerpt\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b) ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"The API and contract designate r as mutable and limit writes to r's footprint.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkhem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The body writes only to r, not to b.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness must provide non-overlapping objects so that the frame condition is meaningful in the CBMC model.\",\"The addend pointer b is treated as readable but not writable.\",\"Any proof of unchanged b should be limited to the declared function scope.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"standard CBMC harness with frame-condition assertions\",\"out_of_scope_boundaries\":[\"No claim about aliasing if the harness violates the no-alias contract.\",\"No claim about other call sites or interprocedural side effects outside the function.\",\"No claim that the function is pure; it is intentionally destructive on r.\"],\"uncertainty\":\"The property is straightforward, but there is a typo in one evidence path in the source summary; the primary raw file evidence for the function body and assigns clause is still sufficient and authoritative.\",\"limitations\":[\"This is a narrow frame property only.\",\"The evidence path typo was corrected by relying on the raw source/header files.\"]},{\"property_id\":\"P16_CAND_006\",\"property_family_id\":\"P16\",\"title\":\"mlk_poly_add remains a local polynomial-array operation rather than a modular reduction step\",\"category\":\"analysis_only_no_formal_claim\",\"verification_strategy\":\"analysis_only_no_formal_claim\",\"proof_obligation_kind\":\"analysis_only\",\"support_classification\":\"analysis_only\",\"required_tool_capabilities\":[\"analysis_only_no_formal_claim\"],\"candidate_statement\":\"The target function should be treated as a raw coefficient-wise integer-addition helper, not as a normalization or modular-reduction primitive; any later conversion to canonical Z_q representatives must be handled by a separate helper such as mlk_poly_reduce.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The helper performs only casted addition, with no reduction call.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_reduce declaration and mlk_poly_add comment\",\"excerpt\":\"Convert a polynomial to unsigned canonical representatives ... Add two polynomials in place. The coefficients of r and b must be such that the addition does not overflow.\",\"supports_claim\":\"A separate normalization primitive exists, distinct from mlk_poly_add.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.1 and 2.4.5\",\"excerpt\":\"Reduction modulo m takes place whenever assignment is made to a variable in Z_m ... addition in R_q and T_q is done coordinate-wise.\",\"supports_claim\":\"The abstract spec is coordinate-wise, but does not name this helper as a reducer.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"This is an interpretive note, not a proof obligation.\",\"Any later formal property must not silently replace this helper with mlk_poly_reduce.\",\"The relationship to canonical Z_q representatives is outside the scope of this helper.\"],\"cbmc_feasibility\":\"unknown\",\"risk_level\":\"low\",\"expected_artifact_type\":\"analysis note for later harness scoping\",\"out_of_scope_boundaries\":[\"No claim of proof or verification.\",\"No claim that the helper implements modular reduction.\",\"No claim of full FIPS or ML-KEM correctness.\"],\"uncertainty\":\"The separation between raw addition and normalization is clear in the source, but the downstream use sites were not exhaustively analyzed.\",\"limitations\":[\"Analysis only; no formal assertion is intended.\",\"This property is intentionally not a CBMC proof obligation.\"]}],\"rejected_or_downgraded_properties\":[{\"property_id\":\"BROAD_001\",\"title\":\"Full ML-KEM correctness\",\"reason\":\"Rejected/downgraded as too broad for a local CBMC harness on mlk_poly_add; the available evidence supports only a local coefficient-wise helper property, not whole-scheme correctness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract and surrounding comments\",\"excerpt\":\"The function is a local accumulator helper with a per-coefficient exact-sum contract and a narrow write footprint.\",\"supports_claim\":\"The helper scope is local, which is inconsistent with whole-scheme correctness.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Sections 3.2, 7.1-7.3\",\"excerpt\":\"The specification discusses overall ML-KEM KeyGen/Encaps/Decaps behavior, which is much broader than mlk_poly_add.\",\"supports_claim\":\"The broad scheme-level property is out of scope for this stage.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_002\",\"title\":\"Full FIPS 203 compliance\",\"reason\":\"Rejected/downgraded because a selected-function CBMC case study cannot establish overall standard compliance; only local, function-scoped obligations are realistic here.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"The function contract is local and does not mention the broader standard beyond a spec citation in a comment.\",\"supports_claim\":\"The evidence supports local alignment, not full compliance.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"Addition in R_q and T_q is coordinate-wise, but the standard does not identify mlk_poly_add by name.\",\"supports_claim\":\"The spec can motivate traceability, not compliance of the entire implementation.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_003\",\"title\":\"Cryptographic security / IND-CCA security\",\"reason\":\"Rejected/downgraded because security proofs are outside the chosen CBMC property family and not supported by a local arithmetic helper harness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 3.2\",\"excerpt\":\"The standard discusses security assumptions and claims at the scheme level, not at the raw coefficient-addition helper level.\",\"supports_claim\":\"Security properties are not local helper properties.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_004\",\"title\":\"Full side-channel resistance\",\"reason\":\"Rejected/downgraded because no primary evidence in the provided files supports a constant-time proof for mlk_poly_add, and CBMC is not being used here for side-channel verification.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"The body contains a simple loop and casted addition but no formal side-channel annotations.\",\"supports_claim\":\"No side-channel claim is supported by the source evidence.\",\"confidence\":\"high\"}]},{\"property_id\":\"BROAD_005\",\"title\":\"Whole-program correctness\",\"reason\":\"Rejected/downgraded because the evidence base is limited to the target helper and a few supporting files; no whole-program model or build configuration was provided.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"The contract is function-local and does not model the entire program.\",\"supports_claim\":\"Local contract scope only.\",\"confidence\":\"high\"}]}],\"assumptions_catalogue\":[{\"assumption_id\":\"A01\",\"statement\":\"The harness will model mlk_poly as a struct containing exactly 256 signed 16-bit coefficients.\",\"justification\":\"Directly supported by the typedef and by FIPS 203's array representation of R_q/T_q elements.\",\"risk_if_wrong\":\"Array bounds and coefficient-wise assertions could be mis-specified, leading to false positives or missed bugs.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"Concrete C layout of mlk_poly.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Sections 2.3 and 2.4.4\",\"excerpt\":\"R_q and T_q are represented as length-256 arrays of coefficients modulo q.\",\"supports_claim\":\"Abstract 256-entry array representation.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A02\",\"statement\":\"The harness will assume memory_no_alias for both r and b, matching the source contract.\",\"justification\":\"The source contract explicitly requires non-aliasing/freshness and the implementation comment says the destructive form was chosen to avoid aliasing reasoning.\",\"risk_if_wrong\":\"Aliasing could invalidate frame and old-state reasoning and make any candidate property unsound relative to the contract.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Explicit non-aliasing requirement.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"comment above mlk_poly_add\",\"excerpt\":\"We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification\",\"supports_claim\":\"Implementation rationale for no-alias setup.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A03\",\"statement\":\"The harness will snapshot the pre-state of r before calling mlk_poly_add if it wants to check the exact-sum postcondition or loop-entry-style invariants.\",\"justification\":\"The contract uses old(*r) and the loop invariants use loop_entry(*r).\",\"risk_if_wrong\":\"Without a pre-state snapshot, the exact postcondition cannot be checked cleanly in a standalone harness.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"Need for old-state snapshot.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(... loop_entry(*r) ... )\",\"supports_claim\":\"Loop-entry snapshot used in source invariants.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A04\",\"statement\":\"The harness will assume the signed-range preconditions exactly as written in the header if it wants the overflow-safety property to be checkable.\",\"justification\":\"The implementation comment says the preconditions imply the addition stays within int16_t, and the contract spells out the range conditions.\",\"risk_if_wrong\":\"The raw addition cast could overflow or produce undefined behavior, making the proof invalid.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"Explicit overflow-avoidance conditions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body comment\",\"excerpt\":\"The preconditions imply that the addition stays within int16_t.\",\"supports_claim\":\"Implementation relies on those conditions.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A05\",\"statement\":\"Any property relating mlk_poly_add to the FIPS 203 abstract model should be scoped to local coordinate-wise addition only, not to modular reduction or canonicalization.\",\"justification\":\"The source helper is a raw signed addition routine; reduction is handled by separate code such as mlk_poly_reduce.\",\"risk_if_wrong\":\"A too-strong property could fail because mlk_poly_add does not normalize coefficients.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add and mlk_poly_reduce comments\",\"excerpt\":\"Add two polynomials in place ... Convert a polynomial to unsigned canonical representatives.\",\"supports_claim\":\"Addition and reduction are distinct helpers.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"No normalization occurs inside the addition helper.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A06\",\"statement\":\"Any later harness should treat CBMC's forall/loop_entry/memory_no_alias macros according to the definitions in cbmc.h, including exclusive upper bounds for quantified ranges.\",\"justification\":\"The proof obligations and invariants in the source are written using those macros.\",\"risk_if_wrong\":\"Misinterpreting the macros would distort the property or the harness semantics.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"forall and loop_entry macro definitions\",\"excerpt\":\"#define forall(qvar, qvar_lb, qvar_ub, predicate) ... exclusive upper bound ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)\",\"supports_claim\":\"Macro semantics for contract and history variables.\",\"confidence\":\"high\"}]}],\"feasibility_ranking\":[{\"property_id\":\"P16_CAND_001\",\"rank\":1,\"feasibility\":\"high\",\"rationale\":\"Best-supported direct contract-and-body property: exact coefficient-wise postcondition, loop structure, and signed-range preconditions are all explicitly present in primary evidence.\"},{\"property_id\":\"P16_CAND_002\",\"rank\":2,\"feasibility\":\"high\",\"rationale\":\"Very likely to succeed as a local memory-safety/footprint check because the body is a single bounded loop over a fixed-size array and the contract restricts the write footprint.\"},{\"property_id\":\"P16_CAND_004\",\"rank\":3,\"feasibility\":\"high\",\"rationale\":\"Signed-range overflow safety is explicitly stated in the source contract and directly matches the casted addition in the body.\"},{\"property_id\":\"P16_CAND_003\",\"rank\":4,\"feasibility\":\"high\",\"rationale\":\"The source already contains the intended loop invariant shape; a harness can likely encode or reuse it, though loop reasoning adds moderate proof complexity.\"},{\"property_id\":\"P16_CAND_005\",\"rank\":5,\"feasibility\":\"high\",\"rationale\":\"Frame-condition reasoning is straightforward and well supported by the const addend plus assigns clause.\"},{\"property_id\":\"P16_CAND_006\",\"rank\":6,\"feasibility\":\"unknown\",\"rationale\":\"This is intentionally analysis-only rather than a formal CBMC claim; it is useful for scoping but not for direct proof generation.\"}],\"uncertainty_register\":[{\"issue\":\"No formal-tool output was provided.\",\"impact\":\"No property can be elevated from candidate status to verified status in this stage.\"},{\"issue\":\"The target function is not named in FIPS 203.\",\"impact\":\"The spec linkage is a candidate trace from source comments and coordinate-wise semantics, not an explicit spec-to-function name match.\"},{\"issue\":\"The provided material did not include build/proof configuration files.\",\"impact\":\"The exact CBMC environment, translation unit, and compiler-model settings remain uncertain.\"},{\"issue\":\"The raw source uses both contract annotations and implementation comments.\",\"impact\":\"These are strong evidence, but still implementation artifacts; later stages should avoid overstating them as proof of correctness.\"},{\"issue\":\"One evidence path in the code summary contained a typo in a non-primary summary reference.\",\"impact\":\"The typo is harmless because the raw primary evidence was used instead; nonetheless, downstream automation should rely on the raw file paths shown above.\"}],\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"accepted_as_advisory_only_with_independent_verification\",\"warning\":\"Deterministic hints were used only as a starting point for candidate discovery. All substantive claims here were independently checked against the raw FIPS 203 and repository source/header evidence. Where the deterministic hints were too broad or unsupported, they were downgraded or rejected.\",\"disagreements\":[{\"deterministic_claim\":\"The deterministic advisory material framed the main property as a broad 'polynomial addition/subtraction bounds' obligation without committing to the exact local postcondition shape.\",\"primary_evidence_finding\":\"The primary source evidence is more specific: mlk_poly_add has an exact per-coefficient old-state postcondition and explicit signed-range preconditions, so the candidate should be narrowed to those exact local obligations.\",\"resolution\":\"Refined the property into a narrow exact-sum / overflow-safe / local frame candidate instead of a broad statement.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) ... requires(... <= INT16_MAX) ... requires(... >= INT16_MIN)\",\"supports_claim\":\"Exact narrowing basis from primary evidence.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration block\",\"excerpt\":\"Add two polynomials in place. ... requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(forall(... <= INT16_MAX)) ... requires(forall(... >= INT16_MIN)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) ... assigns(memory_slice(r, sizeof(mlk_poly)))\",\"supports_claim\":\"Primary contract evidence for the target helper.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add function body and nearby comments\",\"excerpt\":\"Reference: `poly_add()` in the reference implementation @[REF]. - We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Primary implementation evidence for in-place raw addition and alias-aware design.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and surrounding comments\",\"excerpt\":\"Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial coeffs[0] + X*coeffs[1] + ... + X^{n-1}*coeffs[n-1].\",\"supports_claim\":\"Polynomial array shape and element type context.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.3 and 2.4.5\",\"excerpt\":\"Arrays in Z_q^256 represent polynomial coefficients and addition is coordinate-wise.\",\"supports_claim\":\"Abstract specification context for coordinate-wise addition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"lines 21-24\",\"excerpt\":\"#define MLKEM_N 256 ... #define MLKEM_Q 3329 ... #define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */\",\"supports_claim\":\"Key numeric constants used by the target function and related helpers.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"lines 87-118 and 147-192\",\"excerpt\":\"#define old(...) __CPROVER_old(__VA_ARGS__) ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__) ... #define forall(...) ... #define array_abs_bound(...) ...\",\"supports_claim\":\"Semantics of contract/invariant/history macros used in the function contract.\",\"confidence\":\"high\"}],\"limitations\":[\"No proof, verification, or compliance result is claimed.\",\"No CBMC harness was generated in this stage.\",\"The analysis is limited to the provided files and does not establish behavior outside the inspected code paths.\"]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783756020.0,
+    "conversation": null,
+    "max_output_tokens": "[REDACTED]",
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "none",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "04_property_discovery_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "04_property_discovery"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "source_scope": {
+              "type": "object",
+              "properties": {
+                "previous_spec_summary_available": {
+                  "type": "boolean"
+                },
+                "previous_code_summary_available": {
+                  "type": "boolean"
+                },
+                "provided_material_complete": {
+                  "type": "boolean"
+                },
+                "missing_or_unavailable_material": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "previous_spec_summary_available",
+                "previous_code_summary_available",
+                "provided_material_complete",
+                "missing_or_unavailable_material"
+              ],
+              "additionalProperties": false
+            },
+            "candidate_properties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "property_id": {
+                    "type": "string"
+                  },
+                  "property_family_id": {
+                    "type": "string",
+                    "enum": [
+                      "P01",
+                      "P02",
+                      "P03",
+                      "P04",
+                      "P05",
+                      "P06",
+                      "P07",
+                      "P08",
+                      "P09",
+                      "P10",
+                      "P11",
+                      "P12",
+                      "P13",
+                      "P14",
+                      "P15",
+                      "P16",
+                      "P17",
+                      "P18",
+                      "P19",
+                      "P20",
+                      "P21",
+                      "P22",
+                      "P23",
+                      "P24",
+                      "P25",
+                      "P26"
+                    ]
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "verification_strategy": {
+                    "type": "string",
+                    "enum": [
+                      "standard_cbmc_harness",
+                      "native_function_contract",
+                      "native_loop_contract",
+                      "relational_cbmc_harness",
+                      "analysis_only_no_formal_claim",
+                      "hybrid_contract_and_harness"
+                    ]
+                  },
+                  "proof_obligation_kind": {
+                    "type": "string",
+                    "enum": [
+                      "safety",
+                      "range",
+                      "functional",
+                      "relational",
+                      "frame",
+                      "loop_contract",
+                      "function_contract",
+                      "analysis_only"
+                    ]
+                  },
+                  "support_classification": {
+                    "type": "string",
+                    "enum": [
+                      "production_supported",
+                      "production_supported_scoped",
+                      "stretch_supported",
+                      "analysis_only",
+                      "test_or_relational_supported"
+                    ]
+                  },
+                  "required_tool_capabilities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "candidate_statement": {
+                    "type": "string"
+                  },
+                  "supporting_evidence": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "required_assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "cbmc_feasibility": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "risk_level": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical",
+                      "unknown"
+                    ]
+                  },
+                  "expected_artifact_type": {
+                    "type": "string"
+                  },
+                  "out_of_scope_boundaries": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "property_id",
+                  "property_family_id",
+                  "title",
+                  "category",
+                  "verification_strategy",
+                  "proof_obligation_kind",
+                  "support_classification",
+                  "required_tool_capabilities",
+                  "candidate_statement",
+                  "supporting_evidence",
+                  "required_assumptions",
+                  "cbmc_feasibility",
+                  "risk_level",
+                  "expected_artifact_type",
+                  "out_of_scope_boundaries",
+                  "uncertainty",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "rejected_or_downgraded_properties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "property_id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  }
+                },
+                "required": [
+                  "property_id",
+                  "title",
+                  "reason",
+                  "evidence_references"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "assumptions_catalogue": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "assumption_id": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "justification": {
+                    "type": "string"
+                  },
+                  "risk_if_wrong": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  }
+                },
+                "required": [
+                  "assumption_id",
+                  "statement",
+                  "justification",
+                  "risk_if_wrong",
+                  "evidence_references"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "feasibility_ranking": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "property_id": {
+                    "type": "string"
+                  },
+                  "rank": {
+                    "type": "integer"
+                  },
+                  "feasibility": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "rationale": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "property_id",
+                  "rank",
+                  "feasibility",
+                  "rationale"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "uncertainty_register": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "issue",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_path": {
+                    "type": "string",
+                    "description": "File or handoff path containing the supporting evidence."
+                  },
+                  "locator": {
+                    "type": "string",
+                    "description": "Line, section, algorithm, symbol, property, or record locator."
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "description": "Short evidence excerpt or faithful summary."
+                  },
+                  "supports_claim": {
+                    "type": "string",
+                    "description": "The exact claim this evidence supports."
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "source_path",
+                  "locator",
+                  "excerpt",
+                  "supports_claim",
+                  "confidence"
+                ],
+                "additionalProperties": false,
+                "description": "Traceable evidence reference for one claim."
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "source_scope",
+            "candidate_properties",
+            "rejected_or_downgraded_properties",
+            "assumptions_catalogue",
+            "feasibility_ranking",
+            "uncertainty_register",
+            "deterministic_reference_assessment",
+            "evidence_references",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 4 candidate property catalogue. No property is claimed as proven."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "high"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": "[REDACTED]",
+      "input_tokens_details": "[REDACTED]",
+      "output_tokens": "[REDACTED]",
+      "output_tokens_details": "[REDACTED]",
+      "total_tokens": "[REDACTED]"
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": false,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": "[REDACTED]",
+        "input_tokens_details": "[REDACTED]",
+        "output_tokens": "[REDACTED]",
+        "output_tokens_details": "[REDACTED]",
+        "total_tokens": "[REDACTED]"
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}

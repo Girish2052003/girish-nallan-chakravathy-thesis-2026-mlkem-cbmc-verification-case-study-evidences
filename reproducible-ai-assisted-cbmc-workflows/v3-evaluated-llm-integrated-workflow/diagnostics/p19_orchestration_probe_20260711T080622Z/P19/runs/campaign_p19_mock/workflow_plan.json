@@ -1,0 +1,172 @@
+{
+  "schema_version": "workflow_plan.v2.stage_layout",
+  "run_id": "campaign_p19_mock",
+  "target_scheme": "ML-KEM",
+  "target_function": "selected_C_functions",
+  "verification_tool": "CBMC",
+  "artifact_type": "candidate property campaign artefact",
+  "property_campaign": {
+    "property_family_id": "P19",
+    "verification_strategy": "analysis_only_no_formal_claim",
+    "allow_analysis_only": true,
+    "schema_version": "property_campaign.v1",
+    "property_family_slug": "secret_independent_control_access",
+    "property_family_title": "Secret-independent branch/access analysis support",
+    "support_level": "analysis_only",
+    "claim_boundary": "AI-assisted classification and external-test support only; no CBMC constant-time proof claim.",
+    "allowed_strategies": [
+      "analysis_only_no_formal_claim"
+    ],
+    "target_examples": [
+      "selected_C_functions"
+    ],
+    "require_native_contract_tools": false,
+    "explicitly_configured": true,
+    "legacy_compatibility_default": false
+  },
+  "max_iterations": 0,
+  "parallel_initial_agents": false,
+  "layout_policy": {
+    "stage_outputs_written_once": true,
+    "root_level_stage_outputs_allowed": false,
+    "handoff_uses_manifest_pointers": true,
+    "deterministic_reference_is_advisory_only": true,
+    "llm_authoritative_is_candidate_stage_output": true
+  },
+  "agent_order": [
+    "spec_extraction + code_understanding",
+    "property_discovery",
+    "artifact_generation",
+    "critic_review",
+    "tool_execution",
+    "after every tool result: counterexample_analysis; if failure and iterations remain: repair -> re-review -> tool execution",
+    "experiment_logger",
+    "evaluation_reporter"
+  ],
+  "agents": {
+    "spec_extraction": {
+      "name": "spec_extraction",
+      "stage_key": "02_spec_extraction",
+      "script": "agents/spec_extraction_agent.py",
+      "expected_handoff_outputs": [
+        "spec_summary"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed specification extraction; writes authoritative candidate spec summary handoff."
+    },
+    "code_understanding": {
+      "name": "code_understanding",
+      "stage_key": "03_code_understanding",
+      "script": "agents/code_understanding_agent.py",
+      "expected_handoff_outputs": [
+        "code_summary"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed code understanding; writes authoritative candidate code summary handoff."
+    },
+    "property_discovery": {
+      "name": "property_discovery",
+      "stage_key": "04_property_discovery",
+      "script": "agents/property_discovery_agent.py",
+      "expected_handoff_outputs": [
+        "candidate_properties"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed property discovery; writes candidate property list handoff."
+    },
+    "artifact_generation": {
+      "name": "artifact_generation",
+      "stage_key": "05_artifact_generation",
+      "script": "agents/artifact_generation_agent.py",
+      "expected_handoff_outputs": [
+        "artifact_plan",
+        "generated_harness",
+        "artifact_manifest"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed artefact planning with Python rendering/validation of candidate harness."
+    },
+    "critic_review": {
+      "name": "critic_review",
+      "stage_key": "06_review_critic",
+      "script": "agents/review_critic_agent.py",
+      "expected_handoff_outputs": [
+        "critic_review",
+        "review_gate_decision",
+        "formal_build_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed critic review and gate decision before CBMC execution."
+    },
+    "tool_execution": {
+      "name": "tool_execution",
+      "stage_key": "07_tool_execution",
+      "script": "agents/tool_execution_agent.py",
+      "expected_handoff_outputs": [
+        "cbmc_output",
+        "cbmc_status"
+      ],
+      "required": true,
+      "timeout_seconds": 1800,
+      "description": "Deterministic CBMC/tool execution stage."
+    },
+    "counterexample_analysis": {
+      "name": "counterexample_analysis",
+      "stage_key": "08_counterexample_analysis",
+      "script": "agents/counterexample_analysis_agent.py",
+      "expected_handoff_outputs": [
+        "counterexample_analysis",
+        "repair_guidance",
+        "repair_action_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed analysis of CBMC/tool outputs and candidate repair direction."
+    },
+    "repair": {
+      "name": "repair",
+      "stage_key": "09_repair_refinement",
+      "script": "agents/repair_agent.py",
+      "expected_handoff_outputs": [
+        "repair_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed repair/refinement plan; Python controls patch application."
+    },
+    "experiment_logger": {
+      "name": "experiment_logger",
+      "stage_key": "10_experiment_logger",
+      "script": "agents/experiment_logger.py",
+      "expected_handoff_outputs": [
+        "experiment_log",
+        "artifact_inventory",
+        "checksum_manifest"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Deterministic evidence logger and file/checksum indexer."
+    },
+    "evaluation_reporter": {
+      "name": "evaluation_reporter",
+      "stage_key": "11_evaluation_reporter",
+      "script": "agents/evaluation_reporter.py",
+      "expected_handoff_outputs": [
+        "evaluation_report"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Mixed evaluation stage: deterministic facts plus cautious LLM interpretation if enabled."
+    }
+  },
+  "positioning": {
+    "claim": "Agents generate and evaluate candidate formal-verification artefacts in a reproducible workflow.",
+    "non_claim": "The workflow does not claim to fully prove ML-KEM automatically.",
+    "authority": "CBMC/formal tools and human researcher remain final correctness authority."
+  }
+}

@@ -1,0 +1,1107 @@
+{
+  "schema_version": "deterministic_reference_bundle.v1",
+  "created_utc": "2026-07-11T07:46:14.699468+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "03_candidate_properties_deterministic": {
+      "summary": {
+        "stage": "04_property_discovery",
+        "mode": "deterministic_reference_only",
+        "trust_boundary": "advisory_only_not_authoritative",
+        "target_function": "mlk_poly_add",
+        "target_topic": "ML-KEM polynomial addition",
+        "spec_summary_available": true,
+        "code_summary_available": true,
+        "candidate_property_count": 7,
+        "rejected_or_downgraded_count": 5,
+        "warning": "These deterministic candidate properties are advisory only. The LLM must verify, refine, downgrade, reject, or replace them against the primary and previous-stage evidence."
+      },
+      "candidate_properties": [
+        {
+          "property_id": "P16_CAMPAIGN_001",
+          "property_family_id": "P16",
+          "title": "Polynomial addition/subtraction bounds",
+          "category": "polynomial_add_sub_bounds",
+          "verification_strategy": "standard_cbmc_harness",
+          "proof_obligation_kind": "functional",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "standard_cbmc_harness"
+          ],
+          "candidate_statement": "Candidate Polynomial addition/subtraction bounds obligation for mlk_poly_add; the exact statement, bounds, assumptions and representation must be derived from primary FIPS/code evidence.",
+          "evidence_basis": [
+            "Configured from the canonical 26-property thesis catalogue."
+          ],
+          "required_assumptions": [],
+          "feasibility": "unknown",
+          "risk": "medium",
+          "cbmc_relevance": "standard_cbmc_harness",
+          "limitations": [
+            "Local coefficient bounds for the exact representation and input assumptions."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_MEM_001",
+          "property_family_id": "P01",
+          "title": "Pointer validity and memory readability/writability for target function arguments",
+          "category": "memory_safety",
+          "verification_strategy": "standard_cbmc_harness",
+          "proof_obligation_kind": "safety",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "standard_cbmc_harness"
+          ],
+          "candidate_statement": "Candidate harness assumptions may require valid readable/writable memory for objects passed to mlk_poly_add, according to the actual function signature.",
+          "evidence_basis": [
+            "Agent 3 code summary / raw code should confirm pointer parameters and accessed fields."
+          ],
+          "required_assumptions": [
+            "Object sizes and pointer validity must match the actual C type definitions."
+          ],
+          "feasibility": "high",
+          "risk": "medium",
+          "cbmc_relevance": "CBMC can check invalid pointer dereference and memory-safety failures under harness assumptions.",
+          "limitations": [
+            "Advisory only until LLM verifies exact function signature and memory accesses."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARR_001",
+          "property_family_id": "P01",
+          "title": "Array-index safety for coefficient loop",
+          "category": "array_bounds",
+          "verification_strategy": "standard_cbmc_harness",
+          "proof_obligation_kind": "safety",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "standard_cbmc_harness"
+          ],
+          "candidate_statement": "Candidate property: loops or accesses associated with mlk_poly_add should not access coefficient arrays outside their declared bounds.",
+          "evidence_basis": [
+            "Detected terms such as MLKEM_N, coeffs, array/index/loop, or n=256 in previous-stage outputs."
+          ],
+          "required_assumptions": [
+            "Loop bound and coefficient array length must be verified from raw source/header files."
+          ],
+          "feasibility": "high",
+          "risk": "low",
+          "cbmc_relevance": "CBMC is suitable for bounded C array-index safety checks.",
+          "limitations": [
+            "Does not prove mathematical correctness of polynomial operation."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARITH_001",
+          "property_family_id": "P16",
+          "title": "Arithmetic range / overflow under explicit coefficient assumptions",
+          "category": "integer_overflow_or_range",
+          "verification_strategy": "hybrid_contract_and_harness",
+          "proof_obligation_kind": "functional",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "hybrid_contract_and_harness"
+          ],
+          "candidate_statement": "Candidate property: arithmetic inside mlk_poly_add should avoid C integer overflow under explicit coefficient-range assumptions.",
+          "evidence_basis": [
+            "Detected integer types, coefficient terminology, range/modulus constants, or overflow-related hints."
+          ],
+          "required_assumptions": [
+            "Input coefficient ranges must be stated explicitly.",
+            "C integer promotions and casts must be checked from raw implementation code."
+          ],
+          "feasibility": "medium",
+          "risk": "medium",
+          "cbmc_relevance": "CBMC can check signed overflow and arithmetic assertions under bounded assumptions.",
+          "limitations": [
+            "Strong assumptions may be required.",
+            "Success would not prove full ML-KEM arithmetic correctness."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_FUNC_001",
+          "property_family_id": "P16",
+          "title": "Local functional relation with old-state snapshot",
+          "category": "local_functional_consistency",
+          "verification_strategy": "hybrid_contract_and_harness",
+          "proof_obligation_kind": "functional",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "hybrid_contract_and_harness"
+          ],
+          "candidate_statement": "Candidate property: after mlk_poly_add, each affected output coefficient should match a local relation between the old output state and input state, if supported by code/spec evidence.",
+          "evidence_basis": [
+            "Detected possible mutation/in-place-update or coefficient assignment hints in Agent 3 output."
+          ],
+          "required_assumptions": [
+            "The harness must snapshot old output state before calling the function.",
+            "The property must not use post-call values on both sides of the assertion."
+          ],
+          "feasibility": "medium",
+          "risk": "medium",
+          "cbmc_relevance": "CBMC can check local post-call assertions if old-state values are stored explicitly.",
+          "limitations": [
+            "The exact mathematical relation must be verified from raw code and specification evidence.",
+            "This is local functional consistency only, not full FIPS compliance."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ALIAS_001",
+          "property_family_id": "P15",
+          "title": "Non-aliasing assumptions for input/output objects",
+          "category": "pointer_validity_and_aliasing",
+          "verification_strategy": "native_function_contract",
+          "proof_obligation_kind": "functional",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "native_function_contract"
+          ],
+          "candidate_statement": "Candidate property or assumption: if mlk_poly_add requires non-overlapping objects, the harness must state the aliasing condition explicitly.",
+          "evidence_basis": [
+            "Detected aliasing-related terms in previous-stage outputs or contracts."
+          ],
+          "required_assumptions": [
+            "Actual aliasing requirements must be verified from function contracts/source comments."
+          ],
+          "feasibility": "medium",
+          "risk": "high",
+          "cbmc_relevance": "CBMC harnesses can encode aliasing/non-aliasing assumptions.",
+          "limitations": [
+            "Over-strong non-aliasing assumptions can hide real behaviours and must be reviewed carefully."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_CONTRACT_001",
+          "property_family_id": "P26",
+          "title": "Consistency with existing contracts or annotations",
+          "category": "contract_consistency",
+          "verification_strategy": "native_function_contract",
+          "proof_obligation_kind": "functional",
+          "support_classification": "production_supported",
+          "required_tool_capabilities": [
+            "native_function_contract"
+          ],
+          "candidate_statement": "Candidate property: generated harness assumptions/assertions for mlk_poly_add should be consistent with existing source-level contracts or CBMC annotations where present.",
+          "evidence_basis": [
+            "Detected contract/assertion/assumption-related terms in code summary."
+          ],
+          "required_assumptions": [
+            "Existing annotations must be verified from raw headers/source files."
+          ],
+          "feasibility": "medium",
+          "risk": "medium",
+          "cbmc_relevance": "Can guide harness assumptions and avoid contradicting repository contracts.",
+          "limitations": [
+            "Existing contracts are evidence, not proof; they may be assumptions rather than established facts."
+          ],
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "rejected_or_downgraded_properties": [
+        {
+          "property_id": "BROAD_001",
+          "title": "Full ML-KEM correctness",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: too broad for this stage and not a local CBMC property.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_002",
+          "title": "Full FIPS 203 compliance",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: cannot be established by a local C harness.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_003",
+          "title": "Cryptographic security / IND-CCA security",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: outside CBMC C-level local property scope.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_004",
+          "title": "Full side-channel resistance",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: not supported by this workflow stage unless narrowly scoped and separately evidenced.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_005",
+          "title": "Whole-program correctness",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: too broad for selected-function CBMC case study.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "03_property_evidence_matrix": {
+      "rows": [
+        {
+          "property_id": "P16_CAMPAIGN_001",
+          "category": "polynomial_add_sub_bounds",
+          "title": "Polynomial addition/subtraction bounds",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "unknown",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_MEM_001",
+          "category": "memory_safety",
+          "title": "Pointer validity and memory readability/writability for target function arguments",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "high",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARR_001",
+          "category": "array_bounds",
+          "title": "Array-index safety for coefficient loop",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "high",
+          "risk": "low",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARITH_001",
+          "category": "integer_overflow_or_range",
+          "title": "Arithmetic range / overflow under explicit coefficient assumptions",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_FUNC_001",
+          "category": "local_functional_consistency",
+          "title": "Local functional relation with old-state snapshot",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ALIAS_001",
+          "category": "pointer_validity_and_aliasing",
+          "title": "Non-aliasing assumptions for input/output objects",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "high",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_CONTRACT_001",
+          "category": "contract_consistency",
+          "title": "Consistency with existing contracts or annotations",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "03_spec_code_traceability": {
+      "target_function": "mlk_poly_add",
+      "spec_summary_available": true,
+      "code_summary_available": true,
+      "candidate_trace_items": [
+        {
+          "property_id": "P16_CAMPAIGN_001",
+          "category": "polynomial_add_sub_bounds",
+          "title": "Polynomial addition/subtraction bounds",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "unknown",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_MEM_001",
+          "category": "memory_safety",
+          "title": "Pointer validity and memory readability/writability for target function arguments",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "high",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARR_001",
+          "category": "array_bounds",
+          "title": "Array-index safety for coefficient loop",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "high",
+          "risk": "low",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARITH_001",
+          "category": "integer_overflow_or_range",
+          "title": "Arithmetic range / overflow under explicit coefficient assumptions",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_FUNC_001",
+          "category": "local_functional_consistency",
+          "title": "Local functional relation with old-state snapshot",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ALIAS_001",
+          "category": "pointer_validity_and_aliasing",
+          "title": "Non-aliasing assumptions for input/output objects",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "high",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_CONTRACT_001",
+          "category": "contract_consistency",
+          "title": "Consistency with existing contracts or annotations",
+          "spec_evidence_available": true,
+          "code_evidence_available": true,
+          "feasibility": "medium",
+          "risk": "medium",
+          "requires_llm_verification": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "warning": "Traceability is advisory only until LLM and human review.",
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "03_property_risk_register": {
+      "rows": [
+        {
+          "property_id": "P16_CAMPAIGN_001",
+          "risk": "medium",
+          "risk_reason": "Local coefficient bounds for the exact representation and input assumptions.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_MEM_001",
+          "risk": "medium",
+          "risk_reason": "Advisory only until LLM verifies exact function signature and memory accesses.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARR_001",
+          "risk": "low",
+          "risk_reason": "Does not prove mathematical correctness of polynomial operation.",
+          "human_review_needed": false,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ARITH_001",
+          "risk": "medium",
+          "risk_reason": "Strong assumptions may be required.; Success would not prove full ML-KEM arithmetic correctness.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_FUNC_001",
+          "risk": "medium",
+          "risk_reason": "The exact mathematical relation must be verified from raw code and specification evidence.; This is local functional consistency only, not full FIPS compliance.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_ALIAS_001",
+          "risk": "high",
+          "risk_reason": "Over-strong non-aliasing assumptions can hide real behaviours and must be reviewed carefully.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "P_CONTRACT_001",
+          "risk": "medium",
+          "risk_reason": "Existing contracts are evidence, not proof; they may be assumptions rather than established facts.",
+          "human_review_needed": true,
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "03_property_filtering_decisions": {
+      "rejected_or_downgraded_properties": [
+        {
+          "property_id": "BROAD_001",
+          "title": "Full ML-KEM correctness",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: too broad for this stage and not a local CBMC property.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_002",
+          "title": "Full FIPS 203 compliance",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: cannot be established by a local C harness.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_003",
+          "title": "Cryptographic security / IND-CCA security",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: outside CBMC C-level local property scope.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_004",
+          "title": "Full side-channel resistance",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: not supported by this workflow stage unless narrowly scoped and separately evidenced.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        },
+        {
+          "property_id": "BROAD_005",
+          "title": "Whole-program correctness",
+          "decision": "reject_or_downgrade",
+          "reason": "Reject/downgrade: too broad for selected-function CBMC case study.",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "scope_policy": {
+        "prefer": [
+          "array bounds",
+          "buffer length constraints",
+          "pointer validity",
+          "non-aliasing assumptions",
+          "bounded loop safety",
+          "integer-overflow/range checks under stated assumptions",
+          "coefficient range preservation",
+          "local function postconditions",
+          "contract consistency"
+        ],
+        "avoid_or_downgrade": [
+          "full ML-KEM correctness",
+          "full FIPS 203 compliance",
+          "cryptographic security",
+          "IND-CCA security",
+          "whole-program correctness",
+          "full side-channel resistance",
+          "full NTT correctness unless narrowly scoped"
+        ]
+      },
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "property_family_catalogue": {
+      "schema_version": "property_family_catalogue.v1",
+      "property_family_count": 26,
+      "strategy_count": 6,
+      "strategies": [
+        "standard_cbmc_harness",
+        "native_function_contract",
+        "native_loop_contract",
+        "relational_cbmc_harness",
+        "analysis_only_no_formal_claim",
+        "hybrid_contract_and_harness"
+      ],
+      "families": [
+        {
+          "id": "P01",
+          "slug": "array_bounds",
+          "title": "Array bounds property",
+          "default_strategy": "standard_cbmc_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_add",
+            "poly_sub",
+            "poly_tobytes",
+            "poly_frombytes",
+            "polyvec_tobytes",
+            "polyvec_frombytes"
+          ],
+          "difficulty": "easy",
+          "thesis_value": "good",
+          "support_level": "production_supported",
+          "claim_boundary": "Local memory-access safety under the exact harness, source and options."
+        },
+        {
+          "id": "P02",
+          "slug": "barrett_reduction_bounds",
+          "title": "Barrett reduction bounds",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "barrett_reduce"
+          ],
+          "difficulty": "easy_medium",
+          "thesis_value": "very_good",
+          "support_level": "production_supported",
+          "claim_boundary": "Implementation-specific output bounds for stated input bounds; not abstract modular correctness."
+        },
+        {
+          "id": "P03",
+          "slug": "compression_output_range",
+          "title": "Compression output range and write extent",
+          "default_strategy": "hybrid_contract_and_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_compress",
+            "polyvec_compress"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Byte/range/write-footprint properties for configured parameter set only."
+        },
+        {
+          "id": "P04",
+          "slug": "decompression_coefficient_range",
+          "title": "Decompression coefficient range",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_decompress",
+            "polyvec_decompress"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Implementation-representation bounds, not perfect inverse or cryptographic correctness."
+        },
+        {
+          "id": "P05",
+          "slug": "encoding_length",
+          "title": "Encoding length and frame property",
+          "default_strategy": "hybrid_contract_and_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_tobytes",
+            "polyvec_tobytes",
+            "pack_pk",
+            "pack_sk",
+            "pack_ciphertext"
+          ],
+          "difficulty": "easy",
+          "thesis_value": "good",
+          "support_level": "production_supported",
+          "claim_boundary": "Writes remain inside the configured official-length buffer; exact-write claims require frame evidence."
+        },
+        {
+          "id": "P06",
+          "slug": "serialization_round_trip",
+          "title": "FromBytes/ToBytes round-trip",
+          "default_strategy": "relational_cbmc_harness",
+          "allowed_strategies": [
+            "relational_cbmc_harness",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_tobytes",
+            "poly_frombytes"
+          ],
+          "difficulty": "medium_hard",
+          "thesis_value": "very_high",
+          "support_level": "production_supported_scoped",
+          "claim_boundary": "Scoped relational equivalence under explicit normalization assumptions."
+        },
+        {
+          "id": "P07",
+          "slug": "global_api_buffer_safety",
+          "title": "Global API buffer safety",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "crypto_kem_keypair",
+            "crypto_kem_enc",
+            "crypto_kem_dec"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "high",
+          "support_level": "stretch_supported",
+          "claim_boundary": "Memory safety for selected API path and configured stubs; not whole implementation correctness."
+        },
+        {
+          "id": "P08",
+          "slug": "hash_xof_buffer_safety",
+          "title": "Hash/XOF buffer safety",
+          "default_strategy": "standard_cbmc_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "shake128",
+            "shake256",
+            "sha3_256",
+            "sha3_512"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "medium",
+          "support_level": "production_supported",
+          "claim_boundary": "Memory safety and declared buffer extents only."
+        },
+        {
+          "id": "P09",
+          "slug": "integer_overflow_absence",
+          "title": "Integer overflow absence",
+          "default_strategy": "standard_cbmc_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "montgomery_reduce",
+            "barrett_reduce",
+            "fqmul",
+            "poly_add",
+            "poly_sub",
+            "poly_reduce"
+          ],
+          "difficulty": "easy_medium",
+          "thesis_value": "very_good",
+          "support_level": "production_supported",
+          "claim_boundary": "C integer overflow checks under recorded ranges and compiler model."
+        },
+        {
+          "id": "P10",
+          "slug": "packing_consistency",
+          "title": "Join/split packing consistency",
+          "default_strategy": "relational_cbmc_harness",
+          "allowed_strategies": [
+            "relational_cbmc_harness",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "pack_pk",
+            "unpack_pk",
+            "pack_sk",
+            "unpack_sk",
+            "pack_ciphertext",
+            "unpack_ciphertext"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "very_high",
+          "support_level": "production_supported_scoped",
+          "claim_boundary": "One selected pack/unpack relation under stated canonicality assumptions."
+        },
+        {
+          "id": "P11",
+          "slug": "keypair_output_size",
+          "title": "Keypair output size/frame",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "crypto_kem_keypair"
+          ],
+          "difficulty": "medium_hard",
+          "thesis_value": "good",
+          "support_level": "stretch_supported",
+          "claim_boundary": "Write-footprint and buffer safety, not key-generation security or distribution."
+        },
+        {
+          "id": "P12",
+          "slug": "loop_invariant_generation",
+          "title": "Loop invariant generation",
+          "default_strategy": "native_loop_contract",
+          "allowed_strategies": [
+            "native_loop_contract",
+            "hybrid_contract_and_harness",
+            "standard_cbmc_harness"
+          ],
+          "targets": [
+            "poly_add",
+            "poly_sub",
+            "poly_reduce",
+            "poly_tobytes"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "excellent",
+          "support_level": "production_supported",
+          "claim_boundary": "Candidate invariant initiation/preservation/use under exact transformed program; no guarantee of automatic discovery success."
+        },
+        {
+          "id": "P13",
+          "slug": "montgomery_reduction_bounds",
+          "title": "Montgomery reduction bounds",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "montgomery_reduce"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "very_high",
+          "support_level": "production_supported",
+          "claim_boundary": "Implementation-specific Montgomery-domain bounds and overflow conditions."
+        },
+        {
+          "id": "P14",
+          "slug": "ntt_bounds",
+          "title": "NTT input/output bounds",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_ntt",
+            "poly_invntt_tomont",
+            "ntt",
+            "invntt"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "very_high",
+          "support_level": "stretch_supported",
+          "claim_boundary": "C-level coefficient bounds only; not full NTT mathematical correctness or assembly proof."
+        },
+        {
+          "id": "P15",
+          "slug": "non_aliasing",
+          "title": "Output-buffer separation/non-aliasing",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_tobytes",
+            "poly_frombytes",
+            "pack_pk",
+            "unpack_pk",
+            "crypto_kem_enc",
+            "crypto_kem_dec"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Explicit aliasing preconditions and their effect; over-constraint must be reviewed."
+        },
+        {
+          "id": "P16",
+          "slug": "polynomial_add_sub_bounds",
+          "title": "Polynomial addition/subtraction bounds",
+          "default_strategy": "hybrid_contract_and_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "native_loop_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "poly_add",
+            "poly_sub",
+            "poly_reduce"
+          ],
+          "difficulty": "easy_medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Local coefficient bounds for the exact representation and input assumptions."
+        },
+        {
+          "id": "P17",
+          "slug": "q_modulus_range",
+          "title": "q-modulus-related range",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "barrett_reduce",
+            "poly_reduce",
+            "poly_decompress",
+            "poly_frommsg",
+            "poly_tomsg"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Code-derived q-related representation range; exact interval must not be guessed."
+        },
+        {
+          "id": "P18",
+          "slug": "rejection_sampling_safety",
+          "title": "Rejection sampling safety",
+          "default_strategy": "native_loop_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_loop_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "rej_uniform",
+            "poly_uniform",
+            "poly_getnoise_eta1",
+            "poly_getnoise_eta2"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "high",
+          "support_level": "stretch_supported",
+          "claim_boundary": "Buffer/termination obligations under bounded input/model assumptions; not probabilistic distribution correctness."
+        },
+        {
+          "id": "P19",
+          "slug": "secret_independent_control_access",
+          "title": "Secret-independent branch/access analysis support",
+          "default_strategy": "analysis_only_no_formal_claim",
+          "allowed_strategies": [
+            "analysis_only_no_formal_claim"
+          ],
+          "targets": [
+            "selected_C_functions"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "high",
+          "support_level": "analysis_only",
+          "claim_boundary": "AI-assisted classification and external-test support only; no CBMC constant-time proof claim."
+        },
+        {
+          "id": "P20",
+          "slug": "decapsulation_memory_safety",
+          "title": "Top-level decapsulation memory safety",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "crypto_kem_dec"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "high",
+          "support_level": "stretch_supported",
+          "claim_boundary": "Selected-path memory safety under official sizes and configured environment."
+        },
+        {
+          "id": "P21",
+          "slug": "unpack_validation",
+          "title": "Unpack validation",
+          "default_strategy": "hybrid_contract_and_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "unpack_pk",
+            "unpack_sk",
+            "unpack_ciphertext"
+          ],
+          "difficulty": "medium",
+          "thesis_value": "high",
+          "support_level": "production_supported",
+          "claim_boundary": "Input-read bounds and output-field ranges for selected format."
+        },
+        {
+          "id": "P22",
+          "slug": "vector_operation_bounds",
+          "title": "Vector operation bounds",
+          "default_strategy": "hybrid_contract_and_harness",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "native_loop_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "polyvec_add",
+            "polyvec_reduce",
+            "polyvec_ntt",
+            "polyvec_invntt_tomont"
+          ],
+          "difficulty": "medium_hard",
+          "thesis_value": "high",
+          "support_level": "production_supported_scoped",
+          "claim_boundary": "Selected vector operation bounds; NTT variants remain stretch scope."
+        },
+        {
+          "id": "P23",
+          "slug": "zeroization",
+          "title": "Wipe/zeroization",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "selected_cleanup_or_wipe"
+          ],
+          "difficulty": "medium_hard",
+          "thesis_value": "very_high",
+          "support_level": "production_supported_scoped",
+          "claim_boundary": "Post-call memory bytes in the model; compiler-elimination and physical erasure require separate evidence."
+        },
+        {
+          "id": "P24",
+          "slug": "xof_deterministic_expansion",
+          "title": "XOF deterministic expansion",
+          "default_strategy": "relational_cbmc_harness",
+          "allowed_strategies": [
+            "relational_cbmc_harness",
+            "analysis_only_no_formal_claim"
+          ],
+          "targets": [
+            "shake128_absorb",
+            "shake128_squeezeblocks",
+            "shake256"
+          ],
+          "difficulty": "hard",
+          "thesis_value": "medium",
+          "support_level": "test_or_relational_supported",
+          "claim_boundary": "Same modeled input/state yields same modeled output; not cryptographic security or deep Keccak correctness."
+        },
+        {
+          "id": "P25",
+          "slug": "api_return_code",
+          "title": "Expected API return-code range",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "standard_cbmc_harness",
+            "native_function_contract",
+            "hybrid_contract_and_harness"
+          ],
+          "targets": [
+            "crypto_kem_keypair",
+            "crypto_kem_enc",
+            "crypto_kem_dec"
+          ],
+          "difficulty": "easy_medium",
+          "thesis_value": "medium",
+          "support_level": "production_supported",
+          "claim_boundary": "Return-value set on modeled paths only."
+        },
+        {
+          "id": "P26",
+          "slug": "valid_pointer_size_preconditions",
+          "title": "Zero-length/invalid-size exclusion and pointer preconditions",
+          "default_strategy": "native_function_contract",
+          "allowed_strategies": [
+            "native_function_contract",
+            "hybrid_contract_and_harness",
+            "standard_cbmc_harness"
+          ],
+          "targets": [
+            "selected_function"
+          ],
+          "difficulty": "easy",
+          "thesis_value": "excellent",
+          "support_level": "production_supported",
+          "claim_boundary": "Inferred candidate preconditions must be justified; assumptions are not proved by assuming them."
+        }
+      ],
+      "claim_boundary": "Catalogue support means the workflow can prepare, review, execute or explicitly classify an experiment. It never guarantees that an LLM candidate will compile or that CBMC will prove the selected property."
+    },
+    "configured_property_campaign": {
+      "property_family_id": "P16",
+      "verification_strategy": "standard_cbmc_harness",
+      "allow_analysis_only": false,
+      "human_selected_scope_note": "Compatibility-safe default matching the approved 17cbc build; use CONFIG_TEMPLATE_26_PROPERTY_CAMPAIGN.json for native contracts or another family.",
+      "schema_version": "property_campaign.v1",
+      "property_family_slug": "polynomial_add_sub_bounds",
+      "property_family_title": "Polynomial addition/subtraction bounds",
+      "support_level": "production_supported",
+      "claim_boundary": "Local coefficient bounds for the exact representation and input assumptions.",
+      "allowed_strategies": [
+        "standard_cbmc_harness",
+        "native_function_contract",
+        "native_loop_contract",
+        "hybrid_contract_and_harness"
+      ],
+      "target_examples": [
+        "poly_add",
+        "poly_sub",
+        "poly_reduce"
+      ],
+      "require_native_contract_tools": false,
+      "explicitly_configured": true,
+      "legacy_compatibility_default": false
+    },
+    "previous_stage_input_status": {
+      "agent2_spec_summary": {
+        "producer_stage": "02_spec_extraction",
+        "output_key": "spec_summary",
+        "available": true,
+        "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+        "warning": null
+      },
+      "agent3_code_summary": {
+        "producer_stage": "03_code_understanding",
+        "output_key": "code_summary",
+        "available": true,
+        "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_repair1_20260711_095925/stages/03_code_understanding/llm_authoritative/02_code_summary.json",
+        "warning": null
+      }
+    }
+  }
+}

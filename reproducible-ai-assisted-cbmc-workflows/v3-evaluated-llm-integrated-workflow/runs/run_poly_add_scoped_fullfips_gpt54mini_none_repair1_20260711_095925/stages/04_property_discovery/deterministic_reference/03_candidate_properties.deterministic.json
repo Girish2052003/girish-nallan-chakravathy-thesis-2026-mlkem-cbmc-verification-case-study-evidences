@@ -1,0 +1,243 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-11T07:46:14.695476+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "summary": {
+      "stage": "04_property_discovery",
+      "mode": "deterministic_reference_only",
+      "trust_boundary": "advisory_only_not_authoritative",
+      "target_function": "mlk_poly_add",
+      "target_topic": "ML-KEM polynomial addition",
+      "spec_summary_available": true,
+      "code_summary_available": true,
+      "candidate_property_count": 7,
+      "rejected_or_downgraded_count": 5,
+      "warning": "These deterministic candidate properties are advisory only. The LLM must verify, refine, downgrade, reject, or replace them against the primary and previous-stage evidence."
+    },
+    "candidate_properties": [
+      {
+        "property_id": "P16_CAMPAIGN_001",
+        "property_family_id": "P16",
+        "title": "Polynomial addition/subtraction bounds",
+        "category": "polynomial_add_sub_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "functional",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "standard_cbmc_harness"
+        ],
+        "candidate_statement": "Candidate Polynomial addition/subtraction bounds obligation for mlk_poly_add; the exact statement, bounds, assumptions and representation must be derived from primary FIPS/code evidence.",
+        "evidence_basis": [
+          "Configured from the canonical 26-property thesis catalogue."
+        ],
+        "required_assumptions": [],
+        "feasibility": "unknown",
+        "risk": "medium",
+        "cbmc_relevance": "standard_cbmc_harness",
+        "limitations": [
+          "Local coefficient bounds for the exact representation and input assumptions."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_MEM_001",
+        "property_family_id": "P01",
+        "title": "Pointer validity and memory readability/writability for target function arguments",
+        "category": "memory_safety",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "standard_cbmc_harness"
+        ],
+        "candidate_statement": "Candidate harness assumptions may require valid readable/writable memory for objects passed to mlk_poly_add, according to the actual function signature.",
+        "evidence_basis": [
+          "Agent 3 code summary / raw code should confirm pointer parameters and accessed fields."
+        ],
+        "required_assumptions": [
+          "Object sizes and pointer validity must match the actual C type definitions."
+        ],
+        "feasibility": "high",
+        "risk": "medium",
+        "cbmc_relevance": "CBMC can check invalid pointer dereference and memory-safety failures under harness assumptions.",
+        "limitations": [
+          "Advisory only until LLM verifies exact function signature and memory accesses."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_ARR_001",
+        "property_family_id": "P01",
+        "title": "Array-index safety for coefficient loop",
+        "category": "array_bounds",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "standard_cbmc_harness"
+        ],
+        "candidate_statement": "Candidate property: loops or accesses associated with mlk_poly_add should not access coefficient arrays outside their declared bounds.",
+        "evidence_basis": [
+          "Detected terms such as MLKEM_N, coeffs, array/index/loop, or n=256 in previous-stage outputs."
+        ],
+        "required_assumptions": [
+          "Loop bound and coefficient array length must be verified from raw source/header files."
+        ],
+        "feasibility": "high",
+        "risk": "low",
+        "cbmc_relevance": "CBMC is suitable for bounded C array-index safety checks.",
+        "limitations": [
+          "Does not prove mathematical correctness of polynomial operation."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_ARITH_001",
+        "property_family_id": "P16",
+        "title": "Arithmetic range / overflow under explicit coefficient assumptions",
+        "category": "integer_overflow_or_range",
+        "verification_strategy": "hybrid_contract_and_harness",
+        "proof_obligation_kind": "functional",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "hybrid_contract_and_harness"
+        ],
+        "candidate_statement": "Candidate property: arithmetic inside mlk_poly_add should avoid C integer overflow under explicit coefficient-range assumptions.",
+        "evidence_basis": [
+          "Detected integer types, coefficient terminology, range/modulus constants, or overflow-related hints."
+        ],
+        "required_assumptions": [
+          "Input coefficient ranges must be stated explicitly.",
+          "C integer promotions and casts must be checked from raw implementation code."
+        ],
+        "feasibility": "medium",
+        "risk": "medium",
+        "cbmc_relevance": "CBMC can check signed overflow and arithmetic assertions under bounded assumptions.",
+        "limitations": [
+          "Strong assumptions may be required.",
+          "Success would not prove full ML-KEM arithmetic correctness."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_FUNC_001",
+        "property_family_id": "P16",
+        "title": "Local functional relation with old-state snapshot",
+        "category": "local_functional_consistency",
+        "verification_strategy": "hybrid_contract_and_harness",
+        "proof_obligation_kind": "functional",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "hybrid_contract_and_harness"
+        ],
+        "candidate_statement": "Candidate property: after mlk_poly_add, each affected output coefficient should match a local relation between the old output state and input state, if supported by code/spec evidence.",
+        "evidence_basis": [
+          "Detected possible mutation/in-place-update or coefficient assignment hints in Agent 3 output."
+        ],
+        "required_assumptions": [
+          "The harness must snapshot old output state before calling the function.",
+          "The property must not use post-call values on both sides of the assertion."
+        ],
+        "feasibility": "medium",
+        "risk": "medium",
+        "cbmc_relevance": "CBMC can check local post-call assertions if old-state values are stored explicitly.",
+        "limitations": [
+          "The exact mathematical relation must be verified from raw code and specification evidence.",
+          "This is local functional consistency only, not full FIPS compliance."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_ALIAS_001",
+        "property_family_id": "P15",
+        "title": "Non-aliasing assumptions for input/output objects",
+        "category": "pointer_validity_and_aliasing",
+        "verification_strategy": "native_function_contract",
+        "proof_obligation_kind": "functional",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "native_function_contract"
+        ],
+        "candidate_statement": "Candidate property or assumption: if mlk_poly_add requires non-overlapping objects, the harness must state the aliasing condition explicitly.",
+        "evidence_basis": [
+          "Detected aliasing-related terms in previous-stage outputs or contracts."
+        ],
+        "required_assumptions": [
+          "Actual aliasing requirements must be verified from function contracts/source comments."
+        ],
+        "feasibility": "medium",
+        "risk": "high",
+        "cbmc_relevance": "CBMC harnesses can encode aliasing/non-aliasing assumptions.",
+        "limitations": [
+          "Over-strong non-aliasing assumptions can hide real behaviours and must be reviewed carefully."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_CONTRACT_001",
+        "property_family_id": "P26",
+        "title": "Consistency with existing contracts or annotations",
+        "category": "contract_consistency",
+        "verification_strategy": "native_function_contract",
+        "proof_obligation_kind": "functional",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "native_function_contract"
+        ],
+        "candidate_statement": "Candidate property: generated harness assumptions/assertions for mlk_poly_add should be consistent with existing source-level contracts or CBMC annotations where present.",
+        "evidence_basis": [
+          "Detected contract/assertion/assumption-related terms in code summary."
+        ],
+        "required_assumptions": [
+          "Existing annotations must be verified from raw headers/source files."
+        ],
+        "feasibility": "medium",
+        "risk": "medium",
+        "cbmc_relevance": "Can guide harness assumptions and avoid contradicting repository contracts.",
+        "limitations": [
+          "Existing contracts are evidence, not proof; they may be assumptions rather than established facts."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "rejected_or_downgraded_properties": [
+      {
+        "property_id": "BROAD_001",
+        "title": "Full ML-KEM correctness",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: too broad for this stage and not a local CBMC property.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_002",
+        "title": "Full FIPS 203 compliance",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: cannot be established by a local C harness.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_003",
+        "title": "Cryptographic security / IND-CCA security",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: outside CBMC C-level local property scope.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_004",
+        "title": "Full side-channel resistance",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: not supported by this workflow stage unless narrowly scoped and separately evidenced.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_005",
+        "title": "Whole-program correctness",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: too broad for selected-function CBMC case study.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "trust_boundary": "deterministic_reference_advisory_only"
+  }
+}

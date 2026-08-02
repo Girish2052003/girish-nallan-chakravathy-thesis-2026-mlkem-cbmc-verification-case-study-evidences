@@ -1,0 +1,109 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-11T08:06:24.543041+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "summary": {
+      "stage": "04_property_discovery",
+      "mode": "deterministic_reference_only",
+      "trust_boundary": "advisory_only_not_authoritative",
+      "target_function": "selected_C_functions",
+      "target_topic": "secret-independent analysis support",
+      "spec_summary_available": true,
+      "code_summary_available": true,
+      "candidate_property_count": 2,
+      "rejected_or_downgraded_count": 5,
+      "warning": "These deterministic candidate properties are advisory only. The LLM must verify, refine, downgrade, reject, or replace them against the primary and previous-stage evidence."
+    },
+    "candidate_properties": [
+      {
+        "property_id": "P19_CAMPAIGN_001",
+        "property_family_id": "P19",
+        "title": "Secret-independent branch/access analysis support",
+        "category": "secret_independent_control_access",
+        "verification_strategy": "analysis_only_no_formal_claim",
+        "proof_obligation_kind": "analysis_only",
+        "support_classification": "analysis_only",
+        "required_tool_capabilities": [
+          "analysis_only_no_formal_claim"
+        ],
+        "candidate_statement": "Candidate Secret-independent branch/access analysis support obligation for selected_C_functions; the exact statement, bounds, assumptions and representation must be derived from primary FIPS/code evidence.",
+        "evidence_basis": [
+          "Configured from the canonical 26-property thesis catalogue."
+        ],
+        "required_assumptions": [],
+        "feasibility": "unknown",
+        "risk": "high",
+        "cbmc_relevance": "analysis_only_no_formal_claim",
+        "limitations": [
+          "AI-assisted classification and external-test support only; no CBMC constant-time proof claim."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "P_MEM_001",
+        "property_family_id": "P01",
+        "title": "Pointer validity and memory readability/writability for target function arguments",
+        "category": "memory_safety",
+        "verification_strategy": "standard_cbmc_harness",
+        "proof_obligation_kind": "safety",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [
+          "standard_cbmc_harness"
+        ],
+        "candidate_statement": "Candidate harness assumptions may require valid readable/writable memory for objects passed to selected_C_functions, according to the actual function signature.",
+        "evidence_basis": [
+          "Agent 3 code summary / raw code should confirm pointer parameters and accessed fields."
+        ],
+        "required_assumptions": [
+          "Object sizes and pointer validity must match the actual C type definitions."
+        ],
+        "feasibility": "high",
+        "risk": "medium",
+        "cbmc_relevance": "CBMC can check invalid pointer dereference and memory-safety failures under harness assumptions.",
+        "limitations": [
+          "Advisory only until LLM verifies exact function signature and memory accesses."
+        ],
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "rejected_or_downgraded_properties": [
+      {
+        "property_id": "BROAD_001",
+        "title": "Full ML-KEM correctness",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: too broad for this stage and not a local CBMC property.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_002",
+        "title": "Full FIPS 203 compliance",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: cannot be established by a local C harness.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_003",
+        "title": "Cryptographic security / IND-CCA security",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: outside CBMC C-level local property scope.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_004",
+        "title": "Full side-channel resistance",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: not supported by this workflow stage unless narrowly scoped and separately evidenced.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "property_id": "BROAD_005",
+        "title": "Whole-program correctness",
+        "decision": "reject_or_downgrade",
+        "reason": "Reject/downgrade: too broad for selected-function CBMC case study.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "trust_boundary": "deterministic_reference_advisory_only"
+  }
+}

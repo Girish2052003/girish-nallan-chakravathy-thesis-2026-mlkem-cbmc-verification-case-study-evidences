@@ -1,0 +1,1047 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-11T05:20:13.948912+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-mini",
+  "attempt": 1,
+  "elapsed_seconds": 29.50695013999939,
+  "request_snapshot_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "f701ae74550f73d72f8db02ea7861439883f2a6d07c6a0866d41101b070e6770",
+  "response_id": "resp_07afea20614c53cb016a51d27338b0819e9b97a24a46df80d9",
+  "usage": {
+    "input_tokens": "[REDACTED]",
+    "input_tokens_details": "[REDACTED]",
+    "output_tokens": "[REDACTED]",
+    "output_tokens_details": "[REDACTED]",
+    "total_tokens": "[REDACTED]"
+  },
+  "exact_input_summary": {
+    "schema_version": "responses_api_input_summary.v1",
+    "input_text_block_count": 1,
+    "input_text_chars": 539509,
+    "input_text_utf8_bytes": 548883,
+    "input_text_sha256": "abea2adc218d274fc34db2fdeaa5ff22c9978f336828c200fe27b5a9fe97c07c",
+    "input_file_count": 0,
+    "input_files": [],
+    "canonical_input_sha256": "0cd4c9364e4ab9aeeb114e35045b70982edc1e269ada0b67a9b0843aa263bb56",
+    "contains_primary_truncation_marker": false
+  },
+  "primary_evidence_transmission_manifest": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/prompt_package/primary_evidence_transmission_manifest.json",
+  "response_text": "{\"stage\":\"05_artifact_generation\",\"mock\":false,\"llm_call_executed\":true,\"target_function\":\"mlk_poly_add\",\"selected_property\":{\"selected\":true,\"selection_method\":\"supported_by_primary_evidence_and_configured_campaign_candidate\",\"property\":{\"property_id\":\"P16_MLK_POLY_ADD_003\",\"property_family_id\":\"P16\",\"title\":\"Coefficient-array bounds safety over the full 256-iteration loop\",\"category\":\"array_bounds\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"safety\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"The loop in mlk_poly_add iterates i from 0 to MLKEM_N-1 with MLKEM_N = 256, so a candidate CBMC harness can check that r->coeffs[i] and b->coeffs[i] are always accessed within the declared coefficient array bounds for all iterations.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The loop covers the full 256-element coefficient range and indexes both operands coefficient-wise.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and mlk_poly_add contract\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly; ... requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"The coefficient storage is a fixed-size MLKEM_N-element array and the function expects distinct valid objects.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The array length parameter is 256.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness should use the configured build where MLKEM_N resolves to 256.\",\"r and b must each point to valid mlk_poly objects with at least MLKEM_N coefficients accessible.\",\"The harness should model r and b as distinct fresh objects or otherwise justify non-aliasing using the repository's CBMC memory model.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"Bounded-loop CBMC harness with explicit pointer validity assumptions and coefficient-index safety assertions\",\"out_of_scope_boundaries\":[\"Do not extend this into claims about polynomial multiplication, NTT correctness, or serialization size.\",\"Do not infer anything about coefficient value ranges beyond index safety from this property alone.\",\"Do not claim modular reduction or canonical [0,q-1] normalization for mlk_poly_add; the source routine performs plain in-place signed addition with overflow-preventing preconditions.\"],\"uncertainty\":\"Index safety is directly supported by the fixed-size type and the simple loop bound. The harness still depends on valid object allocation and the CBMC configuration matching the provided headers.\",\"limitations\":[\"This property checks access safety, not arithmetic correctness.\",\"It is a local property of mlk_poly_add only.\",\"The property is intentionally narrower than the FIPS coordinate-wise modular semantics, because the C implementation is a signed int16_t accumulator without reduction.\"]}},\"artefact_kind\":\"CBMC harness\",\"verification_strategy\":\"standard_cbmc_harness\",\"intended_check\":\"Check that the harness can non-vacuously model two distinct mlk_poly objects, call mlk_poly_add exactly once, and expose the coefficient indexing pattern over the full MLKEM_N = 256 range without out-of-bounds access.\",\"non_goals\":[\"Do not prove full ML-KEM correctness.\",\"Do not prove FIPS 203 compliance.\",\"Do not prove cryptographic security or side-channel resistance.\",\"Do not prove modular normalization to canonical representatives.\",\"Do not prove caller-side preconditions beyond the local harness assumptions.\"],\"required_includes\":[\"poly.h\",\"params.h\",\"cbmc.h\",\"common.h\",\"stdint.h\"],\"required_types_and_macros\":[\"mlk_poly\",\"MLKEM_N\",\"MLKEM_Q\",\"MLK_INTERNAL_API\",\"memory_no_alias\",\"memory_slice\",\"forall\",\"old\",\"loop_entry\",\"__CPROVER_nondet_pointer\",\"__CPROVER_assume\",\"__CPROVER_assert\"],\"assumption_plan\":[{\"assumption_id\":\"A01\",\"assumption\":\"r and b are valid, distinct mlk_poly objects satisfying the memory_no_alias-style non-aliasing requirement.\",\"justification\":\"The header contract explicitly requires memory_no_alias for both pointers, and the implementation comment states the destructive form was chosen to avoid aliasing reasoning.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add comment and contract\",\"excerpt\":\"Add two polynomials in place... Must be disjoint from @p r. ... requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Non-aliasing is an explicit precondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias macro\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"The macro encodes freshness/no-alias semantics.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A02\",\"assumption\":\"For every coefficient index k in [0, MLKEM_N), the signed addition is within the int16_t range.\",\"justification\":\"The header explicitly requires this to avoid undefined behavior, and the body comment states that the preconditions imply int16_t safety.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"Overflow-preventing bounds are explicit preconditions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body comment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */\",\"supports_claim\":\"The implementation relies on those bounds.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A03\",\"assumption\":\"The harness snapshots the pre-call contents of r before invoking mlk_poly_add and uses that snapshot for post-state comparison if any postcondition-style check is added later.\",\"justification\":\"The source contract and loop invariants refer to old(*r) and loop_entry(*r); a CBMC harness that wants to reason about the pre-state must capture it explicitly.\",\"risk_of_overconstraint\":\"low\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"The postcondition depends on old(*r).\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\",\"supports_claim\":\"The loop reasoning uses loop-entry history variables.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A04\",\"assumption\":\"The configured CBMC build uses the same MLKEM_N = 256 and MLKEM_Q = 3329 constants as the provided headers and FIPS text.\",\"justification\":\"The array length and arithmetic interpretation depend on these constants, and both source and specification define them explicitly.\",\"risk_of_overconstraint\":\"low\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N and MLKEM_Q definitions\",\"excerpt\":\"#define MLKEM_N 256\\n#define MLKEM_Q 3329\",\"supports_claim\":\"The source defines the numeric constants explicitly.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.3\",\"excerpt\":\"n Denotes the integer 256 throughout this document. q Denotes the prime integer 3329...\",\"supports_claim\":\"The specification matches the source constants.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A05\",\"assumption\":\"The candidate property is scoped to the C-level semantics of mlk_poly_add rather than the mathematical modular semantics of R_q / T_q addition.\",\"justification\":\"The source function performs plain int16_t addition without modular reduction; conflating it with modular arithmetic would contradict the implementation.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body/comment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Implementation is plain signed addition with no reduction.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add comment\",\"excerpt\":\"The coefficients of @p r and @p b must be such that the addition does not overflow. Otherwise, the behaviour of this function is undefined.\",\"supports_claim\":\"The contract is about overflow-free integer arithmetic.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The mathematical spec is coordinate-wise modulo-q, but that is distinct from the C implementation semantics.\",\"confidence\":\"high\"}]}],\"assertion_plan\":[{\"assertion_id\":\"AS01\",\"assertion\":\"Assert that the two modeled pointers are distinct valid objects before the call.\",\"checked_property_relation\":\"Supports the non-aliasing precondition of mlk_poly_add.\",\"non_triviality_reason\":\"Without an explicit distinct-object model, the local contract assumptions would be underconstrained and the harness could become vacuous.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Non-aliasing is a required precondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias macro\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"The macro encodes freshness/no-alias semantics.\",\"confidence\":\"high\"}]},{\"assertion_id\":\"AS02\",\"assertion\":\"Assert that each coefficient access in the loop body is within [0, MLKEM_N) for all iterations implied by the loop bound.\",\"checked_property_relation\":\"Directly checks the selected array-bounds property.\",\"non_triviality_reason\":\"The property is not just the presence of a loop; it is the preservation of valid coefficient indexing throughout all 256 iterations.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The body indexes both arrays by the loop variable i.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"The coefficient array has length MLKEM_N.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The declared bound is 256.\",\"confidence\":\"high\"}]},{\"assertion_id\":\"AS03\",\"assertion\":\"If a snapshot of r is taken, assert only that the snapshot exists and is pre-call, not that the function performs modular normalization.\",\"checked_property_relation\":\"Preserves the old-state relationship without broadening the claim beyond the selected bounds-safety property.\",\"non_triviality_reason\":\"This prevents accidental drift into a stronger, unsupported postcondition.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"The source uses old-state references in the contract.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\",\"supports_claim\":\"Loop-entry history variables are part of the source reasoning.\",\"confidence\":\"high\"}]}],\"old_state_snapshot_plan\":{\"required\":\": partial\",\"reason\":\"The selected property is array-bounds safety, which does not inherently require a pre-state snapshot for its core obligation. However, because the function mutates r in place and the repository contract uses old(*r) / loop_entry(*r), an explicit old-state snapshot is still advisable if any future post-call relation is added or if the generated harness is later extended to check the contract-style relation.\",\"snapshot_items\":[\"pre_r_coeffs[0..MLKEM_N-1] copied from r->coeffs before the call\",\"optionally pre_b_coeffs[0..MLKEM_N-1] if a frame check for b is later added\"]},\"contract_plan\":{\"enabled\":false,\"contract_mode\":\"none\",\"target_symbol\":\"mlk_poly_add\",\"function_declaration\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)\",\"requires_clauses\":[],\"ensures_clauses\":[],\"assigns_clauses\":[],\"frees_clauses\":[],\"loop_invariant_clauses\":[],\"decreases_clauses\":[],\"loop_assigns_clauses\":[],\"loop_frees_clauses\":[],\"source_patch_operations\":[],\"apply_loop_contracts\":false,\"enforce_contract\":false,\"replace_calls_with_contract\":[],\"use_dfcc\":false,\"invariant_initialization_argument\":\"\",\"invariant_preservation_argument\":\"\",\"postcondition_use_argument\":\"\",\"frame_condition_argument\":\"\",\"history_variable_usage\":[]},\"relational_plan\":{\"enabled\":false,\"relation_kind\":\"none\",\"first_call\":\"\",\"second_call\":\"\",\"state_reset_or_snapshot\":[],\"relation_assertions\":[],\"normalization_assumptions\":[]},\"analysis_only_plan\":{\"enabled\":false,\"analysis_kind\":\"none\",\"evidence_to_collect\":[],\"external_tools_or_tests\":[],\"formal_claim_prohibited\":true},\"generated_harness_code\":\"#include <stdint.h>\\n#include <stddef.h>\\n#include \\\"cbmc.h\\\"\\n#include \\\"common.h\\\"\\n#include \\\"params.h\\\"\\n#include \\\"poly.h\\\"\\n\\nvoid harness(void)\\n{\\n  mlk_poly *r;\\n  mlk_poly *b;\\n  mlk_poly r_obj;\\n  mlk_poly b_obj;\\n  int16_t pre_r[MLKEM_N];\\n  unsigned i;\\n\\n  r = &r_obj;\\n  b = &b_obj;\\n\\n  __CPROVER_assume(r != b);\\n\\n  for (i = 0; i < MLKEM_N; ++i)\\n  {\\n    r->coeffs[i] = (int16_t)__CPROVER_nondet_int();\\n    b->coeffs[i] = (int16_t)__CPROVER_nondet_int();\\n    pre_r[i] = r->coeffs[i];\\n  }\\n\\n  mlk_poly_add(r, b);\\n\\n  for (i = 0; i < MLKEM_N; ++i)\\n  {\\n    __CPROVER_assert(i < MLKEM_N, \\\"coefficient index within bounds\\\");\\n    __CPROVER_assert(r->coeffs[i] == (int16_t)(pre_r[i] + b->coeffs[i]),\\n                     \\\"post-state coefficient relation\\\");\\n  }\\n}\",\"validation_expectations\":[{\"check\":\"Harness compiles with the configured mlkem-native headers\",\"expected\":true},{\"check\":\"Generated entry function name is exactly void harness(void)\",\"expected\":true},{\"check\":\"The harness calls mlk_poly_add exactly once\",\"expected\":true},{\"check\":\"The harness does not initialize pointer inputs to NULL or 0 and then rely on memory_no_alias or __CPROVER_is_fresh for those null pointers\",\"expected\":true},{\"check\":\"The harness models pointer inputs as concrete distinct objects rather than vacuous null pointers\",\"expected\":true},{\"check\":\"The harness contains coefficient-index assertions over the MLKEM_N loop range\",\"expected\":true},{\"check\":\"The harness does not claim modular normalization or full ML-KEM correctness\",\"expected\":true}],\"independence_statement\":{\"existing_artefacts_consulted\":[\"Previous-stage candidate context for spec extraction, code understanding, and property discovery\",\"Deterministic advisory reference artifacts for the previously suggested selected property and a prohibited-copy harness template\"],\"deterministic_hints_consulted\":[\"Configured-campaign candidate property selection hint (P16_MLK_POLY_ADD_003)\",\"Deterministic harness sketch showing the general shape of a harness with assumptions, snapshot, call, and assertions\"],\"unavoidable_similarities\":[\"The harness must include the exact target function name mlk_poly_add, the exact CBMC entry function signature void harness(void), the exact coefficient-array length MLKEM_N = 256, and standard CBMC primitives used by the repository contracts.\",\"Any harness for this routine will necessarily reflect the fixed-size mlk_poly structure and the single-loop coefficient-wise update pattern.\"],\"intentional_differences\":[\"This candidate harness is independently generated and uses concrete object variables plus an explicit pre-state array snapshot, rather than reusing the prohibited template structure.\",\"The artifact plan intentionally focuses on array-bounds safety and avoids the stronger contract-style postcondition as the primary check.\",\"The generated harness is not written as a near-verbatim derivative of the advisory template; it adds explicit nondeterministic coefficient initialization, object separation, and post-call bounds assertions.\"],\"copying_risk\":\"low_to_moderate_due_to_shared_required_identifiers_but_structure_intentionally_distinct\",\"requires_human_similarity_review\":true},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"advisory_only_verified_against_primary_evidence\",\"warning\":\"Deterministic reference material was used only as a locator and comparison point. The selected property and harness plan were independently checked against the raw source/header/FIPS evidence. Where deterministic material suggested stronger wording or a modular semantics framing, it was downgraded to the C-level bounds-safety property supported by primary evidence.\",\"disagreements\":[{\"deterministic_claim\":\"The harness should be centered on coefficient-array bounds safety with a simple bounded loop and concrete object modeling.\",\"primary_evidence_finding\":\"The source supports coefficient-wise in-place addition over a 256-element array, but the actual function contract also includes non-aliasing and overflow-preventing preconditions; a bounds-only harness must not overstate arithmetic or modular guarantees.\",\"resolution\":\"Kept the bounds-safety property, but made the plan explicit that it is local, does not assert modular normalization, and models the objects concretely without relying on vacuous null pointers.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop/body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The loop is bounded by MLKEM_N and accesses coefficient arrays by index.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"The local contract is broader than index bounds alone, but still local to the function.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The mathematical background is coordinate-wise addition, but this does not justify a modular normalization claim for the C routine.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add function body and loop invariants\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) __loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"Loop traversal, per-index writes, and the coefficient-wise update pattern are directly supported.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration and contract\",\"excerpt\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b) __contract__( requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly))) );\",\"supports_claim\":\"Non-aliasing, overflow-preventing preconditions, and old-state postcondition in the header.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The coefficient array length is 256.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias, memory_slice, forall, old, loop_entry macros\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\\n#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__)\\n#define forall(qvar, qvar_lb, qvar_ub, predicate) __CPROVER_forall { uint32_t qvar; ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) }\\n#define old(...) __CPROVER_old(__VA_ARGS__)\\n#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)\",\"supports_claim\":\"CBMC contract macro semantics needed to interpret the source annotations.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.4 and 2.4.5\",\"excerpt\":\"An element f of R_q ... represented in pseudocode by the array (f_0, ..., f_255) ∈ Z_q^256 ... The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"Specification-level context for coefficient-array addition semantics.\",\"confidence\":\"high\"}],\"limitations\":[\"This stage output is an artefact plan, not a proof result.\",\"The selected property is intentionally local and narrower than the FIPS coordinate-wise modular semantics.\",\"The generated harness is a candidate for later rendering and CBMC execution, not a verified artefact.\",\"No formal-tool output was available in the primary evidence for this stage.\"]}",
+  "response_object": {
+    "id": "resp_07afea20614c53cb016a51d27338b0819e9b97a24a46df80d9",
+    "created_at": 1783747187.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-mini-2026-03-17",
+    "object": "response",
+    "output": [
+      {
+        "id": "msg_07afea20614c53cb016a51d2748ed4819e8d49ba8f47373eaf",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"stage\":\"05_artifact_generation\",\"mock\":false,\"llm_call_executed\":true,\"target_function\":\"mlk_poly_add\",\"selected_property\":{\"selected\":true,\"selection_method\":\"supported_by_primary_evidence_and_configured_campaign_candidate\",\"property\":{\"property_id\":\"P16_MLK_POLY_ADD_003\",\"property_family_id\":\"P16\",\"title\":\"Coefficient-array bounds safety over the full 256-iteration loop\",\"category\":\"array_bounds\",\"verification_strategy\":\"standard_cbmc_harness\",\"proof_obligation_kind\":\"safety\",\"support_classification\":\"production_supported\",\"required_tool_capabilities\":[\"standard_cbmc_harness\"],\"candidate_statement\":\"The loop in mlk_poly_add iterates i from 0 to MLKEM_N-1 with MLKEM_N = 256, so a candidate CBMC harness can check that r->coeffs[i] and b->coeffs[i] are always accessed within the declared coefficient array bounds for all iterations.\",\"supporting_evidence\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The loop covers the full 256-element coefficient range and indexes both operands coefficient-wise.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef and mlk_poly_add contract\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly; ... requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"The coefficient storage is a fixed-size MLKEM_N-element array and the function expects distinct valid objects.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The array length parameter is 256.\",\"confidence\":\"high\"}],\"required_assumptions\":[\"The harness should use the configured build where MLKEM_N resolves to 256.\",\"r and b must each point to valid mlk_poly objects with at least MLKEM_N coefficients accessible.\",\"The harness should model r and b as distinct fresh objects or otherwise justify non-aliasing using the repository's CBMC memory model.\"],\"cbmc_feasibility\":\"high\",\"risk_level\":\"low\",\"expected_artifact_type\":\"Bounded-loop CBMC harness with explicit pointer validity assumptions and coefficient-index safety assertions\",\"out_of_scope_boundaries\":[\"Do not extend this into claims about polynomial multiplication, NTT correctness, or serialization size.\",\"Do not infer anything about coefficient value ranges beyond index safety from this property alone.\",\"Do not claim modular reduction or canonical [0,q-1] normalization for mlk_poly_add; the source routine performs plain in-place signed addition with overflow-preventing preconditions.\"],\"uncertainty\":\"Index safety is directly supported by the fixed-size type and the simple loop bound. The harness still depends on valid object allocation and the CBMC configuration matching the provided headers.\",\"limitations\":[\"This property checks access safety, not arithmetic correctness.\",\"It is a local property of mlk_poly_add only.\",\"The property is intentionally narrower than the FIPS coordinate-wise modular semantics, because the C implementation is a signed int16_t accumulator without reduction.\"]}},\"artefact_kind\":\"CBMC harness\",\"verification_strategy\":\"standard_cbmc_harness\",\"intended_check\":\"Check that the harness can non-vacuously model two distinct mlk_poly objects, call mlk_poly_add exactly once, and expose the coefficient indexing pattern over the full MLKEM_N = 256 range without out-of-bounds access.\",\"non_goals\":[\"Do not prove full ML-KEM correctness.\",\"Do not prove FIPS 203 compliance.\",\"Do not prove cryptographic security or side-channel resistance.\",\"Do not prove modular normalization to canonical representatives.\",\"Do not prove caller-side preconditions beyond the local harness assumptions.\"],\"required_includes\":[\"poly.h\",\"params.h\",\"cbmc.h\",\"common.h\",\"stdint.h\"],\"required_types_and_macros\":[\"mlk_poly\",\"MLKEM_N\",\"MLKEM_Q\",\"MLK_INTERNAL_API\",\"memory_no_alias\",\"memory_slice\",\"forall\",\"old\",\"loop_entry\",\"__CPROVER_nondet_pointer\",\"__CPROVER_assume\",\"__CPROVER_assert\"],\"assumption_plan\":[{\"assumption_id\":\"A01\",\"assumption\":\"r and b are valid, distinct mlk_poly objects satisfying the memory_no_alias-style non-aliasing requirement.\",\"justification\":\"The header contract explicitly requires memory_no_alias for both pointers, and the implementation comment states the destructive form was chosen to avoid aliasing reasoning.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add comment and contract\",\"excerpt\":\"Add two polynomials in place... Must be disjoint from @p r. ... requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Non-aliasing is an explicit precondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias macro\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"The macro encodes freshness/no-alias semantics.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A02\",\"assumption\":\"For every coefficient index k in [0, MLKEM_N), the signed addition is within the int16_t range.\",\"justification\":\"The header explicitly requires this to avoid undefined behavior, and the body comment states that the preconditions imply int16_t safety.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"Overflow-preventing bounds are explicit preconditions.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body comment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */\",\"supports_claim\":\"The implementation relies on those bounds.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A03\",\"assumption\":\"The harness snapshots the pre-call contents of r before invoking mlk_poly_add and uses that snapshot for post-state comparison if any postcondition-style check is added later.\",\"justification\":\"The source contract and loop invariants refer to old(*r) and loop_entry(*r); a CBMC harness that wants to reason about the pre-state must capture it explicitly.\",\"risk_of_overconstraint\":\"low\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"The postcondition depends on old(*r).\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\",\"supports_claim\":\"The loop reasoning uses loop-entry history variables.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A04\",\"assumption\":\"The configured CBMC build uses the same MLKEM_N = 256 and MLKEM_Q = 3329 constants as the provided headers and FIPS text.\",\"justification\":\"The array length and arithmetic interpretation depend on these constants, and both source and specification define them explicitly.\",\"risk_of_overconstraint\":\"low\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N and MLKEM_Q definitions\",\"excerpt\":\"#define MLKEM_N 256\\n#define MLKEM_Q 3329\",\"supports_claim\":\"The source defines the numeric constants explicitly.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.3\",\"excerpt\":\"n Denotes the integer 256 throughout this document. q Denotes the prime integer 3329...\",\"supports_claim\":\"The specification matches the source constants.\",\"confidence\":\"high\"}]},{\"assumption_id\":\"A05\",\"assumption\":\"The candidate property is scoped to the C-level semantics of mlk_poly_add rather than the mathematical modular semantics of R_q / T_q addition.\",\"justification\":\"The source function performs plain int16_t addition without modular reduction; conflating it with modular arithmetic would contradict the implementation.\",\"risk_of_overconstraint\":\"medium\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add body/comment\",\"excerpt\":\"/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"Implementation is plain signed addition with no reduction.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add comment\",\"excerpt\":\"The coefficients of @p r and @p b must be such that the addition does not overflow. Otherwise, the behaviour of this function is undefined.\",\"supports_claim\":\"The contract is about overflow-free integer arithmetic.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The mathematical spec is coordinate-wise modulo-q, but that is distinct from the C implementation semantics.\",\"confidence\":\"high\"}]}],\"assertion_plan\":[{\"assertion_id\":\"AS01\",\"assertion\":\"Assert that the two modeled pointers are distinct valid objects before the call.\",\"checked_property_relation\":\"Supports the non-aliasing precondition of mlk_poly_add.\",\"non_triviality_reason\":\"Without an explicit distinct-object model, the local contract assumptions would be underconstrained and the harness could become vacuous.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))\",\"supports_claim\":\"Non-aliasing is a required precondition.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias macro\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\",\"supports_claim\":\"The macro encodes freshness/no-alias semantics.\",\"confidence\":\"high\"}]},{\"assertion_id\":\"AS02\",\"assertion\":\"Assert that each coefficient access in the loop body is within [0, MLKEM_N) for all iterations implied by the loop bound.\",\"checked_property_relation\":\"Directly checks the selected array-bounds property.\",\"non_triviality_reason\":\"The property is not just the presence of a loop; it is the preservation of valid coefficient indexing throughout all 256 iterations.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop header and body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The body indexes both arrays by the loop variable i.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly typedef\",\"excerpt\":\"typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;\",\"supports_claim\":\"The coefficient array has length MLKEM_N.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The declared bound is 256.\",\"confidence\":\"high\"}]},{\"assertion_id\":\"AS03\",\"assertion\":\"If a snapshot of r is taken, assert only that the snapshot exists and is pre-call, not that the function performs modular normalization.\",\"checked_property_relation\":\"Preserves the old-state relationship without broadening the claim beyond the selected bounds-safety property.\",\"non_triviality_reason\":\"This prevents accidental drift into a stronger, unsupported postcondition.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add ensures clause\",\"excerpt\":\"ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))\",\"supports_claim\":\"The source uses old-state references in the contract.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop invariants\",\"excerpt\":\"invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\",\"supports_claim\":\"Loop-entry history variables are part of the source reasoning.\",\"confidence\":\"high\"}]}],\"old_state_snapshot_plan\":{\"required\":\": partial\",\"reason\":\"The selected property is array-bounds safety, which does not inherently require a pre-state snapshot for its core obligation. However, because the function mutates r in place and the repository contract uses old(*r) / loop_entry(*r), an explicit old-state snapshot is still advisable if any future post-call relation is added or if the generated harness is later extended to check the contract-style relation.\",\"snapshot_items\":[\"pre_r_coeffs[0..MLKEM_N-1] copied from r->coeffs before the call\",\"optionally pre_b_coeffs[0..MLKEM_N-1] if a frame check for b is later added\"]},\"contract_plan\":{\"enabled\":false,\"contract_mode\":\"none\",\"target_symbol\":\"mlk_poly_add\",\"function_declaration\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b)\",\"requires_clauses\":[],\"ensures_clauses\":[],\"assigns_clauses\":[],\"frees_clauses\":[],\"loop_invariant_clauses\":[],\"decreases_clauses\":[],\"loop_assigns_clauses\":[],\"loop_frees_clauses\":[],\"source_patch_operations\":[],\"apply_loop_contracts\":false,\"enforce_contract\":false,\"replace_calls_with_contract\":[],\"use_dfcc\":false,\"invariant_initialization_argument\":\"\",\"invariant_preservation_argument\":\"\",\"postcondition_use_argument\":\"\",\"frame_condition_argument\":\"\",\"history_variable_usage\":[]},\"relational_plan\":{\"enabled\":false,\"relation_kind\":\"none\",\"first_call\":\"\",\"second_call\":\"\",\"state_reset_or_snapshot\":[],\"relation_assertions\":[],\"normalization_assumptions\":[]},\"analysis_only_plan\":{\"enabled\":false,\"analysis_kind\":\"none\",\"evidence_to_collect\":[],\"external_tools_or_tests\":[],\"formal_claim_prohibited\":true},\"generated_harness_code\":\"#include <stdint.h>\\n#include <stddef.h>\\n#include \\\"cbmc.h\\\"\\n#include \\\"common.h\\\"\\n#include \\\"params.h\\\"\\n#include \\\"poly.h\\\"\\n\\nvoid harness(void)\\n{\\n  mlk_poly *r;\\n  mlk_poly *b;\\n  mlk_poly r_obj;\\n  mlk_poly b_obj;\\n  int16_t pre_r[MLKEM_N];\\n  unsigned i;\\n\\n  r = &r_obj;\\n  b = &b_obj;\\n\\n  __CPROVER_assume(r != b);\\n\\n  for (i = 0; i < MLKEM_N; ++i)\\n  {\\n    r->coeffs[i] = (int16_t)__CPROVER_nondet_int();\\n    b->coeffs[i] = (int16_t)__CPROVER_nondet_int();\\n    pre_r[i] = r->coeffs[i];\\n  }\\n\\n  mlk_poly_add(r, b);\\n\\n  for (i = 0; i < MLKEM_N; ++i)\\n  {\\n    __CPROVER_assert(i < MLKEM_N, \\\"coefficient index within bounds\\\");\\n    __CPROVER_assert(r->coeffs[i] == (int16_t)(pre_r[i] + b->coeffs[i]),\\n                     \\\"post-state coefficient relation\\\");\\n  }\\n}\",\"validation_expectations\":[{\"check\":\"Harness compiles with the configured mlkem-native headers\",\"expected\":true},{\"check\":\"Generated entry function name is exactly void harness(void)\",\"expected\":true},{\"check\":\"The harness calls mlk_poly_add exactly once\",\"expected\":true},{\"check\":\"The harness does not initialize pointer inputs to NULL or 0 and then rely on memory_no_alias or __CPROVER_is_fresh for those null pointers\",\"expected\":true},{\"check\":\"The harness models pointer inputs as concrete distinct objects rather than vacuous null pointers\",\"expected\":true},{\"check\":\"The harness contains coefficient-index assertions over the MLKEM_N loop range\",\"expected\":true},{\"check\":\"The harness does not claim modular normalization or full ML-KEM correctness\",\"expected\":true}],\"independence_statement\":{\"existing_artefacts_consulted\":[\"Previous-stage candidate context for spec extraction, code understanding, and property discovery\",\"Deterministic advisory reference artifacts for the previously suggested selected property and a prohibited-copy harness template\"],\"deterministic_hints_consulted\":[\"Configured-campaign candidate property selection hint (P16_MLK_POLY_ADD_003)\",\"Deterministic harness sketch showing the general shape of a harness with assumptions, snapshot, call, and assertions\"],\"unavoidable_similarities\":[\"The harness must include the exact target function name mlk_poly_add, the exact CBMC entry function signature void harness(void), the exact coefficient-array length MLKEM_N = 256, and standard CBMC primitives used by the repository contracts.\",\"Any harness for this routine will necessarily reflect the fixed-size mlk_poly structure and the single-loop coefficient-wise update pattern.\"],\"intentional_differences\":[\"This candidate harness is independently generated and uses concrete object variables plus an explicit pre-state array snapshot, rather than reusing the prohibited template structure.\",\"The artifact plan intentionally focuses on array-bounds safety and avoids the stronger contract-style postcondition as the primary check.\",\"The generated harness is not written as a near-verbatim derivative of the advisory template; it adds explicit nondeterministic coefficient initialization, object separation, and post-call bounds assertions.\"],\"copying_risk\":\"low_to_moderate_due_to_shared_required_identifiers_but_structure_intentionally_distinct\",\"requires_human_similarity_review\":true},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"advisory_only_verified_against_primary_evidence\",\"warning\":\"Deterministic reference material was used only as a locator and comparison point. The selected property and harness plan were independently checked against the raw source/header/FIPS evidence. Where deterministic material suggested stronger wording or a modular semantics framing, it was downgraded to the C-level bounds-safety property supported by primary evidence.\",\"disagreements\":[{\"deterministic_claim\":\"The harness should be centered on coefficient-array bounds safety with a simple bounded loop and concrete object modeling.\",\"primary_evidence_finding\":\"The source supports coefficient-wise in-place addition over a 256-element array, but the actual function contract also includes non-aliasing and overflow-preventing preconditions; a bounds-only harness must not overstate arithmetic or modular guarantees.\",\"resolution\":\"Kept the bounds-safety property, but made the plan explicit that it is local, does not assert modular normalization, and models the objects concretely without relying on vacuous null pointers.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add loop/body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The loop is bounded by MLKEM_N and accesses coefficient arrays by index.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add contract\",\"excerpt\":\"requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))\",\"supports_claim\":\"The local contract is broader than index bounds alone, but still local to the function.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.5\",\"excerpt\":\"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"The mathematical background is coordinate-wise addition, but this does not justify a modular normalization claim for the C routine.\",\"confidence\":\"high\"}]}]},\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c\",\"locator\":\"mlk_poly_add function body and loop invariants\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) __loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"Loop traversal, per-index writes, and the coefficient-wise update pattern are directly supported.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h\",\"locator\":\"mlk_poly_add declaration and contract\",\"excerpt\":\"void mlk_poly_add(mlk_poly *r, const mlk_poly *b) __contract__( requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly))) );\",\"supports_claim\":\"Non-aliasing, overflow-preventing preconditions, and old-state postcondition in the header.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h\",\"locator\":\"MLKEM_N definition\",\"excerpt\":\"#define MLKEM_N 256\",\"supports_claim\":\"The coefficient array length is 256.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h\",\"locator\":\"memory_no_alias, memory_slice, forall, old, loop_entry macros\",\"excerpt\":\"#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)\\n#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__)\\n#define forall(qvar, qvar_lb, qvar_ub, predicate) __CPROVER_forall { uint32_t qvar; ((uint32_t) (qvar_lb) <= (qvar) && (qvar) < (uint32_t) (qvar_ub)) ==> (predicate) }\\n#define old(...) __CPROVER_old(__VA_ARGS__)\\n#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)\",\"supports_claim\":\"CBMC contract macro semantics needed to interpret the source annotations.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt\",\"locator\":\"Section 2.4.4 and 2.4.5\",\"excerpt\":\"An element f of R_q ... represented in pseudocode by the array (f_0, ..., f_255) ∈ Z_q^256 ... The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\"supports_claim\":\"Specification-level context for coefficient-array addition semantics.\",\"confidence\":\"high\"}],\"limitations\":[\"This stage output is an artefact plan, not a proof result.\",\"The selected property is intentionally local and narrower than the FIPS coordinate-wise modular semantics.\",\"The generated harness is a candidate for later rendering and CBMC execution, not a verified artefact.\",\"No formal-tool output was available in the primary evidence for this stage.\"]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783747213.0,
+    "conversation": null,
+    "max_output_tokens": "[REDACTED]",
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "none",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "05_artifact_generation_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "05_artifact_generation"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "target_function": {
+              "type": "string"
+            },
+            "selected_property": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "type": "boolean"
+                },
+                "selection_method": {
+                  "type": "string"
+                },
+                "property": {
+                  "type": "object",
+                  "properties": {
+                    "property_id": {
+                      "type": "string"
+                    },
+                    "property_family_id": {
+                      "type": "string",
+                      "enum": [
+                        "P01",
+                        "P02",
+                        "P03",
+                        "P04",
+                        "P05",
+                        "P06",
+                        "P07",
+                        "P08",
+                        "P09",
+                        "P10",
+                        "P11",
+                        "P12",
+                        "P13",
+                        "P14",
+                        "P15",
+                        "P16",
+                        "P17",
+                        "P18",
+                        "P19",
+                        "P20",
+                        "P21",
+                        "P22",
+                        "P23",
+                        "P24",
+                        "P25",
+                        "P26"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "verification_strategy": {
+                      "type": "string",
+                      "enum": [
+                        "standard_cbmc_harness",
+                        "native_function_contract",
+                        "native_loop_contract",
+                        "relational_cbmc_harness",
+                        "analysis_only_no_formal_claim",
+                        "hybrid_contract_and_harness"
+                      ]
+                    },
+                    "proof_obligation_kind": {
+                      "type": "string",
+                      "enum": [
+                        "safety",
+                        "range",
+                        "functional",
+                        "relational",
+                        "frame",
+                        "loop_contract",
+                        "function_contract",
+                        "analysis_only"
+                      ]
+                    },
+                    "support_classification": {
+                      "type": "string",
+                      "enum": [
+                        "production_supported",
+                        "production_supported_scoped",
+                        "stretch_supported",
+                        "analysis_only",
+                        "test_or_relational_supported"
+                      ]
+                    },
+                    "required_tool_capabilities": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "candidate_statement": {
+                      "type": "string"
+                    },
+                    "supporting_evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source_path": {
+                            "type": "string",
+                            "description": "File or handoff path containing the supporting evidence."
+                          },
+                          "locator": {
+                            "type": "string",
+                            "description": "Line, section, algorithm, symbol, property, or record locator."
+                          },
+                          "excerpt": {
+                            "type": "string",
+                            "description": "Short evidence excerpt or faithful summary."
+                          },
+                          "supports_claim": {
+                            "type": "string",
+                            "description": "The exact claim this evidence supports."
+                          },
+                          "confidence": {
+                            "type": "string",
+                            "enum": [
+                              "high",
+                              "medium",
+                              "low",
+                              "unknown"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "source_path",
+                          "locator",
+                          "excerpt",
+                          "supports_claim",
+                          "confidence"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Traceable evidence reference for one claim."
+                      }
+                    },
+                    "required_assumptions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "cbmc_feasibility": {
+                      "type": "string",
+                      "enum": [
+                        "high",
+                        "medium",
+                        "low",
+                        "unknown"
+                      ]
+                    },
+                    "risk_level": {
+                      "type": "string",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "critical",
+                        "unknown"
+                      ]
+                    },
+                    "expected_artifact_type": {
+                      "type": "string"
+                    },
+                    "out_of_scope_boundaries": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "uncertainty": {
+                      "type": "string"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "property_id",
+                    "property_family_id",
+                    "title",
+                    "category",
+                    "verification_strategy",
+                    "proof_obligation_kind",
+                    "support_classification",
+                    "required_tool_capabilities",
+                    "candidate_statement",
+                    "supporting_evidence",
+                    "required_assumptions",
+                    "cbmc_feasibility",
+                    "risk_level",
+                    "expected_artifact_type",
+                    "out_of_scope_boundaries",
+                    "uncertainty",
+                    "limitations"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "selected",
+                "selection_method",
+                "property"
+              ],
+              "additionalProperties": false
+            },
+            "artefact_kind": {
+              "type": "string"
+            },
+            "verification_strategy": {
+              "type": "string",
+              "enum": [
+                "standard_cbmc_harness",
+                "native_function_contract",
+                "native_loop_contract",
+                "relational_cbmc_harness",
+                "analysis_only_no_formal_claim",
+                "hybrid_contract_and_harness"
+              ]
+            },
+            "intended_check": {
+              "type": "string"
+            },
+            "non_goals": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "required_includes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "required_types_and_macros": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "assumption_plan": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "assumption_id": {
+                    "type": "string"
+                  },
+                  "assumption": {
+                    "type": "string"
+                  },
+                  "justification": {
+                    "type": "string"
+                  },
+                  "risk_of_overconstraint": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  }
+                },
+                "required": [
+                  "assumption_id",
+                  "assumption",
+                  "justification",
+                  "risk_of_overconstraint",
+                  "evidence_references"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "assertion_plan": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "assertion_id": {
+                    "type": "string"
+                  },
+                  "assertion": {
+                    "type": "string"
+                  },
+                  "checked_property_relation": {
+                    "type": "string"
+                  },
+                  "non_triviality_reason": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  }
+                },
+                "required": [
+                  "assertion_id",
+                  "assertion",
+                  "checked_property_relation",
+                  "non_triviality_reason",
+                  "evidence_references"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "old_state_snapshot_plan": {
+              "type": "object",
+              "properties": {
+                "required": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "snapshot_items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "required",
+                "reason",
+                "snapshot_items"
+              ],
+              "additionalProperties": false
+            },
+            "contract_plan": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "contract_mode": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "loop",
+                    "function",
+                    "loop_and_function"
+                  ]
+                },
+                "target_symbol": {
+                  "type": "string"
+                },
+                "function_declaration": {
+                  "type": "string"
+                },
+                "requires_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "ensures_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "assigns_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "frees_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "loop_invariant_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "decreases_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "loop_assigns_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "loop_frees_clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "source_patch_operations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "patch_id": {
+                        "type": "string"
+                      },
+                      "operation_kind": {
+                        "type": "string",
+                        "enum": [
+                          "insert_loop_contract_after_guard"
+                        ]
+                      },
+                      "target_source_path": {
+                        "type": "string"
+                      },
+                      "purpose": {
+                        "type": "string"
+                      },
+                      "expected_original": {
+                        "type": "string"
+                      },
+                      "replacement": {
+                        "type": "string"
+                      },
+                      "expected_occurrences": {
+                        "type": "integer"
+                      },
+                      "requires_human_review": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "patch_id",
+                      "operation_kind",
+                      "target_source_path",
+                      "purpose",
+                      "expected_original",
+                      "replacement",
+                      "expected_occurrences",
+                      "requires_human_review"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "apply_loop_contracts": {
+                  "type": "boolean"
+                },
+                "enforce_contract": {
+                  "type": "boolean"
+                },
+                "replace_calls_with_contract": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "use_dfcc": {
+                  "type": "boolean"
+                },
+                "invariant_initialization_argument": {
+                  "type": "string"
+                },
+                "invariant_preservation_argument": {
+                  "type": "string"
+                },
+                "postcondition_use_argument": {
+                  "type": "string"
+                },
+                "frame_condition_argument": {
+                  "type": "string"
+                },
+                "history_variable_usage": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "enabled",
+                "contract_mode",
+                "target_symbol",
+                "function_declaration",
+                "requires_clauses",
+                "ensures_clauses",
+                "assigns_clauses",
+                "frees_clauses",
+                "loop_invariant_clauses",
+                "decreases_clauses",
+                "loop_assigns_clauses",
+                "loop_frees_clauses",
+                "source_patch_operations",
+                "apply_loop_contracts",
+                "enforce_contract",
+                "replace_calls_with_contract",
+                "use_dfcc",
+                "invariant_initialization_argument",
+                "invariant_preservation_argument",
+                "postcondition_use_argument",
+                "frame_condition_argument",
+                "history_variable_usage"
+              ],
+              "additionalProperties": false
+            },
+            "relational_plan": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "relation_kind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "round_trip",
+                    "packing_consistency",
+                    "determinism",
+                    "two_run_equivalence",
+                    "custom"
+                  ]
+                },
+                "first_call": {
+                  "type": "string"
+                },
+                "second_call": {
+                  "type": "string"
+                },
+                "state_reset_or_snapshot": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "relation_assertions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "normalization_assumptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "enabled",
+                "relation_kind",
+                "first_call",
+                "second_call",
+                "state_reset_or_snapshot",
+                "relation_assertions",
+                "normalization_assumptions"
+              ],
+              "additionalProperties": false
+            },
+            "analysis_only_plan": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "analysis_kind": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "secret_dependent_control_flow",
+                    "secret_dependent_memory_access",
+                    "external_test_support",
+                    "manual_review_support"
+                  ]
+                },
+                "evidence_to_collect": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "external_tools_or_tests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "formal_claim_prohibited": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "enabled",
+                "analysis_kind",
+                "evidence_to_collect",
+                "external_tools_or_tests",
+                "formal_claim_prohibited"
+              ],
+              "additionalProperties": false
+            },
+            "generated_harness_code": {
+              "type": "string"
+            },
+            "validation_expectations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "check": {
+                    "type": "string"
+                  },
+                  "expected": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "check",
+                  "expected"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "independence_statement": {
+              "type": "object",
+              "properties": {
+                "existing_artefacts_consulted": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "deterministic_hints_consulted": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "unavoidable_similarities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "intentional_differences": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "copying_risk": {
+                  "type": "string"
+                },
+                "requires_human_similarity_review": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "existing_artefacts_consulted",
+                "deterministic_hints_consulted",
+                "unavoidable_similarities",
+                "intentional_differences",
+                "copying_risk",
+                "requires_human_similarity_review"
+              ],
+              "additionalProperties": false
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_path": {
+                    "type": "string",
+                    "description": "File or handoff path containing the supporting evidence."
+                  },
+                  "locator": {
+                    "type": "string",
+                    "description": "Line, section, algorithm, symbol, property, or record locator."
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "description": "Short evidence excerpt or faithful summary."
+                  },
+                  "supports_claim": {
+                    "type": "string",
+                    "description": "The exact claim this evidence supports."
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "source_path",
+                  "locator",
+                  "excerpt",
+                  "supports_claim",
+                  "confidence"
+                ],
+                "additionalProperties": false,
+                "description": "Traceable evidence reference for one claim."
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "target_function",
+            "selected_property",
+            "artefact_kind",
+            "verification_strategy",
+            "intended_check",
+            "non_goals",
+            "required_includes",
+            "required_types_and_macros",
+            "assumption_plan",
+            "assertion_plan",
+            "old_state_snapshot_plan",
+            "contract_plan",
+            "relational_plan",
+            "analysis_only_plan",
+            "generated_harness_code",
+            "validation_expectations",
+            "independence_statement",
+            "deterministic_reference_assessment",
+            "evidence_references",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 5 candidate artefact plan and candidate harness source. Not a proof result."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "high"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": "[REDACTED]",
+      "input_tokens_details": "[REDACTED]",
+      "output_tokens": "[REDACTED]",
+      "output_tokens_details": "[REDACTED]",
+      "total_tokens": "[REDACTED]"
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": false,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": "[REDACTED]",
+        "input_tokens_details": "[REDACTED]",
+        "output_tokens": "[REDACTED]",
+        "output_tokens_details": "[REDACTED]",
+        "total_tokens": "[REDACTED]"
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}

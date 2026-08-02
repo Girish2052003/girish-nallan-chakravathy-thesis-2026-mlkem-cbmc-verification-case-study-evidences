@@ -1,0 +1,241 @@
+{
+  "schema_version": "deterministic_reference_bundle.v1",
+  "created_utc": "2026-07-11T05:20:15.053054+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "deterministic_review": {
+      "schema_version": "deterministic_critic_review.v1",
+      "created_utc": "2026-07-11T05:20:15.046777+00:00",
+      "target_function": "mlk_poly_add",
+      "verification_strategy": "standard_cbmc_harness",
+      "analysis_only": false,
+      "contract_validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "enabled": false
+      },
+      "property_campaign_validation": {
+        "schema_version": "property_campaign_artifact_plan_validation.v2",
+        "valid": true,
+        "valid_for_real_experiment": true,
+        "mock_wiring_only": false,
+        "legacy_compatibility_default": false,
+        "errors": [],
+        "warnings": [],
+        "configured_property_family_id": "P16",
+        "configured_property_family_title": "Polynomial addition/subtraction bounds",
+        "configured_verification_strategy": "standard_cbmc_harness",
+        "selected_property_family_id": "P16",
+        "selected_property_strategy": "standard_cbmc_harness",
+        "contract_validation": {
+          "valid": true,
+          "errors": [],
+          "warnings": [],
+          "enabled": false
+        },
+        "claim_boundary": "Strategy-plan compatibility does not prove the contract, harness, relation, or property."
+      },
+      "harness_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+      "artifact_plan_available": true,
+      "artifact_manifest_available": true,
+      "independence_audit_available": true,
+      "assertions_detected": [
+        {
+          "line": 33,
+          "raw_text": "__CPROVER_assert(i < MLKEM_N, \"coefficient index within bounds\");",
+          "trivial_true": false,
+          "trivial_false": false,
+          "possible_self_comparison": false,
+          "trust_boundary": "deterministic_review_diagnostic"
+        },
+        {
+          "line": 34,
+          "raw_text": "__CPROVER_assert(r->coeffs[i] == (int16_t)(pre_r[i] + b->coeffs[i]),",
+          "trivial_true": false,
+          "trivial_false": false,
+          "possible_self_comparison": false,
+          "trust_boundary": "deterministic_review_diagnostic"
+        }
+      ],
+      "assumptions_detected": [
+        {
+          "line": 20,
+          "raw_text": "__CPROVER_assume(r != b);",
+          "possible_overstrong_range": false,
+          "possible_assertion_hiding": false,
+          "trust_boundary": "deterministic_review_diagnostic"
+        }
+      ],
+      "old_state_pattern_check": {
+        "old_state_terms_detected": true,
+        "old_state_related_terms": [
+          "pre_"
+        ],
+        "warning": null,
+        "trust_boundary": "deterministic_review_diagnostic"
+      },
+      "checks": [
+        {
+          "check": "contains_target_function",
+          "passed": true,
+          "details": "mlk_poly_add"
+        },
+        {
+          "check": "contains_no_todo_or_fallback_marker",
+          "passed": true,
+          "details": ""
+        },
+        {
+          "check": "property_campaign_artifact_plan_valid",
+          "passed": true,
+          "details": {
+            "schema_version": "property_campaign_artifact_plan_validation.v2",
+            "valid": true,
+            "valid_for_real_experiment": true,
+            "mock_wiring_only": false,
+            "legacy_compatibility_default": false,
+            "errors": [],
+            "warnings": [],
+            "configured_property_family_id": "P16",
+            "configured_property_family_title": "Polynomial addition/subtraction bounds",
+            "configured_verification_strategy": "standard_cbmc_harness",
+            "selected_property_family_id": "P16",
+            "selected_property_strategy": "standard_cbmc_harness",
+            "contract_validation": {
+              "valid": true,
+              "errors": [],
+              "warnings": [],
+              "enabled": false
+            },
+            "claim_boundary": "Strategy-plan compatibility does not prove the contract, harness, relation, or property."
+          }
+        },
+        {
+          "check": "strategy_specific_plans_valid",
+          "passed": true,
+          "details": {
+            "valid": true,
+            "verification_strategy": "standard_cbmc_harness",
+            "contract_plan": {
+              "valid": true,
+              "errors": [],
+              "warnings": [],
+              "enabled": false
+            },
+            "relational_plan": {
+              "valid": true,
+              "errors": [],
+              "warnings": [],
+              "enabled": false
+            },
+            "analysis_only_plan": {
+              "valid": true,
+              "errors": [],
+              "warnings": [],
+              "enabled": false
+            },
+            "errors": [],
+            "warnings": []
+          }
+        },
+        {
+          "check": "independence_audit_available",
+          "passed": true,
+          "details": "low_similarity_risk"
+        },
+        {
+          "check": "cbmc_or_harness_marker_present",
+          "passed": true,
+          "details": [
+            "__CPROVER",
+            "assert",
+            "harness",
+            "void harness"
+          ]
+        }
+      ],
+      "issues": [],
+      "warnings": [
+        {
+          "severity": "minor",
+          "check": "ambiguous_old_state_snapshot_requirement",
+          "message": "Artefact plan used an unrecognised old-state snapshot requirement value.",
+          "value": ": partial",
+          "blocks_tool_execution": false
+        }
+      ],
+      "blocking_issue_count": 0,
+      "warning_count": 1,
+      "recommended_gate": "needs_human_review",
+      "trust_boundary": "deterministic_review_diagnostic_not_authoritative_critic_reasoning",
+      "limitations": [
+        "This is deterministic pattern-based review, not proof.",
+        "It can miss semantic errors.",
+        "LLM critic and human review are still required."
+      ]
+    },
+    "previous_stage_input_status": {
+      "statuses": {
+        "spec_summary": {
+          "producer_stage": "02_spec_extraction",
+          "output_key": "spec_summary",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+          "warning": null
+        },
+        "code_summary": {
+          "producer_stage": "03_code_understanding",
+          "output_key": "code_summary",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/03_code_understanding/llm_authoritative/02_code_summary.json",
+          "warning": null
+        },
+        "candidate_properties": {
+          "producer_stage": "04_property_discovery",
+          "output_key": "candidate_properties",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/04_property_discovery/llm_authoritative/03_candidate_properties.json",
+          "warning": null
+        },
+        "artifact_plan": {
+          "producer_stage": "orchestrator_current_artifact_plan",
+          "output_key": "artifact_plan",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/llm_authoritative/04_artifact_plan.json",
+          "warning": null
+        },
+        "generated_harness": {
+          "producer_stage": "orchestrator_current_artifact",
+          "output_key": "generated_harness",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+          "warning": null
+        },
+        "artifact_manifest": {
+          "producer_stage": "orchestrator_current_artifact_manifest",
+          "output_key": "artifact_manifest",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/rendered_outputs/04_artifact_manifest.json",
+          "warning": null
+        },
+        "independence_audit": {
+          "producer_stage": "orchestrator_current_independence_audit",
+          "output_key": "independence_audit",
+          "available": true,
+          "path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_poly_add_scoped_fullfips_gpt54mini_none_20260711_080559/stages/05_artifact_generation/validation/04_independence_audit.json",
+          "warning": null
+        }
+      },
+      "available": {
+        "spec_summary": true,
+        "code_summary": true,
+        "candidate_properties": true,
+        "artifact_plan": true,
+        "generated_harness": true,
+        "artifact_manifest": true,
+        "independence_audit": true
+      }
+    }
+  }
+}

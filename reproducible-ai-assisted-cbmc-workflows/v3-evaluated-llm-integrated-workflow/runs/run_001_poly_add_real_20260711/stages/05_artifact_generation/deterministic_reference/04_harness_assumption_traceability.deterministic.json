@@ -1,0 +1,91 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-10T23:30:13.787711+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "selected_property": {
+      "property_id": "P16-mlk_poly_add-001",
+      "property_family_id": "P16",
+      "title": "Array-index safety for coefficient-wise in-place addition loop",
+      "category": "array_bounds",
+      "verification_strategy": "standard_cbmc_harness",
+      "proof_obligation_kind": "safety",
+      "support_classification": "production_supported",
+      "required_tool_capabilities": [
+        "bounded_loop_unwinding",
+        "pointer_object_bounds",
+        "array_bounds_checking"
+      ],
+      "candidate_statement": "Under assumptions that r and b each designate a valid mlk_poly object, every access performed by mlk_poly_add stays within coeffs[0..MLKEM_N-1]; in particular, the single loop only reads and writes r->coeffs[i] and b->coeffs[i] for 0 <= i < MLKEM_N, with MLKEM_N = 256.",
+      "supporting_evidence": [
+        {
+          "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+          "locator": "mlk_poly_add loop header and body",
+          "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+          "supports_claim": "The implementation uses index i only while i is strictly less than MLKEM_N and accesses coeffs at index i.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+          "locator": "mlk_poly typedef",
+          "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+          "supports_claim": "The accessed arrays have extent MLKEM_N within mlk_poly.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+          "locator": "macro definition",
+          "excerpt": "#define MLKEM_N 256",
+          "supports_claim": "The concrete loop bound and array length are 256.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.3 and Section 2.4.4",
+          "excerpt": "n denotes the integer 256... an element f of R_q ... represented ... by the array (f0, f1, … , f255) in Z_q^256.",
+          "supports_claim": "A 256-coefficient representation matches the implementation loop extent.",
+          "confidence": "high"
+        }
+      ],
+      "required_assumptions": [
+        "r points to a valid allocated object of type mlk_poly.",
+        "b points to a valid allocated object of type mlk_poly.",
+        "CBMC harness models complete mlk_poly objects rather than undersized buffers."
+      ],
+      "cbmc_feasibility": "high",
+      "risk_level": "low",
+      "expected_artifact_type": "standard_cbmc_harness with object-allocation assumptions and bounds assertions",
+      "out_of_scope_boundaries": [
+        "Does not claim coefficient arithmetic correctness.",
+        "Does not claim modular reduction or canonical output range.",
+        "Does not claim anything about callers beyond valid object shape."
+      ],
+      "uncertainty": "Low; this is directly supported by the loop bound and struct definition.",
+      "limitations": [
+        "Relies on harness assumptions for pointer validity.",
+        "Outside-CBMC runtime builds do not enforce these assumptions automatically."
+      ]
+    },
+    "assumptions": [
+      {
+        "assumption_id": "A_TYPES_001",
+        "description": "Use the actual C types, macros, and function signature from raw source/header evidence.",
+        "risk": "high_if_guessed",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "assumption_id": "A_MEMORY_001",
+        "description": "Use explicit pointer validity and object-size assumptions where pointer parameters are present.",
+        "risk": "medium",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "assumption_id": "A_OLDSTATE_001",
+        "description": "If the target mutates an object in place, snapshot old state before calling the function.",
+        "risk": "medium",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "trust_boundary": "deterministic_reference_advisory_only"
+  }
+}

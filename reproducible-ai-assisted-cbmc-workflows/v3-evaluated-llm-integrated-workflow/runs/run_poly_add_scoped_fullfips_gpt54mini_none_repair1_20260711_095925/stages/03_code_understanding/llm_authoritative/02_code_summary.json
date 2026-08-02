@@ -1,0 +1,1395 @@
+{
+  "schema_version": "llm_authoritative_stage_output.v1",
+  "created_utc": "2026-07-11T07:46:13.691135+00:00",
+  "trust_boundary": "authoritative_stage_candidate_not_formal_truth",
+  "content": {
+    "stage": "03_code_understanding",
+    "mock": false,
+    "llm_call_executed": false,
+    "source_scope": {
+      "primary_sources_used": [
+        "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+        "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+        "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+        "/home/girish/thesis-repos/mlkem-native/mlkem/src/common.h",
+        "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt"
+      ],
+      "provided_material_complete": false,
+      "missing_or_unavailable_material": [
+        "No build/proof configuration files were provided in the primary evidence set.",
+        "No CBMC or other formal-tool output was provided in the primary evidence set.",
+        "No repository files beyond the listed source/header/spec files were provided in the primary evidence set."
+      ],
+      "previous_spec_summary_available": true
+    },
+    "functions": [
+      {
+        "name": "mlk_poly_add",
+        "signature": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+        "role": "In-place polynomial coefficient-wise addition helper for `mlk_poly`; adds `b` into accumulator `r` across all `MLKEM_N` coefficients.",
+        "inputs": [
+          "r: pointer to mutable `mlk_poly` accumulator",
+          "b: pointer to const `mlk_poly` addend"
+        ],
+        "outputs": [
+          "No return value; mutates `r->coeffs[i]` in place"
+        ],
+        "modified_memory": [
+          "Writes `r->coeffs[0..MLKEM_N-1]`",
+          "Does not write `b` according to the loop body and read-only parameter qualification"
+        ],
+        "preconditions_or_contracts": [
+          "`r` and `b` are both required to be non-aliased fresh objects of size `sizeof(mlk_poly)` by the header contract.",
+          "For every coefficient index `k0`, `r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX`.",
+          "For every coefficient index `k1`, `r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN`."
+        ],
+        "postconditions_or_contracts": [
+          "Loop invariant states already-processed coefficients satisfy `r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]` for processed indices.",
+          "Loop invariant states not-yet-processed coefficients remain equal to their entry-state values.",
+          "Header contract states `r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]` for all `k`.",
+          "Body comment says the preconditions imply the addition stays within `int16_t`.",
+          "The function does not perform modular reduction; output is the raw signed sum cast to `int16_t`."
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add function body, around lines 227-242",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) ... invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "In-place coefficient-wise addition, loop shape, and in-loop old-state/new-state relationship.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add declaration and contract section",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b) ... requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(... r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(... r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Signature, no-alias preconditions, overflow preconditions, old-state postcondition, and write footprint.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "comment immediately above mlk_poly_add declaration",
+            "excerpt": "Add two polynomials in place. The coefficients of r and b must be such that the addition does not overflow. Otherwise, the behaviour of this function is undefined.",
+            "supports_claim": "Function intent and overflow-safety expectation.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "The header contract expresses addition in raw `int16_t` terms and does not assert any modulo-q normalization for the output; whether later callers reduce the result is outside this function.",
+        "limitations": [
+          "The implementation source was available, but there is no formal proof artifact attached to this stage.",
+          "The function is specialized to a destructive accumulator form; the reference implementation comment notes this differs from the reference implementation's 3-argument form."
+        ]
+      },
+      {
+        "name": "mlk_poly_sub",
+        "signature": "MLK_INTERNAL_API void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)",
+        "role": "In-place polynomial coefficient-wise subtraction helper for `mlk_poly`; subtracts `b` from accumulator `r` across all `MLKEM_N` coefficients.",
+        "inputs": [
+          "r: pointer to mutable `mlk_poly` accumulator",
+          "b: pointer to const `mlk_poly` subtrahend"
+        ],
+        "outputs": [
+          "No return value; mutates `r->coeffs[i]` in place"
+        ],
+        "modified_memory": [
+          "Writes `r->coeffs[0..MLKEM_N-1]`"
+        ],
+        "preconditions_or_contracts": [
+          "`r` and `b` are required to be non-aliased fresh objects of size `sizeof(mlk_poly)`.",
+          "For every coefficient index `k0`, `r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX`.",
+          "For every coefficient index `k1`, `r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN`."
+        ],
+        "postconditions_or_contracts": [
+          "Header contract states `r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k]` for all `k`.",
+          "The body comment says the preconditions imply the subtraction stays within `int16_t`."
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_sub function body, around lines 246-261",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) ... invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1])) ... r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);",
+            "supports_claim": "In-place coefficient-wise subtraction and loop invariants.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_sub declaration and contract section",
+            "excerpt": "void mlk_poly_sub(mlk_poly *r, const mlk_poly *b) ... requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(... r->coeffs[k0] - b->coeffs[k0] <= INT16_MAX)) requires(forall(... r->coeffs[k1] - b->coeffs[k1] >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] - b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Signature, no-alias preconditions, overflow preconditions, old-state postcondition, and write footprint.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "As with addition, the contract is about raw signed subtraction, not modular reduction.",
+        "limitations": [
+          "No proof artifact was provided.",
+          "This function is not the target of the current downstream property, but it is a closely related sibling and useful for subtraction-bound context."
+        ]
+      },
+      {
+        "name": "mlk_poly_reduce",
+        "signature": "MLK_INTERNAL_API void mlk_poly_reduce(mlk_poly *r)",
+        "role": "Normalize each coefficient of a polynomial to unsigned canonical representatives in `[0, MLKEM_Q-1]`.",
+        "inputs": [
+          "r: pointer to mutable `mlk_poly`"
+        ],
+        "outputs": [
+          "No return value; mutates `r->coeffs` in place"
+        ],
+        "modified_memory": [
+          "Writes all `r->coeffs[0..MLKEM_N-1]`"
+        ],
+        "preconditions_or_contracts": [
+          "`r` must be a non-aliased fresh object of size `sizeof(mlk_poly)`."
+        ],
+        "postconditions_or_contracts": [
+          "Header contract requires `array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)` after execution.",
+          "Implementation uses Barrett reduction followed by conditional addition of `MLKEM_Q` to move signed canonical representatives into `[0, MLKEM_Q)`."
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_reduce_c around lines 184-207",
+            "excerpt": "int16_t t = mlk_barrett_reduce(r->coeffs[i]); r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);",
+            "supports_claim": "Implementation performs signed reduction then unsigned canonicalization.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_reduce declaration and contract section",
+            "excerpt": "Convert a polynomial to unsigned canonical representatives. The input coefficients can be arbitrary integers in int16_t. The output coefficients are in [0,1,..,MLKEM_Q-1]. ... ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))",
+            "supports_claim": "Declared normalization goal and output bound.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "This is not the addition helper itself, but it is the adjacent normalization primitive that downstream harnesses may need if they want to relate raw sums to canonical coefficient bounds.",
+        "limitations": [
+          "Not all call sites or build configurations were inspected beyond the provided files."
+        ]
+      },
+      {
+        "name": "mlk_poly_ntt",
+        "signature": "MLK_INTERNAL_API void mlk_poly_ntt(mlk_poly *r)",
+        "role": "Forward NTT transform of a polynomial in place; relevant as surrounding representation context for polynomial-array operations.",
+        "inputs": [
+          "r: pointer to mutable `mlk_poly`"
+        ],
+        "outputs": [
+          "No return value; mutates `r->coeffs` in place"
+        ],
+        "modified_memory": [
+          "Writes all `r->coeffs[0..MLKEM_N-1]`"
+        ],
+        "preconditions_or_contracts": [
+          "`r` must be non-aliased and satisfy `array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q)` before the call."
+        ],
+        "postconditions_or_contracts": [
+          "Header contract ensures `array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_NTT_BOUND)` after the call.",
+          "The comment states the implementation satisfies a tighter bound than the contract, but the contract itself is `8 * MLKEM_Q`."
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_ntt_c around lines 426-453 and wrapper at 453-470",
+            "excerpt": "requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q)) ... ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND)) ... NOTE: This particular implementation satisfies a much tighter bound on the output coefficients (5*q) than the contractual one (8*q)",
+            "supports_claim": "Pre/post bounds and existence of a tighter-but-uncontracted implementation comment.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_ntt declaration and contract",
+            "excerpt": "Compute the negacyclic number-theoretic transform (NTT) of a polynomial in place ... The input is assumed to be ... coefficient-wise bound by MLKEM_Q in absolute value ... output ... bound by MLK_NTT_BOUND in absolute value.",
+            "supports_claim": "Declared shape/bounds of forward NTT.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "Relevant mainly because the FIPS text treats NTT-domain elements as coefficient arrays over Z_q and performs coordinate-wise arithmetic there as well.",
+        "limitations": [
+          "This function is not the target of the current property; included for representation context."
+        ]
+      },
+      {
+        "name": "mlk_poly_invntt_tomont",
+        "signature": "MLK_INTERNAL_API void mlk_poly_invntt_tomont(mlk_poly *r)",
+        "role": "Inverse NTT plus Montgomery-domain adjustment in place; surrounding context for polynomial representation changes.",
+        "inputs": [
+          "r: pointer to mutable `mlk_poly`"
+        ],
+        "outputs": [
+          "No return value; mutates `r->coeffs` in place"
+        ],
+        "modified_memory": [
+          "Writes all `r->coeffs[0..MLKEM_N-1]`"
+        ],
+        "preconditions_or_contracts": [
+          "`r` must be non-aliased and writable; wrapper and internal function contracts do not require a bounded input in the same way as forward NTT."
+        ],
+        "postconditions_or_contracts": [
+          "Header contract ensures `array_abs_bound(r->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND)` after execution."
+        ],
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_invntt_tomont_c around lines 517-554",
+            "excerpt": "Scale input polynomial ... Run the invNTT layers ... mlk_assert_abs_bound(p, MLKEM_N, MLK_INVNTT_BOUND);",
+            "supports_claim": "Inverse NTT and bound-checking structure.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_invntt_tomont declaration and contract",
+            "excerpt": "Compute the inverse negacyclic number-theoretic transform (NTT) of a polynomial in place ... output polynomial is in normal order, and coefficient-wise bound by MLK_INVNTT_BOUND in absolute value.",
+            "supports_claim": "Declared shape/bounds of inverse NTT.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "Not directly about addition, but useful context because the spec also treats array addition coordinate-wise in both R_q and T_q.",
+        "limitations": [
+          "Included as supporting context, not as a direct target-function fact."
+        ]
+      }
+    ],
+    "macros_constants_types": [
+      {
+        "fact_id": "MC01",
+        "category": "macro",
+        "statement": "`MLKEM_N` is defined as 256 in `params.h` and is used as the polynomial coefficient-array length throughout `poly.c` and `poly.h`.",
+        "verification_relevance": "Critical for loop bounds, array extents, and representation shape of `mlk_poly`.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "line 21",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "Constant value of the polynomial length parameter.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef and comments",
+            "excerpt": "int16_t coeffs[MLKEM_N]; /**< Polynomial coefficients. */",
+            "supports_claim": "Use of MLKEM_N as the polynomial coefficient-array size.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "multiple loops in poly.c, especially mlk_poly_add loop header",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+            "supports_claim": "Runtime loop bound tied to MLKEM_N.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC02",
+        "category": "macro",
+        "statement": "`MLKEM_Q` is defined as 3329 in `params.h` and is the modulus used in the surrounding FIPS specification and many polynomial bounds comments/contracts.",
+        "verification_relevance": "Important for interpreting coefficient-domain assumptions and `int16_t` overflow preconditions.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "line 23",
+            "excerpt": "#define MLKEM_Q 3329",
+            "supports_claim": "Constant value of q.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Sections 2.3-2.4.5",
+            "excerpt": "q denotes 3329; arrays in Z_q^256 represent polynomial coefficients; addition is coordinate-wise modulo q.",
+            "supports_claim": "Specification modulus and coefficient-array semantics.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC03",
+        "category": "macro",
+        "statement": "`MLKEM_Q_HALF` is defined as `(MLKEM_Q + 1) / 2`, with the comment `1665`; this matches the half-open centered interval used in `mlk_fqmul`, `mlk_barrett_reduce`, and related bound reasoning.",
+        "verification_relevance": "Relevant to signed-canonical coefficient bounds and proof obligations around Montgomery/Barrett reduction.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "line 24",
+            "excerpt": "#define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */",
+            "supports_claim": "Defined half-modulus value.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_fqmul and mlk_barrett_reduce comments/contracts",
+            "excerpt": "requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF) ... ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)",
+            "supports_claim": "Use of Q_HALF in coefficient bound contracts.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC04",
+        "category": "macro",
+        "statement": "`MLK_INVNTT_BOUND` and `MLK_NTT_BOUND` are both defined as `8 * MLKEM_Q` in `poly.h`.",
+        "verification_relevance": "Relevant to the contractual output bounds of the NTT and inverse NTT helpers, not directly to `mlk_poly_add`.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "lines 20-28",
+            "excerpt": "#define MLK_INVNTT_BOUND (8 * MLKEM_Q) ... #define MLK_NTT_BOUND (8 * MLKEM_Q)",
+            "supports_claim": "Named NTT bound macros and their values.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC05",
+        "category": "macro",
+        "statement": "`MLK_INTERNAL_API` is a macro alias for a configurable API qualifier in `common.h`; in the provided configuration it may expand to empty, but the exact expansion depends on build configuration.",
+        "verification_relevance": "Relevant to understanding linkage/visibility of `mlk_poly_add` and sibling helpers.",
+        "confidence": "high",
+        "uncertainty": "The concrete expansion is configuration-dependent; only the macro indirection is certain from the provided files.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/common.h",
+            "locator": "lines 20-32",
+            "excerpt": "#if !defined(MLK_CONFIG_INTERNAL_API_QUALIFIER) #define MLK_INTERNAL_API ... #else #define MLK_INTERNAL_API MLK_CONFIG_INTERNAL_API_QUALIFIER",
+            "supports_claim": "Configurable API-qualifier mechanism.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC06",
+        "category": "macro",
+        "statement": "`memory_no_alias(...)` expands to `__CPROVER_is_fresh(...)` in `cbmc.h`, and `memory_slice(...)` expands to `__CPROVER_object_upto(...)`.",
+        "verification_relevance": "Important for interpreting the aliasing and footprint contracts attached to `mlk_poly_add` and related helpers.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "lines 61-70",
+            "excerpt": "#define memory_slice(...) __CPROVER_object_upto(__VA_ARGS__) ... #define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)",
+            "supports_claim": "Meaning of contract macros used in function declarations.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC07",
+        "category": "typedef",
+        "statement": "`mlk_poly` is a typedef of a struct containing `int16_t coeffs[MLKEM_N]`, i.e., 256 signed 16-bit coefficients.",
+        "verification_relevance": "Core data-shape fact for coefficient-wise addition and subtraction reasoning.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "typedef around lines 30-38",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+            "supports_claim": "Polynomial storage layout and element type.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC08",
+        "category": "typedef",
+        "statement": "`mlk_poly_mulcache` is a typedef of a struct containing `int16_t coeffs[MLKEM_N >> 1]`, i.e., 128 cached coefficients.",
+        "verification_relevance": "Useful adjacent type fact; not central to `mlk_poly_add`, but helps delimit the file’s polynomial-related data layouts.",
+        "confidence": "medium",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "typedef around lines 40-46",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N >> 1]; } MLK_ALIGN mlk_poly_mulcache;",
+            "supports_claim": "Mulcache storage layout.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "Not directly involved in `mlk_poly_add`."
+        ]
+      },
+      {
+        "fact_id": "MC09",
+        "category": "macro",
+        "statement": "`old(...)` is defined in `cbmc.h` as `__CPROVER_old(...)`, and `loop_entry(...)` is defined as `__CPROVER_loop_entry(...)`.",
+        "verification_relevance": "Necessary to interpret the `mlk_poly_add` contract and loop invariants involving `old(*r)` / `loop_entry(*r)`.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "lines 87-88",
+            "excerpt": "#define old(...) __CPROVER_old(__VA_ARGS__) ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)",
+            "supports_claim": "History-variable macro semantics.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC10",
+        "category": "macro",
+        "statement": "`forall(qvar, qvar_lb, qvar_ub, predicate)` quantifies over `uint32_t` indices with an exclusive upper bound, per the comment and macro definition in `cbmc.h`.",
+        "verification_relevance": "Important for interpreting the per-coefficient quantified contract clauses in `mlk_poly_add` and `mlk_poly_sub`.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "lines 92-118",
+            "excerpt": "The quantified variable is declared as uint32_t ... bounds larger than UINT32_MAX are NOT supported ... ((uint32_t)(qvar_lb) <= qvar && qvar < (uint32_t)(qvar_ub))",
+            "supports_claim": "Quantifier range semantics.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC11",
+        "category": "macro",
+        "statement": "`array_abs_bound(arr, lb, ub, k)` is a convenience macro for an exclusive absolute-value bound over an array slice, implemented via `array_bound` with lower bound `-((int)(k)) + 1` and upper bound `k`.",
+        "verification_relevance": "Useful for interpreting other bounds in `poly.c`; not directly used by `mlk_poly_add` but important for nearby helpers.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "line 192 onward",
+            "excerpt": "#define array_abs_bound(arr, lb, ub, k) array_bound((arr), (lb), (ub), -((int)(k)) + 1, (k))",
+            "supports_claim": "Absolute-value bound macro definition.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MC12",
+        "category": "macro",
+        "statement": "`MLK_MAX_BUFFER_SIZE` is defined in `cbmc.h` as `SIZE_MAX >> 12`, i.e. a proof-oriented buffer-size ceiling for CBMC modeling, not a semantic bound of the ML-KEM algorithm itself.",
+        "verification_relevance": "Relevant to the broader verification environment, but not directly to `mlk_poly_add`.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "lines 74-84",
+            "excerpt": "Maximum supported buffer size ... #define MLK_MAX_BUFFER_SIZE (SIZE_MAX >> 12)",
+            "supports_claim": "CBMC modeling ceiling macro.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "Not a functional algorithm bound."
+        ]
+      }
+    ],
+    "loops_and_indexing": [
+      {
+        "fact_id": "LI01",
+        "category": "loop",
+        "statement": "`mlk_poly_add` uses a single `for` loop `for (i = 0; i < MLKEM_N; i++)`, so it processes exactly `MLKEM_N = 256` coefficients when the loop executes to completion.",
+        "verification_relevance": "Directly relevant to per-coefficient addition coverage and array-bound reasoning.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop header",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+            "supports_claim": "Exact loop structure used for addition.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+            "locator": "line 21",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "Concrete loop-trip count parameter.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "LI02",
+        "category": "loop",
+        "statement": "The loop invariant in `mlk_poly_add` states that coefficients with index `k0` in the unprocessed suffix `[i, MLKEM_N)` remain equal to the loop-entry state of `r`, while processed coefficients `k1` in `[0, i)` satisfy `r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]`.",
+        "verification_relevance": "This is the main old-state/new-state relationship available for the target helper and is directly useful for downstream harness/property discovery.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop invariants",
+            "excerpt": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))",
+            "supports_claim": "Old-state/new-state split in the loop specification.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "loop_entry macro definition",
+            "excerpt": "#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)",
+            "supports_claim": "Meaning of loop_entry in the invariant.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "LI03",
+        "category": "loop",
+        "statement": "The write statement in `mlk_poly_add` is `r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);`, so the implementation performs a raw signed 16-bit addition and truncation/cast at each coefficient rather than modular reduction.",
+        "verification_relevance": "Critical for local coefficient-bound reasoning because overflow safety is a precondition and the result is not normalized by this helper.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop body",
+            "excerpt": "/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Exact update expression and overflow comment.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "LI04",
+        "category": "loop",
+        "statement": "`mlk_poly_sub` mirrors `mlk_poly_add` structurally, using the same `for (i = 0; i < MLKEM_N; i++)` loop shape and loop-entry invariants, but with subtraction instead of addition.",
+        "verification_relevance": "Useful sibling fact for property families that also cover subtraction bounds.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_sub loop header and invariants",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) ... invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))",
+            "supports_claim": "Parallel loop structure for subtraction.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "LI05",
+        "category": "loop",
+        "statement": "`mlk_poly_ntt_c` uses a 7-iteration outer loop over `layer = 1..7`, and nested loops within `mlk_ntt_layer`/`mlk_ntt_butterfly_block` process the 256 coefficients in strided pairs. This is separate from `mlk_poly_add` but important nearby context for array indexing and coefficient bounds.",
+        "verification_relevance": "Nearby indexing structure that may help later agents understand how coefficient arrays are manipulated elsewhere in the file.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_ntt_c and helpers",
+            "excerpt": "for (layer = 1; layer <= 7; layer++) ... for (start = 0; start < MLKEM_N; start += 2 * len) ... for (j = start; j < start + len; j++)",
+            "supports_claim": "Nested NTT loop structure over the same coefficient array size.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "Not part of mlk_poly_add itself."
+        ]
+      },
+      {
+        "fact_id": "LI06",
+        "category": "loop",
+        "statement": "`mlk_poly_invntt_tomont_c` uses an initial linear pass over `j = 0..MLKEM_N-1` followed by a descending outer loop over `layer = 7..1`, with nested `j` loops inside each layer.",
+        "verification_relevance": "Additional nearby array-iteration context for the polynomial module.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_invntt_tomont_c",
+            "excerpt": "for (j = 0; j < MLKEM_N; j++) ... for (layer = 7; layer > 0; layer--) ... for (j = start; j < start + len; j++)",
+            "supports_claim": "Inverse NTT traversal structure.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "Not directly about polynomial addition."
+        ]
+      }
+    ],
+    "memory_and_pointer_facts": [
+      {
+        "fact_id": "MP01",
+        "category": "aliasing",
+        "statement": "`mlk_poly_add` is designed as a destructive accumulator helper: `r` is the modified output/input, while `b` is declared `const` and only read from in the body.",
+        "verification_relevance": "Directly relevant to old-state/new-state reasoning and harness memory modeling.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add declaration and comment",
+            "excerpt": "Add two polynomials in place. ... @param[in,out] r ... @param[in] b ...",
+            "supports_claim": "Intended in-place accumulator usage and const read-only addend.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Only `r` is assigned in the function body.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP02",
+        "category": "aliasing",
+        "statement": "The header explicitly requires `memory_no_alias(r, sizeof(mlk_poly))` and `memory_no_alias(b, sizeof(mlk_poly))` for `mlk_poly_add`, so the CBMC contract expects each pointer to refer to fresh non-overlapping storage of the polynomial object size.",
+        "verification_relevance": "Very important for harness assumptions and for avoiding alias-based corner cases.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly)))",
+            "supports_claim": "No-alias preconditions for both arguments.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "memory_no_alias macro definition",
+            "excerpt": "#define memory_no_alias(...) __CPROVER_is_fresh(__VA_ARGS__)",
+            "supports_claim": "Meaning of the no-alias predicate used in the contract.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "The exact semantic strength of `__CPROVER_is_fresh` depends on CBMC’s modeling, but the contract clearly intends non-aliasing/freshness."
+        ]
+      },
+      {
+        "fact_id": "MP03",
+        "category": "aliasing",
+        "statement": "The function body comment in `mlk_poly_add` states that the destructive form was chosen to avoid reasoning about aliasing in the CBMC specification.",
+        "verification_relevance": "Explains why the implementation is accumulator-style and helps later agents avoid assuming a three-argument reference-style API.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "comment above mlk_poly_add",
+            "excerpt": "Reference: `poly_add()` in the reference implementation @[REF]. - We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification",
+            "supports_claim": "Design motivation for accumulator form and aliasing simplification.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP04",
+        "category": "aliasing",
+        "statement": "The `assigns(memory_slice(r, sizeof(mlk_poly)))` contract indicates that only the memory footprint of `r` is permitted to change; `b` is not listed as a modified region.",
+        "verification_relevance": "Useful for footprint assumptions and frame-condition reasoning in downstream verification.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Write footprint restricted to `r`.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "This is a contract-level frame condition; it does not independently prove no writes occur outside the stated footprint, but it is the declared requirement."
+        ]
+      },
+      {
+        "fact_id": "MP05",
+        "category": "pointer",
+        "statement": "`mlk_poly` stores coefficients in a contiguous `int16_t coeffs[MLKEM_N]` array, so pointer arithmetic on `r->coeffs[i]` and `b->coeffs[i]` in `mlk_poly_add` is over a fixed-size 256-element contiguous buffer.",
+        "verification_relevance": "Important for memory-safety reasoning and harness array modeling.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } MLK_ALIGN mlk_poly;",
+            "supports_claim": "Contiguous storage of polynomial coefficients.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP06",
+        "category": "pointer",
+        "statement": "`mlk_poly_add` uses only direct indexed access `r->coeffs[i]` and `b->coeffs[i]`; there are no pointer increments, sub-slices, or nested aliasing constructions in the body.",
+        "verification_relevance": "Simplifies downstream modeling of the helper to a single array traversal over fixed indices.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Direct indexed access pattern only.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP07",
+        "category": "pointer",
+        "statement": "The loop invariants in `mlk_poly_add` refer to `loop_entry(*r)`, which means the old value of the entire pointed-to polynomial object `r` is captured at loop entry, not just the current coefficient.",
+        "verification_relevance": "Critical for expressing exact old-state/new-state relations in later property discovery.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+            "locator": "loop_entry macro definition",
+            "excerpt": "#define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__)",
+            "supports_claim": "Loop-entry history variable mechanism.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop invariants",
+            "excerpt": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) ...",
+            "supports_claim": "Whole-object loop-entry snapshot used in invariants.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP08",
+        "category": "pointer",
+        "statement": "`b` is `const mlk_poly *`, so the implementation and contract indicate it should be treated as read-only throughout `mlk_poly_add`.",
+        "verification_relevance": "Useful for aliasing and frame-condition assumptions in downstream harnesses.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add signature",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+            "supports_claim": "Const-qualified addend pointer.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP09",
+        "category": "pointer",
+        "statement": "The `mlk_poly_add` contract is written in terms of object-size memory predicates on whole `mlk_poly` objects rather than on individual coefficient elements or smaller slices.",
+        "verification_relevance": "Suggests later harnesses should model whole-object preconditions if they want to reuse the contract directly.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Whole-object memory contract style.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "MP10",
+        "category": "pointer",
+        "statement": "The implementation comment and contract together indicate that `mlk_poly_add` is a special-purpose helper for the accumulator form, not a generic three-argument addition routine.",
+        "verification_relevance": "Relevant when mapping spec-level addition semantics to concrete code and when deciding how to model old-state snapshots.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "comment above mlk_poly_add",
+            "excerpt": "We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification",
+            "supports_claim": "Accumulator specialization.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add signature",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+            "supports_claim": "Two-argument accumulator form.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      }
+    ],
+    "arithmetic_and_range_facts": [
+      {
+        "fact_id": "AR01",
+        "category": "range",
+        "statement": "The `mlk_poly_add` body performs `(int16_t)(r->coeffs[i] + b->coeffs[i])`, so the implementation relies on the sum of the two `int16_t` values staying within the `int16_t` range before the cast.",
+        "verification_relevance": "This is the core local overflow-sensitive fact for the target property family P16.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body comment and assignment",
+            "excerpt": "/* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Raw signed addition and overflow-sensitive cast.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "requires(forall(k0, 0, MLKEM_N, (int32_t) r->coeffs[k0] + b->coeffs[k0] <= INT16_MAX)) requires(forall(k1, 0, MLKEM_N, (int32_t) r->coeffs[k1] + b->coeffs[k1] >= INT16_MIN))",
+            "supports_claim": "Explicit signed-range preconditions intended to prevent overflow.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "AR02",
+        "category": "range",
+        "statement": "The header contract for `mlk_poly_add` specifies coefficient-wise upper and lower signed bounds separately, using `INT16_MAX` and `INT16_MIN` guards rather than a modular wraparound postcondition.",
+        "verification_relevance": "Important distinction for later property discovery: the function is about safe raw integer addition, not about modulus-q closure.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "requires(forall(... <= INT16_MAX)) requires(forall(... >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))",
+            "supports_claim": "Signed-range preconditions and exact-sum postcondition.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "AR03",
+        "category": "range",
+        "statement": "The `mlk_poly_add` implementation itself does not call modular reduction or any normalizing helper; it only does the casted addition assignment in the loop body.",
+        "verification_relevance": "Helps downstream agents avoid conflating `mlk_poly_add` with `mlk_poly_reduce` or FIPS abstract modulo-q closure.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Only raw addition and cast in the helper.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "AR04",
+        "category": "range",
+        "statement": "The FIPS 203 abstract model treats polynomial and NTT coefficients as elements of `Z_q` and addition as coordinate-wise modulo `q`; the C helper `mlk_poly_add` instead requires `int16_t`-safe raw addition, so the C-level contract is stricter and lower-level than the abstract spec statement.",
+        "verification_relevance": "This distinction is important for property-bound discovery because the target property boundary is local exact-representation and input assumptions, not full abstract modulo-q equivalence.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.5",
+            "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise ... the addition of two NTT representations in pseudocode is performed by ...",
+            "supports_claim": "Abstract coordinate-wise modulo-q semantics.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "requires(... <= INT16_MAX) requires(... >= INT16_MIN) ensures(... == old(*r).coeffs[k] + b->coeffs[k])",
+            "supports_claim": "Concrete safe raw-add contract.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "This is a cross-layer interpretation, not a proof that the helper implements the abstract spec semantics after modular reduction."
+        ]
+      },
+      {
+        "fact_id": "AR05",
+        "category": "range",
+        "statement": "`mlk_poly_add`'s postcondition is an exact arithmetic equality on each coefficient of `r` relative to `old(*r)` and `b`, so any later proof obligation about modular representation would need an additional normalization step outside this helper if the goal is to establish values in `Z_q`.",
+        "verification_relevance": "Useful for downstream property discovery to separate exact integer addition from canonicalization requirements.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))",
+            "supports_claim": "Exact-sum postcondition.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "adjacent mlk_poly_reduce implementation and comments",
+            "excerpt": "Convert a polynomial to unsigned canonical representatives ... output coefficients are in [0,1,..,MLKEM_Q-1].",
+            "supports_claim": "Separate normalization helper exists elsewhere.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "This statement is about the helper as written, not about all call chains that might follow it."
+        ]
+      },
+      {
+        "fact_id": "AR06",
+        "category": "range",
+        "statement": "The FIPS 203 text confirms that arrays in `Z_q^256` represent polynomial coefficients and that array addition is coordinate-wise, but it does not itself provide an `int16_t`-specific overflow lemma for C code.",
+        "verification_relevance": "Warns later agents that the C overflow preconditions originate from implementation contracts, not from the abstract spec text alone.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Sections 2.4.1-2.4.5",
+            "excerpt": "Reduction modulo m takes place whenever assignment is made to a variable in Z_m ... addition in R_q and T_q is done coordinate-wise on coefficient arrays.",
+            "supports_claim": "Abstract arithmetic model without C integer-width details.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "AR07",
+        "category": "range",
+        "statement": "The `mlk_poly_add` loop does not change the loop index `i` except by the `for` increment, and it touches exactly one coefficient per iteration, which preserves the one-coefficient-per-step range reasoning pattern typical for array bounds proofs.",
+        "verification_relevance": "Helpful for downstream invariant synthesis on per-element arithmetic safety.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Single-element update inside a linear loop.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      }
+    ],
+    "existing_contracts_assertions_annotations": [
+      {
+        "fact_id": "CA01",
+        "category": "contract",
+        "statement": "The header declaration of `mlk_poly_add` includes explicit CBMC contracts for non-aliasing, coefficient-wise signed-range preconditions, exact per-coordinate postcondition, and a write footprint restricted to `r`.",
+        "verification_relevance": "This is the single most important existing verification annotation for the target function.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add declaration block",
+            "excerpt": "requires(memory_no_alias(r, sizeof(mlk_poly))) requires(memory_no_alias(b, sizeof(mlk_poly))) requires(forall(... <= INT16_MAX)) requires(forall(... >= INT16_MIN)) ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Exact contract contents for target helper.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CA02",
+        "category": "contract",
+        "statement": "The `mlk_poly_add` function body contains loop invariants that are stronger/more operational than the header postcondition: they separate untouched suffix coefficients from already-updated prefix coefficients using `loop_entry(*r)`.",
+        "verification_relevance": "Useful for later harnesses or symbolic reasoning that want a per-iteration invariant rather than only a final-state property.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop invariants",
+            "excerpt": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))",
+            "supports_claim": "Operational loop invariants with old-state/new-state split.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CA03",
+        "category": "contract",
+        "statement": "The code comment immediately above the `mlk_poly_add` body explicitly attributes the destructive accumulator form to avoiding aliasing reasoning in the CBMC specification.",
+        "verification_relevance": "Important explanatory annotation for why the helper is shaped this way.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "comment above mlk_poly_add",
+            "excerpt": "We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification",
+            "supports_claim": "Rationale for accumulator-form implementation.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CA04",
+        "category": "contract",
+        "statement": "The comment inside `mlk_poly_add` says, verbatim, that the preconditions imply the addition stays within `int16_t`.",
+        "verification_relevance": "This is the local implementation rationale for the overflow guards in the header contract.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop body comment",
+            "excerpt": "/* The preconditions imply that the addition stays within int16_t. */",
+            "supports_claim": "Overflow-safety rationale stated by the implementation.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CA05",
+        "category": "contract",
+        "statement": "The `mlk_poly_sub` sibling helper uses the same contract style as `mlk_poly_add`, with analogous signed-range guards and an exact per-coordinate subtraction postcondition, which reinforces the interpretation of the addition helper as a raw integer arithmetic primitive rather than a modular reducer.",
+        "verification_relevance": "Supports cross-checking the addition helper’s semantics by comparison with its sibling subtraction helper.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_sub declaration block",
+            "excerpt": "requires(... - b->coeffs[k0] <= INT16_MAX) requires(... - b->coeffs[k1] >= INT16_MIN) ensures(... == old(*r).coeffs[k] - b->coeffs[k])",
+            "supports_claim": "Parallel raw-subtraction contract style.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      }
+    ],
+    "input_output_mutation_facts": [
+      {
+        "fact_id": "IO01",
+        "category": "mutation",
+        "statement": "`mlk_poly_add` mutates only its first argument `r` and leaves `b` unchanged in the implementation body; this is aligned with the declared `assigns` clause and the const qualification on `b`.",
+        "verification_relevance": "Key for modeling the function as in-place addition in later harnesses.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Only `r` is assigned in the loop body.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add contract",
+            "excerpt": "assigns(memory_slice(r, sizeof(mlk_poly)))",
+            "supports_claim": "Declared write footprint only covers `r`.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "IO02",
+        "category": "mutation",
+        "statement": "The specification-level exact relationship for addition is coordinate-wise per coefficient; in the concrete helper, this is realized as a per-index update over `i = 0..255` with no cross-coefficient mixing.",
+        "verification_relevance": "This is the exact shape later property agents will likely want to capture when relating the helper to the abstract model.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop and body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Per-index update with no mixing between coefficients.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.5",
+            "excerpt": "Addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+            "supports_claim": "Abstract coordinate-wise semantics.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "The helper does not itself perform modular reduction or canonicalization."
+        ]
+      },
+      {
+        "fact_id": "IO03",
+        "category": "mutation",
+        "statement": "The `mlk_poly_add` contract and body together imply that the caller must supply coefficient values that are safe to sum in `int16_t`; otherwise the helper’s behavior is undefined per the header comment.",
+        "verification_relevance": "This is the main caller-side assumption for the local bounds property family.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add header comment and contract",
+            "excerpt": "The coefficients of r and b must be such that the addition does not overflow. Otherwise, the behaviour of this function is undefined.",
+            "supports_claim": "Caller responsibility for overflow-safe coefficient values.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "IO04",
+        "category": "mutation",
+        "statement": "The `mlk_poly_reduce` helper exists separately to convert arbitrary signed coefficients into canonical unsigned representatives, which makes it a likely downstream normalization step after raw polynomial arithmetic helpers if canonical `Z_q` representatives are needed.",
+        "verification_relevance": "Important surrounding context for property discovery around addition and bounds, but not a claim about `mlk_poly_add` itself.",
+        "confidence": "medium",
+        "uncertainty": "The code does not show `mlk_poly_add` calling `mlk_poly_reduce`; this is only a structural observation about available helpers.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_reduce_c body and comment",
+            "excerpt": "Convert a polynomial to unsigned canonical representatives. ... r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);",
+            "supports_claim": "Separate canonicalization helper exists.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "Not all call chains were inspected."
+        ]
+      },
+      {
+        "fact_id": "IO05",
+        "category": "mutation",
+        "statement": "The `mlk_poly_add` loop invariant demonstrates a standard prefix-processed / suffix-unprocessed shape, which is useful for proving preservation of untouched tail coefficients during iteration.",
+        "verification_relevance": "Potentially useful invariant shape for downstream harness discovery or assertion templating.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add loop invariants",
+            "excerpt": "invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))",
+            "supports_claim": "Untouched suffix invariant.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      }
+    ],
+    "candidate_code_level_facts": [
+      {
+        "fact_id": "CF01",
+        "category": "code_fact",
+        "statement": "`mlk_poly_add` is the concrete implementation counterpart most directly aligned with FIPS 203 Section 2.4.5 coordinate-wise addition, but the linkage is only a candidate correspondence because the standard does not name this C helper explicitly.",
+        "verification_relevance": "This is the main traceability fact for downstream property discovery.",
+        "confidence": "high",
+        "uncertainty": "The correspondence is supported by structure and comments, not by an explicit name match in the FIPS text.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add comment",
+            "excerpt": "@spec{@[FIPS203, 2.4.5, Arithmetic With Polynomials and NTT Representations].",
+            "supports_claim": "The code itself cites FIPS 203 2.4.5 as its spec alignment.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.5",
+            "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+            "supports_claim": "The abstract operation that the helper appears intended to realize.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": [
+          "This remains a candidate trace, not a formal proof of semantic equivalence."
+        ]
+      },
+      {
+        "fact_id": "CF02",
+        "category": "code_fact",
+        "statement": "`mlk_poly_add` uses the exact same coefficient-array length `MLKEM_N` and coefficient element type `int16_t` as the `mlk_poly` typedef, so any later property on local coefficient bounds can be phrased elementwise over a fixed 256-element signed-16-bit array.",
+        "verification_relevance": "Directly useful for later harness/property generation.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly typedef and mlk_poly_add declaration",
+            "excerpt": "int16_t coeffs[MLKEM_N]; ... void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+            "supports_claim": "Type/shape alignment between function and data structure.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CF03",
+        "category": "code_fact",
+        "statement": "The function is not symmetrical in its API: `r` is mutable, `b` is read-only, and the function therefore computes `r := r + b` rather than returning a new polynomial value.",
+        "verification_relevance": "Important for downstream old-state snapshot and mutation modeling.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+            "locator": "mlk_poly_add signature and comments",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b) ... Add two polynomials in place.",
+            "supports_claim": "Asymmetric accumulator API.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CF04",
+        "category": "code_fact",
+        "statement": "`mlk_poly_add` has no internal assertions, reductions, or helper calls in its body besides the raw casted addition, so the function’s safety and semantics are almost entirely determined by its header contract and the single loop body assignment.",
+        "verification_relevance": "This sharply narrows the code facts available for property discovery.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "mlk_poly_add body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) { /* The preconditions imply that the addition stays within int16_t. */ r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+            "supports_claim": "Minimal body structure with no extra calls or checks.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      },
+      {
+        "fact_id": "CF05",
+        "category": "code_fact",
+        "statement": "The implementation comment explicitly states the function is a reference-implementation-inspired helper but uses a destructive form to simplify CBMC alias reasoning; this indicates the code was written with verification in mind, not just performance or API convenience.",
+        "verification_relevance": "Useful contextual fact when preparing later verification artefacts.",
+        "confidence": "high",
+        "uncertainty": "",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+            "locator": "comment above mlk_poly_add",
+            "excerpt": "Reference: `poly_add()` in the reference implementation @[REF]. - We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification",
+            "supports_claim": "Verification-oriented design comment.",
+            "confidence": "high"
+          }
+        ],
+        "limitations": []
+      }
+    ],
+    "deterministic_reference_assessment": {
+      "used": true,
+      "status": "accepted_as_advisory_only_with_independent_verification",
+      "warning": "Deterministic advisory material was used only to locate candidate functions, macros, and loop structures. All substantive claims in this JSON were verified against the provided raw source/header/spec evidence. Where deterministic hints were not directly supported, they were not relied upon.",
+      "disagreements": [
+        {
+          "deterministic_claim": "The deterministic summary suggested `mlk_poly_add` has the body invariant and signature as part of a verification-oriented CBMC contract, but the exact claim boundary needs the header/source evidence rather than the deterministic parser output.",
+          "primary_evidence_finding": "The raw `poly.h` contract and `poly.c` implementation independently confirm the no-alias preconditions, raw integer overflow guards, exact old-state postcondition, and loop invariants.",
+          "resolution": "Accepted the claim only after independent verification; the deterministic output was used as a locator, not as evidence.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+              "locator": "mlk_poly_add contract block",
+              "excerpt": "requires(memory_no_alias(...)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k]))",
+              "supports_claim": "Verified target-function contract details.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+              "locator": "mlk_poly_add body and invariants",
+              "excerpt": "invariant(forall(... loop_entry(*r) ...)) ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "Verified loop-body behavior and invariants.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ]
+    },
+    "uncertainties": [
+      {
+        "issue": "The target function `mlk_poly_add` is not named in FIPS 203; correspondence to Section 2.4.5 is a candidate trace only.",
+        "impact": "Downstream property discovery should treat spec linkage as approximate and confirm the exact call path/semantic scope in later stages."
+      },
+      {
+        "issue": "The header contract states safe signed addition preconditions, but the exact caller-side argument ranges that guarantee those inequalities are not derived here.",
+        "impact": "A later harness will likely need explicit assumptions on coefficient ranges or a stronger source-level precondition trace."
+      },
+      {
+        "issue": "No formal-tool output was provided.",
+        "impact": "Cannot elevate any claim to proof, verification, or compliance status."
+      },
+      {
+        "issue": "No build configuration or translation-unit-level inclusion context was provided beyond the raw files.",
+        "impact": "Exact expansion of visibility/linkage macros and the active parameter set are configuration-dependent; only the inspected file contents are certain."
+      }
+    ],
+    "evidence_references": [
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+        "locator": "mlk_poly_add declaration block",
+        "excerpt": "Add two polynomials in place ... requires(memory_no_alias(r, sizeof(mlk_poly))) ... requires(forall(... <= INT16_MAX)) ... requires(forall(... >= INT16_MIN)) ... ensures(forall(k, 0, MLKEM_N, r->coeffs[k] == old(*r).coeffs[k] + b->coeffs[k])) ... assigns(memory_slice(r, sizeof(mlk_poly)))",
+        "supports_claim": "Primary contract evidence for the target function.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "locator": "mlk_poly_add function body and nearby comments",
+        "excerpt": "Reference: `poly_add()` in the reference implementation @[REF]. - We use destructive version (output=first input) to avoid reasoning about aliasing in the CBMC specification ... r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+        "supports_claim": "Primary implementation evidence for in-place raw addition and alias-aware design.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+        "locator": "mlk_poly typedef and surrounding comments",
+        "excerpt": "Element of R_q = Z_q[X]/(X^n + 1). Represents polynomial coeffs[0] + X*coeffs[1] + ... + X^{n-1}*coeffs[n-1].",
+        "supports_claim": "Polynomial array shape and element type context.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-agent-workflow-26-property-test/inputs/specs/fips203_clean.txt",
+        "locator": "Section 2.4.3 and 2.4.5",
+        "excerpt": "Arrays in Z_q^256 represent polynomial coefficients and addition is coordinate-wise.",
+        "supports_claim": "Abstract specification context for coordinate-wise addition.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/params.h",
+        "locator": "lines 21-24",
+        "excerpt": "#define MLKEM_N 256 ... #define MLKEM_Q 3329 ... #define MLKEM_Q_HALF ((MLKEM_Q + 1) / 2) /* 1665 */",
+        "supports_claim": "Key numeric constants used by the target function and related helpers.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/thesis-repos/mlkem-native/mlkem/src/cbmc.h",
+        "locator": "lines 87-118 and 147-192",
+        "excerpt": "#define old(...) __CPROVER_old(__VA_ARGS__) ... #define loop_entry(...) __CPROVER_loop_entry(__VA_ARGS__) ... #define forall(...) ... #define array_abs_bound(...) ...",
+        "supports_claim": "Semantics of contract/invariant/history macros used in the function contract.",
+        "confidence": "high"
+      }
+    ],
+    "limitations": [
+      "No proof, verification, or compliance result is claimed.",
+      "No CBMC harness was generated in this stage.",
+      "The analysis is limited to the provided files and does not establish behavior outside the inspected code paths."
+    ]
+  }
+}

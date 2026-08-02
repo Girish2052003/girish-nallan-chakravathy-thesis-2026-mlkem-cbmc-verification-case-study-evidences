@@ -1,0 +1,376 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-11T05:17:44.130217+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "functions": [
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_fqmul",
+        "start_line": 42,
+        "end_line": 62,
+        "signature_text": "static MLK_INLINE int16_t mlk_fqmul(int16_t a, int16_t b) __contract__( requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF) ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q) )",
+        "parameters_text": "int16_t a, int16_t b) __contract__( requires(b > -MLKEM_Q_HALF && b < MLKEM_Q_HALF) ensures(return_value > -MLKEM_Q && return_value < MLKEM_Q)",
+        "body_excerpt": "{\n  int16_t res;\n  mlk_assert_abs_bound(&b, 1, MLKEM_Q_HALF);\n\n  res = mlk_montgomery_reduce((int32_t)a * (int32_t)b);\n  /* Bounds:\n   * |res| <= ceil(|a| * |b| / 2^16) + (MLKEM_Q + 1) / 2\n   *       <= ceil(2^15 * ((MLKEM_Q - 1)/2) / 2^16) + (MLKEM_Q + 1) / 2\n   *       <= ceil((MLKEM_Q - 1) / 4) + (MLKEM_Q + 1) / 2\n   *        < MLKEM_Q\n   */\n\n  mlk_assert_abs_bound(&res, 1, MLKEM_Q);\n  return res;\n}",
+        "body_char_count": 405,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "ensures",
+        "start_line": 74,
+        "end_line": 106,
+        "signature_text": "static MLK_INLINE int16_t mlk_barrett_reduce(int16_t a) __contract__( ensures(return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF) )",
+        "parameters_text": "return_value > -MLKEM_Q_HALF && return_value < MLKEM_Q_HALF)",
+        "body_excerpt": "{\n  /* Barrett reduction approximates\n   * ```\n   *     round(a/MLKEM_Q)\n   *   = round(a*(2^N/MLKEM_Q))/2^N)\n   *  ~= round(a*round(2^N/MLKEM_Q)/2^N)\n   * ```\n   * Here, we pick N=26.\n   */\n  const int32_t magic = 20159; /* check-magic: 20159 == round(2^26 / MLKEM_Q) */\n\n  /*\n   * PORTABILITY: Right-shift on a signed integer is\n   * implementation-defined for negative left argument.\n   * Here, we assume it's sign-preserving \"arithmetic\" shift right.\n   * See (C99 6.5.7 (5))\n   */\n  const int32_t t = (magic * a + ((int32_t)1 << 25)) >> 26;\n\n  /*\n   * t is in -10 .. +10, so we need 32-bit math to\n   * evaluate t * MLKEM_Q and the subsequent subtraction\n   */\n  int16_t res = (int16_t)(a - t * MLKEM_Q);\n\n  mlk_assert_abs_bound(&res, 1, MLKEM_Q_HALF);\n  return res;\n}",
+        "body_char_count": 773,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "memory_no_alias",
+        "start_line": 108,
+        "end_line": 128,
+        "signature_text": "MLK_STATIC_TESTABLE void mlk_poly_tomont_c(mlk_poly *r) __contract__( requires(memory_no_alias(r, sizeof(mlk_poly))) assigns(memory_slice(r, sizeof(mlk_poly))) ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q)) )",
+        "parameters_text": "r, sizeof(mlk_poly))) assigns(memory_slice(r, sizeof(mlk_poly))) ensures(array_abs_bound(r->coeffs, 0, MLKEM_N, MLKEM_Q))",
+        "body_excerpt": "{\n  unsigned i;\n  const int16_t f = 1353; /* check-magic: 1353 == signed_mod(2^32, MLKEM_Q) */\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q))\n    decreases(MLKEM_N - i))\n  {\n    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);\n  }\n\n  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);\n}",
+        "body_char_count": 354,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 118,
+        "end_line": 125,
+        "signature_text": "__loop__( invariant(i <= MLKEM_N) invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q)) decreases(MLKEM_N - i))",
+        "parameters_text": "i <= MLKEM_N) invariant(array_abs_bound(r->coeffs, 0, i, MLKEM_Q)) decreases(MLKEM_N - i)",
+        "body_excerpt": "{\n    r->coeffs[i] = mlk_fqmul(r->coeffs[i], f);\n  }",
+        "body_char_count": 52,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_tomont",
+        "start_line": 128,
+        "end_line": 144,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_tomont(mlk_poly *r)",
+        "parameters_text": "mlk_poly *r",
+        "body_excerpt": "{\n#if defined(MLK_USE_NATIVE_POLY_TOMONT)\n  int ret;\n  ret = mlk_poly_tomont_native(r->coeffs);\n  if (ret == MLK_NATIVE_FUNC_SUCCESS)\n  {\n    mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);\n    return;\n  }\n#endif /* MLK_USE_NATIVE_POLY_TOMONT */\n\n  mlk_poly_tomont_c(r);\n}",
+        "body_char_count": 267,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "requires",
+        "start_line": 159,
+        "end_line": 176,
+        "signature_text": "static MLK_INLINE int16_t mlk_scalar_signed_to_unsigned_q(int16_t c) __contract__( requires(c > -MLKEM_Q && c < MLKEM_Q) ensures(return_value >= 0 && return_value < MLKEM_Q) ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q)))",
+        "parameters_text": "c > -MLKEM_Q && c < MLKEM_Q) ensures(return_value >= 0 && return_value < MLKEM_Q) ensures(return_value == (int32_t)c + (((int32_t)c < 0) * MLKEM_Q))",
+        "body_excerpt": "{\n  mlk_assert_abs_bound(&c, 1, MLKEM_Q);\n\n  /* Add MLKEM_Q if c is negative, but in constant time.\n   *\n   * Note that c + MLKEM_Q does not overflow in int16_t,\n   * so the cast to uint16_t is safe. */\n  c = mlk_ct_sel_int16((int16_t)(c + MLKEM_Q), c, mlk_ct_cmask_neg_i16(c));\n\n  mlk_assert_bound(&c, 1, 0, MLKEM_Q);\n  return c;\n}",
+        "body_char_count": 332,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "memory_no_alias",
+        "start_line": 184,
+        "end_line": 207,
+        "signature_text": "MLK_STATIC_TESTABLE void mlk_poly_reduce_c(mlk_poly *r) __contract__( requires(memory_no_alias(r, sizeof(mlk_poly))) assigns(memory_slice(r, sizeof(mlk_poly))) ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q)) )",
+        "parameters_text": "r, sizeof(mlk_poly))) assigns(memory_slice(r, sizeof(mlk_poly))) ensures(array_bound(r->coeffs, 0, MLKEM_N, 0, MLKEM_Q))",
+        "body_excerpt": "{\n  unsigned i;\n\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q))\n    decreases(MLKEM_N - i))\n  {\n    /* Barrett reduction, giving signed canonical representative */\n    int16_t t = mlk_barrett_reduce(r->coeffs[i]);\n    /* Conditional addition to get unsigned canonical representative */\n    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);\n  }\n\n  mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);\n}",
+        "body_char_count": 472,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 194,
+        "end_line": 204,
+        "signature_text": "__loop__( invariant(i <= MLKEM_N) invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q)) decreases(MLKEM_N - i))",
+        "parameters_text": "i <= MLKEM_N) invariant(array_bound(r->coeffs, 0, i, 0, MLKEM_Q)) decreases(MLKEM_N - i)",
+        "body_excerpt": "{\n    /* Barrett reduction, giving signed canonical representative */\n    int16_t t = mlk_barrett_reduce(r->coeffs[i]);\n    /* Conditional addition to get unsigned canonical representative */\n    r->coeffs[i] = mlk_scalar_signed_to_unsigned_q(t);\n  }",
+        "body_char_count": 250,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_reduce",
+        "start_line": 207,
+        "end_line": 223,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_reduce(mlk_poly *r)",
+        "parameters_text": "mlk_poly *r",
+        "body_excerpt": "{\n#if defined(MLK_USE_NATIVE_POLY_REDUCE)\n  int ret;\n  ret = mlk_poly_reduce_native(r->coeffs);\n  if (ret == MLK_NATIVE_FUNC_SUCCESS)\n  {\n    mlk_assert_bound(r, MLKEM_N, 0, MLKEM_Q);\n    return;\n  }\n#endif /* MLK_USE_NATIVE_POLY_REDUCE */\n\n  mlk_poly_reduce_c(r);\n}",
+        "body_char_count": 266,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_add",
+        "start_line": 227,
+        "end_line": 242,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+        "parameters_text": "mlk_poly *r, const mlk_poly *b",
+        "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+        "body_char_count": 432,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 232,
+        "end_line": 241,
+        "signature_text": "__loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i))",
+        "parameters_text": "i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1])) decreases(MLKEM_N - i)",
+        "body_excerpt": "{\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }",
+        "body_char_count": 138,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_sub",
+        "start_line": 246,
+        "end_line": 261,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_sub(mlk_poly *r, const mlk_poly *b)",
+        "parameters_text": "mlk_poly *r, const mlk_poly *b",
+        "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the subtraction stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);\n  }\n}",
+        "body_char_count": 435,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 251,
+        "end_line": 260,
+        "signature_text": "__loop__( invariant(i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1])) decreases(MLKEM_N - i))",
+        "parameters_text": "i <= MLKEM_N) invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0])) invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] - b->coeffs[k1])) decreases(MLKEM_N - i)",
+        "body_excerpt": "{\n    /* The preconditions imply that the subtraction stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] - b->coeffs[i]);\n  }",
+        "body_char_count": 141,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_mulcache_compute_c",
+        "start_line": 268,
+        "end_line": 298,
+        "signature_text": "MLK_STATIC_TESTABLE void mlk_poly_mulcache_compute_c(mlk_poly_mulcache *x, const mlk_poly *a) __contract__( requires(memory_no_alias(x, sizeof(mlk_poly_mulcache))) requires(memory_no_alias(a, sizeof(mlk_poly))) assigns(memory_slice(x, sizeof(mlk_poly_mulcache))) )",
+        "parameters_text": "mlk_poly_mulcache *x, const mlk_poly *a) __contract__( requires(memory_no_alias(x, sizeof(mlk_poly_mulcache))) requires(memory_no_alias(a, sizeof(mlk_poly))) assigns(memory_slice(x, sizeof(mlk_poly_mulcache)))",
+        "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N / 4; i++)\n  __loop__(\n    invariant(i <= MLKEM_N / 4)\n    invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q))\n    decreases(MLKEM_N / 4 - i))\n  {\n    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);\n    /* The values in zeta table are <= MLKEM_Q in absolute value,\n     * so the negation in int16_t is safe. */\n    x->coeffs[2 * i + 1] =\n        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));\n  }\n\n  /*\n   * This bound is true for the C implementation, but not needed\n   * in the higher level bounds reasoning. It is thus omitted\n   * from the spec to not unnecessarily constrain native\n   * implementations, but checked here nonetheless.\n   */\n  mlk_assert_abs_bound(x, MLKEM_N / 2, MLKEM_Q);\n}",
+        "body_char_count": 785,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 278,
+        "end_line": 289,
+        "signature_text": "__loop__( invariant(i <= MLKEM_N / 4) invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q)) decreases(MLKEM_N / 4 - i))",
+        "parameters_text": "i <= MLKEM_N / 4) invariant(array_abs_bound(x->coeffs, 0, 2 * i, MLKEM_Q)) decreases(MLKEM_N / 4 - i)",
+        "body_excerpt": "{\n    x->coeffs[2 * i + 0] = mlk_fqmul(a->coeffs[4 * i + 1], mlk_zetas[64 + i]);\n    /* The values in zeta table are <= MLKEM_Q in absolute value,\n     * so the negation in int16_t is safe. */\n    x->coeffs[2 * i + 1] =\n        mlk_fqmul(a->coeffs[4 * i + 3], (int16_t)(-mlk_zetas[64 + i]));\n  }",
+        "body_char_count": 295,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_mulcache_compute",
+        "start_line": 298,
+        "end_line": 313,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_mulcache_compute(mlk_poly_mulcache *x, const mlk_poly *a)",
+        "parameters_text": "mlk_poly_mulcache *x, const mlk_poly *a",
+        "body_excerpt": "{\n#if defined(MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE)\n  int ret;\n  ret = mlk_poly_mulcache_compute_native(x->coeffs, a->coeffs);\n  if (ret == MLK_NATIVE_FUNC_SUCCESS)\n  {\n    return;\n  }\n#endif /* MLK_USE_NATIVE_POLY_MULCACHE_COMPUTE */\n\n  mlk_poly_mulcache_compute_c(x, a);\n}",
+        "body_char_count": 274,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_ntt_butterfly_block",
+        "start_line": 342,
+        "end_line": 380,
+        "signature_text": "static void mlk_ntt_butterfly_block(int16_t r[MLKEM_N], int16_t zeta, unsigned start, unsigned len, unsigned bound) __contract__( requires(start < MLKEM_N) requires(1 <= len && len <= MLKEM_N / 2 && start + 2 * len <= MLKEM_N) requires(0 <= bound && bound < INT16_MAX - MLKEM_Q) requires(-MLKEM_Q_HALF < zeta && zeta < MLKEM_Q_HALF) requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(array_abs_bound(r, 0, start, bound + MLKEM_Q)) requires(array_abs_bound(r, start, MLKEM_N, bound)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q)) ensures(array_abs_bound(r, start + 2 * len, MLKEM_N, bound)))",
+        "parameters_text": "int16_t r[MLKEM_N], int16_t zeta, unsigned start, unsigned len, unsigned bound) __contract__( requires(start < MLKEM_N) requires(1 <= len && len <= MLKEM_N / 2 && start + 2 * len <= MLKEM_N) requires(0 <= bound && bound < INT16_MAX - MLKEM_Q) requires(-MLKEM_Q_HALF < zeta && zeta < MLKEM_Q_HALF) requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(array_abs_bound(r, 0, start, bound + MLKEM_Q)) requires(array_abs_bound(r, start, MLKEM_N, bound)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, start + 2*len, bound + MLKEM_Q)) ensures(array_abs_bound(r, start + 2 * len, MLKEM_N, bound))",
+        "body_excerpt": "{\n  /* `bound` is a ghost variable only needed in the CBMC specification */\n  unsigned j;\n  ((void)bound);\n  for (j = start; j < start + len; j++)\n  __loop__(\n    invariant(start <= j && j <= start + len)\n    /*\n     * Coefficients are updated in strided pairs, so the bounds for the\n     * intermediate states alternate twice between the old and new bound\n     */\n    invariant(array_abs_bound(r, 0,           j,           bound + MLKEM_Q))\n    invariant(array_abs_bound(r, j,           start + len, bound))\n    invariant(array_abs_bound(r, start + len, j + len,     bound + MLKEM_Q))\n    invariant(array_abs_bound(r, j + len,     MLKEM_N,     bound))\n    decreases(start + len - j))\n  {\n    int16_t t;\n    t = mlk_fqmul(r[j + len], zeta);\n    /* The precondition implies that the arithmetic does not overflow. */\n    r[j + len] = (int16_t)(r[j] - t);\n    r[j] = (int16_t)(r[j] + t);\n  }\n}",
+        "body_char_count": 890,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 361,
+        "end_line": 379,
+        "signature_text": "__loop__( invariant(start <= j && j <= start + len) /* * Coefficients are updated in strided pairs, so the bounds for the * intermediate states alternate twice between the old and new bound */ invariant(array_abs_bound(r, 0, j, bound + MLKEM_Q)) invariant(array_abs_bound(r, j, start + len, bound)) invariant(array_abs_bound(r, start + len, j + len, bound + MLKEM_Q)) invariant(array_abs_bound(r, j + len, MLKEM_N, bound)) decreases(start + len - j))",
+        "parameters_text": "start <= j && j <= start + len) /* * Coefficients are updated in strided pairs, so the bounds for the * intermediate states alternate twice between the old and new bound */ invariant(array_abs_bound(r, 0, j, bound + MLKEM_Q)) invariant(array_abs_bound(r, j, start + len, bound)) invariant(array_abs_bound(r, start + len, j + len, bound + MLKEM_Q)) invariant(array_abs_bound(r, j + len, MLKEM_N, bound)) decreases(start + len - j)",
+        "body_excerpt": "{\n    int16_t t;\n    t = mlk_fqmul(r[j + len], zeta);\n    /* The precondition implies that the arithmetic does not overflow. */\n    r[j + len] = (int16_t)(r[j] - t);\n    r[j] = (int16_t)(r[j] + t);\n  }",
+        "body_char_count": 201,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_ntt_layer",
+        "start_line": 389,
+        "end_line": 413,
+        "signature_text": "static void mlk_ntt_layer(int16_t r[MLKEM_N], unsigned layer) __contract__( requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(1 <= layer && layer <= 7) requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q)))",
+        "parameters_text": "int16_t r[MLKEM_N], unsigned layer) __contract__( requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(1 <= layer && layer <= 7) requires(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, MLKEM_N, (layer + 1) * MLKEM_Q))",
+        "body_excerpt": "{\n  unsigned start, k, len;\n  /* Twiddle factors for layer n are at indices 2^(n-1)..2^n-1. */\n  k = 1u << (layer - 1);\n  len = (unsigned)MLKEM_N >> layer;\n  for (start = 0; start < MLKEM_N; start += 2 * len)\n  __loop__(\n    invariant(start < MLKEM_N + 2 * len)\n    invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N)\n    invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q))\n    invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q))\n    decreases(MLKEM_N - start))\n  {\n    int16_t zeta = mlk_zetas[k++];\n    mlk_ntt_butterfly_block(r, zeta, start, len, layer * MLKEM_Q);\n  }\n}",
+        "body_char_count": 609,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 402,
+        "end_line": 412,
+        "signature_text": "__loop__( invariant(start < MLKEM_N + 2 * len) invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N) invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q)) invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q)) decreases(MLKEM_N - start))",
+        "parameters_text": "start < MLKEM_N + 2 * len) invariant(k <= MLKEM_N / 2 && 2 * len * k == start + MLKEM_N) invariant(array_abs_bound(r, 0, start, layer * MLKEM_Q + MLKEM_Q)) invariant(array_abs_bound(r, start, MLKEM_N, layer * MLKEM_Q)) decreases(MLKEM_N - start)",
+        "body_excerpt": "{\n    int16_t zeta = mlk_zetas[k++];\n    mlk_ntt_butterfly_block(r, zeta, start, len, layer * MLKEM_Q);\n  }",
+        "body_char_count": 107,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "memory_no_alias",
+        "start_line": 426,
+        "end_line": 453,
+        "signature_text": "MLK_STATIC_TESTABLE void mlk_poly_ntt_c(mlk_poly *p) __contract__( requires(memory_no_alias(p, sizeof(mlk_poly))) requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q)) assigns(memory_slice(p, sizeof(mlk_poly))) ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND)) )",
+        "parameters_text": "p, sizeof(mlk_poly))) requires(array_abs_bound(p->coeffs, 0, MLKEM_N, MLKEM_Q)) assigns(memory_slice(p, sizeof(mlk_poly))) ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_NTT_BOUND))",
+        "body_excerpt": "{\n  unsigned layer;\n  int16_t *r;\n\n  mlk_assert_abs_bound(p, MLKEM_N, MLKEM_Q);\n\n  r = p->coeffs;\n\n  for (layer = 1; layer <= 7; layer++)\n  __loop__(\n    invariant(1 <= layer && layer <= 8)\n    invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q))\n    decreases(8 - layer))\n  {\n    mlk_ntt_layer(r, layer);\n  }\n\n  /* Check the stronger bound */\n  mlk_assert_abs_bound(p, MLKEM_N, MLK_NTT_BOUND);\n}",
+        "body_char_count": 402,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 442,
+        "end_line": 449,
+        "signature_text": "__loop__( invariant(1 <= layer && layer <= 8) invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q)) decreases(8 - layer))",
+        "parameters_text": "1 <= layer && layer <= 8) invariant(array_abs_bound(r, 0, MLKEM_N, layer * MLKEM_Q)) decreases(8 - layer)",
+        "body_excerpt": "{\n    mlk_ntt_layer(r, layer);\n  }",
+        "body_char_count": 34,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_ntt",
+        "start_line": 453,
+        "end_line": 470,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_ntt(mlk_poly *r)",
+        "parameters_text": "mlk_poly *r",
+        "body_excerpt": "{\n#if defined(MLK_USE_NATIVE_NTT)\n  int ret;\n  mlk_assert_abs_bound(r, MLKEM_N, MLKEM_Q);\n  ret = mlk_ntt_native(r->coeffs);\n  if (ret == MLK_NATIVE_FUNC_SUCCESS)\n  {\n    mlk_assert_abs_bound(r, MLKEM_N, MLK_NTT_BOUND);\n    return;\n  }\n#endif /* MLK_USE_NATIVE_NTT */\n\n  mlk_poly_ntt_c(r);\n}",
+        "body_char_count": 291,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_invntt_layer",
+        "start_line": 475,
+        "end_line": 511,
+        "signature_text": "static void mlk_invntt_layer(int16_t *r, unsigned layer) __contract__( requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(1 <= layer && layer <= 7) requires(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)))",
+        "parameters_text": "int16_t *r, unsigned layer) __contract__( requires(memory_no_alias(r, sizeof(int16_t) * MLKEM_N)) requires(1 <= layer && layer <= 7) requires(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) assigns(memory_slice(r, sizeof(int16_t) * MLKEM_N)) ensures(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))",
+        "body_excerpt": "{\n  unsigned start, k, len;\n  len = (unsigned)MLKEM_N >> layer;\n  k = (1u << layer) - 1;\n  for (start = 0; start < MLKEM_N; start += 2 * len)\n  __loop__(\n    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))\n    invariant(start <= MLKEM_N && k <= 127)\n    /* Normalised form of k == MLKEM_N / len - 1 - start / (2 * len) */\n    invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len)\n    decreases(MLKEM_N - start))\n  {\n    unsigned j;\n    int16_t zeta = mlk_zetas[k--];\n    for (j = start; j < start + len; j++)\n    __loop__(\n      invariant(start <= j && j <= start + len)\n      invariant(start <= MLKEM_N && k <= 127)\n      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))\n      decreases(start + len - j))\n    {\n      int16_t t = r[j];\n      /* The preconditions imply that the arithmetic does not overflow. */\n      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));\n      r[j + len] = (int16_t)(r[j + len] - t);\n      r[j + len] = mlk_fqmul(r[j + len], zeta);\n    }\n  }\n}",
+        "body_char_count": 983,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "array_abs_bound",
+        "start_line": 487,
+        "end_line": 510,
+        "signature_text": "__loop__( invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) invariant(start <= MLKEM_N && k <= 127) /* Normalised form of k == MLKEM_N / len - 1 - start / (2 * len) */ invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len) decreases(MLKEM_N - start))",
+        "parameters_text": "r, 0, MLKEM_N, MLKEM_Q)) invariant(start <= MLKEM_N && k <= 127) /* Normalised form of k == MLKEM_N / len - 1 - start / (2 * len) */ invariant(2 * len * k + start == 2 * MLKEM_N - 2 * len) decreases(MLKEM_N - start)",
+        "body_excerpt": "{\n    unsigned j;\n    int16_t zeta = mlk_zetas[k--];\n    for (j = start; j < start + len; j++)\n    __loop__(\n      invariant(start <= j && j <= start + len)\n      invariant(start <= MLKEM_N && k <= 127)\n      invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))\n      decreases(start + len - j))\n    {\n      int16_t t = r[j];\n      /* The preconditions imply that the arithmetic does not overflow. */\n      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));\n      r[j + len] = (int16_t)(r[j + len] - t);\n      r[j + len] = mlk_fqmul(r[j + len], zeta);\n    }\n  }",
+        "body_char_count": 562,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 497,
+        "end_line": 509,
+        "signature_text": "__loop__( invariant(start <= j && j <= start + len) invariant(start <= MLKEM_N && k <= 127) invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) decreases(start + len - j))",
+        "parameters_text": "start <= j && j <= start + len) invariant(start <= MLKEM_N && k <= 127) invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) decreases(start + len - j)",
+        "body_excerpt": "{\n      int16_t t = r[j];\n      /* The preconditions imply that the arithmetic does not overflow. */\n      r[j] = mlk_barrett_reduce((int16_t)(t + r[j + len]));\n      r[j + len] = (int16_t)(r[j + len] - t);\n      r[j + len] = mlk_fqmul(r[j + len], zeta);\n    }",
+        "body_char_count": 260,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "memory_no_alias",
+        "start_line": 517,
+        "end_line": 554,
+        "signature_text": "MLK_STATIC_TESTABLE void mlk_poly_invntt_tomont_c(mlk_poly *p) __contract__( requires(memory_no_alias(p, sizeof(mlk_poly))) assigns(memory_slice(p, sizeof(mlk_poly))) ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND)) )",
+        "parameters_text": "p, sizeof(mlk_poly))) assigns(memory_slice(p, sizeof(mlk_poly))) ensures(array_abs_bound(p->coeffs, 0, MLKEM_N, MLK_INVNTT_BOUND))",
+        "body_excerpt": "{\n  unsigned j, layer;\n  const int16_t f = 1441; /* check-magic: 1441 == pow(2,32 - 7,MLKEM_Q) */\n  int16_t *r = p->coeffs;\n\n  /*\n   * Scale input polynomial to account for Montgomery factor\n   * and NTT twist. This also brings coefficients down to\n   * absolute value < MLKEM_Q.\n   */\n  for (j = 0; j < MLKEM_N; j++)\n  __loop__(\n    invariant(j <= MLKEM_N)\n    invariant(array_abs_bound(r, 0, j, MLKEM_Q))\n    decreases(MLKEM_N - j))\n  {\n    r[j] = mlk_fqmul(r[j], f);\n  }\n\n  /* Run the invNTT layers */\n  for (layer = 7; layer > 0; layer--)\n  __loop__(\n    invariant(0 <= layer && layer < 8)\n    invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q))\n    decreases(layer))\n  {\n    mlk_invntt_layer(r, layer);\n  }\n\n  mlk_assert_abs_bound(p, MLKEM_N, MLK_INVNTT_BOUND);\n}",
+        "body_char_count": 767,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 534,
+        "end_line": 541,
+        "signature_text": "__loop__( invariant(j <= MLKEM_N) invariant(array_abs_bound(r, 0, j, MLKEM_Q)) decreases(MLKEM_N - j))",
+        "parameters_text": "j <= MLKEM_N) invariant(array_abs_bound(r, 0, j, MLKEM_Q)) decreases(MLKEM_N - j)",
+        "body_excerpt": "{\n    r[j] = mlk_fqmul(r[j], f);\n  }",
+        "body_char_count": 36,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "invariant",
+        "start_line": 544,
+        "end_line": 551,
+        "signature_text": "__loop__( invariant(0 <= layer && layer < 8) invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) decreases(layer))",
+        "parameters_text": "0 <= layer && layer < 8) invariant(array_abs_bound(r, 0, MLKEM_N, MLKEM_Q)) decreases(layer)",
+        "body_excerpt": "{\n    mlk_invntt_layer(r, layer);\n  }",
+        "body_char_count": 37,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+        "function_name": "mlk_poly_invntt_tomont",
+        "start_line": 554,
+        "end_line": 570,
+        "signature_text": "MLK_INTERNAL_API void mlk_poly_invntt_tomont(mlk_poly *r)",
+        "parameters_text": "mlk_poly *r",
+        "body_excerpt": "{\n#if defined(MLK_USE_NATIVE_INTT)\n  int ret;\n  ret = mlk_intt_native(r->coeffs);\n  if (ret == MLK_NATIVE_FUNC_SUCCESS)\n  {\n    mlk_assert_abs_bound(r, MLKEM_N, MLK_INVNTT_BOUND);\n    return;\n  }\n#endif /* MLK_USE_NATIVE_INTT */\n\n  mlk_poly_invntt_tomont_c(r);\n}",
+        "body_char_count": 262,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.h",
+        "function_name": "requires",
+        "start_line": 57,
+        "end_line": 100,
+        "signature_text": "static MLK_ALWAYS_INLINE int16_t mlk_montgomery_reduce(int32_t a) __contract__( requires(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) && a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q))) /* We don't attempt to express an input-dependent output bound * as the post-condition here. There are two call-sites for this * function: * - The base multiplication: Here, we need no output bound. * - mlk_fqmul: Here, we inline this function and prove another spec * for mlk_fqmul which does have a post-condition bound. */ )",
+        "parameters_text": "a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) && a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q))) /* We don't attempt to express an input-dependent output bound * as the post-condition here. There are two call-sites for this * function: * - The base multiplication: Here, we need no output bound. * - mlk_fqmul: Here, we inline this function and prove another spec * for mlk_fqmul which does have a post-condition bound. */",
+        "body_excerpt": "{\n  /* check-magic: 62209 == unsigned_mod(pow(MLKEM_Q, -1, 2^16), 2^16) */\n  const uint32_t QINV = 62209;\n\n  /* Compute a*q^{-1} mod 2^16 in unsigned representatives. */\n  const uint16_t a_reduced = mlk_cast_int32_to_uint16(a);\n  const uint16_t a_inverted = (a_reduced * QINV) & UINT16_MAX;\n\n  /* Lift to signed canonical representative mod 2^16. */\n  const int16_t t = mlk_cast_uint16_to_int16(a_inverted);\n\n  int32_t r;\n\n  mlk_assert(a < +(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)) &&\n             a > -(INT32_MAX - (((int32_t)1 << 15) * MLKEM_Q)));\n\n  r = a - ((int32_t)t * MLKEM_Q);\n\n  /*\n   * PORTABILITY: Right-shift on a signed integer is, strictly-speaking,\n   * implementation-defined for negative left argument. Here,\n   * we assume it's sign-preserving \"arithmetic\" shift right. (C99 6.5.7 (5))\n   */\n  r = r >> 16;\n  /* Bounds: |r >> 16| <= ceil(|r| / 2^16)\n   *                   <= ceil(|a| / 2^16 + MLKEM_Q / 2)\n   *                   <= ceil(|a| / 2^16) + (MLKEM_Q + 1) / 2\n   *\n   * (Note that |a >> n| = ceil(|a| / 2^16) for negative a)\n   */\n  return (int16_t)r;\n}",
+        "body_char_count": 1085,
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "target_function_analysis": {
+      "target_function": "mlk_poly_add",
+      "found_exact_match": true,
+      "matches": [
+        {
+          "function_name": "mlk_poly_add",
+          "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+          "start_line": 227,
+          "end_line": 242,
+          "signature_text": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+          "parameters_text": "mlk_poly *r, const mlk_poly *b",
+          "possible_assignment_lines": [
+            "for (i = 0; i < MLKEM_N; i++)",
+            "invariant(i <= MLKEM_N)",
+            "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+          ],
+          "possible_inplace_update": true,
+          "old_state_new_state_warning": "Function may modify object fields in place. Later harnesses may need explicit old-state snapshots before the function call.",
+          "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "warning": "This is deterministic parser output only. The LLM must verify target function behaviour against raw source/header evidence.",
+      "trust_boundary": "deterministic_reference_advisory_only"
+    },
+    "trust_boundary": "deterministic_reference_advisory_only"
+  }
+}

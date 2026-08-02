@@ -1,0 +1,47 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-10T23:27:40.598889+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "target_function": "mlk_poly_add",
+    "candidate_harness_considerations": [
+      {
+        "hint": "Use actual function signature and required headers from primary source.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "hint": "If the target function mutates a structure in place, later harnesses may need an explicit old-state snapshot.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      },
+      {
+        "hint": "Do not infer correctness from function name. Verify behaviour from source body and contracts.",
+        "trust_boundary": "deterministic_reference_advisory_only"
+      }
+    ],
+    "target_function_analysis": {
+      "target_function": "mlk_poly_add",
+      "found_exact_match": true,
+      "matches": [
+        {
+          "function_name": "mlk_poly_add",
+          "file": "/home/girish/thesis-repos/mlkem-native/mlkem/src/poly.c",
+          "start_line": 227,
+          "end_line": 242,
+          "signature_text": "MLK_INTERNAL_API void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+          "parameters_text": "mlk_poly *r, const mlk_poly *b",
+          "possible_assignment_lines": [
+            "for (i = 0; i < MLKEM_N; i++)",
+            "invariant(i <= MLKEM_N)",
+            "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);"
+          ],
+          "possible_inplace_update": true,
+          "old_state_new_state_warning": "Function may modify object fields in place. Later harnesses may need explicit old-state snapshots before the function call.",
+          "body_excerpt": "{\n  unsigned i;\n  for (i = 0; i < MLKEM_N; i++)\n  __loop__(\n    invariant(i <= MLKEM_N)\n    invariant(forall(k0, i, MLKEM_N, r->coeffs[k0] == loop_entry(*r).coeffs[k0]))\n    invariant(forall(k1, 0, i, r->coeffs[k1] == loop_entry(*r).coeffs[k1] + b->coeffs[k1]))\n    decreases(MLKEM_N - i))\n  {\n    /* The preconditions imply that the addition stays within int16_t. */\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+          "trust_boundary": "deterministic_reference_advisory_only"
+        }
+      ],
+      "warning": "This is deterministic parser output only. The LLM must verify target function behaviour against raw source/header evidence.",
+      "trust_boundary": "deterministic_reference_advisory_only"
+    }
+  }
+}

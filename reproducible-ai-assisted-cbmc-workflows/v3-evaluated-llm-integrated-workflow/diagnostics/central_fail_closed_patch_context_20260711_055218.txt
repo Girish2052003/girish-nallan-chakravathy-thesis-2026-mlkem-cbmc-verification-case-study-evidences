@@ -1,0 +1,1814 @@
+================================================================
+CENTRAL FAIL-CLOSED PATCH CONTEXT
+================================================================
+
+=== LLM configuration and central-profile resolution ===
+        Useful for deterministic baseline runs.
+    """
+
+    REAL = "real"
+    MOCK = "mock"
+    DISABLED = "disabled"
+
+
+@dataclass
+class LLMClientConfig:
+    """
+    Configuration for the shared LLM client.
+    """
+
+    mode: LLMMode = LLMMode.MOCK
+    model: str = "REPLACE_WITH_AVAILABLE_MODEL"
+    api_key_env: str = "OPENAI_API_KEY"
+
+    # Provider and Responses API settings
+    provider: str = "openai"
+    temperature: Optional[float] = None
+    max_output_tokens: Optional[int] = None
+    preflight_max_output_tokens: int = 256
+    reasoning_mode: Optional[str] = None
+    reasoning_effort: Optional[str] = None
+    reasoning_summary: Optional[str] = None
+    text_verbosity: Optional[str] = None
+    store: bool = False
+
+    # OpenAI client routing/settings
+    base_url: Optional[str] = None
+    organization: Optional[str] = None
+    project: Optional[str] = None
+    timeout_seconds: Optional[float] = None
+
+    # Retry/validation behaviour
+    max_retries: int = 2
+    retry_sleep_seconds: float = 2.0
+    require_json_object: bool = True
+    validate_with_jsonschema: bool = True
+
+    # File/evidence behaviour
+    max_inline_file_chars: int = 120_000
+    attach_files_as_base64: bool = False
+    # If False, text/code files are inlined in the prompt package.
+    # If True, file inputs are encoded for the Responses API input_file mechanism.
+
+    # Safety/logging
+    save_raw_response: bool = True
+    save_prompt_text: bool = True
+    save_call_metadata: bool = True
+    redact_secrets_in_logs: bool = True
+
+    @classmethod
+    def from_mapping(cls, data: Optional[Mapping[str, Any]]) -> "LLMClientConfig":
+        if not data:
+            return cls()
+
+        mode_value = str(data.get("mode", data.get("llm_mode", cls.mode.value))).lower()
+        if mode_value not in {m.value for m in LLMMode}:
+            raise ValueError(f"Unsupported llm mode: {mode_value}")
+
+        reasoning = data.get("reasoning") if isinstance(data.get("reasoning"), Mapping) else {}
+        text_cfg = data.get("text") if isinstance(data.get("text"), Mapping) else {}
+        client_cfg = data.get("client") if isinstance(data.get("client"), Mapping) else {}
+
+        def optional_text(value: Any) -> Optional[str]:
+            if value is None:
+                return None
+            text = str(value).strip()
+            return text or None
+
+        return cls(
+            mode=LLMMode(mode_value),
+            model=str(data.get("model", cls.model)),
+            api_key_env=str(data.get("api_key_env", cls.api_key_env)),
+            provider=str(data.get("provider", cls.provider)).strip().lower(),
+            temperature=data.get("temperature", cls.temperature),
+            max_output_tokens=data.get("max_output_tokens", cls.max_output_tokens),
+            preflight_max_output_tokens=int(
+                data.get("preflight_max_output_tokens", cls.preflight_max_output_tokens)
+            ),
+            reasoning_mode=optional_text(
+                reasoning.get("mode", data.get("reasoning_mode", cls.reasoning_mode))
+            ),
+            reasoning_effort=optional_text(
+                reasoning.get("effort", data.get("reasoning_effort", cls.reasoning_effort))
+            ),
+            reasoning_summary=optional_text(
+                reasoning.get("summary", data.get("reasoning_summary", cls.reasoning_summary))
+            ),
+            text_verbosity=optional_text(
+                text_cfg.get("verbosity", data.get("text_verbosity", cls.text_verbosity))
+            ),
+            store=bool(data.get("store", cls.store)),
+            base_url=optional_text(client_cfg.get("base_url", data.get("base_url", cls.base_url))),
+            organization=optional_text(
+                client_cfg.get("organization", data.get("organization", cls.organization))
+            ),
+            project=optional_text(client_cfg.get("project", data.get("project", cls.project))),
+            timeout_seconds=(
+                float(client_cfg.get("timeout_seconds", data.get("timeout_seconds")))
+                if client_cfg.get("timeout_seconds", data.get("timeout_seconds")) is not None
+                else cls.timeout_seconds
+            ),
+            max_retries=int(data.get("max_retries", cls.max_retries)),
+            retry_sleep_seconds=float(data.get("retry_sleep_seconds", cls.retry_sleep_seconds)),
+            require_json_object=bool(data.get("require_json_object", cls.require_json_object)),
+            validate_with_jsonschema=bool(data.get("validate_with_jsonschema", cls.validate_with_jsonschema)),
+            max_inline_file_chars=int(data.get("max_inline_file_chars", cls.max_inline_file_chars)),
+            attach_files_as_base64=bool(data.get("attach_files_as_base64", cls.attach_files_as_base64)),
+            save_raw_response=bool(data.get("save_raw_response", cls.save_raw_response)),
+            save_prompt_text=bool(data.get("save_prompt_text", cls.save_prompt_text)),
+            save_call_metadata=bool(data.get("save_call_metadata", cls.save_call_metadata)),
+            redact_secrets_in_logs=bool(data.get("redact_secrets_in_logs", cls.redact_secrets_in_logs)),
+        )
+
+
+def build_openai_client_kwargs(config: LLMClientConfig, api_key: str) -> JsonDict:
+    """Build the same OpenAI client arguments for preflight and runtime."""
+    if config.provider != "openai":
+        raise ValueError(f"Unsupported LLM provider: {config.provider!r}")
+    kwargs: JsonDict = {"api_key": api_key}
+    for key, value in (
+        ("base_url", config.base_url),
+        ("organization", config.organization),
+        ("project", config.project),
+    ):
+        if value is not None:
+            kwargs[key] = value
+    if config.timeout_seconds is not None:
+        kwargs["timeout"] = config.timeout_seconds
+    return kwargs
+
+
+def build_responses_control_payload(
+
+=== Evidence manifests and inline evidence builders ===
+
+class SchemaValidationError(ValueError):
+    pass
+
+
+def extract_json_object(text: str) -> JsonDict:
+    """
+    Extract a JSON object from an LLM response.
+
+    Accepts:
+    - pure JSON object
+    - fenced ```json blocks
+    - text with the first parseable JSON object embedded
+
+    Returns a dict only.
+    """
+    stripped = text.strip()
+
+    # Direct JSON.
+    try:
+        data = json.loads(stripped)
+        if isinstance(data, dict):
+            return data
+        raise JSONExtractionError(f"Expected JSON object, got {type(data).__name__}")
+    except json.JSONDecodeError:
+        pass
+
+    # Fenced code block.
+    fence_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", stripped, re.DOTALL | re.IGNORECASE)
+    if fence_match:
+        candidate = fence_match.group(1)
+        try:
+            data = json.loads(candidate)
+            if isinstance(data, dict):
+                return data
+            raise JSONExtractionError(f"Expected JSON object in fenced block, got {type(data).__name__}")
+        except json.JSONDecodeError as exc:
+            raise JSONExtractionError(f"Invalid JSON in fenced block: {exc}") from exc
+
+    # Bracket matching fallback.
+    first = stripped.find("{")
+    last = stripped.rfind("}")
+    if first != -1 and last != -1 and last > first:
+        candidate = stripped[first:last + 1]
+        try:
+            data = json.loads(candidate)
+            if isinstance(data, dict):
+                return data
+            raise JSONExtractionError(f"Expected JSON object in embedded object, got {type(data).__name__}")
+        except json.JSONDecodeError as exc:
+            raise JSONExtractionError(f"Could not parse embedded JSON object: {exc}") from exc
+
+    raise JSONExtractionError("No parseable JSON object found in response.")
+
+
+def validate_json_schema(instance: JsonDict, schema: Optional[JsonDict]) -> JsonDict:
+    """
+    Validate JSON against a schema if jsonschema is installed.
+
+    If jsonschema is unavailable, performs a minimal required-field check.
+    """
+    if schema is None:
+        return {
+            "schema_validation_enabled": False,
+            "valid": True,
+            "reason": "No schema provided.",
+        }
+
+    if jsonschema is not None:
+        try:
+            jsonschema.validate(instance=instance, schema=schema)
+            return {
+                "schema_validation_enabled": True,
+                "validator": "jsonschema",
+                "valid": True,
+                "errors": [],
+            }
+        except Exception as exc:
+            return {
+                "schema_validation_enabled": True,
+                "validator": "jsonschema",
+                "valid": False,
+                "errors": [str(exc)],
+            }
+
+    # Minimal fallback: only check top-level required fields.
+    missing = []
+    required = schema.get("required", [])
+    if isinstance(required, list):
+        for field in required:
+            if field not in instance:
+                missing.append(field)
+
+    return {
+        "schema_validation_enabled": True,
+        "validator": "minimal_required_fields_fallback",
+        "valid": not missing,
+        "errors": [f"Missing required field: {m}" for m in missing],
+        "warning": "Install jsonschema for full validation: pip install jsonschema",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Prompt building helpers
+# ---------------------------------------------------------------------------
+
+def build_primary_evidence_manifest(files: Sequence[PathLike]) -> JsonDict:
+    entries = []
+    for f in files:
+        p = Path(f)
+        if p.exists() and p.is_file():
+            entries.append(path_metadata(p))
+        else:
+            entries.append({
+                "path": str(p),
+                "exists": False,
+                "warning": "Primary evidence file was listed but not found.",
+            })
+    return {
+        "files": entries,
+        "evidence_priority": "primary",
+        "note": "Primary evidence outranks deterministic advisory material.",
+    }
+
+
+
+
+def build_evidence_manifest(files: Sequence[PathLike], *, category: str, trust_boundary: str) -> JsonDict:
+    entries = []
+    for f in files:
+        p = Path(f)
+        if p.exists() and p.is_file():
+            meta = path_metadata(p)
+            meta["sha256"] = hashlib.sha256(p.read_bytes()).hexdigest()
+            entries.append(meta)
+        else:
+            entries.append({"path": str(p), "exists": False, "warning": "Listed evidence file was not found."})
+    return {
+        "files": entries,
+        "category": category,
+        "trust_boundary": trust_boundary,
+    }
+
+
+def _json_context_block(title: str, value: Optional[JsonDict], *, max_chars: int) -> str:
+    if value is None:
+        return ""
+    text = json.dumps(value, ensure_ascii=False, indent=2)
+    if len(text) > max_chars:
+        text = text[:max_chars] + "\n[TRUNCATED_BY_LLM_CLIENT_CONTEXT_LIMIT]"
+    return f"\n\n===== {title} BEGIN =====\n{text}\n===== {title} END ====="
+
+
+def inline_categorised_file_block(
+    files: Sequence[PathLike], *, category: str, trust_boundary: str, max_chars: int
+) -> str:
+    blocks: List[str] = []
+    for f in files:
+        p = Path(f)
+        if not p.exists() or not p.is_file():
+            blocks.append(f"\n[{category.upper()}_FILE_MISSING] path: {p}\n")
+            continue
+        text = read_text_safely(p, max_chars=max_chars)
+        blocks.append("\n".join([
+            "",
+            f"===== {category.upper()} FILE BEGIN =====",
+            f"trust_boundary: {trust_boundary}",
+            f"path: {p}",
+            f"name: {p.name}",
+            f"size_bytes: {p.stat().st_size}",
+            "----- content begin -----",
+            text,
+            "----- content end -----",
+            f"===== {category.upper()} FILE END =====",
+            "",
+        ]))
+    return "\n".join(blocks)
+
+def inline_text_evidence_block(files: Sequence[PathLike], *, max_chars: int) -> str:
+    """
+    Create a prompt block containing text/code evidence.
+
+    This is useful when not using file attachments.
+    """
+    blocks = []
+    for f in files:
+        p = Path(f)
+        if not p.exists() or not p.is_file():
+            blocks.append(f"\n[PRIMARY_EVIDENCE_FILE_MISSING]\npath: {p}\n")
+            continue
+
+        text = read_text_safely(p, max_chars=max_chars)
+        blocks.append(
+            "\n".join([
+                "",
+                "===== PRIMARY EVIDENCE FILE BEGIN =====",
+                f"path: {p}",
+                f"name: {p.name}",
+                f"size_bytes: {p.stat().st_size}",
+                "----- content begin -----",
+                text,
+                "----- content end -----",
+                "===== PRIMARY EVIDENCE FILE END =====",
+                "",
+            ])
+        )
+    return "\n".join(blocks)
+
+
+def with_json_retry_instruction(prompt: str, schema: Optional[JsonDict], previous_error: str) -> str:
+    schema_text = json.dumps(schema, indent=2, ensure_ascii=False) if schema else "{}"
+    return f"""
+{prompt}
+
+[RETRY INSTRUCTION]
+Your previous response could not be parsed or validated as the required JSON object.
+
+Validation/parsing error:
+{previous_error}
+
+Return only a valid JSON object matching the required schema below. Do not include Markdown fences or explanatory prose.
+
+Schema:
+{schema_text}
+""".strip()
+
+
+# ---------------------------------------------------------------------------
+# OpenAI Responses API adapter
+# ---------------------------------------------------------------------------
+
+def _response_to_text(response: Any) -> str:
+    """
+    Extract text from an OpenAI Responses API object.
+
+    The SDK shape can evolve, so this tries several safe patterns.
+    """
+    # Newer SDKs expose output_text.
+    text = getattr(response, "output_text", None)
+    if isinstance(text, str) and text.strip():
+        return text
+
+    # Fallback: dict/model dump.
+    if hasattr(response, "model_dump"):
+        data = response.model_dump()
+    elif hasattr(response, "to_dict"):
+        data = response.to_dict()
+    else:
+        data = response
+
+    # Search likely text fields recursively.
+    found: List[str] = []
+
+    def walk(x: Any) -> None:
+        if isinstance(x, dict):
+            # Common content shape.
+            if x.get("type") in {"output_text", "text"} and isinstance(x.get("text"), str):
+                found.append(x["text"])
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for item in x:
+                walk(item)
+
+    walk(data)
+    if found:
+        return "\n".join(found)
+
+    # Last resort: dump the object. This may be useful for debugging but likely not JSON.
+    try:
+        return json.dumps(data, ensure_ascii=False)
+    except Exception:
+        return str(response)
+
+
+def _response_to_serialisable(response: Any) -> Any:
+    if hasattr(response, "model_dump"):
+        return response.model_dump()
+    if hasattr(response, "to_dict"):
+        return response.to_dict()
+    try:
+        json.dumps(response)
+        return response
+    except Exception:
+        return {"repr": repr(response), "text": _response_to_text(response)}
+
+
+def build_responses_api_input(
+    prompt_text: str,
+    primary_evidence_files: Sequence[PathLike],
+    *,
+    prior_authoritative_context_files: Sequence[PathLike] = (),
+    trusted_deterministic_fact_files: Sequence[PathLike] = (),
+    prior_authoritative_context_bundle: Optional[JsonDict] = None,
+    trusted_deterministic_facts_bundle: Optional[JsonDict] = None,
+    deterministic_reference_bundle: Optional[JsonDict] = None,
+    config: LLMClientConfig,
+) -> List[JsonDict]:
+    """Build the exact Responses API input while preserving evidence categories."""
+    hierarchy = """
+[EVIDENCE HIERARCHY AND TRUST RULE]
+1. Raw specification/source/build evidence and raw formal-tool output outrank all summaries.
+2. Previous LLM-stage outputs are candidate context, not proof.
+3. Trusted deterministic facts are authoritative only for measured/logged facts.
+4. Deterministic references are fallible advisory hints. Verify them independently.
+5. Unsupported inference is lowest priority. Mark uncertainty rather than inventing.
+""".strip()
+
+    context_text = prompt_text + "\n\n" + hierarchy
+    context_text += _json_context_block(
+        "PREVIOUS AUTHORITATIVE CANDIDATE-STAGE CONTEXT (NOT FORMAL TRUTH)",
+        prior_authoritative_context_bundle,
+        max_chars=config.max_inline_file_chars,
+    )
+    context_text += inline_categorised_file_block(
+        prior_authoritative_context_files,
+        category="previous_authoritative_candidate_context",
+        trust_boundary="candidate_context_not_formal_truth",
+        max_chars=config.max_inline_file_chars,
+    )
+    context_text += _json_context_block(
+        "TRUSTED DETERMINISTIC MEASURED FACTS",
+        trusted_deterministic_facts_bundle,
+        max_chars=config.max_inline_file_chars,
+    )
+    context_text += inline_categorised_file_block(
+        trusted_deterministic_fact_files,
+        category="trusted_deterministic_measured_facts",
+        trust_boundary="authoritative_for_logged_measured_facts_only",
+        max_chars=config.max_inline_file_chars,
+    )
+    context_text += _json_context_block(
+        "DETERMINISTIC ADVISORY REFERENCES (FALLIBLE; DO NOT COPY BLINDLY)",
+        deterministic_reference_bundle,
+        max_chars=config.max_inline_file_chars,
+    )
+
+    if not config.attach_files_as_base64:
+        context_text += inline_categorised_file_block(
+            primary_evidence_files,
+            category="raw_primary_evidence",
+            trust_boundary="highest_priority_for_stage_claims",
+            max_chars=config.max_inline_file_chars,
+        )
+        return [{"role": "user", "content": [{"type": "input_text", "text": context_text}]}]
+
+    content: List[JsonDict] = [{"type": "input_text", "text": context_text}]
+    for f in primary_evidence_files:
+        p = Path(f)
+        if not p.exists() or not p.is_file():
+            content.append({"type": "input_text", "text": f"[RAW_PRIMARY_EVIDENCE_FILE_MISSING] path: {p}"})
+            continue
+        raw = p.read_bytes()
+        b64 = base64.b64encode(raw).decode("ascii")
+        mime = mimetypes.guess_type(p.name)[0] or "application/octet-stream"
+        content.append({
+            "type": "input_file",
+            "filename": p.name,
+            "file_data": f"data:{mime};base64,{b64}",
+        })
+    return [{"role": "user", "content": content}]
+
+
+# ---------------------------------------------------------------------------
+# Main LLM client
+# ---------------------------------------------------------------------------
+
+=== Request construction and API-call path ===
+# ---------------------------------------------------------------------------
+
+class LLMClient:
+    """
+    Shared LLM client for all LLM-backed agents.
+    """
+
+    def __init__(self, config: Optional[Union[LLMClientConfig, Mapping[str, Any]]] = None):
+        if config is None:
+            self.config = LLMClientConfig()
+        elif isinstance(config, LLMClientConfig):
+            self.config = config
+        else:
+            self.config = LLMClientConfig.from_mapping(config)
+
+    @classmethod
+    def from_run_config(cls, run_config: Mapping[str, Any]) -> "LLMClient":
+        """
+        Build from a run config.
+
+        Supports any of:
+        - run_config["llm"]
+        - run_config["llm_config"]
+        - run_config["openai"]
+        """
+        cfg = (
+            run_config.get("llm")
+            or run_config.get("llm_config")
+            or run_config.get("openai")
+            or {}
+        )
+        return cls(cfg)
+
+    def run_stage(self, layout: Any, request: LLMStageRequest) -> LLMStageResult:
+        """
+        Execute one LLM-backed stage and write all records to the RunLayout folders.
+
+        The layout object is expected to be compatible with agents.common.run_layout.RunLayout.
+        """
+        cfg = self.config
+        stage = request.stage
+
+        # ------------------------------------------------------------------
+        # 1. Prompt package preservation
+        # ------------------------------------------------------------------
+        primary_evidence_manifest = build_evidence_manifest(
+            request.primary_evidence_files,
+            category="raw_primary_evidence",
+            trust_boundary="highest_priority_for_stage_claims",
+        )
+        prior_context_manifest = build_evidence_manifest(
+            request.prior_authoritative_context_files,
+            category="previous_authoritative_candidate_context",
+            trust_boundary="candidate_context_not_formal_truth",
+        )
+        trusted_facts_manifest = build_evidence_manifest(
+            request.trusted_deterministic_fact_files,
+            category="trusted_deterministic_measured_facts",
+            trust_boundary="authoritative_for_logged_measured_facts_only",
+        )
+
+        prompt_outputs = layout.write_prompt_package(
+            stage,
+            prompt_text=request.prompt_text,
+            prompt_filename=f"{stage}_prompt.txt" if not stage.startswith("agent") else f"{stage}.txt",
+            metadata={
+                "stage": stage,
+                "mode": cfg.mode.value,
+                "model": cfg.model,
+                "created_utc": utc_now_iso(),
+                "primary_evidence_file_count": len(request.primary_evidence_files),
+                "prior_authoritative_context_file_count": len(request.prior_authoritative_context_files),
+                "trusted_deterministic_fact_file_count": len(request.trusted_deterministic_fact_files),
+                "prior_authoritative_context_provided": request.prior_authoritative_context_bundle is not None,
+                "trusted_deterministic_facts_provided": request.trusted_deterministic_facts_bundle is not None,
+                "deterministic_reference_provided": request.deterministic_reference_bundle is not None,
+                "require_json_object": cfg.require_json_object,
+                "schema_provided": request.json_schema is not None,
+                "attach_files_as_base64": cfg.attach_files_as_base64,
+                "extra": request.extra_prompt_metadata,
+            },
+            deterministic_reference_bundle=request.deterministic_reference_bundle,
+            prior_authoritative_context_bundle=request.prior_authoritative_context_bundle,
+            trusted_deterministic_facts_bundle=request.trusted_deterministic_facts_bundle,
+            primary_evidence_manifest=primary_evidence_manifest,
+            prior_authoritative_context_manifest=prior_context_manifest,
+            trusted_deterministic_facts_manifest=trusted_facts_manifest,
+        )
+
+        prompt_path = str(prompt_outputs.get("prompt")) if prompt_outputs.get("prompt") else None
+        metadata_path = str(prompt_outputs.get("prompt_metadata")) if prompt_outputs.get("prompt_metadata") else None
+
+        # ------------------------------------------------------------------
+        # 2. Disabled mode
+        # ------------------------------------------------------------------
+        if cfg.mode == LLMMode.DISABLED:
+            validation = {
+                "schema_version": "llm_stage_validation.v1",
+                "created_utc": utc_now_iso(),
+                "stage": stage,
+                "valid": False,
+                "llm_call_executed": False,
+                "mode": cfg.mode.value,
+                "reason": "LLM mode is disabled. No authoritative LLM output was generated.",
+            }
+            validation_path = layout.write_validation_json(
+                stage,
+                "llm_call_validation.json",
+                validation,
+            )
+
+            return LLMStageResult(
+                stage=stage,
+                mode=cfg.mode.value,
+                success=False,
+                llm_call_executed=False,
+                output_path=None,
+                raw_response_path=None,
+                validation_path=str(validation_path),
+                prompt_path=prompt_path,
+                metadata_path=metadata_path,
+                attempts=0,
+                error="LLM disabled",
+                validation=validation,
+            )
+
+        # ------------------------------------------------------------------
+        # 3. Mock mode
+        # ------------------------------------------------------------------
+        if cfg.mode == LLMMode.MOCK:
+            mock_content = request.mock_response_content or self._schema_shaped_mock(
+                stage=stage,
+                schema=request.json_schema,
+            )
+            output_path = layout.write_llm_authoritative_json(
+                stage,
+                request.output_filename,
+                mock_content,
+            )
+            raw_response_path = layout.llm_authoritative_dir(stage) / "api_responses" / "attempt_01_response.json"
+            atomic_write_json(raw_response_path, {
+                "schema_version": "raw_llm_response.v1",
+                "created_utc": utc_now_iso(),
+                "mode": cfg.mode.value,
+                "llm_call_executed": False,
+                "mock": True,
+                "content": mock_content,
+            })
+
+            schema_result = validate_json_schema(mock_content, request.json_schema)
+            validation = {
+                "schema_version": "llm_stage_validation.v1",
+                "created_utc": utc_now_iso(),
+                "stage": stage,
+                "mode": cfg.mode.value,
+                "llm_call_executed": False,
+                "valid": bool(schema_result.get("valid")),
+                "schema_validation": schema_result,
+                "note": "Mock mode validates pipeline wiring only. It is not an API-backed result.",
+            }
+            validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+
+            return LLMStageResult(
+                stage=stage,
+                mode=cfg.mode.value,
+                success=bool(schema_result.get("valid")),
+                llm_call_executed=False,
+                output_path=str(output_path),
+                raw_response_path=str(raw_response_path),
+                validation_path=str(validation_path),
+                prompt_path=prompt_path,
+                metadata_path=metadata_path,
+                attempts=1,
+                parsed_json=mock_content,
+                validation=validation,
+            )
+
+        # ------------------------------------------------------------------
+        # 4. Real API mode
+        # ------------------------------------------------------------------
+        if cfg.mode == LLMMode.REAL:
+            return self._run_stage_real(layout, request, prompt_path, metadata_path)
+
+        raise ValueError(f"Unhandled LLM mode: {cfg.mode}")
+
+    # ----------------------------------------------------------------------
+    # Real API implementation
+    # ----------------------------------------------------------------------
+
+    def _run_stage_real(
+        self,
+        layout: Any,
+        request: LLMStageRequest,
+        prompt_path: Optional[str],
+        metadata_path: Optional[str],
+    ) -> LLMStageResult:
+        cfg = self.config
+        stage = request.stage
+
+        api_key = os.environ.get(cfg.api_key_env)
+        if not api_key:
+            validation = {
+                "schema_version": "llm_stage_validation.v1",
+                "created_utc": utc_now_iso(),
+                "stage": stage,
+                "mode": cfg.mode.value,
+                "valid": False,
+                "llm_call_executed": False,
+                "error": f"Missing API key environment variable: {cfg.api_key_env}",
+            }
+            validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+            return LLMStageResult(
+                stage=stage,
+                mode=cfg.mode.value,
+                success=False,
+                llm_call_executed=False,
+                output_path=None,
+                raw_response_path=None,
+                validation_path=str(validation_path),
+                prompt_path=prompt_path,
+                metadata_path=metadata_path,
+                attempts=0,
+                error=f"Missing API key environment variable: {cfg.api_key_env}",
+                validation=validation,
+            )
+
+        if OpenAI is None:
+            validation = {
+                "schema_version": "llm_stage_validation.v1",
+                "created_utc": utc_now_iso(),
+                "stage": stage,
+                "mode": cfg.mode.value,
+                "valid": False,
+                "llm_call_executed": False,
+                "error": "OpenAI Python package is not installed. Install with: pip install openai",
+            }
+            validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+            return LLMStageResult(
+                stage=stage,
+                mode=cfg.mode.value,
+                success=False,
+                llm_call_executed=False,
+                output_path=None,
+                raw_response_path=None,
+                validation_path=str(validation_path),
+                prompt_path=prompt_path,
+                metadata_path=metadata_path,
+                attempts=0,
+                error="OpenAI package not installed",
+                validation=validation,
+            )
+
+        client = OpenAI(**build_openai_client_kwargs(cfg, api_key))
+
+        attempts = 0
+        last_error: Optional[str] = None
+        current_prompt = request.prompt_text
+        raw_response_path: Optional[Path] = None
+
+        for attempt_idx in range(cfg.max_retries + 1):
+            attempts = attempt_idx + 1
+            try:
+                api_input = build_responses_api_input(
+                    current_prompt,
+                    request.primary_evidence_files,
+                    prior_authoritative_context_files=request.prior_authoritative_context_files,
+                    trusted_deterministic_fact_files=request.trusted_deterministic_fact_files,
+                    prior_authoritative_context_bundle=request.prior_authoritative_context_bundle,
+                    trusted_deterministic_facts_bundle=request.trusted_deterministic_facts_bundle,
+                    deterministic_reference_bundle=request.deterministic_reference_bundle,
+                    config=cfg,
+                )
+
+                request_payload: JsonDict = {
+                    "model": cfg.model,
+                    "input": api_input,
+                }
+                request_payload.update(build_responses_control_payload(cfg))
+
+                # Merge verbosity with the stage's strict structured-output format.
+                # Never replace the json_schema object when verbosity is configured.
+
+=== Remaining shared-client request path ===
+                # Never replace the json_schema object when verbosity is configured.
+                text_options: JsonDict = dict(request_payload.get("text") or {})
+                if request.json_schema is not None:
+                    text_options["format"] = {
+                        "type": "json_schema",
+                        "name": f"{stage}_schema",
+                        "schema": request.json_schema,
+                        "strict": True,
+                    }
+                elif cfg.require_json_object:
+                    text_options["format"] = {
+                        "type": "json_object",
+                    }
+                if text_options:
+                    request_payload["text"] = text_options
+
+                # Preserve the exact redacted payload sent on every attempt.
+                redacted_payload = redact_secrets(request_payload) if cfg.redact_secrets_in_logs else request_payload
+                payload_bytes = json.dumps(redacted_payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                request_snapshot_path = layout.prompt_package_dir(stage) / "api_requests" / f"attempt_{attempts:02d}_request.json"
+                atomic_write_json(request_snapshot_path, {
+                    "schema_version": "exact_api_request_snapshot.v1",
+                    "created_utc": utc_now_iso(),
+                    "stage": stage,
+                    "attempt": attempts,
+                    "retry": attempts > 1,
+                    "retry_reason": last_error if attempts > 1 else None,
+                    "request_sha256": hashlib.sha256(payload_bytes).hexdigest(),
+                    "api_payload": redacted_payload,
+                    "evidence_categories": {
+                        "raw_primary_evidence_files": [str(Path(x)) for x in request.primary_evidence_files],
+                        "previous_authoritative_context_files": [str(Path(x)) for x in request.prior_authoritative_context_files],
+                        "trusted_deterministic_fact_files": [str(Path(x)) for x in request.trusted_deterministic_fact_files],
+                        "previous_authoritative_context_bundle_present": request.prior_authoritative_context_bundle is not None,
+                        "trusted_deterministic_facts_bundle_present": request.trusted_deterministic_facts_bundle is not None,
+                        "deterministic_advisory_bundle_present": request.deterministic_reference_bundle is not None,
+                    },
+                    "secret_policy": "API key is supplied through the client constructor and is never stored in this payload snapshot.",
+                })
+
+                started = time.time()
+                response = client.responses.create(**request_payload)
+                elapsed = time.time() - started
+
+                response_text = _response_to_text(response)
+                response_serialisable = _response_to_serialisable(response)
+
+                raw_response_path = layout.llm_authoritative_dir(stage) / "api_responses" / f"attempt_{attempts:02d}_response.json"
+                raw_record = {
+                    "schema_version": "raw_llm_response.v2.per_attempt",
+                    "created_utc": utc_now_iso(),
+                    "mode": cfg.mode.value,
+                    "llm_call_executed": True,
+                    "model": cfg.model,
+                    "attempt": attempts,
+                    "elapsed_seconds": elapsed,
+                    "request_snapshot_path": str(request_snapshot_path),
+                    "request_sha256": hashlib.sha256(payload_bytes).hexdigest(),
+                    "response_id": getattr(response, "id", None),
+                    "usage": getattr(response, "usage", None).model_dump() if hasattr(getattr(response, "usage", None), "model_dump") else getattr(response, "usage", None),
+                    "response_text": response_text,
+                    "response_object": response_serialisable,
+                }
+                if cfg.redact_secrets_in_logs:
+                    raw_record = redact_secrets(raw_record)
+                atomic_write_json(raw_response_path, raw_record)
+
+                parsed = extract_json_object(response_text)
+                schema_result = validate_json_schema(parsed, request.json_schema)
+
+                if not schema_result.get("valid", False):
+                    last_error = "Schema validation failed: " + json.dumps(schema_result, ensure_ascii=False)
+                    if attempt_idx < cfg.max_retries:
+                        current_prompt = with_json_retry_instruction(
+                            request.prompt_text,
+                            request.json_schema,
+                            last_error,
+                        )
+                        time.sleep(cfg.retry_sleep_seconds)
+                        continue
+
+                    validation = {
+                        "schema_version": "llm_stage_validation.v1",
+                        "created_utc": utc_now_iso(),
+                        "stage": stage,
+                        "mode": cfg.mode.value,
+                        "llm_call_executed": True,
+                        "valid": False,
+                        "attempts": attempts,
+                        "schema_validation": schema_result,
+                        "error": last_error,
+                    }
+                    validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+
+                    if request.allow_invalid_json_save:
+                        invalid_path = layout.llm_authoritative_dir(stage) / ("invalid_" + request.output_filename)
+                        atomic_write_json(invalid_path, parsed)
+
+                    return LLMStageResult(
+                        stage=stage,
+                        mode=cfg.mode.value,
+                        success=False,
+                        llm_call_executed=True,
+                        output_path=None,
+                        raw_response_path=str(raw_response_path),
+                        validation_path=str(validation_path),
+                        prompt_path=prompt_path,
+                        metadata_path=metadata_path,
+                        attempts=attempts,
+                        error=last_error,
+                        parsed_json=parsed,
+                        validation=validation,
+                    )
+
+                output_path = layout.write_llm_authoritative_json(
+                    stage,
+                    request.output_filename,
+                    parsed,
+                )
+
+                validation = {
+                    "schema_version": "llm_stage_validation.v1",
+                    "created_utc": utc_now_iso(),
+                    "stage": stage,
+                    "mode": cfg.mode.value,
+                    "llm_call_executed": True,
+                    "valid": True,
+                    "attempts": attempts,
+                    "schema_validation": schema_result,
+                    "model": cfg.model,
+                    "elapsed_seconds_last_attempt": elapsed,
+                    "final_request_snapshot_path": str(request_snapshot_path),
+                    "final_response_path": str(raw_response_path),
+                    "request_sha256": hashlib.sha256(payload_bytes).hexdigest(),
+                }
+                validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+
+                return LLMStageResult(
+                    stage=stage,
+                    mode=cfg.mode.value,
+                    success=True,
+                    llm_call_executed=True,
+                    output_path=str(output_path),
+                    raw_response_path=str(raw_response_path),
+                    validation_path=str(validation_path),
+                    prompt_path=prompt_path,
+                    metadata_path=metadata_path,
+                    attempts=attempts,
+                    parsed_json=parsed,
+                    validation=validation,
+                )
+
+            except Exception as exc:
+                last_error = f"{type(exc).__name__}: {exc}"
+                error_record = {
+                    "schema_version": "llm_call_error.v1",
+                    "created_utc": utc_now_iso(),
+                    "stage": stage,
+                    "mode": cfg.mode.value,
+                    "attempt": attempts,
+                    "error": last_error,
+                    "traceback": traceback.format_exc(),
+                }
+                if cfg.redact_secrets_in_logs:
+                    error_record = redact_secrets(error_record)
+                layout.write_validation_json(stage, f"llm_call_error_attempt_{attempts:02d}.json", error_record)
+
+                if attempt_idx < cfg.max_retries:
+                    current_prompt = with_json_retry_instruction(
+                        request.prompt_text,
+                        request.json_schema,
+                        last_error,
+                    )
+                    time.sleep(cfg.retry_sleep_seconds)
+                    continue
+
+        validation = {
+            "schema_version": "llm_stage_validation.v1",
+            "created_utc": utc_now_iso(),
+            "stage": stage,
+            "mode": cfg.mode.value,
+            "llm_call_executed": True,
+            "valid": False,
+            "attempts": attempts,
+            "error": last_error or "Unknown LLM failure",
+        }
+        validation_path = layout.write_validation_json(stage, "llm_call_validation.json", validation)
+
+        return LLMStageResult(
+            stage=stage,
+            mode=cfg.mode.value,
+            success=False,
+            llm_call_executed=True,
+            output_path=None,
+            raw_response_path=str(raw_response_path) if raw_response_path else None,
+            validation_path=str(validation_path),
+            prompt_path=prompt_path,
+            metadata_path=metadata_path,
+            attempts=attempts,
+            error=last_error,
+            validation=validation,
+        )
+
+    # ----------------------------------------------------------------------
+    # Mock generation
+    # ----------------------------------------------------------------------
+
+    def _schema_shaped_mock(self, *, stage: str, schema: Optional[JsonDict]) -> JsonDict:
+        """
+        Generate a simple schema-shaped mock object.
+
+        This is intentionally marked as mock output and must not be treated as
+        API-backed evidence.
+        """
+        if schema is None:
+            return {
+                "stage": stage,
+                "mock": True,
+                "status": "mock_output_without_schema",
+                "claims": [],
+                "limitations": [
+
+=== Preflight live-probe implementation ===
+    return path.resolve()
+
+
+def _model_dump(value: Any) -> Any:
+    if value is None:
+        return None
+    if hasattr(value, "model_dump"):
+        try:
+            return value.model_dump()
+        except Exception:
+            pass
+    if isinstance(value, (dict, list, str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def check_live_api_access(
+    llm: Mapping[str, Any],
+    *,
+    client_factory: Callable[..., Any] = OpenAI,
+) -> dict[str, Any]:
+    """Perform one tiny live Responses API call to prove key and configured-model access.
+
+    This is deliberately a connectivity/model-access probe, not a semantic-quality test.
+    It does not send thesis evidence, source code, or specification material.
+    """
+    cfg = LLMClientConfig.from_mapping(llm)
+    model = cfg.model.strip()
+    key_env = cfg.api_key_env.strip()
+    api_key = os.environ.get(key_env, "").strip()
+    if not api_key:
+        raise RuntimeError(f"API credential environment variable {key_env} is empty.")
+
+    client = client_factory(**build_openai_client_kwargs(cfg, api_key))
+    request_payload: dict[str, Any] = {
+        "model": model,
+        "input": [{
+            "role": "user",
+            "content": [{
+                "type": "input_text",
+                "text": "Connectivity preflight only. Reply with the single word READY.",
+            }],
+        }],
+    }
+    request_payload.update(
+        build_responses_control_payload(
+            cfg,
+            max_output_tokens_override=cfg.preflight_max_output_tokens,
+        )
+    )
+    response = client.responses.create(**request_payload)
+
+    status = str(getattr(response, "status", "") or "unknown")
+    error = _model_dump(getattr(response, "error", None))
+    if status.lower() in {"failed", "cancelled"} or error:
+        raise RuntimeError(f"Responses API returned status={status!r}, error={error!r}")
+
+    return {
+        "performed": True,
+        "purpose": "connectivity_and_configured_model_access_only",
+        "model_requested": model,
+        "model_reported": getattr(response, "model", None),
+        "resolved_controls": {
+            "reasoning_mode": cfg.reasoning_mode,
+            "reasoning_effort": cfg.reasoning_effort,
+            "reasoning_summary": cfg.reasoning_summary,
+            "text_verbosity": cfg.text_verbosity,
+            "store": cfg.store,
+            "preflight_max_output_tokens": cfg.preflight_max_output_tokens,
+        },
+        "response_id": getattr(response, "id", None),
+        "status": status,
+        "usage": _model_dump(getattr(response, "usage", None)),
+        "thesis_evidence_sent": False,
+        "semantic_quality_established": False,
+        "secret_logged": False,
+    }
+
+
+def check_live_cbmc_smoke(binary_path: Path) -> dict[str, Any]:
+    """Execute a tiny passing C assertion through the real CBMC binary."""
+    with tempfile.TemporaryDirectory(prefix="cbmc_live_preflight_") as td:
+        tmp = Path(td)
+        smoke = tmp / "cbmc_smoke.c"
+        smoke.write_text(
+            "#include <assert.h>\n"
+            "int main(void) {\n"
+            "  int x = 0;\n"
+            "  assert(x == 0);\n"
+            "  return 0;\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        command = [
+            str(binary_path), str(smoke),
+            "--function", "main",
+
+=== Preflight orchestration and approval logic ===
+            if not path.is_file():
+                errors.append(f"Configured stub file does not exist: {path}")
+        for value in tool.get("include_paths", []) if isinstance(tool.get("include_paths"), list) else []:
+            path = resolve_path(value, project_root)
+            if not path.is_dir():
+                errors.append(f"Configured include path does not exist: {path}")
+        working = resolve_path(tool.get("working_directory", "."), project_root)
+        if not working.is_dir():
+            errors.append(f"Formal-build working directory does not exist: {working}")
+    else:
+        report["checks"]["formal_build_configuration"] = {
+            "passed": True,
+            "required": False,
+            "reason": "Analysis-only property family has no CBMC/GOTO execution claim.",
+        }
+
+    revision = str(provenance.get("source_revision") or "").strip()
+    repository_paths = provenance.get("repository_paths", [])
+    if not revision or has_placeholder(revision):
+        errors.append("provenance.source_revision must be replaced with the exact repository commit or tag.")
+    resolved_repositories: list[Path] = []
+    if not isinstance(repository_paths, list) or not repository_paths:
+        errors.append("provenance.repository_paths must list at least one source repository.")
+    else:
+        git_matches = 0
+        for value in repository_paths:
+            repo = resolve_path(value, project_root)
+            resolved_repositories.append(repo)
+            if not repo.is_dir():
+                errors.append(f"Repository provenance path does not exist: {repo}")
+                continue
+            rc_head, head = run_text(["git", "-C", str(repo), "rev-parse", "HEAD"])
+            if rc_head != 0:
+                errors.append(f"Repository provenance path is not a readable Git worktree: {repo}")
+                continue
+            rc_rev, resolved_revision = run_text(["git", "-C", str(repo), "rev-parse", revision])
+            if rc_rev != 0:
+                errors.append(f"Configured source revision cannot be resolved in {repo}: {revision}")
+                continue
+            git_matches += 1
+            if head.splitlines()[0] != resolved_revision.splitlines()[0]:
+                errors.append(
+                    f"Repository HEAD does not match provenance.source_revision in {repo}: "
+                    f"HEAD={head.splitlines()[0]} configured={resolved_revision.splitlines()[0]}"
+                )
+            rc_dirty, dirty = run_text(["git", "-C", str(repo), "status", "--porcelain"])
+            if rc_dirty != 0:
+                errors.append(f"Could not inspect repository cleanliness: {repo}")
+            elif dirty:
+                warnings.append(f"Repository contains uncommitted changes: {repo}")
+        if git_matches == 0:
+            errors.append("No configured repository path produced verifiable Git revision provenance.")
+
+    if resolved_repositories:
+        implementation_paths = [Path(str(v)).resolve() for v in config.get("inputs", {}).get("code_paths", [])]
+        for implementation_path in implementation_paths:
+            if not any(implementation_path == repo or repo in implementation_path.parents for repo in resolved_repositories):
+                errors.append(f"Implementation input is outside every provenance repository path: {implementation_path}")
+
+    try:
+        run_dir = resolve_run_dir_from_config(config)
+    except ConfigContractError as exc:
+        errors.append(str(exc))
+        run_dir = None
+    else:
+        if run_dir.exists() and not allow_existing_run:
+            errors.append(f"Run directory already exists; choose a unique run_id: {run_dir}")
+        run_dir.parent.mkdir(parents=True, exist_ok=True)
+        if not os.access(run_dir.parent, os.W_OK):
+            errors.append(f"Run output parent is not writable: {run_dir.parent}")
+
+    if has_placeholder(config):
+        errors.append("The configuration still contains one or more placeholder values.")
+
+    # Live checks are deliberately last: do not spend even a tiny API request when
+    # local configuration/provenance validation has already failed.
+    if not errors:
+        try:
+            report["checks"]["live_api_access"] = {
+                "passed": True,
+                **check_live_api_access(llm, client_factory=api_client_factory),
+            }
+        except Exception as exc:
+            errors.append(f"Live Responses API/model-access probe failed: {type(exc).__name__}: {exc}")
+            report["checks"]["live_api_access"] = {"passed": False, "error": str(exc)}
+
+    if not errors and analysis_only:
+        report["checks"]["formal_tool_smoke"] = {
+            "passed": True,
+            "performed": False,
+            "reason": "Analysis-only property family intentionally permits no CBMC proof claim.",
+        }
+    elif not errors and native_contract and binary_path and goto_cc_path and goto_instrument_path:
+        try:
+            report["checks"]["live_native_contract_smoke"] = {
+                "passed": True,
+                **check_live_native_contract_toolchain_smoke(
+                    strategy=strategy,
+                    goto_cc_path=goto_cc_path,
+                    goto_instrument_path=goto_instrument_path,
+                    cbmc_path=binary_path,
+                ),
+            }
+        except Exception as exc:
+            errors.append(f"Live native-contract toolchain smoke failed: {type(exc).__name__}: {exc}")
+            report["checks"]["live_native_contract_smoke"] = {"passed": False, "error": str(exc)}
+    elif not errors and binary_path is not None:
+        try:
+            report["checks"]["live_cbmc_smoke"] = {
+                "passed": True,
+                **check_live_cbmc_smoke(binary_path),
+            }
+        except Exception as exc:
+            errors.append(f"Live CBMC smoke verification failed: {type(exc).__name__}: {exc}")
+            report["checks"]["live_cbmc_smoke"] = {"passed": False, "error": str(exc)}
+
+
+=== Formal-build plan construction and validation ===
+            errors.append(f"Stub source is missing: {record['path']}")
+    for record in include_records:
+        if not record["is_dir"]:
+            errors.append(f"Include directory is missing: {record['path']}")
+    for record in forced_include_headers:
+        if not record["is_file"]:
+            errors.append(f"Forced contract header is missing: {record['path']}")
+    if not working_directory.is_dir():
+        errors.append(f"Formal-build working directory is missing: {working_directory}")
+    if not source_records:
+        warnings.append(
+            "No implementation .c source unit is configured. This is acceptable only when the harness "
+            "intentionally includes/defines the implementation or the target is otherwise self-contained."
+        )
+
+    for err in contract_plan_validation.get("errors", []):
+        errors.append(f"Contract-plan validation: {err}")
+    for warning in contract_plan_validation.get("warnings", []):
+        warnings.append(f"Contract-plan validation: {warning}")
+    contract_mode = str(contract_plan.get("contract_mode") or "none")
+    if contract_mode in {"loop", "loop_and_function"} and not replacement_map:
+        errors.append("Loop-contract execution requires at least one rendered instrumented source copy.")
+    if contract_mode in {"function", "loop_and_function"} and not forced_include_headers:
+        errors.append("Function-contract execution requires the generated forced-include contract header.")
+
+    extra_args = [str(v) for v in _list(te.get("extra_cbmc_args") or te.get("cbmc_args"))]
+    extra_goto_cc_args = [str(v) for v in _list(te.get("extra_goto_cc_args"))]
+    extra_goto_instrument_args = [str(v) for v in _list(te.get("extra_goto_instrument_args"))]
+    function_name = str(te.get("cbmc_function") or target_function or "harness")
+    enforce_symbol = str(contract_plan.get("target_symbol") or target_function or "")
+    use_dfcc = bool(contract_plan.get("use_dfcc"))
+    analysis_entry_function = enforce_symbol if bool(contract_plan.get("enforce_contract")) and not use_dfcc else function_name
+
+    return {
+        "schema_version": "formal_build_plan.v2.property_contracts",
+        "trust_boundary": "deterministic_build_configuration_reviewed_before_execution",
+        "property_family_id": campaign.get("property_family_id"),
+        "verification_strategy": strategy,
+        "harness": harness_record,
+        "source_units": source_records,
+        "stub_units": stub_records,
+        "include_paths": include_records,
+        "forced_include_headers": forced_include_headers,
+        "defines": defines,
+        "working_directory": str(working_directory),
+        "cbmc_function": function_name,
+        "unwind": te.get("unwind"),
+        "extra_cbmc_args": extra_args,
+        "extra_goto_cc_args": extra_goto_cc_args,
+        "extra_goto_instrument_args": extra_goto_instrument_args,
+        "execution_profile": {
+            "mode": (
+                "analysis_only" if strategy == "analysis_only_no_formal_claim" else
+                "goto_contract_pipeline" if strategy in {"native_loop_contract", "native_function_contract", "hybrid_contract_and_harness"} else
+                "direct_cbmc"
+            ),
+            "goto_cc_binary": str(te.get("goto_cc_binary") or "goto-cc"),
+            "goto_instrument_binary": str(te.get("goto_instrument_binary") or "goto-instrument"),
+            "apply_loop_contracts": bool(contract_plan.get("apply_loop_contracts")),
+            "enforce_contract": bool(contract_plan.get("enforce_contract")),
+            "enforce_contract_symbol": enforce_symbol,
+            "replace_calls_with_contract": list(contract_plan.get("replace_calls_with_contract") or []),
+            "use_dfcc": use_dfcc,
+            "dfcc_harness": function_name,
+            "analysis_entry_function": analysis_entry_function,
+            "contract_mode": contract_mode,
+            "intermediate_models_must_be_hashed": True,
+        },
+        "contract_artifacts": {
+            "contract_summary": dict(contract_summary),
+            "contract_plan_validation": dict(contract_plan_validation),
+            "repository_source_modified": False,
+            "instrumented_copy_count": len(replacement_map),
+        },
+        "validation": {
+            "valid": not errors,
+            "error_count": len(errors),
+            "warning_count": len(warnings),
+            "errors": errors,
+            "warnings": warnings,
+        },
+        "claim_boundary": {
+            "build_plan_review_does_not_prove_property": True,
+            "cbmc_result_remains_property_and_configuration_specific": True,
+        },
+    }
+
+
+def validate_formal_build_plan(plan: Mapping[str, Any], harness_path: PathLike) -> JsonDict:
+    errors: List[str] = []
+    harness = Path(harness_path).expanduser().resolve()
+    plan_harness = plan.get("harness", {}) if isinstance(plan.get("harness"), Mapping) else {}
+    recorded_path = Path(str(plan_harness.get("path") or "")).expanduser()
+    if recorded_path and recorded_path.resolve() != harness:
+        errors.append(
+            f"Formal-build harness path differs from reviewed artifact: {recorded_path.resolve()} != {harness}"
+        )
+    if not harness.is_file():
+        errors.append(f"Reviewed harness is missing: {harness}")
+    else:
+        recorded_hash = plan_harness.get("sha256")
+        actual_hash = sha256_file(harness)
+        if recorded_hash and recorded_hash != actual_hash:
+            errors.append("Formal-build harness checksum differs from the reviewed artifact checksum.")
+    plan_validation = plan.get("validation", {}) if isinstance(plan.get("validation"), Mapping) else {}
+    for err in plan_validation.get("errors", []) if isinstance(plan_validation.get("errors"), list) else []:
+        errors.append(str(err))
+    return {"valid": not errors, "errors": errors}
+
+
+def build_cbmc_command_from_plan(
+    binary: str,
+    plan: Mapping[str, Any],
+    *,
+    default_checks: Sequence[str],
+    unwind_override: Optional[int] = None,
+    extra_args: Sequence[str] = (),
+) -> List[str]:
+    harness = plan.get("harness", {}) if isinstance(plan.get("harness"), Mapping) else {}
+    cmd = [binary, str(harness.get("path"))]
+    for group in ("source_units", "stub_units"):
+        records = plan.get(group, []) if isinstance(plan.get(group), list) else []
+        for record in records:
+            if isinstance(record, Mapping) and record.get("path"):
+                path = str(record["path"])
+                if path not in cmd:
+                    cmd.append(path)
+    for record in plan.get("include_paths", []) if isinstance(plan.get("include_paths"), list) else []:
+        if isinstance(record, Mapping) and record.get("path"):
+            cmd.extend(["-I", str(record["path"])])
+    for record in plan.get("forced_include_headers", []) if isinstance(plan.get("forced_include_headers"), list) else []:
+        if isinstance(record, Mapping) and record.get("path"):
+            cmd.extend(["-include", str(record["path"])])
+    for define in plan.get("defines", []) if isinstance(plan.get("defines"), list) else []:
+        cmd.extend(["-D", str(define)])
+    function_name = str(plan.get("cbmc_function") or "")
+    if function_name:
+        cmd.extend(["--function", function_name])
+    cmd.extend(str(x) for x in default_checks)
+    unwind = unwind_override if unwind_override is not None else plan.get("unwind")
+    if unwind is not None:
+        cmd.extend(["--unwind", str(unwind), "--unwinding-assertions"])
+    cmd.extend(str(x) for x in plan.get("extra_cbmc_args", []) if isinstance(plan.get("extra_cbmc_args"), list))
+    cmd.extend(str(x) for x in extra_args)
+    return cmd
+
+
+def build_tool_pipeline_from_plan(
+    plan: Mapping[str, Any],
+    *,
+    output_dir: PathLike,
+    cbmc_binary: str = "cbmc",
+    goto_cc_binary: str = "goto-cc",
+    goto_instrument_binary: str = "goto-instrument",
+    default_checks: Sequence[str] = (),
+    unwind_override: Optional[int] = None,
+    extra_args: Sequence[str] = (),
+) -> List[JsonDict]:
+    """Build an auditable direct-CBMC or native-contract command pipeline.
+
+    Loop and function transformations are deliberately separate.  The official
+    CBMC interface documents ``--apply-loop-contracts`` for loop transformation
+    and ``--dfcc <harness>``/``--enforce-contract`` for dynamic-frame function
+    contracts.  A combined campaign therefore produces sequential GOTO models
+    rather than relying on an undocumented one-command combination.
+    """
+    output = Path(output_dir).expanduser().resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    profile = plan.get("execution_profile", {}) if isinstance(plan.get("execution_profile"), Mapping) else {}
+    mode = str(profile.get("mode") or "direct_cbmc")
+    if mode == "analysis_only":
+        return []
+    if mode == "direct_cbmc":
+        return [{
+            "step_id": "cbmc_direct",
+            "tool": "cbmc",
+            "command": build_cbmc_command_from_plan(
+                cbmc_binary, plan, default_checks=default_checks,
+                unwind_override=unwind_override, extra_args=extra_args
+            ),
+            "input_model": None,
+            "output_model": None,
+            "authoritative_result_step": True,
+        }]
+
+    model_counter = 1
+    model_current = output / f"{model_counter:02d}_compiled_model.gb"
+    compile_cmd: List[str] = [goto_cc_binary, "-o", str(model_current)]
+    compile_cmd.extend(str(x) for x in plan.get("extra_goto_cc_args", []) if isinstance(plan.get("extra_goto_cc_args"), list))
+    harness = plan.get("harness", {}) if isinstance(plan.get("harness"), Mapping) else {}
+    seen_sources: set[str] = set()
+
+=== Formal-build command generation ===
+    seen_sources: set[str] = set()
+    for record in [harness] + list(plan.get("source_units", [])) + list(plan.get("stub_units", [])):
+        if isinstance(record, Mapping) and record.get("path"):
+            path = str(record["path"])
+            if path not in seen_sources:
+                seen_sources.add(path)
+                compile_cmd.append(path)
+    for record in plan.get("include_paths", []) if isinstance(plan.get("include_paths"), list) else []:
+        if isinstance(record, Mapping) and record.get("path"):
+            compile_cmd.extend(["-I", str(record["path"])])
+    for record in plan.get("forced_include_headers", []) if isinstance(plan.get("forced_include_headers"), list) else []:
+        if isinstance(record, Mapping) and record.get("path"):
+            compile_cmd.extend(["-include", str(record["path"])])
+    for define in plan.get("defines", []) if isinstance(plan.get("defines"), list) else []:
+        compile_cmd.extend(["-D", str(define)])
+    # Compile the complete selected translation units into a GOTO model.
+    # The code-contract CLI selects the DFCC harness at the goto-instrument
+    # transformation step and selects the analysis entry at the final CBMC step;
+    # do not pass CBMC's --function option to goto-cc.
+
+    steps: List[JsonDict] = [{
+        "step_id": "goto_compile",
+        "tool": "goto-cc",
+        "command": compile_cmd,
+        "input_model": None,
+        "output_model": str(model_current),
+        "authoritative_result_step": False,
+    }]
+
+    if bool(profile.get("apply_loop_contracts")):
+        model_counter += 1
+        model_next = output / f"{model_counter:02d}_loop_contracts_applied.gb"
+        cmd = [goto_instrument_binary]
+        cmd.extend(str(x) for x in plan.get("extra_goto_instrument_args", []) if isinstance(plan.get("extra_goto_instrument_args"), list))
+        cmd.extend(["--apply-loop-contracts", str(model_current), str(model_next)])
+        steps.append({
+            "step_id": "apply_loop_contracts",
+            "tool": "goto-instrument",
+            "command": cmd,
+            "input_model": str(model_current),
+            "output_model": str(model_next),
+            "authoritative_result_step": False,
+        })
+        model_current = model_next
+
+    enforce = bool(profile.get("enforce_contract"))
+    replacements = [str(x) for x in profile.get("replace_calls_with_contract", [])] if isinstance(profile.get("replace_calls_with_contract"), list) else []
+    if enforce or replacements:
+        model_counter += 1
+        model_next = output / f"{model_counter:02d}_function_contracts_applied.gb"
+        cmd = [goto_instrument_binary]
+        cmd.extend(str(x) for x in plan.get("extra_goto_instrument_args", []) if isinstance(plan.get("extra_goto_instrument_args"), list))
+        if bool(profile.get("use_dfcc")):
+            cmd.extend(["--dfcc", str(profile.get("dfcc_harness") or plan.get("cbmc_function") or "harness")])
+        if enforce:
+            symbol = str(profile.get("enforce_contract_symbol") or "").strip()
+            if not symbol:
+                raise ValueError("Function contract enforcement requested without enforce_contract_symbol.")
+            cmd.extend(["--enforce-contract", symbol])
+        for symbol in replacements:
+            cmd.extend(["--replace-call-with-contract", symbol])
+        cmd.extend([str(model_current), str(model_next)])
+        steps.append({
+            "step_id": "apply_function_contracts",
+            "tool": "goto-instrument",
+            "command": cmd,
+            "input_model": str(model_current),
+            "output_model": str(model_next),
+            "authoritative_result_step": False,
+        })
+        model_current = model_next
+
+    if len(steps) == 1:
+        raise ValueError("goto_contract_pipeline selected but no loop/function contract transformation was configured.")
+
+    cbmc_cmd: List[str] = [cbmc_binary, str(model_current)]
+    function_name = str(profile.get("analysis_entry_function") or plan.get("cbmc_function") or "")
+    if function_name:
+        cbmc_cmd.extend(["--function", function_name])
+    cbmc_cmd.extend(str(x) for x in default_checks)
+    unwind = unwind_override if unwind_override is not None else plan.get("unwind")
+    if unwind is not None:
+        cbmc_cmd.extend(["--unwind", str(unwind), "--unwinding-assertions"])
+    cbmc_cmd.extend(str(x) for x in plan.get("extra_cbmc_args", []) if isinstance(plan.get("extra_cbmc_args"), list))
+    cbmc_cmd.extend(str(x) for x in extra_args)
+    steps.append({
+        "step_id": "cbmc_contract_check",
+        "tool": "cbmc",
+        "command": cbmc_cmd,
+        "input_model": str(model_current),
+        "output_model": None,
+        "authoritative_result_step": True,
+    })
+    return steps
+
+=== Tool-execution preparation ===
+        pipeline_execution: JsonDict = {"steps": [], "authoritative": {}}
+        # --------------------------------------------------------------
+        # 3. Write input/control manifests.
+        # --------------------------------------------------------------
+        env_snapshot = environment_snapshot(cbmc_version)
+        env_snapshot["formal_tools"] = {
+            "execution_mode": execution_mode,
+            "resolved_tools": resolved_tools,
+            "tool_versions": tool_version_records,
+            "unavailable_tools": unavailable_tools,
+        }
+
+        harness_input_manifest = {
+            "schema_version": "tool_input_harness_manifest.v1",
+            "created_utc": utc_now_iso(),
+            "harness_path": str(harness_path),
+            "harness_exists": Path(harness_path).exists(),
+            "harness_sha256": sha256_file(harness_path) if Path(harness_path).exists() else None,
+            "source_stage": harness_status.get("producer_stage") or "06_review_critic.generated_harness_under_review",
+            "iteration": cfg.iteration,
+            "trust_boundary": "candidate_harness_for_tool_execution_not_verified_before_cbmc",
+        }
+
+        gate_input_record = {
+            "schema_version": "tool_input_gate_record.v1",
+            "created_utc": utc_now_iso(),
+            "gate_path": str(gate_path) if gate_path else None,
+            "gate_available": bool(gate_decision),
+            "final_gate": final_gate,
+            "tool_execution_allowed": tool_allowed,
+            "gate_reason": gate_reason,
+            "force_run": cfg.force_run,
+            "dry_run": cfg.dry_run,
+        }
+
+        command_manifest = {
+            "schema_version": "tool_command_manifest.v2.iteration_contract",
+            "iteration": cfg.iteration,
+            "created_utc": utc_now_iso(),
+            "tool": "cbmc_contract_pipeline" if execution_mode == "goto_contract_pipeline" else ("analysis_only" if analysis_only else "cbmc"),
+            "execution_mode": execution_mode,
+            "verification_strategy": formal_build_plan.get("verification_strategy"),
+            "original_binary": cfg.cbmc_binary,
+            "resolved_binary": cbmc_resolved,
+            "resolved_tools": resolved_tools,
+            "tool_versions": tool_version_records,
+            "unavailable_tools": unavailable_tools,
+            "command": cmd_for_record,
+            "command_text": command_text,
+            "pipeline_step_count": len(pipeline_steps),
+            "pipeline_setup_failed": pipeline_setup_failed,
+            "execution_command": cmd,
+            "pipeline_steps": pipeline_steps,
+            "working_directory": str(effective_working_directory),
+            "formal_build_plan_path": str(formal_build_plan_path),
+            "formal_build_plan_validation": build_binding_validation,
+            "source_units": formal_build_plan.get("source_units", []),
+            "stub_units": formal_build_plan.get("stub_units", []),
+            "include_paths": formal_build_plan.get("include_paths", []),
+            "defines": formal_build_plan.get("defines", []),
+            "timeout_seconds": cfg.timeout_seconds,
+            "cbmc_function": cfg.cbmc_function,
+            "unwind": cfg.unwind,
+            "extra_cbmc_args": cfg.extra_cbmc_args,
+            "gate": gate_input_record,
+            "artifact_review_binding": {
+                "reviewed_harness_path": str(reviewed_harness_path) if reviewed_harness_path else None,
+                "executed_harness_path": str(harness_path),
+                "paths_match": bool(
+                    reviewed_harness_path
+                    and harness_path
+                    and reviewed_harness_path.resolve() == Path(harness_path).resolve()
+                ),
+            },
+            "formal_claim_boundary": {
+                "full_correctness_claimed": False,
+                "fips_compliance_claimed": False,
+                "cryptographic_security_claimed": False,
+                "property_specific_tool_evidence_only": True,
+            },
+        }
+
+        input_paths: Dict[str, Path] = {
+            "harness_input_manifest": atomic_write_json(
+                layout.tool_inputs_dir(stage) / "06_harness_input_manifest.json",
+                harness_input_manifest,
+            ),
+            "critic_gate_decision_input": atomic_write_json(
+                layout.tool_inputs_dir(stage) / "06_critic_gate_decision_input.json",
+                gate_input_record,
+            ),
+            "tool_command_manifest": atomic_write_json(
+                layout.tool_inputs_dir(stage) / "06_tool_command_manifest.json",
+                command_manifest,
+            ),
+            "tool_environment_snapshot": atomic_write_json(
+                layout.tool_inputs_dir(stage) / "06_tool_environment_snapshot.json",
+                env_snapshot,
+            ),
+            "formal_build_plan_reference": atomic_write_json(
+                layout.tool_inputs_dir(stage) / "06_formal_build_plan_reference.json",
+                {
+                    "schema_version": "formal_build_plan_reference.v1",
+                    "path": str(formal_build_plan_path),
+                    "validation": build_binding_validation,
+                    "policy": "pointer_and_checksum_reference_no_duplicate_build_plan_copy",
+                },
+            ),
+        }
+
+        command_path = layout.tool_outputs_dir(stage) / "06_cbmc_command.txt"
+        atomic_write_text(command_path, command_text + "\n")
+
+        # --------------------------------------------------------------
+        # 4. Decide execution mode and execute every reviewed step.
+        # --------------------------------------------------------------
+        skipped = False
+        unavailable = False
+        dry_run = False
+        execution_result: JsonDict
+
+        if analysis_only:
+            execution_result = {
+                "executed": False, "timeout": False, "exit_code": None,
+                "stdout": "", "stderr": "",
+                "exception": "Analysis-only property family: no formal-tool claim is permitted.",
+
+=== Tool-execution result classification ===
+13:- Records exact command, environment, stdout/stderr, exit code, status classification,
+360:            "exit_code": proc.returncode,
+415:    if "verification successful" in combined:
+416:        return "verification_successful", "CBMC reported VERIFICATION SUCCESSFUL."
+420:        return "tool_exit_zero_unknown_verification_text", "CBMC exited 0 but success text was not detected."
+423:    return "unknown", "No result classification available."
+579:            "exit_code": proc.returncode,
+1089:            "result_classification": result_class,
+1124:            "result_classification": result_class,
+1160:            "result_classification": result_class,
+1201:                "result_classification": result_class,
+1231:                "result_classification": result_class,
+1247:                "result_classification": result_class,
+1253:        # 0 = agent completed and wrote handoff, regardless of CBMC verification success/failure.
+1298:    if result_class == "verification_successful":
+1323:        f"- Result classification: `{cbmc_status.get('result_classification')}`",
+
+=== Central-profile regression around preflight ===
+
+
+def test_preflight_runtime_parity(resolved: dict[str, Any]) -> None:
+    print("[4/8] Preflight and runtime derive controls/client routing from the same helpers...")
+    cfg = LLMClientConfig.from_mapping(resolved["llm"])
+    runtime_client = build_openai_client_kwargs(cfg, "sk-local-central-profile-preflight")
+    runtime_controls = build_responses_control_payload(cfg)
+
+    capture: dict[str, Any] = {}
+
+    class FakeResponses:
+        def create(self, **kwargs: Any) -> Any:
+            capture["payload"] = kwargs
+            return SimpleNamespace(
+                status="completed",
+                error=None,
+                model=kwargs["model"],
+                id="resp_preflight",
+                usage={"output_tokens": 1},
+            )
+
+    class Factory:
+        def __call__(self, **kwargs: Any) -> Any:
+            capture["client"] = kwargs
+            return SimpleNamespace(responses=FakeResponses())
+
+    old_key = os.environ.get("OPENAI_API_KEY")
+    os.environ["OPENAI_API_KEY"] = "sk-local-central-profile-preflight"
+    try:
+        result = preflight.check_live_api_access(resolved["llm"], client_factory=Factory())
+    finally:
+        if old_key is None:
+            os.environ.pop("OPENAI_API_KEY", None)
+        else:
+            os.environ["OPENAI_API_KEY"] = old_key
+
+    require(capture["client"] == runtime_client, "Preflight/runtime client arguments diverged")
+    payload = capture["payload"]
+    for key in ("store", "reasoning", "text"):
+        require(payload.get(key) == runtime_controls.get(key), f"Preflight/runtime {key} controls diverged")
+    require(payload["max_output_tokens"] == cfg.preflight_max_output_tokens, "Preflight token cap incorrect")
+    require(result["resolved_controls"]["reasoning_effort"] == "high", "Preflight report omitted effort")
+    print("  PASS live probe tests the exact model/control combination with a small dedicated token cap")
+
+
+def test_orchestrator_freeze(config_path: Path, profile_path: Path, tmp: Path) -> None:
+    print("[5/8] Orchestrator snapshots and freezes the resolved profile per run...")
+    # Restore the profile to a known value before the run snapshot.
+    write_json(profile_path, profile(model="gpt-5.4-mini", effort="xhigh"))
+    orchestrator = MasterOrchestrator(config_path, dry_run=True, skip_input_checks=False)
+    orchestrator.validate_config()
+    orchestrator.setup_run_dir()
+
+    resolved_path = orchestrator.resolved_config_path
+    snapshot_path = orchestrator.resolved_llm_profile_path
+    require(resolved_path.exists(), "Resolved run config was not written")
+    require(snapshot_path.exists(), "Resolved LLM profile snapshot was not written")
+
+    resolved_raw = json.loads(resolved_path.read_text(encoding="utf-8"))
+    require(resolved_raw["_llm_profile"]["frozen"] is True, "Resolved config profile is not frozen")
+    require(
+        resolved_raw["_llm_profile"]["snapshot_path"] == str(snapshot_path.resolve()),
+        "Resolved profile snapshot path missing",
+    )
+    require(
+        resolved_raw["_llm_profile"]["resolved_llm_sha256"]
+        == canonical_json_sha256(resolved_raw["llm"]),
+        "Resolved config LLM hash mismatch",
+    )
+
+    input_snapshot = (
+        orchestrator.run_dir
+        / "stages/01_master_orchestrator/control/input_snapshot"
+    )
+    require(
+        any(path.name.startswith("llm_profile_") for path in input_snapshot.glob("*")),
+
+=== Existing preflight thesis-evidence test ===
+            "target_scheme": "ML-KEM", "target_function": "mlk_poly_add", "target_topic": "preflight",
+            "verification_tool": "CBMC", "artifact_type": "CBMC verification harness", "max_iterations": 0,
+            "parallel_initial_agents": False, "strict_outputs": True,
+            "inputs": {
+                "spec_paths": [str(spec_dir / "fips.txt")],
+                "code_dir": str(code_dir),
+                "code_paths": [str(code_dir / "poly.c"), str(code_dir / "poly.h")],
+            },
+            "llm": {"mode": "real", "model": "deployment-test-model", "api_key_env": "OPENAI_API_KEY"},
+            "tool_execution": {
+                "cbmc_binary": str(fake_cbmc), "cbmc_function": "harness", "dry_run": False,
+                "force_run": False, "require_gate_approval": True, "source_files": [str(code_dir / "poly.c")],
+                "stub_files": [], "include_paths": [str(code_dir)], "defines": [],
+                "working_directory": str(repo), "extra_cbmc_args": [], "unwind": 3,
+            },
+            "provenance": {"repository_paths": [str(repo)], "source_revision": revision},
+        }
+        cfg_path = tmp / "config.json"
+        write_json(cfg_path, cfg)
+        previous_key = os.environ.get("OPENAI_API_KEY")
+        os.environ["OPENAI_API_KEY"] = "sk-local-preflight-test"
+        try:
+            rc, result = preflight.run_preflight(cfg_path, api_client_factory=FakeOpenAI)
+        finally:
+            if previous_key is None:
+                os.environ.pop("OPENAI_API_KEY", None)
+            else:
+                os.environ["OPENAI_API_KEY"] = previous_key
+        require(rc == 0, f"Operational preflight failed: {result['errors']}")
+        require(result["approved_for_one_controlled_first_experiment"] is True, "Valid preflight was not authorized")
+        require(result["checks"]["live_api_access"]["passed"] is True, "Live API access logic was not exercised")
+        require(result["checks"]["live_cbmc_smoke"]["passed"] is True, "Live CBMC smoke logic was not exercised")
+        require(result["checks"]["live_api_access"]["thesis_evidence_sent"] is False, "Connectivity probe sent thesis evidence")
+
+
+def test_package_contract() -> None:
+    req = ROOT / "requirements.txt"
+    bootstrap = ROOT / "bootstrap_ubuntu.sh"
+    preflight = ROOT / "preflight_first_api.py"
+    require(req.is_file() and bootstrap.is_file() and preflight.is_file(), "Pinned dependency/bootstrap/preflight files missing")
+    text = req.read_text(encoding="utf-8")
+    for pin in ["openai==", "httpx==", "jsonschema==", "pypdf=="]:
+        require(pin in text, f"Dependency is not pinned: {pin}")
+    for cfg_name in ["CONFIG_TEMPLATE_CANONICAL.json", "CONFIG_TEMPLATE_FIRST_API_PREFLIGHT.json"]:
+        cfg = read_json(ROOT / "configs" / cfg_name)
+        tool = cfg.get("tool_execution", {})
+        for key in ["source_files", "include_paths", "defines", "working_directory"]:
+            require(key in tool, f"{cfg_name} lacks formal-build field {key}")
+        require("provenance" in cfg, f"{cfg_name} lacks repository provenance block")
+
+
+
+=== Current complete-FIPS configuration ===
+Config: configs/poly_add_fullfips_gpt54mini_xhigh_20260711_053808.json
+run_id: run_poly_add_fullfips_gpt54mini_xhigh_20260711_053808
+max_inline_file_chars: 200000
+cbmc_function: harness
+max_iterations: 0
+
+=== Latest complete-FIPS preflight decision ===
+Report: preflight_reports/run_poly_add_fullfips_gpt54mini_xhigh_20260711_053808.json
+approved: False
+errors: ['Configuration could not be normalized: Configuration must not contain both llm_profile and an inline llm object. Use llm_overrides only for approved run-specific operational fields.']
+warnings: []
+model: None
+
+=== Syntax and current harness regression ===
+LIVE HARNESS HARDENING REGRESSION TEST PASSED

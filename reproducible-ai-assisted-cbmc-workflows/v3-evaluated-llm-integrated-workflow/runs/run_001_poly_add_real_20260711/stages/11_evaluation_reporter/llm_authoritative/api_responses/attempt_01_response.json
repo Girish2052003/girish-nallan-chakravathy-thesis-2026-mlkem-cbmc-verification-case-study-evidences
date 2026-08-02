@@ -1,0 +1,640 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-10T23:32:17.987652+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-2026-03-05",
+  "attempt": 1,
+  "elapsed_seconds": 42.762837171554565,
+  "request_snapshot_path": "/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/11_evaluation_reporter/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "092175d2f000dcec58665418b1c6b22f8655fd7b7aad7585173461608dfe22a7",
+  "response_id": "resp_0f8473fb4746477e006a5180e32be4819f9e01ca6ac96f418a",
+  "usage": {
+    "input_tokens": "[REDACTED]",
+    "input_tokens_details": "[REDACTED]",
+    "output_tokens": "[REDACTED]",
+    "output_tokens_details": "[REDACTED]",
+    "total_tokens": "[REDACTED]"
+  },
+  "response_text": "{\"stage\":\"11_evaluation_reporter\",\"mock\":false,\"llm_call_executed\":true,\"measured_facts\":{\"target_function\":\"mlk_poly_add\",\"target_topic\":\"ML-KEM polynomial addition\",\"property_family_id\":\"P16\",\"verification_strategy\":\"standard_cbmc_harness\",\"property_support_classification\":\"production_supported\",\"llm_modes_observed\":[\"real\",\"unknown\"],\"llm_call_executed_count\":5,\"cbmc_result_classification\":\"not_available_in_run_log\",\"cbmc_tool_executed\":false,\"tool_outcome_category\":\"unknown_or_incomplete_tool_outcome\",\"integrity_status\":\"valid_with_warnings\",\"missing_expected_output_count\":6,\"summary\":\"The run logged real LLM-backed activity in stages 02-06, produced a candidate harness and critic review, but did not reach a logged CBMC execution result. The final review gate was needs_revision_before_tool_execution, tool execution was not allowed, and integrity validation reported warnings including missing 07_tool_execution CBMC status evidence.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_experiment_log.json\",\"locator\":\"summary.review_gate; summary.cbmc_result_classification; summary.llm_call_executed_count\",\"excerpt\":\"review_gate.final_gate = needs_revision_before_tool_execution; cbmc_result_classification = null; llm_call_executed_count = 5.\",\"supports_claim\":\"The run ended before a logged CBMC result and had five executed LLM calls.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_llm_call_index.json\",\"locator\":\"rows for 02_spec_extraction, 03_code_understanding, 04_property_discovery, 05_artifact_generation, 06_review_critic, 08_counterexample_analysis, 09_repair_refinement\",\"excerpt\":\"Stages 02-06 show llm_call_executed=true and mode=real; stages 08-09 have missing validation and null execution fields.\",\"supports_claim\":\"Observed LLM modes were real for five stages and unknown/missing for two later LLM stages.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_tool_evidence_index.json\",\"locator\":\"cbmc_status_summary; evidence_files\",\"excerpt\":\"cbmc_status_summary = null; all listed 07_tool_execution evidence files resolve as missing/handoff_key_missing.\",\"supports_claim\":\"No CBMC/tool result was available in the logged run evidence.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/validation/09_log_integrity_validation.json\",\"locator\":\"content.validation_status; content.warnings\",\"excerpt\":\"validation_status = valid_with_warnings; warnings include missing_stage_manifest for 07_tool_execution, 08_counterexample_analysis, 09_repair_refinement, and missing_cbmc_status for 07_tool_execution.\",\"supports_claim\":\"Integrity status was valid_with_warnings with missing downstream outputs.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_review_gate_decision.json\",\"locator\":\"content.final_gate; content.tool_execution_allowed\",\"excerpt\":\"final_gate = needs_revision_before_tool_execution; tool_execution_allowed = false.\",\"supports_claim\":\"The critic gate prevented tool execution in this run.\",\"confidence\":\"high\"}]},\"llm_interpretation\":{\"status\":\"evidence_bounded_case_study_interpretation\",\"summary\":\"Within this single run, the workflow was useful for producing and reviewing a narrow candidate verification artefact for mlk_poly_add, but it did not deliver formal-tool evidence because the review gate stopped progress before Agent 7. The strongest substantive finding is therefore about workflow behaviour and artefact quality control, not about verified correctness of mlk_poly_add.\"},\"rq_mapping\":{\"rows\":[{\"research_question\":\"RQ1\",\"question_focus\":\"Transform selected PQC specification/code context into candidate CBMC-style artefacts using an API-backed LLM workflow.\",\"run_evidence\":[\"Five real LLM calls were logged in stages 02-06.\",\"A candidate harness was rendered at stages/05_artifact_generation/rendered_outputs/04_generated_harness.c.\",\"A critic review and build plan were produced in stage 06.\"],\"supported_statement\":\"This run supports the bounded claim that the workflow generated a candidate CBMC-style harness and accompanying review artefacts for mlk_poly_add in real LLM mode.\",\"not_supported_statement\":\"This run does not show that the generated artefact was correct, executable as-is, or formally verified by CBMC.\"},{\"research_question\":\"RQ2\",\"question_focus\":\"Use high-assurance PQC/formal-methods workflow ideas to structure the ML-KEM/CBMC case study.\",\"run_evidence\":[\"The source and spec traceability for mlk_poly_add was documented across stages 02-05.\",\"The critic identified a concrete build-interface defect before tool execution.\",\"Checksums, handoff indexes, and reproducibility records were logged by Agent 10.\"],\"supported_statement\":\"This run supports a bounded discussion that staged specification extraction, code understanding, property discovery, artefact generation, and pre-tool review can structure a reproducible ML-KEM case study.\",\"not_supported_statement\":\"This run does not establish that the workflow matches or outperforms established high-assurance frameworks, nor that the staged process guarantees executable artefacts.\"},{\"research_question\":\"RQ3\",\"question_focus\":\"Evaluate usefulness, failure modes, and human-correction needs after review, correction, and CBMC checking.\",\"run_evidence\":[\"Final gate: needs_revision_before_tool_execution.\",\"No CBMC status file or tool evidence was logged.\",\"Critic review reported a harness entry-point mismatch between cbmc_function = harness and the rendered symbol harness_mlk_poly_add_int16_safe_sum.\",\"Independence audit reported low similarity risk and no required human similarity review on copying grounds.\"],\"supported_statement\":\"This run supports a case-study claim that the workflow can surface actionable pre-execution failure modes and human-revision needs, especially configuration and harness wiring defects.\",\"not_supported_statement\":\"This run does not support claims about CBMC success rates, counterexample quality, or repair effectiveness because no tool execution or repair stage output was logged.\"}]},\"usefulness_assessment\":{\"status\":\"partially_useful_with_pre_execution_stop\",\"bounded_statement\":\"For this mlk_poly_add case only, the workflow was useful for narrowing the claim boundary, extracting traceable evidence, generating a non-trivial candidate harness, and catching an execution-readiness defect before CBMC was run.\",\"supporting_observations\":[\"The repository contract and source code support a narrow local property: coefficient-wise in-place addition under explicit int16_t-safe-sum assumptions.\",\"The generated harness snapshots pre-state, calls the target function, and asserts a post-state relation tied to the source contract.\",\"The critic detected a concrete mismatch between the configured CBMC entry function name and the rendered harness symbol, which likely prevented a valid tool attempt if not corrected.\",\"The run retained bounded wording and explicitly excluded claims about canonical modulo-q output, full ML-KEM correctness, FIPS compliance, and cryptographic security.\"]},\"failure_mode_assessment\":{\"result_classification\":\"no_formal_result_recorded\",\"tool_outcome_category\":\"unknown_or_incomplete_tool_outcome\",\"rows\":[{\"taxonomy_id\":\"FM_TOOL_001\",\"label\":\"No formal-tool result because execution was skipped, dry-run, or unavailable\",\"observed_in_run\":false,\"evidence_basis\":\"The taxonomy row is marked false in the deterministic failure-mode log, but primary run evidence still shows that no CBMC result artifact was recorded.\",\"evaluation_implication\":\"Treat the run as lacking formal verification evidence; do not infer success or failure of the candidate property.\"},{\"taxonomy_id\":\"FM_TOOL_002\",\"label\":\"CBMC/tool execution error or timeout\",\"observed_in_run\":false,\"evidence_basis\":\"No CBMC status or stderr/output files were logged, and there is no direct evidence of timeout or runtime tool failure.\",\"evaluation_implication\":\"Do not classify this run as a CBMC runtime failure; the stronger supported claim is that execution did not proceed to a logged result.\"},{\"taxonomy_id\":\"FM_PROP_001\",\"label\":\"Verification failure/counterexample available\",\"observed_in_run\":false,\"evidence_basis\":\"No 07_tool_execution result and no 08_counterexample_analysis outputs are present.\",\"evaluation_implication\":\"No property counterexample can be discussed from this run.\"},{\"taxonomy_id\":\"FM_SCOPE_001\",\"label\":\"Verification success is property-specific and scope-limited\",\"observed_in_run\":false,\"evidence_basis\":\"No success result exists to scope.\",\"evaluation_implication\":\"This taxonomy item remains conceptually relevant but was not observed because there was no successful CBMC result.\"},{\"taxonomy_id\":\"FM_REVIEW_001\",\"label\":\"Review gate prevented tool execution\",\"observed_in_run\":true,\"evidence_basis\":\"Stage 06 review gate set final_gate to needs_revision_before_tool_execution and tool_execution_allowed to false; the critic cited the CBMC entry-point mismatch as a blocking issue.\",\"evaluation_implication\":\"The main observed failure mode in this run is pre-execution artefact/configuration gating rather than semantic verification failure.\"}],\"limitations\":[\"The run contains no raw CBMC output, so failure-mode analysis is limited to pre-execution workflow evidence.\",\"The deterministic taxonomy understates the practical consequence of missing CBMC evidence for FM_TOOL_001; primary evidence was used to keep wording conservative.\",\"No repair/refinement outputs exist, so downstream recovery behaviour cannot be evaluated.\"]},\"human_review_required\":{\"required\":true,\"status\":\"required\",\"items\":[\"Revise the harness/build configuration so that the configured CBMC entry symbol matches the rendered function name, or rename the harness function to the expected entry point.\",\"Review whether the strong memory_no_alias/__CPROVER_is_fresh assumptions are acceptable for the intended proof scope, since they may over-constrain concrete aliasing behaviours.\",\"Review whether the selected conditional property is the desired thesis example, given that it assumes rather than derives the per-coefficient INT16 bounds from real callers.\",\"Check whether a second assertion in the harness is worth retaining, since the critic flagged it as partly redundant.\"]},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"used_for_logged_facts_and_checked_against_primary_evidence\",\"warning\":\"Deterministic Agent 10 materials were treated as authoritative only for logged measurements and file-presence facts. Deterministic advisory interpretations were not copied blindly; where practical significance required interpretation, primary evidence from the critic review, harness, and source files took precedence.\",\"disagreements\":[{\"deterministic_claim\":\"Failure-mode taxonomy row FM_TOOL_001 is marked observed_in_run = false.\",\"primary_evidence_finding\":\"Primary logged evidence shows that no CBMC status, output, command, or stage manifest was recorded for stage 07, and the final gate disallowed tool execution. This supports the broader narrative that no formal-tool result is available, even if the taxonomy row itself is not flagged true.\",\"resolution\":\"Retain the measured taxonomy row as logged, but phrase the evaluation in terms of absence of formal-tool evidence rather than a claimed skipped-tool classification.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_tool_evidence_index.json\",\"locator\":\"evidence_files; cbmc_status_summary\",\"excerpt\":\"All 07_tool_execution evidence files are missing and cbmc_status_summary is null.\",\"supports_claim\":\"No formal-tool evidence was recorded.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_failure_mode_log.json\",\"locator\":\"records.cbmc_status\",\"excerpt\":\"cbmc_status path exists=false, error=missing.\",\"supports_claim\":\"The CBMC status artifact is missing.\",\"confidence\":\"high\"}]},{\"deterministic_claim\":\"Measured CBMC fields are null/unknown.\",\"primary_evidence_finding\":\"The stage 06 critic review provides a more specific causal account: the harness/build plan had an entry-point mismatch and the final gate blocked execution before Agent 7.\",\"resolution\":\"Use the deterministic null/unknown fields as measured facts, but prefer the primary critic evidence when explaining why the run stopped.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/llm_authoritative/05_critic_review.json\",\"locator\":\"blocking_issues[0]\",\"excerpt\":\"The build plan selects cbmc_function \\\"harness\\\", but the rendered C defines \\\"harness_mlk_poly_add_int16_safe_sum\\\".\",\"supports_claim\":\"A concrete entry-point mismatch was identified before tool execution.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_review_gate_decision.json\",\"locator\":\"content.final_gate; content.tool_execution_allowed\",\"excerpt\":\"needs_revision_before_tool_execution; tool_execution_allowed=false.\",\"supports_claim\":\"The gate prevented tool execution.\",\"confidence\":\"high\"}]}]},\"threats_to_validity\":{\"threats\":[{\"threat_id\":\"TV_SCOPE_001\",\"category\":\"scope\",\"threat\":\"This is a single-function, single-run case study focused on mlk_poly_add rather than whole-implementation verification.\",\"mitigation\":\"Limit claims to the local property family P16 and explicitly avoid whole-program or full-ML-KEM correctness language.\"},{\"threat_id\":\"TV_TOOL_001\",\"category\":\"tool evidence\",\"threat\":\"No CBMC execution result was produced, so the study cannot evaluate semantic verification outcomes for this candidate harness.\",\"mitigation\":\"Report the run as a pre-execution workflow result and separate artefact-generation evidence from formal-tool evidence.\"},{\"threat_id\":\"TV_LLM_001\",\"category\":\"LLM usage\",\"threat\":\"Although five LLM stages were logged as real, later LLM stages 08-09 are missing, so the workflow was not observed end-to-end through analysis/repair.\",\"mitigation\":\"State the exact number of real LLM calls observed and avoid extrapolating to stages that did not run.\"},{\"threat_id\":\"TV_REPRO_001\",\"category\":\"reproducibility\",\"threat\":\"Integrity validation is valid_with_warnings, including missing stage manifests and missing CBMC status.\",\"mitigation\":\"Use the checksum manifest, handoff index, and reproducibility record for the produced artefacts, while reporting all missing outputs explicitly.\"},{\"threat_id\":\"TV_ASSUMP_001\",\"category\":\"formalisation\",\"threat\":\"The selected harness scope depends on strong freshness and arithmetic assumptions that may not characterize all concrete executions of mlk_poly_add in context.\",\"mitigation\":\"Treat the candidate property as conditional and contract-aligned rather than universally representative of all callers.\"},{\"threat_id\":\"TV_GENERAL_001\",\"category\":\"generalisation\",\"threat\":\"A pre-execution stop on one target function cannot justify broader claims about workflow effectiveness across PQC codebases.\",\"mitigation\":\"Frame findings as qualitative case-study evidence and motivate future repeated runs on additional functions and property families.\"}]},\"thesis_safe_wording\":{\"status\":\"ready\",\"paragraph\":\"In the mlk_poly_add case study, the workflow produced a traceable candidate CBMC harness for a narrow local property: under explicit contract-aligned assumptions that each coefficient-wise sum fits within int16_t, the function should update each destination coefficient to the sum of its pre-state value and the corresponding source coefficient. However, this run did not yield formal-tool evidence, because the review stage stopped progression before Agent 7 and identified an execution-readiness issue in the harness/build configuration. Accordingly, the run supports discussion of artefact generation, review discipline, and pre-execution failure detection, but it does not support claims of verified correctness, full ML-KEM correctness, FIPS 203 compliance, or cryptographic security.\"},\"evidence_gaps\":[{\"gap\":\"No stage 07 CBMC status, output, stderr, command, or property-result artifacts were logged.\",\"impact\":\"No formal verification outcome can be reported for the selected property.\"},{\"gap\":\"No stage 08 counterexample-analysis outputs were produced.\",\"impact\":\"There is no evidence about semantic failure diagnosis or counterexample usefulness.\"},{\"gap\":\"No stage 09 repair/refinement outputs were produced.\",\"impact\":\"The workflow's ability to correct the entry-point mismatch or refine the harness was not evaluated in this run.\"},{\"gap\":\"The FIPS 203 raw excerpt is truncated in later Section 7/8 material.\",\"impact\":\"Some broader specification details, especially later input-checking text and full parameter-table context, cannot be directly cited from the provided excerpt.\"}],\"claim_boundaries\":{\"proof_claimed\":false,\"full_correctness_claimed\":false,\"fips_compliance_claimed\":false,\"cryptographic_security_claimed\":false,\"mock_output\":false},\"limitations\":[\"This report is evidence-bounded to one logged run for mlk_poly_add and should not be generalized to all ML-KEM functions.\",\"No CBMC execution result exists in the run evidence, so all discussion of the candidate property remains pre-verification.\",\"The selected property is conditional on source-contract assumptions, especially per-coefficient int16_t bounds and freshness-style pointer predicates.\",\"Traceability between mlk_poly_add and the FIPS 203 addition semantics is supported by comments and surrounding call structure, but not formally proven here.\",\"Integrity warnings and missing downstream stage outputs reduce completeness of the experimental record, even though the logger judged the record valid_with_warnings.\"]}",
+  "response_object": {
+    "id": "resp_0f8473fb4746477e006a5180e32be4819f9e01ca6ac96f418a",
+    "created_at": 1783726307.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-2026-03-05",
+    "object": "response",
+    "output": [
+      {
+        "id": "msg_0f8473fb4746477e006a5180e750f4819fa97c0c289020e4ed",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"stage\":\"11_evaluation_reporter\",\"mock\":false,\"llm_call_executed\":true,\"measured_facts\":{\"target_function\":\"mlk_poly_add\",\"target_topic\":\"ML-KEM polynomial addition\",\"property_family_id\":\"P16\",\"verification_strategy\":\"standard_cbmc_harness\",\"property_support_classification\":\"production_supported\",\"llm_modes_observed\":[\"real\",\"unknown\"],\"llm_call_executed_count\":5,\"cbmc_result_classification\":\"not_available_in_run_log\",\"cbmc_tool_executed\":false,\"tool_outcome_category\":\"unknown_or_incomplete_tool_outcome\",\"integrity_status\":\"valid_with_warnings\",\"missing_expected_output_count\":6,\"summary\":\"The run logged real LLM-backed activity in stages 02-06, produced a candidate harness and critic review, but did not reach a logged CBMC execution result. The final review gate was needs_revision_before_tool_execution, tool execution was not allowed, and integrity validation reported warnings including missing 07_tool_execution CBMC status evidence.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_experiment_log.json\",\"locator\":\"summary.review_gate; summary.cbmc_result_classification; summary.llm_call_executed_count\",\"excerpt\":\"review_gate.final_gate = needs_revision_before_tool_execution; cbmc_result_classification = null; llm_call_executed_count = 5.\",\"supports_claim\":\"The run ended before a logged CBMC result and had five executed LLM calls.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_llm_call_index.json\",\"locator\":\"rows for 02_spec_extraction, 03_code_understanding, 04_property_discovery, 05_artifact_generation, 06_review_critic, 08_counterexample_analysis, 09_repair_refinement\",\"excerpt\":\"Stages 02-06 show llm_call_executed=true and mode=real; stages 08-09 have missing validation and null execution fields.\",\"supports_claim\":\"Observed LLM modes were real for five stages and unknown/missing for two later LLM stages.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_tool_evidence_index.json\",\"locator\":\"cbmc_status_summary; evidence_files\",\"excerpt\":\"cbmc_status_summary = null; all listed 07_tool_execution evidence files resolve as missing/handoff_key_missing.\",\"supports_claim\":\"No CBMC/tool result was available in the logged run evidence.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/validation/09_log_integrity_validation.json\",\"locator\":\"content.validation_status; content.warnings\",\"excerpt\":\"validation_status = valid_with_warnings; warnings include missing_stage_manifest for 07_tool_execution, 08_counterexample_analysis, 09_repair_refinement, and missing_cbmc_status for 07_tool_execution.\",\"supports_claim\":\"Integrity status was valid_with_warnings with missing downstream outputs.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_review_gate_decision.json\",\"locator\":\"content.final_gate; content.tool_execution_allowed\",\"excerpt\":\"final_gate = needs_revision_before_tool_execution; tool_execution_allowed = false.\",\"supports_claim\":\"The critic gate prevented tool execution in this run.\",\"confidence\":\"high\"}]},\"llm_interpretation\":{\"status\":\"evidence_bounded_case_study_interpretation\",\"summary\":\"Within this single run, the workflow was useful for producing and reviewing a narrow candidate verification artefact for mlk_poly_add, but it did not deliver formal-tool evidence because the review gate stopped progress before Agent 7. The strongest substantive finding is therefore about workflow behaviour and artefact quality control, not about verified correctness of mlk_poly_add.\"},\"rq_mapping\":{\"rows\":[{\"research_question\":\"RQ1\",\"question_focus\":\"Transform selected PQC specification/code context into candidate CBMC-style artefacts using an API-backed LLM workflow.\",\"run_evidence\":[\"Five real LLM calls were logged in stages 02-06.\",\"A candidate harness was rendered at stages/05_artifact_generation/rendered_outputs/04_generated_harness.c.\",\"A critic review and build plan were produced in stage 06.\"],\"supported_statement\":\"This run supports the bounded claim that the workflow generated a candidate CBMC-style harness and accompanying review artefacts for mlk_poly_add in real LLM mode.\",\"not_supported_statement\":\"This run does not show that the generated artefact was correct, executable as-is, or formally verified by CBMC.\"},{\"research_question\":\"RQ2\",\"question_focus\":\"Use high-assurance PQC/formal-methods workflow ideas to structure the ML-KEM/CBMC case study.\",\"run_evidence\":[\"The source and spec traceability for mlk_poly_add was documented across stages 02-05.\",\"The critic identified a concrete build-interface defect before tool execution.\",\"Checksums, handoff indexes, and reproducibility records were logged by Agent 10.\"],\"supported_statement\":\"This run supports a bounded discussion that staged specification extraction, code understanding, property discovery, artefact generation, and pre-tool review can structure a reproducible ML-KEM case study.\",\"not_supported_statement\":\"This run does not establish that the workflow matches or outperforms established high-assurance frameworks, nor that the staged process guarantees executable artefacts.\"},{\"research_question\":\"RQ3\",\"question_focus\":\"Evaluate usefulness, failure modes, and human-correction needs after review, correction, and CBMC checking.\",\"run_evidence\":[\"Final gate: needs_revision_before_tool_execution.\",\"No CBMC status file or tool evidence was logged.\",\"Critic review reported a harness entry-point mismatch between cbmc_function = harness and the rendered symbol harness_mlk_poly_add_int16_safe_sum.\",\"Independence audit reported low similarity risk and no required human similarity review on copying grounds.\"],\"supported_statement\":\"This run supports a case-study claim that the workflow can surface actionable pre-execution failure modes and human-revision needs, especially configuration and harness wiring defects.\",\"not_supported_statement\":\"This run does not support claims about CBMC success rates, counterexample quality, or repair effectiveness because no tool execution or repair stage output was logged.\"}]},\"usefulness_assessment\":{\"status\":\"partially_useful_with_pre_execution_stop\",\"bounded_statement\":\"For this mlk_poly_add case only, the workflow was useful for narrowing the claim boundary, extracting traceable evidence, generating a non-trivial candidate harness, and catching an execution-readiness defect before CBMC was run.\",\"supporting_observations\":[\"The repository contract and source code support a narrow local property: coefficient-wise in-place addition under explicit int16_t-safe-sum assumptions.\",\"The generated harness snapshots pre-state, calls the target function, and asserts a post-state relation tied to the source contract.\",\"The critic detected a concrete mismatch between the configured CBMC entry function name and the rendered harness symbol, which likely prevented a valid tool attempt if not corrected.\",\"The run retained bounded wording and explicitly excluded claims about canonical modulo-q output, full ML-KEM correctness, FIPS compliance, and cryptographic security.\"]},\"failure_mode_assessment\":{\"result_classification\":\"no_formal_result_recorded\",\"tool_outcome_category\":\"unknown_or_incomplete_tool_outcome\",\"rows\":[{\"taxonomy_id\":\"FM_TOOL_001\",\"label\":\"No formal-tool result because execution was skipped, dry-run, or unavailable\",\"observed_in_run\":false,\"evidence_basis\":\"The taxonomy row is marked false in the deterministic failure-mode log, but primary run evidence still shows that no CBMC result artifact was recorded.\",\"evaluation_implication\":\"Treat the run as lacking formal verification evidence; do not infer success or failure of the candidate property.\"},{\"taxonomy_id\":\"FM_TOOL_002\",\"label\":\"CBMC/tool execution error or timeout\",\"observed_in_run\":false,\"evidence_basis\":\"No CBMC status or stderr/output files were logged, and there is no direct evidence of timeout or runtime tool failure.\",\"evaluation_implication\":\"Do not classify this run as a CBMC runtime failure; the stronger supported claim is that execution did not proceed to a logged result.\"},{\"taxonomy_id\":\"FM_PROP_001\",\"label\":\"Verification failure/counterexample available\",\"observed_in_run\":false,\"evidence_basis\":\"No 07_tool_execution result and no 08_counterexample_analysis outputs are present.\",\"evaluation_implication\":\"No property counterexample can be discussed from this run.\"},{\"taxonomy_id\":\"FM_SCOPE_001\",\"label\":\"Verification success is property-specific and scope-limited\",\"observed_in_run\":false,\"evidence_basis\":\"No success result exists to scope.\",\"evaluation_implication\":\"This taxonomy item remains conceptually relevant but was not observed because there was no successful CBMC result.\"},{\"taxonomy_id\":\"FM_REVIEW_001\",\"label\":\"Review gate prevented tool execution\",\"observed_in_run\":true,\"evidence_basis\":\"Stage 06 review gate set final_gate to needs_revision_before_tool_execution and tool_execution_allowed to false; the critic cited the CBMC entry-point mismatch as a blocking issue.\",\"evaluation_implication\":\"The main observed failure mode in this run is pre-execution artefact/configuration gating rather than semantic verification failure.\"}],\"limitations\":[\"The run contains no raw CBMC output, so failure-mode analysis is limited to pre-execution workflow evidence.\",\"The deterministic taxonomy understates the practical consequence of missing CBMC evidence for FM_TOOL_001; primary evidence was used to keep wording conservative.\",\"No repair/refinement outputs exist, so downstream recovery behaviour cannot be evaluated.\"]},\"human_review_required\":{\"required\":true,\"status\":\"required\",\"items\":[\"Revise the harness/build configuration so that the configured CBMC entry symbol matches the rendered function name, or rename the harness function to the expected entry point.\",\"Review whether the strong memory_no_alias/__CPROVER_is_fresh assumptions are acceptable for the intended proof scope, since they may over-constrain concrete aliasing behaviours.\",\"Review whether the selected conditional property is the desired thesis example, given that it assumes rather than derives the per-coefficient INT16 bounds from real callers.\",\"Check whether a second assertion in the harness is worth retaining, since the critic flagged it as partly redundant.\"]},\"deterministic_reference_assessment\":{\"used\":true,\"status\":\"used_for_logged_facts_and_checked_against_primary_evidence\",\"warning\":\"Deterministic Agent 10 materials were treated as authoritative only for logged measurements and file-presence facts. Deterministic advisory interpretations were not copied blindly; where practical significance required interpretation, primary evidence from the critic review, harness, and source files took precedence.\",\"disagreements\":[{\"deterministic_claim\":\"Failure-mode taxonomy row FM_TOOL_001 is marked observed_in_run = false.\",\"primary_evidence_finding\":\"Primary logged evidence shows that no CBMC status, output, command, or stage manifest was recorded for stage 07, and the final gate disallowed tool execution. This supports the broader narrative that no formal-tool result is available, even if the taxonomy row itself is not flagged true.\",\"resolution\":\"Retain the measured taxonomy row as logged, but phrase the evaluation in terms of absence of formal-tool evidence rather than a claimed skipped-tool classification.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_tool_evidence_index.json\",\"locator\":\"evidence_files; cbmc_status_summary\",\"excerpt\":\"All 07_tool_execution evidence files are missing and cbmc_status_summary is null.\",\"supports_claim\":\"No formal-tool evidence was recorded.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/10_experiment_logger/experiment_log/09_failure_mode_log.json\",\"locator\":\"records.cbmc_status\",\"excerpt\":\"cbmc_status path exists=false, error=missing.\",\"supports_claim\":\"The CBMC status artifact is missing.\",\"confidence\":\"high\"}]},{\"deterministic_claim\":\"Measured CBMC fields are null/unknown.\",\"primary_evidence_finding\":\"The stage 06 critic review provides a more specific causal account: the harness/build plan had an entry-point mismatch and the final gate blocked execution before Agent 7.\",\"resolution\":\"Use the deterministic null/unknown fields as measured facts, but prefer the primary critic evidence when explaining why the run stopped.\",\"evidence_references\":[{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/llm_authoritative/05_critic_review.json\",\"locator\":\"blocking_issues[0]\",\"excerpt\":\"The build plan selects cbmc_function \\\"harness\\\", but the rendered C defines \\\"harness_mlk_poly_add_int16_safe_sum\\\".\",\"supports_claim\":\"A concrete entry-point mismatch was identified before tool execution.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/thesis-agent-workflow-26-property-test/runs/run_001_poly_add_real_20260711/stages/06_review_critic/iterations/iteration_00/validation/05_review_gate_decision.json\",\"locator\":\"content.final_gate; content.tool_execution_allowed\",\"excerpt\":\"needs_revision_before_tool_execution; tool_execution_allowed=false.\",\"supports_claim\":\"The gate prevented tool execution.\",\"confidence\":\"high\"}]}]},\"threats_to_validity\":{\"threats\":[{\"threat_id\":\"TV_SCOPE_001\",\"category\":\"scope\",\"threat\":\"This is a single-function, single-run case study focused on mlk_poly_add rather than whole-implementation verification.\",\"mitigation\":\"Limit claims to the local property family P16 and explicitly avoid whole-program or full-ML-KEM correctness language.\"},{\"threat_id\":\"TV_TOOL_001\",\"category\":\"tool evidence\",\"threat\":\"No CBMC execution result was produced, so the study cannot evaluate semantic verification outcomes for this candidate harness.\",\"mitigation\":\"Report the run as a pre-execution workflow result and separate artefact-generation evidence from formal-tool evidence.\"},{\"threat_id\":\"TV_LLM_001\",\"category\":\"LLM usage\",\"threat\":\"Although five LLM stages were logged as real, later LLM stages 08-09 are missing, so the workflow was not observed end-to-end through analysis/repair.\",\"mitigation\":\"State the exact number of real LLM calls observed and avoid extrapolating to stages that did not run.\"},{\"threat_id\":\"TV_REPRO_001\",\"category\":\"reproducibility\",\"threat\":\"Integrity validation is valid_with_warnings, including missing stage manifests and missing CBMC status.\",\"mitigation\":\"Use the checksum manifest, handoff index, and reproducibility record for the produced artefacts, while reporting all missing outputs explicitly.\"},{\"threat_id\":\"TV_ASSUMP_001\",\"category\":\"formalisation\",\"threat\":\"The selected harness scope depends on strong freshness and arithmetic assumptions that may not characterize all concrete executions of mlk_poly_add in context.\",\"mitigation\":\"Treat the candidate property as conditional and contract-aligned rather than universally representative of all callers.\"},{\"threat_id\":\"TV_GENERAL_001\",\"category\":\"generalisation\",\"threat\":\"A pre-execution stop on one target function cannot justify broader claims about workflow effectiveness across PQC codebases.\",\"mitigation\":\"Frame findings as qualitative case-study evidence and motivate future repeated runs on additional functions and property families.\"}]},\"thesis_safe_wording\":{\"status\":\"ready\",\"paragraph\":\"In the mlk_poly_add case study, the workflow produced a traceable candidate CBMC harness for a narrow local property: under explicit contract-aligned assumptions that each coefficient-wise sum fits within int16_t, the function should update each destination coefficient to the sum of its pre-state value and the corresponding source coefficient. However, this run did not yield formal-tool evidence, because the review stage stopped progression before Agent 7 and identified an execution-readiness issue in the harness/build configuration. Accordingly, the run supports discussion of artefact generation, review discipline, and pre-execution failure detection, but it does not support claims of verified correctness, full ML-KEM correctness, FIPS 203 compliance, or cryptographic security.\"},\"evidence_gaps\":[{\"gap\":\"No stage 07 CBMC status, output, stderr, command, or property-result artifacts were logged.\",\"impact\":\"No formal verification outcome can be reported for the selected property.\"},{\"gap\":\"No stage 08 counterexample-analysis outputs were produced.\",\"impact\":\"There is no evidence about semantic failure diagnosis or counterexample usefulness.\"},{\"gap\":\"No stage 09 repair/refinement outputs were produced.\",\"impact\":\"The workflow's ability to correct the entry-point mismatch or refine the harness was not evaluated in this run.\"},{\"gap\":\"The FIPS 203 raw excerpt is truncated in later Section 7/8 material.\",\"impact\":\"Some broader specification details, especially later input-checking text and full parameter-table context, cannot be directly cited from the provided excerpt.\"}],\"claim_boundaries\":{\"proof_claimed\":false,\"full_correctness_claimed\":false,\"fips_compliance_claimed\":false,\"cryptographic_security_claimed\":false,\"mock_output\":false},\"limitations\":[\"This report is evidence-bounded to one logged run for mlk_poly_add and should not be generalized to all ML-KEM functions.\",\"No CBMC execution result exists in the run evidence, so all discussion of the candidate property remains pre-verification.\",\"The selected property is conditional on source-contract assumptions, especially per-coefficient int16_t bounds and freshness-style pointer predicates.\",\"Traceability between mlk_poly_add and the FIPS 203 addition semantics is supported by comments and surrounding call structure, but not formally proven here.\",\"Integrity warnings and missing downstream stage outputs reduce completeness of the experimental record, even though the logger judged the record valid_with_warnings.\"]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783726342.0,
+    "conversation": null,
+    "max_output_tokens": "[REDACTED]",
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "none",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "11_evaluation_reporter_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "11_evaluation_reporter"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "measured_facts": {
+              "type": "object",
+              "properties": {
+                "target_function": {
+                  "type": "string"
+                },
+                "target_topic": {
+                  "type": "string"
+                },
+                "property_family_id": {
+                  "type": "string",
+                  "enum": [
+                    "P01",
+                    "P02",
+                    "P03",
+                    "P04",
+                    "P05",
+                    "P06",
+                    "P07",
+                    "P08",
+                    "P09",
+                    "P10",
+                    "P11",
+                    "P12",
+                    "P13",
+                    "P14",
+                    "P15",
+                    "P16",
+                    "P17",
+                    "P18",
+                    "P19",
+                    "P20",
+                    "P21",
+                    "P22",
+                    "P23",
+                    "P24",
+                    "P25",
+                    "P26"
+                  ]
+                },
+                "verification_strategy": {
+                  "type": "string",
+                  "enum": [
+                    "standard_cbmc_harness",
+                    "native_function_contract",
+                    "native_loop_contract",
+                    "relational_cbmc_harness",
+                    "analysis_only_no_formal_claim",
+                    "hybrid_contract_and_harness"
+                  ]
+                },
+                "property_support_classification": {
+                  "type": "string"
+                },
+                "llm_modes_observed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "llm_call_executed_count": {
+                  "type": "integer"
+                },
+                "cbmc_result_classification": {
+                  "type": "string"
+                },
+                "cbmc_tool_executed": {
+                  "type": "boolean"
+                },
+                "tool_outcome_category": {
+                  "type": "string"
+                },
+                "integrity_status": {
+                  "type": "string"
+                },
+                "missing_expected_output_count": {
+                  "type": "integer"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "evidence_references": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source_path": {
+                        "type": "string",
+                        "description": "File or handoff path containing the supporting evidence."
+                      },
+                      "locator": {
+                        "type": "string",
+                        "description": "Line, section, algorithm, symbol, property, or record locator."
+                      },
+                      "excerpt": {
+                        "type": "string",
+                        "description": "Short evidence excerpt or faithful summary."
+                      },
+                      "supports_claim": {
+                        "type": "string",
+                        "description": "The exact claim this evidence supports."
+                      },
+                      "confidence": {
+                        "type": "string",
+                        "enum": [
+                          "high",
+                          "medium",
+                          "low",
+                          "unknown"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "source_path",
+                      "locator",
+                      "excerpt",
+                      "supports_claim",
+                      "confidence"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Traceable evidence reference for one claim."
+                  }
+                }
+              },
+              "required": [
+                "target_function",
+                "target_topic",
+                "property_family_id",
+                "verification_strategy",
+                "property_support_classification",
+                "llm_modes_observed",
+                "llm_call_executed_count",
+                "cbmc_result_classification",
+                "cbmc_tool_executed",
+                "tool_outcome_category",
+                "integrity_status",
+                "missing_expected_output_count",
+                "summary",
+                "evidence_references"
+              ],
+              "additionalProperties": false
+            },
+            "llm_interpretation": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "summary"
+              ],
+              "additionalProperties": false
+            },
+            "rq_mapping": {
+              "type": "object",
+              "properties": {
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "research_question": {
+                        "type": "string"
+                      },
+                      "question_focus": {
+                        "type": "string"
+                      },
+                      "run_evidence": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "supported_statement": {
+                        "type": "string"
+                      },
+                      "not_supported_statement": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "research_question",
+                      "question_focus",
+                      "run_evidence",
+                      "supported_statement",
+                      "not_supported_statement"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "rows"
+              ],
+              "additionalProperties": false
+            },
+            "usefulness_assessment": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "bounded_statement": {
+                  "type": "string"
+                },
+                "supporting_observations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "bounded_statement",
+                "supporting_observations"
+              ],
+              "additionalProperties": false
+            },
+            "failure_mode_assessment": {
+              "type": "object",
+              "properties": {
+                "result_classification": {
+                  "type": "string"
+                },
+                "tool_outcome_category": {
+                  "type": "string"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "taxonomy_id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "observed_in_run": {
+                        "type": "boolean"
+                      },
+                      "evidence_basis": {
+                        "type": "string"
+                      },
+                      "evaluation_implication": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "taxonomy_id",
+                      "label",
+                      "observed_in_run",
+                      "evidence_basis",
+                      "evaluation_implication"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "limitations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "result_classification",
+                "tool_outcome_category",
+                "rows",
+                "limitations"
+              ],
+              "additionalProperties": false
+            },
+            "human_review_required": {
+              "type": "object",
+              "properties": {
+                "required": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "required",
+                "status",
+                "items"
+              ],
+              "additionalProperties": false
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "threats_to_validity": {
+              "type": "object",
+              "properties": {
+                "threats": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "threat_id": {
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string"
+                      },
+                      "threat": {
+                        "type": "string"
+                      },
+                      "mitigation": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "threat_id",
+                      "category",
+                      "threat",
+                      "mitigation"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "threats"
+              ],
+              "additionalProperties": false
+            },
+            "thesis_safe_wording": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "paragraph": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "paragraph"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "gap": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "gap",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "claim_boundaries": {
+              "type": "object",
+              "properties": {
+                "proof_claimed": {
+                  "type": "boolean"
+                },
+                "full_correctness_claimed": {
+                  "type": "boolean"
+                },
+                "fips_compliance_claimed": {
+                  "type": "boolean"
+                },
+                "cryptographic_security_claimed": {
+                  "type": "boolean"
+                },
+                "mock_output": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "proof_claimed",
+                "full_correctness_claimed",
+                "fips_compliance_claimed",
+                "cryptographic_security_claimed",
+                "mock_output"
+              ],
+              "additionalProperties": false
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "measured_facts",
+            "llm_interpretation",
+            "rq_mapping",
+            "usefulness_assessment",
+            "failure_mode_assessment",
+            "human_review_required",
+            "deterministic_reference_assessment",
+            "threats_to_validity",
+            "thesis_safe_wording",
+            "evidence_gaps",
+            "claim_boundaries",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 11 evidence-bounded evaluation narrative. It must not overclaim proof or security."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": "[REDACTED]",
+      "input_tokens_details": "[REDACTED]",
+      "output_tokens": "[REDACTED]",
+      "output_tokens_details": "[REDACTED]",
+      "total_tokens": "[REDACTED]"
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": "[REDACTED]",
+        "input_tokens_details": "[REDACTED]",
+        "output_tokens": "[REDACTED]",
+        "output_tokens_details": "[REDACTED]",
+        "total_tokens": "[REDACTED]"
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}
