@@ -1,0 +1,107 @@
+{
+  "schema_version": "validation_record.v1",
+  "created_utc": "2026-07-15T04:41:19.129191+00:00",
+  "content": {
+    "schema_version": "cbmc_capability_profile.v1",
+    "profile_family": "cbmc-6.x-contracts",
+    "supported_clause_forms": {
+      "requires": [
+        "C Boolean expression"
+      ],
+      "ensures": [
+        "C Boolean expression",
+        "__CPROVER_old(expr)",
+        "__CPROVER_return_value"
+      ],
+      "assigns": [
+        "plain writable lvalue",
+        "__CPROVER_object_whole(pointer)",
+        "__CPROVER_object_from(pointer)",
+        "__CPROVER_object_upto(pointer, size)"
+      ],
+      "frees": [
+        "pointer expression identifying an object that may be freed"
+      ],
+      "loop_invariant": [
+        "C Boolean expression",
+        "__CPROVER_loop_entry(expr)"
+      ],
+      "decreases": [
+        "integer expression",
+        "comma-separated lexicographic tuple"
+      ],
+      "loop_assigns": [
+        "plain writable lvalue",
+        "__CPROVER_object_whole(pointer)",
+        "__CPROVER_object_from(pointer)",
+        "__CPROVER_object_upto(pointer, size)"
+      ],
+      "loop_frees": [
+        "pointer expression identifying an object that may be freed"
+      ]
+    },
+    "valid_minimal_examples": {
+      "requires": [
+        "r != NULL",
+        "__CPROVER_rw_ok(r, sizeof(*r))"
+      ],
+      "ensures": [
+        "r->coeffs[0] == __CPROVER_old(r->coeffs[0])"
+      ],
+      "assigns": [
+        "r->coeffs[0]",
+        "__CPROVER_object_upto(r->coeffs, sizeof(r->coeffs))"
+      ],
+      "loop_invariant": [
+        "0 <= i && i <= MLKEM_N"
+      ],
+      "decreases": [
+        "MLKEM_N - i"
+      ]
+    },
+    "prohibited_known_pseudocode_forms": [
+      "array[0 .. N]",
+      "array[0:N]",
+      "array[start:end]",
+      "natural-language prose in executable_expression",
+      "ACSL-style ranges",
+      "Python/Rust slice notation"
+    ],
+    "builtin_arity": {
+      "__CPROVER_object_whole": 1,
+      "__CPROVER_object_from": 1,
+      "__CPROVER_object_upto": 2,
+      "__CPROVER_old": 1,
+      "__CPROVER_loop_entry": 1,
+      "__CPROVER_rw_ok": 2,
+      "__CPROVER_r_ok": 2,
+      "__CPROVER_w_ok": 2,
+      "__CPROVER_is_fresh": 2,
+      "__CPROVER_pointer_in_range_dfcc": 3
+    },
+    "tools": {
+      "goto_cc": {
+        "configured": "goto-cc",
+        "resolved": "/usr/bin/goto-cc",
+        "available": true,
+        "version_first_line": "gcc (goto-cc 6.9.0 (cbmc-6.9.0)) 13.3.0",
+        "exit_code": 0
+      },
+      "goto_instrument": {
+        "configured": "goto-instrument",
+        "resolved": "/usr/bin/goto-instrument",
+        "available": true,
+        "version_first_line": "6.9.0 (cbmc-6.9.0)",
+        "exit_code": 0
+      },
+      "cbmc": {
+        "configured": "cbmc",
+        "resolved": "/usr/bin/cbmc",
+        "available": true,
+        "version_first_line": "6.9.0 (cbmc-6.9.0)",
+        "exit_code": 0
+      }
+    },
+    "capability_profile_sha256": "36d803aa744bcb0c781bd3e14165a673f0ce14a64bdb4e5478454113c144b680"
+  }
+}

@@ -1,0 +1,203 @@
+ FINAL_RELEASE_README.md                            |  74 +++
+ RUN_FINAL_ACCEPTANCE_UBUNTU.sh                     |  15 +
+ agents/__pycache__/__init__.cpython-312.pyc        | Bin 156 -> 0 bytes
+ agents/artifact_generation_agent.py                | 617 ++++++++++-------
+ agents/common/__pycache__/__init__.cpython-312.pyc | Bin 163 -> 0 bytes
+ .../__pycache__/config_contract.cpython-312.pyc    | Bin 48898 -> 0 bytes
+ .../__pycache__/contract_artifacts.cpython-312.pyc | Bin 36278 -> 0 bytes
+ .../__pycache__/evidence_contract.cpython-312.pyc  | Bin 3562 -> 0 bytes
+ .../experiment_protocol.cpython-312.pyc            | Bin 12505 -> 0 bytes
+ .../__pycache__/formal_build.cpython-312.pyc       | Bin 51064 -> 0 bytes
+ .../common/__pycache__/llm_client.cpython-312.pyc  | Bin 70848 -> 0 bytes
+ .../common/__pycache__/llm_profile.cpython-312.pyc | Bin 15904 -> 0 bytes
+ .../__pycache__/prompt_templates.cpython-312.pyc   | Bin 6571 -> 0 bytes
+ .../__pycache__/property_campaign.cpython-312.pyc  | Bin 17948 -> 0 bytes
+ .../__pycache__/property_catalog.cpython-312.pyc   | Bin 12860 -> 0 bytes
+ .../property_discovery_mode.cpython-312.pyc        | Bin 31524 -> 0 bytes
+ .../common/__pycache__/run_layout.cpython-312.pyc  | Bin 41477 -> 0 bytes
+ agents/common/__pycache__/schemas.cpython-312.pyc  | Bin 27530 -> 0 bytes
+ .../__pycache__/semantic_gate.cpython-312.pyc      | Bin 30492 -> 0 bytes
+ .../tool_result_contract.cpython-312.pyc           | Bin 10882 -> 0 bytes
+ .../__pycache__/workflow_policy.cpython-312.pyc    | Bin 6666 -> 0 bytes
+ .../__pycache__/workspace_mode.cpython-312.pyc     | Bin 1674 -> 0 bytes
+ agents/common/cbmc_capability.py                   | 388 +++++++++++
+ agents/common/cbmc_evidence.py                     | 148 ++++-
+ agents/common/config_contract.py                   | 404 +++++++----
+ agents/common/contract_artifacts.py                | 248 ++++---
+ agents/common/exact_traceability.py                | 476 +++++++++++++
+ agents/common/experiment_protocol.py               |  34 +
+ agents/common/formal_build.py                      | 565 ++++++++++++----
+ agents/common/gate_contract.py                     | 103 +++
+ agents/common/llm_client.py                        | 328 ++++++---
+ agents/common/property_campaign.py                 | 116 +++-
+ agents/common/property_discovery_mode.py           | 143 ++--
+ agents/common/schemas.py                           | 175 ++++-
+ agents/common/semantic_gate.py                     | 567 +++++-----------
+ agents/common/semantic_gate_claims.py              |  56 ++
+ agents/common/semantic_gate_diagnostics.py         |  77 +++
+ agents/common/semantic_property.py                 | 392 +++++++++++
+ agents/common/tool_result_contract.py              |  39 +-
+ agents/common/workflow_policy.py                   |  49 +-
+ agents/counterexample_analysis_agent.py            | 240 +++++--
+ agents/evaluation_reporter.py                      |  49 +-
+ agents/experiment_logger.py                        |  91 ++-
+ agents/master_orchestrator.py                      | 371 ++++++++++-
+ agents/property_discovery_agent.py                 |  50 +-
+ agents/repair_agent.py                             | 149 ++++-
+ agents/review_critic_agent.py                      | 278 ++++++--
+ agents/tool_execution_agent.py                     | 385 +++++++++--
+ docs/MAINTAINABILITY_EXCEPTION_REGISTRY.json       | 189 +++---
+ .../FINAL_LOCAL_51_REGRESSION_RESULTS.json         | 735 +++++++++++++++++++++
+ .../FINAL_LOCAL_51_REGRESSION_RUNNER.log           | 105 +++
+ release_evidence/FINAL_RELEASE_STATUS.json         |  10 +
+ release_evidence/FROZEN_RUNS_COMPARISON.json       |  24 +
+ release_evidence/PROMISE_COMPLIANCE_MATRIX.json    | 579 ++++++++++++++++
+ release_evidence/PROMISE_COMPLIANCE_MATRIX.md      |  50 ++
+ .../REAL_CBMC_6_9_HOST_GATE_STATUS.json            |  13 +
+ ...fy_26_property_contract_extension.py.stderr.txt |   0
+ ...fy_26_property_contract_extension.py.stdout.txt |  24 +
+ ...perty_repair_and_claim_boundaries.py.stderr.txt |   0
+ ...perty_repair_and_claim_boundaries.py.stdout.txt |  22 +
+ ...lassification_and_agent11_wording.py.stderr.txt |   0
+ ...lassification_and_agent11_wording.py.stdout.txt |   1 +
+ ...y_agent11_compact_evidence_budget.py.stderr.txt |   0
+ ...y_agent11_compact_evidence_budget.py.stdout.txt |   1 +
+ ...nt4_campaign_candidate_separation.py.stderr.txt |   0
+ ...nt4_campaign_candidate_separation.py.stdout.txt |   1 +
+ .../verify_agent5_scope_consistency.py.stderr.txt  |   0
+ .../verify_agent5_scope_consistency.py.stdout.txt  |   1 +
+ .../verify_blocker1_schemas.py.stderr.txt          |   0
+ .../verify_blocker1_schemas.py.stdout.txt          |  22 +
+ .../verify_blocker2_config_contract.py.stderr.txt  |   0
+ .../verify_blocker2_config_contract.py.stdout.txt  |  16 +
+ .../verify_blockers3_to_8.py.stderr.txt            |   0
+ .../verify_blockers3_to_8.py.stdout.txt            |  18 +
+ ...fy_canonical_tool_result_contract.py.stderr.txt |   0
+ ...fy_canonical_tool_result_contract.py.stdout.txt |   1 +
+ ...nonical_tool_workflow_transitions.py.stderr.txt |   0
+ ...nonical_tool_workflow_transitions.py.stdout.txt |   1 +
+ ...ify_central_fail_closed_hardening.py.stderr.txt |   0
+ ...ify_central_fail_closed_hardening.py.stdout.txt |  14 +
+ .../verify_central_llm_profile.py.stderr.txt       |   0
+ .../verify_central_llm_profile.py.stdout.txt       |  18 +
+ ...ract_expression_and_run001_replay.py.stderr.txt |   0
+ ...ract_expression_and_run001_replay.py.stdout.txt |   1 +
+ ...rify_critic_tool_readiness_policy.py.stderr.txt |   0
+ ...rify_critic_tool_readiness_policy.py.stdout.txt |   1 +
+ ...efinitive_winner_result_integrity.py.stderr.txt |   0
+ ...efinitive_winner_result_integrity.py.stdout.txt |   1 +
+ .../verify_deployment_gate.py.stderr.txt           |   0
+ .../verify_deployment_gate.py.stdout.txt           |   1 +
+ .../verify_eight_session_conformance.py.stderr.txt |   0
+ .../verify_eight_session_conformance.py.stdout.txt |  12 +
+ ...ify_exact_traceability_edge_cases.py.stderr.txt |   0
+ ...ify_exact_traceability_edge_cases.py.stdout.txt |   1 +
+ ...ify_explicit_llm_retry_categories.py.stderr.txt |   0
+ ...ify_explicit_llm_retry_categories.py.stdout.txt |   1 +
+ ...fy_explicit_repair_retry_controls.py.stderr.txt |   0
+ ...fy_explicit_repair_retry_controls.py.stdout.txt |   1 +
+ .../verify_failure_diagnostics.py.stderr.txt       |   0
+ .../verify_failure_diagnostics.py.stdout.txt       |   1 +
+ ...verify_final_partial_items_closed.py.stderr.txt |   0
+ ...verify_final_partial_items_closed.py.stdout.txt |   1 +
+ .../verify_gate_boolean_fail_closed.py.stderr.txt  |   0
+ .../verify_gate_boolean_fail_closed.py.stdout.txt  |   1 +
+ ...erify_hash_bound_resume_semantics.py.stderr.txt |   0
+ ...erify_hash_bound_resume_semantics.py.stdout.txt |   1 +
+ ...rify_live_child_process_streaming.py.stderr.txt |   0
+ ...rify_live_child_process_streaming.py.stdout.txt |   1 +
+ .../verify_live_harness_hardening.py.stderr.txt    |   0
+ .../verify_live_harness_hardening.py.stdout.txt    |   1 +
+ ...erify_llm_incomplete_retry_budget.py.stderr.txt |   0
+ ...erify_llm_incomplete_retry_budget.py.stdout.txt |  11 +
+ ...y_maintainability_and_portability.py.stderr.txt |   0
+ ...y_maintainability_and_portability.py.stdout.txt |   1 +
+ .../verify_mandatory_a_to_z_repairs.py.stderr.txt  |   0
+ .../verify_mandatory_a_to_z_repairs.py.stdout.txt  |  26 +
+ ...mandatory_semantic_evidence_gates.py.stderr.txt |   0
+ ...mandatory_semantic_evidence_gates.py.stdout.txt |  13 +
+ ...ble_bootstrap_and_residue_cleanup.py.stderr.txt |   0
+ ...ble_bootstrap_and_residue_cleanup.py.stdout.txt |   1 +
+ .../verify_mutable_package_structure.py.stderr.txt |   0
+ .../verify_mutable_package_structure.py.stdout.txt |   1 +
+ ...verify_mutable_workspace_contract.py.stderr.txt |   0
+ ...verify_mutable_workspace_contract.py.stdout.txt |   1 +
+ .../verify_offline_fake_llm_cbmc_e2e.py.stderr.txt |   0
+ .../verify_offline_fake_llm_cbmc_e2e.py.stdout.txt |   1 +
+ ..._open_discovery_fake_llm_cbmc_e2e.py.stderr.txt |   0
+ ..._open_discovery_fake_llm_cbmc_e2e.py.stdout.txt |   1 +
+ .../verify_old_state_plan_enum.py.stderr.txt       |   0
+ .../verify_old_state_plan_enum.py.stdout.txt       |   1 +
+ ...y_open_discovery_agent5_reporting.py.stderr.txt |   0
+ ...y_open_discovery_agent5_reporting.py.stdout.txt |   1 +
+ .../verify_open_discovery_mode.py.stderr.txt       |   0
+ .../verify_open_discovery_mode.py.stdout.txt       |   1 +
+ ...y_mutable_workspace_compatibility.py.stderr.txt |   0
+ ...y_mutable_workspace_compatibility.py.stdout.txt |   1 +
+ ...fy_pre_agent7_readiness_diagnosis.py.stderr.txt |   0
+ ...fy_pre_agent7_readiness_diagnosis.py.stdout.txt |   1 +
+ ...verify_preflight_iteration_policy.py.stderr.txt |   0
+ ...verify_preflight_iteration_policy.py.stdout.txt |   1 +
+ ...y_property_campaign_orchestration.py.stderr.txt |   0
+ ...y_property_campaign_orchestration.py.stdout.txt |   6 +
+ ...regression_runner_process_cleanup.py.stderr.txt |   0
+ ...regression_runner_process_cleanup.py.stdout.txt |   1 +
+ .../verify_retry_growth_user_control.py.stderr.txt |   0
+ .../verify_retry_growth_user_control.py.stdout.txt |  11 +
+ ...2_exact_replay_and_clause_grammar.py.stderr.txt |   0
+ ...2_exact_replay_and_clause_grammar.py.stdout.txt |   1 +
+ ...trality_and_semantic_repair_guard.py.stderr.txt |   0
+ ...trality_and_semantic_repair_guard.py.stdout.txt |   1 +
+ ...nciliation_and_frontend_readiness.py.stderr.txt |   0
+ ...nciliation_and_frontend_readiness.py.stdout.txt |   1 +
+ ..._success_text_failure_hint_gating.py.stderr.txt |   0
+ ..._success_text_failure_hint_gating.py.stdout.txt |   1 +
+ ..._user_override_command_provenance.py.stderr.txt |   0
+ ..._user_override_command_provenance.py.stdout.txt |   1 +
+ .../verify_workflow_state_policy.py.stderr.txt     |   0
+ .../verify_workflow_state_policy.py.stdout.txt     |   1 +
+ ...oly_add_open_discovery_20260714.baseline.sha256 | 246 +++++++
+ ...k_poly_add_open_discovery_20260714.final.sha256 | 246 +++++++
+ ...pen_discovery_repaired_20260714.baseline.sha256 | 192 ++++++
+ ...d_open_discovery_repaired_20260714.final.sha256 | 192 ++++++
+ scripts/run_final_trust_chain_acceptance.py        |  56 ++
+ ...PPROVED_TEST_INVENTORY_FINAL_TRUST_CHAIN.sha256 |  51 ++
+ tests/accept_real_cbmc_69.py                       | 152 +++++
+ .../SHA256SUMS                                     |   9 +
+ .../SOURCE_MANIFEST.json                           |  56 ++
+ .../artifact_plan.json.fixture                     | 363 ++++++++++
+ .../formal_build_plan.json.fixture                 | 175 +++++
+ .../frontend_readiness.json.fixture                |  64 ++
+ .../frontend_readiness.stderr.txt.fixture          |   4 +
+ .../generated_contracts.h                          |   7 +
+ .../generated_harness.c                            |  38 ++
+ .../review_gate.json.fixture                       |  71 ++
+ .../traceability_validation.json.fixture           |  72 ++
+ tests/verify_26_property_contract_extension.py     |  14 +-
+ ...rify_26_property_repair_and_claim_boundaries.py | 102 ++-
+ ...t10_stage_classification_and_agent11_wording.py |  42 ++
+ .../verify_agent4_campaign_candidate_separation.py |  25 +
+ tests/verify_canonical_tool_result_contract.py     |  29 +-
+ .../verify_canonical_tool_workflow_transitions.py  |  14 +
+ ...verify_contract_expression_and_run001_replay.py |  10 +-
+ tests/verify_critic_tool_readiness_policy.py       |   6 +-
+ tests/verify_definitive_winner_result_integrity.py |  10 +-
+ tests/verify_exact_traceability_edge_cases.py      | 100 +++
+ tests/verify_explicit_llm_retry_categories.py      |  95 +++
+ tests/verify_explicit_repair_retry_controls.py     |  71 ++
+ tests/verify_final_partial_items_closed.py         |  74 +++
+ tests/verify_hash_bound_resume_semantics.py        |  64 ++
+ tests/verify_live_child_process_streaming.py       |  32 +
+ tests/verify_mandatory_a_to_z_repairs.py           |  55 +-
+ tests/verify_mandatory_semantic_evidence_gates.py  |  50 +-
+ tests/verify_offline_fake_llm_cbmc_e2e.py          | 112 +++-
+ tests/verify_open_discovery_agent5_reporting.py    |  35 +-
+ tests/verify_open_discovery_mode.py                |  48 +-
+ tests/verify_pre_agent7_readiness_diagnosis.py     |  36 +
+ tests/verify_property_campaign_orchestration.py    |   6 +-
+ ...erify_run002_exact_replay_and_clause_grammar.py |  62 ++
+ ...trategy_neutrality_and_semantic_repair_guard.py |  58 ++
+ ...rategy_reconciliation_and_frontend_readiness.py |  87 ++-
+ tests/verify_success_text_failure_hint_gating.py   |  22 +-
+ tests/verify_user_override_command_provenance.py   |  74 +++
+ 202 files changed, 10239 insertions(+), 1671 deletions(-)

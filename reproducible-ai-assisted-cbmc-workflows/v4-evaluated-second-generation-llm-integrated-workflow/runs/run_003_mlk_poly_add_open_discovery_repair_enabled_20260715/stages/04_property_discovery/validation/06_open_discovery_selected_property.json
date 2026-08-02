@@ -1,0 +1,189 @@
+{
+  "schema_version": "validation_record.v1",
+  "created_utc": "2026-07-15T04:41:17.830420+00:00",
+  "content": {
+    "schema_version": "selected_property_handoff.v1",
+    "discovery_mode": "open_discovery",
+    "selected": true,
+    "selection_method": "explicit_legacy_policy:feasibility_then_risk_then_rank",
+    "property": {
+      "property_id": "OPEN_CAND_002",
+      "property_family_id": "UNMAPPED",
+      "title": "Single zero-based pass over all coefficients",
+      "category": "loop coverage and access pattern",
+      "verification_strategy": "UNSELECTED",
+      "proposed_strategy": "UNSELECTED",
+      "family_recommendation": "standard_cbmc_harness",
+      "selection_authority": "not_selected_before_agent5",
+      "possible_encodings": [
+        {
+          "strategy": "standard_cbmc_harness",
+          "expressible": true,
+          "required": false,
+          "reason": "The target call and selected claim can be represented by explicit harness assumptions, snapshots, and assertions.",
+          "authority": "semantic_property_record"
+        },
+        {
+          "strategy": "native_loop_contract",
+          "expressible": true,
+          "reason": "The semantic record explicitly requires loop reasoning; a loop-only contract does not satisfy a separate modular-call requirement.",
+          "authority": "semantic_property_record"
+        },
+        {
+          "strategy": "native_function_contract",
+          "expressible": true,
+          "required": false,
+          "reason": "A function contract is an optional alternative; the semantic record does not require modular replacement.",
+          "authority": "semantic_property_record"
+        },
+        {
+          "strategy": "hybrid_contract_and_harness",
+          "expressible": true,
+          "required": false,
+          "reason": "Hybrid encoding is optional when both a complete harness claim and contract artefact are available.",
+          "authority": "semantic_property_record"
+        }
+      ],
+      "semantic_property": {
+        "schema_version": "semantic_property.v2",
+        "property_id": "OPEN_CAND_002",
+        "statement": "The call performs exactly MLKEM_N iterations starting at 0 and visiting each coefficient position once.",
+        "target_call": {
+          "function": "mlk_poly_add",
+          "arguments": [
+            "r",
+            "b"
+          ],
+          "call_count": 1
+        },
+        "pre_state_objects": [
+          "r->coeffs[0..MLKEM_N-1]",
+          "b->coeffs[0..MLKEM_N-1]"
+        ],
+        "post_state_objects": [
+          "r->coeffs[0..MLKEM_N-1]"
+        ],
+        "observed_memory": [
+          "r->coeffs[0..MLKEM_N-1]",
+          "b->coeffs[0..MLKEM_N-1]"
+        ],
+        "permitted_writes": [
+          "r->coeffs[0..MLKEM_N-1]"
+        ],
+        "required_assumptions": [
+          "ASSUME_001"
+        ],
+        "success_predicate": "∀i∈{0,…,MLKEM_N-1}: the call reaches i exactly once and the only per-iteration write targets r->coeffs[i]",
+        "quantified_domain": {
+          "variable": "i",
+          "lower_bound": "0",
+          "upper_bound_exclusive": "MLKEM_N"
+        },
+        "requires_pre_state_snapshot": false,
+        "requires_modular_call_replacement": false,
+        "requires_loop_reasoning": true,
+        "requires_relational_execution": false,
+        "analysis_only": false,
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+            "supports_claim": "The loop structure is a single zero-based pass.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The fixed iteration count is 256.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3",
+            "excerpt": "All arrays have indices that begin at zero.",
+            "supports_claim": "The relevant coefficient indexing convention is zero-based.",
+            "confidence": "high"
+          }
+        ],
+        "uncertainty": "No formal loop contract is visible in the snapshot.",
+        "semantic_completeness": {
+          "complete": true,
+          "missing_fields": [],
+          "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+        }
+      },
+      "proof_obligation_kind": "fixed-bounds traversal",
+      "support_classification": "uncatalogued_candidate",
+      "required_tool_capabilities": [],
+      "candidate_statement": "The function uses one for-loop initialized at i = 0 and bounded by i < MLKEM_N; with MLKEM_N = 256 this traverses the 256 coefficient positions in order.",
+      "supporting_evidence": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add function body",
+          "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+          "supports_claim": "The loop starts at zero and uses MLKEM_N as its upper bound.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "locator": "macro definitions",
+          "excerpt": "#define MLKEM_N 256",
+          "supports_claim": "The loop executes exactly 256 iterations.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.3 and Section 2.4.4",
+          "excerpt": "All arrays have indices that begin at zero. An element f of R_q is represented by the array (f0, f1, ..., f255) in Z_q^256.",
+          "supports_claim": "The specification uses zero-based 256-entry coefficient arrays.",
+          "confidence": "high"
+        }
+      ],
+      "required_assumptions": [
+        "ASSUME_001"
+      ],
+      "cbmc_feasibility": "high",
+      "risk_level": "low",
+      "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+      "out_of_scope_boundaries": [
+        "Does not assert the computed values themselves.",
+        "Does not assert modulo-q normalization or canonical output.",
+        "Does not claim anything about aliasing or external wrappers."
+      ],
+      "uncertainty": "The snapshot does not include loop contracts, so this is a local structural property only.",
+      "limitations": [
+        "This is a coverage/access-pattern candidate, not a full functional specification.",
+        "It does not establish the abstract ring meaning of the update."
+      ]
+    },
+    "selection_reason": "Selected after the LLM-authored candidate set was saved and post-classified. Selection is an experiment-control decision, not proof that the property is true.",
+    "catalogue_mapping_status": "unmapped_new",
+    "effective_property_campaign": {
+      "schema_version": "property_campaign.v2.open_selected_unmapped",
+      "property_family_id": "UNMAPPED",
+      "property_family_slug": "unmapped_new_property",
+      "property_family_title": "Unmapped/new open-discovery property",
+      "verification_strategy": "UNSELECTED",
+      "support_level": "uncatalogued_candidate",
+      "claim_boundary": "Local selected claim only; uncatalogued status does not imply truth, novelty, or provability.",
+      "allowed_strategies": [
+        "standard_cbmc_harness",
+        "native_function_contract",
+        "native_loop_contract",
+        "relational_cbmc_harness",
+        "analysis_only_no_formal_claim",
+        "hybrid_contract_and_harness"
+      ],
+      "target_examples": [],
+      "allow_analysis_only": true,
+      "require_native_contract_tools": false,
+      "explicitly_configured": false,
+      "legacy_compatibility_default": false,
+      "discovery_mode": "open_discovery",
+      "selection_pending": false,
+      "selected_property_id": "OPEN_CAND_002"
+    }
+  }
+}

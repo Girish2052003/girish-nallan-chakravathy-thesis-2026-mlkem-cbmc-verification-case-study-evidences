@@ -1,0 +1,442 @@
+{
+  "schema_version": "agent_status.v1",
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "experiment_protocol_version": "llm-first-v1",
+  "semantic_advisory_mode": "off",
+  "property_discovery_mode": "open_discovery",
+  "stage": "05_artifact_generation",
+  "started_utc": "2026-07-14T09:05:36.081100+00:00",
+  "completed_utc": "2026-07-14T09:10:42.218704+00:00",
+  "success": true,
+  "llm_call_executed": true,
+  "handoff_available": true,
+  "errors": [],
+  "warnings": [
+    "semantic_advisory_mode=off: deterministic selected-property hints, assertion suggestions, and harness templates were not generated or transmitted.",
+    "Agent 5 candidate contains hard semantic/tool-readiness blockers; Agent 6 must not approve it for CBMC."
+  ],
+  "open_discovery_selection": {
+    "selected_property_id": "OPEN_CAND_002",
+    "selection_method": "open_discovery_feasibility_then_risk_then_rank",
+    "effective_property_family_id": "UNMAPPED",
+    "effective_verification_strategy": "native_function_contract"
+  },
+  "llm_mode": "real",
+  "llm_success": true,
+  "llm_result": {
+    "stage": "05_artifact_generation",
+    "mode": "real",
+    "success": true,
+    "llm_call_executed": true,
+    "output_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/llm_authoritative/04_artifact_plan.json",
+    "raw_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/llm_authoritative/api_responses/attempt_01_response.json",
+    "validation_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/validation/llm_call_validation.json",
+    "prompt_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/prompt_package/05_artifact_generation_prompt.txt",
+    "metadata_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/prompt_package/prompt_metadata.json",
+    "attempts": 1,
+    "error": null,
+    "parsed_json": {
+      "stage": "05_artifact_generation",
+      "mock": false,
+      "llm_call_executed": true,
+      "target_function": "mlk_poly_add",
+      "selected_property": {
+        "selected": true,
+        "selection_method": "open_discovery_feasibility_then_risk_then_rank",
+        "property": {
+          "property_id": "OPEN_CAND_002",
+          "property_family_id": "UNMAPPED",
+          "title": "Writes confined to destination coefficient array",
+          "category": "frame",
+          "verification_strategy": "native_function_contract",
+          "proof_obligation_kind": "frame",
+          "support_classification": "uncatalogued_candidate",
+          "required_tool_capabilities": [
+            "native_function_contract"
+          ],
+          "candidate_statement": "A frame check can target the fact that the only visible writes are to r->coeffs[i] for i in [0, MLKEM_N), with no allocation, deallocation, or explicit global-state update in the body.",
+          "supporting_evidence": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "function body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+              "supports_claim": "The only visible write target is the destination coefficient array inside a bounded loop.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "typedef block and function declaration",
+              "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The API exposes a mutable destination pointer, a const-qualified source pointer, and fixed-length coefficient storage.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro block",
+              "excerpt": "#define MLKEM_N 256",
+              "supports_claim": "The coefficient array length and loop bound are 256 in the provided snapshot.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "top-of-file comment",
+              "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+              "supports_claim": "No visible formal contract or proof harness can be reused from the snapshot.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3; Section 2.4.4; Section 2.4.5",
+              "excerpt": "R_q elements are represented as arrays in Z_q^256; addition in R_q and T_q is done coordinate-wise.",
+              "supports_claim": "The coefficient-array model is consistent with the specification's coordinate-wise polynomial-add semantics.",
+              "confidence": "high"
+            }
+          ],
+          "required_assumptions": [
+            "The visible function body is complete for this symbol.",
+            "No hidden macro expansion introduces extra side effects.",
+            "The harness uses a disjoint witness object so the sentinel assertion is meaningful."
+          ],
+          "cbmc_feasibility": "high",
+          "risk_level": "low",
+          "expected_artifact_type": "native function contract",
+          "out_of_scope_boundaries": [
+            "Does not assert that b remains semantically unchanged under pointer aliasing.",
+            "Does not establish modular-q correctness or any full polynomial-equivalence result.",
+            "Does not rule out unexpected writes that miss the disjoint witness sentinel."
+          ],
+          "uncertainty": "The snapshot does not include aliasing or ownership contracts, so the footprint claim is local rather than a full separation proof.",
+          "limitations": [
+            "Semantic effects through aliasing are not ruled out.",
+            "The witness-based harness check is only a sentinel for unexpected writes, not a complete alias analysis.",
+            "This is a local footprint observation, not a whole-function proof."
+          ]
+        }
+      },
+      "artefact_kind": "native_function_contract_harness",
+      "verification_strategy": "native_function_contract",
+      "intended_check": "Check that the visible footprint of mlk_poly_add is limited to writes through r->coeffs[i] and that a disjoint witness object remains unchanged across the call; no modular arithmetic or full functional equivalence is claimed.",
+      "non_goals": [
+        "No claim of FIPS 203 compliance or cryptographic security.",
+        "No claim that the routine performs modular-q reduction locally.",
+        "No claim of full functional correctness or polynomial-equivalence proof.",
+        "No aliasing guarantee between r and b is introduced.",
+        "No claim that a disjoint witness sentinel is a complete analysis of all possible out-of-footprint writes."
+      ],
+      "required_includes": [
+        "poly.h"
+      ],
+      "required_types_and_macros": [
+        "mlk_poly",
+        "MLKEM_N",
+        "int16_t",
+        "__CPROVER_assume",
+        "__CPROVER_assert",
+        "__CPROVER_nondet_int",
+        "__CPROVER_r_ok",
+        "__CPROVER_w_ok"
+      ],
+      "assumption_plan": [
+        {
+          "assumption_id": "A01",
+          "assumption": "The witness object used in the harness is disjoint from the arguments passed to mlk_poly_add.",
+          "justification": "The witness assertion is only a meaningful frame sentinel if the witness is not aliased with r or b.",
+          "risk_of_overconstraint": "low",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "function body",
+              "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The visible write target is r->coeffs[i], so a disjoint witness is a sensible sentinel object.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration",
+              "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The interface exposes pointer arguments but no documented disjointness contract.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "top-of-file comment",
+              "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+              "supports_claim": "No visible aliasing or footprint contract is available in the snapshot.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "assertion_plan": [
+        {
+          "assertion_id": "C01",
+          "assertion": "witness_obj.coeffs[i] == witness_before.coeffs[i] for every i in [0, MLKEM_N)",
+          "checked_property_relation": "Checks a disjoint witness object rather than self-comparing the mutated destination, providing a local sentinel for unexpected writes beyond the intended footprint.",
+          "non_triviality_reason": "The assertion is not a tautology because witness_obj is nondeterministically initialized, snapshotted before the call, and compared after mlk_poly_add returns; any stray write to that object would be exposed.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "function body",
+              "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The visible write is confined to the destination coefficient array, so a disjoint sentinel is an appropriate frame check.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration",
+              "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The function takes two pointer arguments and mutates the destination in place.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "top-of-file comment",
+              "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+              "supports_claim": "No preexisting contract is available to reuse for the claim.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "old_state_snapshot_plan": {
+        "required": "partial_for_selected_property",
+        "reason": "The selected frame claim is contract-based, but the harness also snapshots a disjoint witness object before the call so the witness assertion can act as a non-vacuity sentinel.",
+        "snapshot_items": [
+          "witness_obj"
+        ]
+      },
+      "contract_plan": {
+        "enabled": true,
+        "contract_mode": "function",
+        "target_symbol": "mlk_poly_add",
+        "function_declaration": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+        "requires_clauses": [
+          "__CPROVER_w_ok(r, sizeof(mlk_poly))",
+          "__CPROVER_r_ok(b, sizeof(mlk_poly))"
+        ],
+        "ensures_clauses": [],
+        "assigns_clauses": [
+          "r->coeffs[0 .. MLKEM_N - 1]"
+        ],
+        "frees_clauses": [],
+        "loop_invariant_clauses": [],
+        "decreases_clauses": [],
+        "loop_assigns_clauses": [],
+        "loop_frees_clauses": [],
+        "source_patch_operations": [],
+        "apply_loop_contracts": false,
+        "enforce_contract": true,
+        "replace_calls_with_contract": [
+          "mlk_poly_add"
+        ],
+        "use_dfcc": true,
+        "invariant_initialization_argument": "",
+        "invariant_preservation_argument": "",
+        "postcondition_use_argument": "",
+        "frame_condition_argument": "r->coeffs[0 .. MLKEM_N - 1]",
+        "history_variable_usage": []
+      },
+      "relational_plan": {
+        "enabled": false,
+        "relation_kind": "none",
+        "first_call": "",
+        "second_call": "",
+        "state_reset_or_snapshot": [],
+        "relation_assertions": [],
+        "normalization_assumptions": []
+      },
+      "analysis_only_plan": {
+        "enabled": false,
+        "analysis_kind": "none",
+        "evidence_to_collect": [],
+        "external_tools_or_tests": [],
+        "formal_claim_prohibited": false
+      },
+      "traceability_manifest": {
+        "selected_property_id": "OPEN_CAND_002",
+        "target_call_marker": "TRACE_TARGET_CALL:OPEN_CAND_002",
+        "expected_claim_count": 2,
+        "assumption_map": [
+          {
+            "assumption_id": "A01",
+            "implementation_kind": "harness_assume",
+            "code_marker": "TRACE_ASSUMPTION:A01",
+            "code_locator": "harness: witness disjointness assumption before snapshot",
+            "rationale": "Ensures the sentinel object is disjoint from the callee arguments so the frame check is observationally meaningful."
+          }
+        ],
+        "claim_map": [
+          {
+            "assertion_id": "C01",
+            "implementation_kind": "harness_assertion",
+            "code_marker": "TRACE_CLAIM:C01",
+            "cbmc_property_patterns": [
+              "__CPROVER_assert",
+              "witness_obj.coeffs[i] == witness_before.coeffs[i]"
+            ],
+            "rationale": "This is the explicit harness sentinel that checks a disjoint object remains unchanged across the call."
+          },
+          {
+            "assertion_id": "C02",
+            "implementation_kind": "cbmc_builtin",
+            "code_marker": "assigns r->coeffs[0 .. MLKEM_N - 1]",
+            "cbmc_property_patterns": [
+              "assigns",
+              "frame condition",
+              "destination coefficient array"
+            ],
+            "rationale": "This is the contract-scoped footprint claim selected for OPEN_CAND_002."
+          }
+        ],
+        "non_vacuity_strategy": [
+          "Mutation sensitivity: if a review-time mutant adds a stray write to the disjoint witness object, the C01 assertion should fail.",
+          "Reachability sensitivity: the coefficient arrays are left nondeterministic, so the claim is exercised across arbitrary inputs rather than a single canned example."
+        ]
+      },
+      "generated_harness_code": "#include \"poly.h\"\n\nstatic int16_t nd16(void)\n{\n  return (int16_t)__CPROVER_nondet_int();\n}\n\nvoid harness(void)\n{\n  mlk_poly r_obj;\n  mlk_poly b_obj;\n  mlk_poly witness_obj;\n  mlk_poly witness_before;\n  unsigned i;\n\n  for (i = 0; i < MLKEM_N; ++i)\n  {\n    r_obj.coeffs[i] = nd16();\n    b_obj.coeffs[i] = nd16();\n    witness_obj.coeffs[i] = nd16();\n  }\n\n  /* TRACE_ASSUMPTION:A01 */\n  __CPROVER_assume(&witness_obj != &r_obj && &witness_obj != &b_obj);\n\n  witness_before = witness_obj;\n\n  mlk_poly_add(&r_obj, &b_obj); /* TRACE_TARGET_CALL:OPEN_CAND_002 */\n\n  for (i = 0; i < MLKEM_N; ++i)\n  {\n    /* TRACE_CLAIM:C01 */\n    __CPROVER_assert(\n      witness_obj.coeffs[i] == witness_before.coeffs[i],\n      \"disjoint witness object remains unchanged\"\n    );\n  }\n}\n",
+      "validation_expectations": [
+        {
+          "check": "CBMC accepts the harness together with the native function contract for mlk_poly_add",
+          "expected": true
+        },
+        {
+          "check": "The target call marker appears immediately beside the exact mlk_poly_add invocation",
+          "expected": true
+        },
+        {
+          "check": "The witness assertion is reachable under nondeterministic coefficient initialization",
+          "expected": true
+        },
+        {
+          "check": "The assigns clause is interpreted as restricting writes to r->coeffs[0 .. MLKEM_N - 1]",
+          "expected": true
+        },
+        {
+          "check": "The harness does not rely on NULL-pointer or __CPROVER_is_fresh pointer modelling",
+          "expected": true
+        }
+      ],
+      "independence_statement": {
+        "existing_artefacts_consulted": [
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+          "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/03_code_understanding/llm_authoritative/02_code_summary.json",
+          "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/04_property_discovery/validation/05_open_discovery_classified_candidates.json",
+          "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/04_property_discovery/validation/06_open_discovery_selected_property.json"
+        ],
+        "deterministic_hints_consulted": [],
+        "unavoidable_similarities": [
+          "The target function name mlk_poly_add, the mlk_poly type, and MLKEM_N are fixed by the provided source and header files.",
+          "A CBMC-oriented harness must still call the exact target symbol and use standard CBMC builtins for assumptions/assertions.",
+          "The coefficient-array loop shape is conventional because the implementation and specification both expose a 256-entry polynomial representation."
+        ],
+        "intentional_differences": [
+          "The harness uses a disjoint witness object and a snapshot-based sentinel assertion rather than a self-comparison of the destination array.",
+          "The plan does not add a modular-q postcondition or any whole-scheme correctness claim.",
+          "The plan does not assume null pointers or use memory_no_alias/__CPROVER_is_fresh pointer modelling.",
+          "The artifact is a separate candidate harness variant rather than a copy of any prior proof harness or repair template."
+        ],
+        "copying_risk": "low",
+        "requires_human_similarity_review": false
+      },
+      "deterministic_reference_assessment": {
+        "used": false,
+        "status": "not used",
+        "warning": "No deterministic Python advisory analysis output was supplied in the evidence bundle, so there was no advisory material to verify or disagree with.",
+        "disagreements": []
+      },
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "function body",
+          "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+          "supports_claim": "The only visible write in mlk_poly_add is to the destination coefficient array inside a bounded loop.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "typedef block and function declaration",
+          "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The destination/source roles and coefficient storage type used by the harness.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "locator": "macro block",
+          "excerpt": "#define MLKEM_N 256",
+          "supports_claim": "The coefficient array length and loop bound are 256 in the provided snapshot.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.3; Section 2.4.4; Section 2.4.5",
+          "excerpt": "R_q elements are represented as arrays in Z_q^256; addition in R_q and T_q is done coordinate-wise.",
+          "supports_claim": "The coefficient-array model and coordinate-wise addition semantics justify the harness's array-based object model.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "top-of-file comment",
+          "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+          "supports_claim": "No visible formal contract or proof harness can be reused from the snapshot.",
+          "confidence": "high"
+        }
+      ],
+      "limitations": [
+        "This is a candidate artifact plan, not a proof result or a verified harness.",
+        "The frame claim is local to the visible body and does not establish full alias analysis or whole-function correctness.",
+        "No deterministic advisory analysis or raw formal-tool output was supplied, so there is no external proof trace to reconcile.",
+        "The witness-based harness check is only a sentinel for unexpected writes and does not detect every possible out-of-footprint effect.",
+        "The plan intentionally avoids stronger semantic claims such as modular-q correctness, FIPS 203 compliance, or cryptographic security."
+      ]
+    },
+    "validation": {
+      "schema_version": "llm_stage_validation.v1",
+      "created_utc": "2026-07-14T09:10:42.197603+00:00",
+      "stage": "05_artifact_generation",
+      "mode": "real",
+      "llm_call_executed": true,
+      "valid": true,
+      "attempts": 1,
+      "schema_validation": {
+        "schema_validation_enabled": true,
+        "validator": "jsonschema",
+        "valid": true,
+        "errors": []
+      },
+      "model": "gpt-5.4-mini",
+      "elapsed_seconds_last_attempt": 305.96697187423706,
+      "final_request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/prompt_package/api_requests/attempt_01_request.json",
+      "final_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/llm_authoritative/api_responses/attempt_01_response.json",
+      "request_sha256": "47efc64400b925f48ce4d1061413ca7af9eb8104eec25a66b3ca1a5008ba556b",
+      "primary_evidence_complete": true,
+      "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/prompt_package/primary_evidence_transmission_manifest.json",
+      "exact_input_summary": {
+        "schema_version": "responses_api_input_summary.v1",
+        "input_text_block_count": 1,
+        "input_text_chars": 376831,
+        "input_text_utf8_bytes": 385308,
+        "input_text_sha256": "3e82959ef3ef3d4b6a5cfee4ea858325f7e52ba0f31ac647ae1404fb6c4fc434",
+        "input_file_count": 0,
+        "input_files": [],
+        "canonical_input_sha256": "cb9e43dbba4ba4b415ce26dc57bb79fe025e9ee32125442975d40f246a00b238",
+        "contains_primary_truncation_marker": false
+      },
+      "provider_usage": {
+        "input_tokens": 95184,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 45625,
+        "output_tokens_details": {
+          "reasoning_tokens": 41604
+        },
+        "total_tokens": 140809
+      }
+    }
+  }
+}

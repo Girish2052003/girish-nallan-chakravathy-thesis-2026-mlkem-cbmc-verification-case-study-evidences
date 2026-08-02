@@ -1,0 +1,86 @@
+{
+  "schema_version": "llm_derived_repair_guidance.v1",
+  "created_utc": "2026-07-14T05:33:50.636503+00:00",
+  "source": "07_counterexample_analysis.json",
+  "content": {
+    "status": "repair_required",
+    "guidance_items": [
+      {
+        "action_id": "A1",
+        "action_type": "syntax_fix",
+        "priority": "high",
+        "target_stage": "05_artifact_generation",
+        "proposed_change": "Regenerate the contracts header so every DFCC annotation is valid CBMC/C syntax. In particular, replace prose-like __CPROVER_requires text with an actual boolean predicate over the intended preconditions, while preserving the selected frame property.",
+        "evidence_basis": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+            "locator": "stderr text",
+            "excerpt": "syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+            "supports_claim": "The current generated contract text is not parseable.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+            "locator": "command_text",
+            "excerpt": "-include .../contracts/04_generated_contracts.h",
+            "supports_claim": "The malformed contract header is the artifact that must be fixed for the pipeline to proceed.",
+            "confidence": "high"
+          }
+        ],
+        "risk_if_applied": "If the rewritten predicate is too weak or mismatched to the intended model, the next run may pass syntax checks but no longer test the same frame property.",
+        "evidence_strength_lost_if_any": "Any simplification that drops the intended frame predicate would weaken the current write-footprint evidence."
+      },
+      {
+        "action_id": "A2",
+        "action_type": "re_run_pipeline",
+        "priority": "high",
+        "target_stage": "07_tool_execution",
+        "proposed_change": "After fixing the contract header, rerun the same goto-cc -> goto-instrument -> cbmc pipeline and confirm that the compiled GOTO model is produced before interpreting any property result.",
+        "evidence_basis": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+            "locator": "pipeline_steps",
+            "excerpt": "planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true",
+            "supports_claim": "The current attempt stopped before the formal check stage, so a rerun is needed after repair.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+            "locator": "result_classification",
+            "excerpt": "result_classification=\"contract_build_or_instrumentation_failed\"; emitted_property_count=0",
+            "supports_claim": "There is no formal result to reinterpret until the pipeline successfully completes.",
+            "confidence": "high"
+          }
+        ],
+        "risk_if_applied": "This consumes another tool cycle and may still fail if the header contains any remaining unsupported constructs.",
+        "evidence_strength_lost_if_any": "None; this action preserves the current evidence boundary and simply re-attempts verification after repair."
+      },
+      {
+        "action_id": "A3",
+        "action_type": "add_preflight_check",
+        "priority": "medium",
+        "target_stage": "05_artifact_generation",
+        "proposed_change": "Add a lightweight preflight compile/parse check for the generated contracts header before invoking goto-cc/goto-instrument, so syntax regressions are caught earlier in the workflow.",
+        "evidence_basis": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+            "locator": "pre_execution_structural_validation",
+            "excerpt": "valid=true; cbmc_execution_still_required=true",
+            "supports_claim": "Structural validation succeeded, so an earlier syntax gate would provide better failure localization.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+            "locator": "stderr text",
+            "excerpt": "syntax error before 'points'",
+            "supports_claim": "The failure is a parser error that a preflight syntax check should catch before the formal pipeline is launched.",
+            "confidence": "high"
+          }
+        ],
+        "risk_if_applied": "Adds pipeline complexity and may require extra maintenance for the contract-generation path.",
+        "evidence_strength_lost_if_any": "None for the current property intent; this is a diagnostic safeguard rather than a semantic weakening."
+      }
+    ]
+  },
+  "trust_boundary": "llm_candidate_repair_guidance_not_applied"
+}

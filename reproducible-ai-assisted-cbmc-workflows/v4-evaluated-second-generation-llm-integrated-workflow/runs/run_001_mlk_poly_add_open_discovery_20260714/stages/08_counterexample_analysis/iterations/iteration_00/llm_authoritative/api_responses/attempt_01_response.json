@@ -1,0 +1,786 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-14T05:33:50.585361+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-mini",
+  "attempt": 1,
+  "elapsed_seconds": 118.67452955245972,
+  "request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "8e638c5a7cecf348a501ef2eec587d6b082d7ece094758f461814bbe3eca04b1",
+  "response_id": "resp_0d93be3417c17ba9016a55c9d18ff881a1b5f0b22cf3a7f642",
+  "usage": {
+    "input_tokens": 63650,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 19974,
+    "output_tokens_details": {
+      "reasoning_tokens": 14502
+    },
+    "total_tokens": 83624
+  },
+  "exact_input_summary": {
+    "schema_version": "responses_api_input_summary.v1",
+    "input_text_block_count": 1,
+    "input_text_chars": 234551,
+    "input_text_utf8_bytes": 242976,
+    "input_text_sha256": "83783d86b68f1dfc36041d012799159ab90fb001e76071dd670aff741b1031b9",
+    "input_file_count": 0,
+    "input_files": [],
+    "canonical_input_sha256": "b4e6d4228ecd670af7cac317ccdb6e0d2a59e2268beb60dd34136bb7c8afa599",
+    "contains_primary_truncation_marker": false
+  },
+  "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/primary_evidence_transmission_manifest.json",
+  "provider_status": "completed",
+  "incomplete_reason": null,
+  "incomplete_details": null,
+  "response_text": "{\"stage\":\"08_counterexample_analysis\",\"mock\":false,\"llm_call_executed\":true,\"tool_result_summary\":{\"result_classification\":\"contract_build_or_instrumentation_failed\",\"tool_executed\":true,\"exit_code\":1,\"summary\":\"CBMC was invoked in the configured goto_contract_pipeline, but the run failed before any property was emitted or checked. The status record reports a pre-CBMC GOTO build/instrumentation failure, and stderr shows a syntax error in the generated contracts header. No formal verification result or counterexample was produced.\"},\"execution_status_interpretation\":{\"status\":\"failed_pre_cbmc_build_or_instrumentation\",\"formal_tool_result_exists\":false,\"interpretation\":\"The tool executed, but the pipeline stopped upstream of CBMC analysis. Because the GOTO build/instrumentation step failed, there is no formal CBMC property result to interpret for this run.\"},\"counterexample_analysis\":{\"status\":\"no_formal_counterexample_available\",\"findings\":[{\"finding_id\":\"CF-01\",\"category\":\"tool_result_boundary\",\"finding\":\"No counterexample can be extracted from this run because the pipeline stopped before any CBMC property was emitted or checked.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification / pipeline_execution_summary\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; result_reason=\\\"A pre-CBMC GOTO build/instrumentation step failed.\\\"; selected_property_verified_under_model=false; emitted_property_count=0; emitted_failure_count=0\",\"supports_claim\":\"The run ended before any formal property result existed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"CBMC produced no stdout result content for this run.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The pre-execution gate passed, but the actual formal-result stage never completed.\",\"confidence\":\"high\"}],\"uncertainty\":\"High confidence that no formal counterexample exists in the visible evidence. The exact downstream property status cannot be recovered because the pipeline failed before property emission.\"},{\"finding_id\":\"CF-02\",\"category\":\"contract_syntax_error\",\"finding\":\"The immediate trigger is a malformed generated contract clause in the included contracts header: stderr reports a syntax error before the word 'points' in a __CPROVER_requires line.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"error: syntax error before 'points' __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract text is not valid syntax and caused the pipeline failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps / goto_compile / apply_function_contracts\",\"excerpt\":\"goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true\",\"supports_claim\":\"The failure happened in the pre-CBMC compile/instrumentation pipeline and involved the generated contracts header.\",\"confidence\":\"high\"}],\"uncertainty\":\"The visible evidence localizes the parse failure to the generated contract header, but it does not show the full header contents or the exact generator bug that emitted the malformed text.\"},{\"finding_id\":\"CF-03\",\"category\":\"harness_structure_ok\",\"finding\":\"The harness wiring itself appears structurally valid: the entry function is defined, the target function is called, and the known vacuity pattern was rejected before execution.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The harness passed the structural gate before the later build/instrumentation failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"harness body\",\"excerpt\":\"__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \\\"TRACE_CLAIM:C01\\\");\",\"supports_claim\":\"The harness is the intended local-object frame-check harness and includes the target call.\",\"confidence\":\"medium\"}],\"uncertainty\":\"General semantic non-vacuity was not proved, so the harness may still be narrower than the intended semantic claim even though the structural gate passed.\"}]},\"failure_classification\":{\"result_classification\":\"contract_build_or_instrumentation_failed\",\"failure_categories\":[\"pre_cbmc_build_failure\",\"contract_syntax_error\",\"instrumentation_pipeline_failure\",\"no_formal_result\"],\"severity\":\"high\",\"repair_needed\":true,\"no_formal_tool_result\":true,\"parsed_failure_count\":1,\"interpretation_boundary\":\"This failure is at the contract/build boundary, not a verified property failure. Do not infer a concrete counterexample to mlk_poly_add from this run.\"},\"harness_vs_property_vs_tool_diagnosis\":{\"status\":\"toolchain_failure_during_contract_parsing\",\"root_cause_category\":\"generated_contracts_header_parse_error\",\"findings\":[{\"finding_id\":\"HD-01\",\"category\":\"pipeline_boundary\",\"finding\":\"The pipeline stopped before CBMC property checking, so there is no pass/fail outcome for the selected property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"tool result summary\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0; emitted_failure_count=0\",\"supports_claim\":\"No CBMC property results were emitted.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"No stdout witness or result text was produced.\",\"confidence\":\"high\"}],\"uncertainty\":\"The exact boundary between contract generation and instrumentation is visible only indirectly, but the failure clearly occurs before formal property solving.\"},{\"finding_id\":\"HD-02\",\"category\":\"contract_generation\",\"finding\":\"The malformed text in the generated contracts header is the best-supported root cause of the failure.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The contract header contains invalid syntax and triggers the parser error.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text / pipeline_steps\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h; goto-instrument --dfcc harness --enforce-contract mlk_poly_add ...; pipeline_setup_failed=true\",\"supports_claim\":\"The failure is in the contract-aware build/instrumentation path, not in CBMC property solving.\",\"confidence\":\"high\"}],\"uncertainty\":\"The error text is explicit, but the exact upstream generator bug is not directly shown.\"},{\"finding_id\":\"HD-03\",\"category\":\"harness_scope\",\"finding\":\"The harness itself is not the obvious source of the failure; it was structurally accepted and the target call is present.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true\",\"supports_claim\":\"The harness/entrypoint wiring passed validation before the later failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The selected source context is a simple in-place coefficientwise add, consistent with a frame-property harness rather than a complex control-flow source of failure.\",\"confidence\":\"high\"}],\"uncertainty\":\"This does not exclude subtler modeling issues, but the visible evidence points away from the harness body as the immediate failure cause.\"}]},\"repair_guidance\":{\"status\":\"repair_required\",\"guidance_items\":[{\"action_id\":\"A1\",\"action_type\":\"syntax_fix\",\"priority\":\"high\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Regenerate the contracts header so every DFCC annotation is valid CBMC/C syntax. In particular, replace prose-like __CPROVER_requires text with an actual boolean predicate over the intended preconditions, while preserving the selected frame property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The current generated contract text is not parseable.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h\",\"supports_claim\":\"The malformed contract header is the artifact that must be fixed for the pipeline to proceed.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"If the rewritten predicate is too weak or mismatched to the intended model, the next run may pass syntax checks but no longer test the same frame property.\",\"evidence_strength_lost_if_any\":\"Any simplification that drops the intended frame predicate would weaken the current write-footprint evidence.\"},{\"action_id\":\"A2\",\"action_type\":\"re_run_pipeline\",\"priority\":\"high\",\"target_stage\":\"07_tool_execution\",\"proposed_change\":\"After fixing the contract header, rerun the same goto-cc -> goto-instrument -> cbmc pipeline and confirm that the compiled GOTO model is produced before interpreting any property result.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps\",\"excerpt\":\"planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true\",\"supports_claim\":\"The current attempt stopped before the formal check stage, so a rerun is needed after repair.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification\",\"excerpt\":\"result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0\",\"supports_claim\":\"There is no formal result to reinterpret until the pipeline successfully completes.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"This consumes another tool cycle and may still fail if the header contains any remaining unsupported constructs.\",\"evidence_strength_lost_if_any\":\"None; this action preserves the current evidence boundary and simply re-attempts verification after repair.\"},{\"action_id\":\"A3\",\"action_type\":\"add_preflight_check\",\"priority\":\"medium\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Add a lightweight preflight compile/parse check for the generated contracts header before invoking goto-cc/goto-instrument, so syntax regressions are caught earlier in the workflow.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; cbmc_execution_still_required=true\",\"supports_claim\":\"Structural validation succeeded, so an earlier syntax gate would provide better failure localization.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points'\",\"supports_claim\":\"The failure is a parser error that a preflight syntax check should catch before the formal pipeline is launched.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"Adds pipeline complexity and may require extra maintenance for the contract-generation path.\",\"evidence_strength_lost_if_any\":\"None for the current property intent; this is a diagnostic safeguard rather than a semantic weakening.\"}]},\"repair_action_plan\":[{\"action_id\":\"A1\",\"action_type\":\"syntax_fix\",\"priority\":\"high\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Regenerate the contracts header so all DFCC annotations are valid CBMC expressions, preserving the intended frame property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract text is malformed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h\",\"supports_claim\":\"The failing artifact is the generated contracts header used by the build pipeline.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"A syntactically valid but semantically weaker contract could stop the parse error while reducing the evidence value of the verification attempt.\",\"evidence_strength_lost_if_any\":\"Any simplification that drops the intended precondition/frame meaning would reduce the current property evidence.\"},{\"action_id\":\"A2\",\"action_type\":\"rerun_pipeline\",\"priority\":\"high\",\"target_stage\":\"07_tool_execution\",\"proposed_change\":\"Rerun the same contract pipeline after the syntax fix and only interpret results once the GOTO build and instrumentation steps complete successfully.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps\",\"excerpt\":\"planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true\",\"supports_claim\":\"The previous attempt did not reach the formal check stage.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"tool result summary\",\"excerpt\":\"result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0\",\"supports_claim\":\"There is no property result to carry forward until the pipeline succeeds.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"May still fail if additional unsupported constructs remain in the generated contracts or harness glue.\",\"evidence_strength_lost_if_any\":\"None; this is the required next verification attempt after repair.\"},{\"action_id\":\"A3\",\"action_type\":\"add_preflight_check\",\"priority\":\"medium\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Insert a preflight parse/compile check for generated contract files before the formal tool run so syntax errors are detected earlier and reported more clearly.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The current structural gate did not catch the syntax issue, so an earlier parser gate would improve diagnostics.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points'\",\"supports_claim\":\"The failure mode is exactly the kind that a preflight syntax check should catch.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"Adds maintenance overhead and may duplicate some of the formal toolchain's syntax checking.\",\"evidence_strength_lost_if_any\":\"None.\"}],\"success_scope_analysis\":{\"status\":\"limited_to_pre_cbmc_pipeline\",\"checked_scope\":[\"CBMC and helper tools were available in the environment\",\"the harness entry function was defined and the target function was called\",\"pre-execution structural validation passed\",\"the pipeline stopped during the contract-aware build/instrumentation path before any property emission\"],\"not_checked\":[\"bounds checks\",\"pointer checks\",\"memory-leak checks\",\"division-by-zero checks\",\"signed overflow checks\",\"unsigned overflow checks\",\"conversion checks\",\"undefined-shift checks\",\"selected-property success/failure\",\"counterexample traces\",\"any semantic correctness claim about mlk_poly_add\"],\"limitations\":[\"No formal CBMC property result exists for this run because the pipeline failed before property emission.\",\"The raw property-results and trace-summary contents were not included in the visible evidence excerpt, so no witness or counterexample details can be recovered from them here.\",\"The failure is a tooling/build issue, not evidence of a bug in mlk_poly_add itself.\"]},\"deterministic_reference_assessment\":{\"used\":false,\"status\":\"not used\",\"warning\":\"No deterministic Python advisory analysis was provided for this stage. Previous LLM candidate-context records were treated only as non-authoritative workflow context, not as deterministic evidence.\",\"disagreements\":[]},\"evidence_references\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification / pre_execution_structural_validation\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; result_reason=\\\"A pre-CBMC GOTO build/instrumentation step failed.\\\"; emitted_property_count=0; emitted_failure_count=0; selected_property_verified_under_model=false\",\"supports_claim\":\"The run failed before any CBMC property result existed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"No stdout result content was produced by the CBMC invocation.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract header contained invalid syntax that caused the failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps / command_text\",\"excerpt\":\"goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true; completed_step_count=1; planned_step_count=3\",\"supports_claim\":\"The failure occurred in the contract-aware build/instrumentation pipeline before CBMC property checking.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The harness passed the structural gate before the later build/instrumentation failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"harness body\",\"excerpt\":\"__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \\\"TRACE_CLAIM:C01\\\");\",\"supports_claim\":\"The harness is the intended local-object frame-check harness and includes the target call.\",\"confidence\":\"medium\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"The implementation body writes only through the destination polynomial pointer in the visible source.\",\"confidence\":\"high\"}],\"limitations\":[\"The raw property_results and trace_summary contents were not included in the visible evidence excerpt, so no trace-based counterexample details can be extracted here.\",\"The exact upstream generator bug that emitted the malformed contract text is not directly shown; only the parser failure is visible.\",\"This analysis does not claim proof, correctness, FIPS compliance, cryptographic security, or any ML-KEM-wide property.\",\"Any repair suggestion here is aimed at restoring a valid formal-tool run, not at establishing the selected property by itself.\"]}",
+  "response_error": null,
+  "response_object": {
+    "id": "resp_0d93be3417c17ba9016a55c9d18ff881a1b5f0b22cf3a7f642",
+    "created_at": 1784007121.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-mini-2026-03-17",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0d93be3417c17ba9016a55c9d2940481a1a7f2d4ce8770a3e3",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": "gAAAAABqVcpGHs-3UYp2SbAOAx-A39UgQ7r36I1wgsqS_G-bAl5G5vpzYowN21x1S6PHwxn_XxOhVRNo3vSXfxGxfMqzW_HL27ZagQ04qrkG0B_g67Jf3bwQ5b8x2iMXAGBTHHdM_kOai1qHPM3Caoon_5S7mP-F1HOi0qLLbAVl9XHOtkZdCMZHiIUPMHxEsp9zFCjCy4mFJhkPw5kcLJqsd22md1oaq7Q5QychDPzzmeedPuG0rCaCwYR_geRgWscpq2lVgqlA62fdcUzCiYQfw6DoqFEv3UEelBPfX-Cfc35gM6k1MljrzzEVlMs4Xv8FvMT2PNdHZvkK47E4o7sESFqWrTW1j_8QzT2PRMkBdiuYuksvbnJhiSYycyUWRMejifpw9wF4XFG7xgKAt41UtiQvR2gctLBLlJ_9BMx468o9syfot8W6vOsg6_aD5CFXft-vJogv8sKv6s1TFTuZGyJf3ZqgBrUTta1-8VL6hRsYw-xFTpJ_-6wPSRPVhLNdIOpnrKxsX_1C79lt_RVSHJVkz45PcfFErZDCkfxPonSZQvS2Oto1b82YbSba3DnRhwJNyD6ml0uvVzW-slSYai4g3OkCDfxn8o74FSIruQl0ZA8-Y5q6Rp1pfna79kkuz5KSIL7ibaGYCZrVi5G6c16NaYh9Ts_qwIkyJXAu1YD_IKHPn7g90eHVir81AcnDkLuWiKBWDwajDkn7QyaMp9MrsL1TM6IsWOoMwYjCn4mHDXvAD7SYwPeQ2_63xX3zaGfhn47kQWF5a33iRbNVkwPvt4olFnWv0b1a32Cjav_VWExUI0Gx0gos7eolakGHOw3XgcpDuFtuiZl_kJ42DqzrTG2n3QE-2iOJzCwLnOZlSK-4KULLbertJfl4WQk5e7_dBrh0tT21QXg5-gfb8DstHvIzBcIxBpfwBwnmaJHP7XBcWyb-xl9BocPmIkfn_Kc9OlfzklRkyOayCgpSR78Tg58blbBFQgST2Df3yv-wJrry5ys7mJV-_BCQUtMjpFytOeL2lSY_IR9klJPCc0x7TXFGtrMh9mtIGpe7Ij32LRjvgbU-vTCKwtXYmm8j03n-ZfjQZdwgpbXoX8zIHM1BHlxjD3UBrDGJzj5FFYJUGIhqCz-YEVBOJdWrNXMFoK4VppCFLFTYq-LGWjgm13K76cjf4MztgIJVv9sKjbtxsIif5lD4UV-Elf7r8_zWBIbDgWYigV8_9jZIlXwBotAoLNnl0LLxqFBoeKIrBpSF1bWWy5O5jhVfM2-zm-s0fLjaF9phO_U_cgfk7OaAb1BIe7eouymAySBpgRIZVqaNBRI9e5VIFH_6rJRugkYwj3p3H0S59xoLArZLg8fVjWysUgXUnbvoIsUyxmk8fiR39lywClEVxZ8DdNn2Ueu-dUMfxhAh2miWbBYj_xyqzeWuVPnabOysGr-1-3-2HycUzPkBahPic-XyUiV5x6THEYsTwXzfl-6nApmmu1skWn5WY1ohH7i9jjTuOoEuupylEBCvmYlse1JWW-MFhW4xlXe5NaEJ6b4QPMD6OtQvqGxxSrKql7nEQofQesy6E-jBjQg1y6anrmAVQRMWS9LGxxttTyzuT0gmIiJAIWBa_ZfuKT_nvbMLWgvUoBIiqx1DyZBQ6rsKngL788NHE3nH4jlSPrOG9dZPhhobh5pxJgVESI6w2_raFieCDnNkLPuaNvo3_y94eAXIpbxDQCTwR9HAP6Ic-9fdOCaj0B0EKWkhTPV4lkVdbzOoO5Zq6aD-h7A3bR1DHf5jm8tMPabz93O4xnvbYZEMPrFHX8a0ZhlAQbT3xWV-hfmFfB3bWntv2DVwhkcfLJJ5ICfz-AmELUL7-yvyvSC_CcOn0pMIxMLoW6zErKTT24xrMfwecsYDGN4MD2QfuH-L--M7AcFEW3BF9I2lHvKl2Hww7RCulXcGdK50cY5UNaNIjq2wZ9n_HbkEcF2Q4CBElsuZxnyF5jHp45qUm26l5GywPu6pR6QvIgwQYZIN0aCc4RDSYAIn0QNCDB4oM-Nbi5-sLGJPvozeGL61nRU6WOxXNEnT6RkMKtHdJ_v_s6Yl-YC75HKqxi3bCTsZ-J86LtDECTWZz9wrYFBDNEn73X_zFjUBExBucteKTU-LCz9hEGKqoepXuVOCW3dzyI4OenkgpHfY0HLWj8EBvHrYLbFPN9FFFyiqSZ3oUiGMYlaNK9zsI3rDXnxA8pr0edk1_7WirWKqqgEbSSn-RuHgln3hV6rpJawXpGdz9zlo4FrK0Gv23wf6RlZXrc-mzxD_z0HxcFDYlAMdXnewgwPWcGWKU2TkHsSO_S9bX5sBBkaXOtlwR2pNIm9PBahFrlvHbBD660gB3s_dzcp6GQylmhksM0yIsJemnGHWO2ncheaguvogtDoYLmj3aoOtgX9-DQlGHq5WBRCvCSw6sg8aJTHr8MBfXZZupcjRpn0xmyswubedYWUnCQul3JluhBKbanwVcd6IRlhCXnlgJx7rKLtelb67t--x7XFCnXST2II1_9j56taWLfUjEYh1xGpEIF7FL8zj0BqXN-uHqTaCC3PFzYq66zSzVzuWdAKvZ-2DZElDge-ka52lq6UTP3bVF7TLc_SCo_-RIuXX3qHNzPhqHvpKawWRa98PiDca69TgiWOnCyzLOd2P2RDkxfWGPQT2beptOcWoXC6gf1HzymHhaM_wXfr7Eh36sRQL2we7pYBEq-SPMUwelYT1Sq76_b46gx_cG9lSQcWQKkb2dNw1Zbk0g9F14-A7UfTWzMGcsM74XcJDXAqp31f39KO_ayZtiNSbOtTh-yXckIkm0OmeqUbcaiem1_-0tLC9wjksepEx7jeedJQce-Ow_WGHCwOi9xqar8m4jLWqBxox5jZhtoZSPpbIyhQIFv0OUM3AxAeYbJ00jG19HpHsaZ9TyG4AZsXwDohI8e1R2bL6B0ZqJZM_TBStdmO2QKeiOHMCPSb9cINhvxz_E6rAtsFKV_Qy4QpKYGBb1yVgPlcJupS6M-hszsDjBlTEWLV_z1PTH32HlTqgFMBqHzCV1hw6R__w5_I74YCO1gjciYnoYqt--TkUs09ezzK7FVi9JFSpp3HCn_uL0FOtjM1VhQsSQh48xlhudapDnmPCNwjKvTId4qkzI-pjIJlFYBPaFvh8-nqZ-OX52ApVdcM19h6iZQskmWBz_KRCIA1joWcBpWj5VTq9l5PaFlJ42ZGY0KdKIo9PaSWXaFKLiZy85t5jf2NoaamZ6TMzjjE8xCDGLsFOiVG21BkoK6cUAoVkKDxXbWOH9MYecldI2QZWaKRc2bfHAMQ3y1fqF540ckFrKTivLoz2uUP0LBhWits84NT6lPGiCx_BNsvOobgTjxOJpmWzE3PUmnZuCXjndzU7vff92sbVgU2iusEvDq0R-dwrqXGKViqkhiLuS5beAQIJafOF0KQWsA3iAI6NffRMnD4c3cVJEKWDkZ-Tza9gp4dwjwgfy9J0CdTiZUVHMKi6LoL7N9UU5O3YxekELOpxRzK8B4JGycmilS-TW6AAeIq2noHT9MDQnvV0nkmNRfv4Gh-86ClvuJbD-R2DQ34OgFC03XkR-DNnRCj4pE-m3YTKUpEjMQe3Mgz5xy8CsJf8BIw0nacI6lFpOJxmwhmdKZtGwvn1X9Bubyz6f7WefYsC7mNsguBFuegdcDuIHXC5BSBep3H_nsoh3NcaBZbXhd6nVFGtopSubD28R5pxNhFxxG1TIfB6GpwfSEsx6jmnWTkd5iACKVi_n8Vg6hxMtCMLV2nbg0GjCImf-johlYrOiyQIf3PZap_baCEEEAfkzMfCWNHuJ6A5RhYqc2KVZiojFsS5jDy0RBdrJC_k4gWarEbXySylbMXE7w38Vx9XPpplcaOFt-VrQ2HoYlivJe5ZP68uwhRjpdIYPfHC307w0E68WFeyDS0cXjd5nN7f6LUUUa9KaxRzhv0POaJpTXVaokp7RlWj3R7bBuSz9ylfg1FnssHCYydq91Ijswy-rNyPQ0KkvtZjELLbnI0nPFY59C2fxtftyhEiV6xYhD6g-C1zu9k88JXWp0DksolwdXYkhfPk_qowZyg-OYDf5pBcqH6S4gGlQka_5So1BWMPu1eqnNGfOfxh1UlTqQsPTJN6AsuYWQjJ1VzZ18ZU2ZVmeIkXfBRQNvGNaBxuTydaIugEP47jdlq5la1prebDhzZEqOwnI01pwtTadN52fv13TNoR4zk06pVnE5FwC0WZ8OaAWO34BVcxgJeRQ6M-LBAW8-Elegx1WYxQHLf1qTV3xW7GRrsoyiVz0QT2jLCMhP-Gu9nAuFclPaE4eqc2zLgtI-Pqm4wyIFYGQbgTreQV-0Lbdgj5CM1LRG_hhDeBFgsWQSsm_KeNsXE9lFg2C7JWol2oWdbnc8thAPjy6_Kl42tngZqD3PRYLyqIPmwoR8yGKUwXjknerOz8blXD0hlfkwFjI-sMmU4rt751TOdWUltJrsawVcfmQzZN4BlgzA9OFUuXUjCk2aAKIjpCcN5Kmq7lmL0hPq8-FMC1-TmOqEzNyky_9-NQ8HsP3iDALTJYdhfbUeFwat5efdSXZ_9D6TTTAms6D9ojIXQYi4TqpkfxA97OvLCJjJtpYKbl72WyqQxj_pfwbqnYT6pfwT7IlLu6uF5f6ub34R9MtW2_La7ctE8_RUU9NTlO2-xb802Iqgcaiml6p9ykHXxvpSjfKNkp4BnC2cEz6sCkKxJkE0AaXJUZf1RV-K75hi3bYwRbOivmPdaZ6jDttlDIiI1SbFPPsuQTt6y88GACq0vw16QbEssostEtv3Wc33QXqzY7gMA7TM8tyvwa2cMBW8XQktfUjbWB0ufS8RfloJsfFvOcRz47z0U-pDM63N-PqtgttmE0ocVnZpGiA_vc3Y8_M1zG6VnErppe9NHVs0BPGY1V-PIABS3wg4nMIMGitG_fVocPmrcuOg9ujY5F0yVYc4IxuEu5JMIKGYmxHdoYiThLsN4AhZ5orZuzfOZfekZaqfGAWypacWKjB1GYyLgCwFnBGf5c7B9I_Burg1uFfFUDMvSCiaVZZouwgLd9uliz_djS8aObjKL2uJsoBzPcRT3D3D5s2zUZpq2GTZ7NfjDMzU7RZ7pD8bF-3Cp3ezVBkZFBnORv1MvcGqenic5eCZ0yearU-c-COOQOhNzjbwNljlAnbYuA5aVcPD8baaJSXIVHQy0u4APNt4pcIMc6vL8JBI3nmneLr2a4cRBojRDHAI7zVMFNoWfP2QKD4cd3Jzz957GkVfsx5oFXC619_A0VwVtVG5kEWin4YgwAfyYmJGtPfqLh_7G1nIp7KdOUoJVlKtON_ep5xH-kos0pSGRq2wXB6lYNaC02ULuzDuFt9GVN9AM2RAD9TteQVApbEJFewM26BJXU6a-KORjZoqNBZaUsLxPHxNTnnyJrGGM2K8TnkfPX5TYzhmNU5yQmqTj0urUM0TRinPX63J6pIz3LnKDujBP8cm8fY8YT6Hd1P2WTvO46N-69WoMpD8xvasfN1L_nADsrFReMF52BZBw9Xp5tQRdQ4oSNd1ATr7atnD5Q8x_3oMqI6oZl8NrlCT0f7dJ-n0p6vPZg1fbJtYe8dDryLfU74oGwMEzHDd-Y3bNvxKvvNr8Nnl2NZyMUF1g2FHUIkTWmFEscQiv8fCs1RaSECl9kXd0z-s0fL_Eg03BpdNZx4bZRo6PgVATuHI5ixe2EfvvtsCIbKZ_oT6QvpgIXhFV-pXWbCTqWF_q37PIFLh57A7zsQqKcUdNocPk8yJ7j9cKQzDa1PKD7MkbHPurHb3Z7gcX02VwyS1DaU69YO6SEB2F3Db9Ps3m2lz1WUMZ3u23Oud_uS5qwdbLHyNMQen14sJYVj_ia49ws1oKsm2OP3Cb7-3NJ1LGgEHq3UjVOu-FZSQl3M_-OzuaZKASvD3Cqg2lCMFHGvb0Ou4DMgqv0SCRtFgqDLQaRDQU5Ldbn6uIleeBmYCqtTLX5oNJ6KOQqvvkChub6uYIy67nr4poA8_OWWU2O8oaEWgjkU2XVbtXQnoqzaokjfdNBYppppUKn9TPcUTkPRMllgJyUgiPkjl0Eq9uvRWiX_nn6Iy_qDr5fy9JK_QLgR-6XiLCOMh54a6V3euXUFityETOPMCk52RhxcQeho8Vej_-ay-NZ9vSGn6kCEGTHPsTj8x70g-JJAh8v22u--K9SnxarCdzZjpcs1qr2S6-_FnFTHSHfwiyLYQIS7UAxtC31GUtnvkZbyBLCTnEbpgOQKHZCYwmtmmm_DuuDkvq8PR0m6cxEXvGkSx_ZcqR81MncnJWsjYCtGuvTtMPyZUxDPhapqpt0fYBTyoyXGwwAfLcQWDN2dbXk_lbiQqPOs7wNpegr9skFoZuAUsm9kKBjKI02kjOAKyCfkyUyRhAg3fmMUiGUfC1hlQ9IaiswrVoyqNNMKM1tStlRjHfu6HsE-bVNVf1v4NX5wqE0g9H2rxxdcdxQgXHR55TJ521yLqfsacYXLUljtamfJHzZZLYAYM_6fqlYIA-xXBQH2nhwD1mMOK6A8G4wxQioyftS1p0g0D-uHFVwUZ1A1nTBgHTquICh1LtYnYWTnHDD9Xw_5F005R-4_gCHLTQzXhymSXhlEUQV8HetE1r2B6yRVc-1x6vshCjebSam5yQt2kqfz_aosomCSZwo14T-GdvjS1HUJu-1kzX7dNsM9vNOCZ9CQPvPfLlJfHUgIkm54lZ58F6LIIy-PY6df-10tQ3uAGf-9x0vRJ8u3Y1QD8yejSLBW7axw5zQD9qNnmLM8kdN7L2rLcQJzzbK5GjM10nuY-fR8UP7RhPjPz1vRVgWOqMQDUUHxzNROffaz6PACovfSNMyzAmrJjynqdDGbV5-NG7Sp8jyZiUAea9uPWftrrFmN3YXoDssm73eIow_8gX6XAr-TvI_y8sHzm6VrbqJn9qQ6sRL_T_xl1quQ_3S1fQvrvlHJ8ylq-_gB6oHJua_DY2BN9VDEQEmjNZCNwyGr0PdqsIoWM26Ezl3nJ6Wyzuhp-1yk93_7jViCGrWcEkqrKsPTfO40mjxgmCtrIy_vOAJoZD4x7E071aEoH3qFPGS8H3qU1TnuLJPHa9xEAS-jHaM0b6vgpaFfJCOCx1BPQcmZ1I2CggetsBUTbM3w5nWGMzCqY40qxF_R6F8rS1Hfd84cachXIQAhAw4mvANBkbLtA_YZ7ADgBHhbSgXxmg9YlwjnN1umo_934rTx_hwjxs75dmlZpCX2qDuDGROHen5EKLIuyVJmcxjs5XdXJkEGb_O42bYzjorEq_5b2h4uqEoTtGUymvy-vaKSt7K0w1XGgOeoknv7aq3WHvYEk2fx2kmgTaLXnPVaSiF3HrFH88q1GnrorCvYN45auSsfGxNBX5n6ozAvJz29RrZdTIGTMx5c0deIuPi4mHI6DUhe3S0sLw8meFm_8BQnDyVEGDJu-MQXrPZBZiFLsFtvrTGITOW5i42XTii0Dhi0UkKPTebMhkmscFYFEb0T3Vcs2DlWbXNZ8sYyTYaAKF_bDtdMrpC1mQF6bNxwTupeHl-evyEv8JN3NhjFbhMgcl_3XeJPzsVG6-7ItMNkFlvjHf5hpMpgSrbHhpevRBSdfummkWvvIx9RP4CK3pNsVhyTG6MP74U2pm75HifvEfkCe1lgAAT6G6Tc5r-glsyqMiK7iz3PHASrZpwTaW77c6zvBw95qgtTAWM-gRswoiLjC8fbEW3Ae0vcoovgzfSnNzocG9QFCNul3d8SfAnoM8pU7vMsVGJD5UfCAIOumuTia13tX1PTMbjIAlhkVX-q25sLOhyC63TkexpKCBHt3dfjlUS87BYZtAO5NaP6xmUitaYvYRt4sFQNvB9X_RqbekcMx7N8t4UIpCwkxDgMwMSEKNw2-0YIV7UUaQ3gFdDFNqBExbZyljDwCV94zTEcsmI364KUEsQ7Gx7ZxPu8Hw0GSGRrrOL5PuECcI1VKqoDYUJIr2T0vBvvXDngZJ0OmTugBLunbm-GaINAxfxpkJLaXolxb43QwMolQQwXTfXR3JATAgmS_6Ej8Zx5w0rYqCRfEKu4n1Ojq5v1V_D93yZrLyusaGXxedyBWow9X2PJCcxNc1mkBT9gyGXh_Ja_QyPGsGzsi_6L5hDYi1tIT98mxzieI8cQ9P1GjFB9xG1gS-lagUN47y9AbjVitWAj-x4BmWnxu81IFRrQsexLPOpJngStBcJiQAytQhkn5AAA0FypAl9ehuIeLoCI7M-69MriFnSx3hySfUIXOZ9sc08y9UeCAaXMDlNo5qcBfsKJFrJUnVkhmFl5J6bbDzALWlvEoYSDBuk6NpWv_0JA8ArqfoZ2ou8kjJXTHMlzjhjsDQ1X8ljxagVQiHHvpusDP3FAp_XUHYkF7ZddVh8qutoPglH94TJ6V5EeUJKkA3Yln-_2yX5feBcBQB5Lsi2CMrLwC8jpBrMkL0lSHhupRrizxm0ApX1xsq7PGuw6PRdjuEH2GGKqFeDJH0E1GA8pTMLuYqbBvKoGlpQR4VmzRipV7NBhOQ3qLMpy40KmUpF6bDwJAYcADOaOuM_3Sy3ARPcEdMg8Uc71I6wgX5XCR-bokAoN-VtxdnR0nMvSzqH5KG8Hi3gE9E0zhTL9znWVOVUMz3CPoe_KdxtiopQOxTikgn1XWO-jtxAX68u-QCWR8Qmy-y5o49cPIzhaP4S8E4s0jcUMyWyJ1a-KtEXd7ydLhXGoek3FcNg5kN0RoTl5XW42-Nv0luYSX6Ss1pvvaFr2CjeirBzcA_QQBD0C1ZN_kjk6T-DDK8xGuBzHSQlq25cBJPEZoYjImqzXEGWb3_NUHCjtmNcz2yal4O7bTfNKW6EMImBB8cUTuLLKBUUseHMir7R_8if_11s8MknpxjH_PGO10wAr9U3lmXPr0Sj8LaLjFqkTxfIV-UKdU96NSFnNgl3wZrmYzVlm4QxHeUvd0QFmIt45WMWfCs_jJwVIInrNZfYNyEB-yFNKQFSQxwAFfZG4BOeilDRe0JpzN0U0inTBFFemNa7qmYhLZKkClzOYWLtrK1LsQg1JbU3dCzaii1szysntDpZvJWwkNlipexNxgDoLdAVSIHqVRoMxwqT8mv6NJhcCofLUHj7fCUqp0P70gu3B5g3KCp3TRgpJkXUe_Knmkruj3E9r_2P32rvNLfVAJUZXMw9BsanfjiD9a8fTui7gWABXoDeF4KCyUKUmSs2GOmsKnPzakUpJuerdF9b6h90BXmbyHMDiNqvybvCzIoHIiueN0XGfvC2fhWBWQwCjT51OoSsUhD4bkTrnOvAV5X_x_6B9swJpDLTSSLdWXcfQw3SP8LnLIPuWl-32O9TZvb7p40BgBmyWuPi07PchgFT7jFTBQtxqrnNigoJPMibpgQvMAZaJ2SstPXgUQRN19Qbpl_NhtwcEulmdY9pc2q5GngXXn7bex7MaUXNb8kVwiVLF4jUt69R8Brg3esdT-UYhtZ7g8Sem35vxrC5Zx4DHLZCZ3m3BXxfG2UjTb3YVHVR_qM4DJuc9DXTA3SMxtmIEPmv7FQLZ51XoS2qo4rvC1lCDjAPSRORIq5D0b6Nr5FWTJU5N_ASBkVttyxAdlI93vHmruoBzr0hgizX-Om-7zq-pd4SvZJpttHVfhPP375tWjrViqkgPt3vS-GHz4QgVvfNxm5FZbeqw2p8se9i6xGWkwbL8Xg6IORKIgSCPJSs-w5ZCoF_vdej5Ym9Bw3H67RXRCJsU5yI_pDVHTuvDYL8yXOfvNKIzDS06E8azEzIQvEsH3o8mwLcFQbpTkgZqDU1TvHfZYJmwpNsY1XWKqmeWyX6anl9k2r1yTzMvBhHpFCuxxyaNeAmF1gkyQVF10bI4appQyhKyOF-pxajnUwfcI_U0de4ugcnn4QJS-ZLn3p7jD35PXtsSF6fFovj1Pv9Sqo2DfD6h4MhyACS75SXlu12akrnC2l04XW38dYAg3LmVOBcOeiLigBbZDqIZs62JP3x3hJLPnk555x1sa5EDqSc9CEf6NYlmBHFK3svqqjSeCeeViciyLzEp9UWPy-m_lez0YNN-_i0mAU43boorPJ0Sv5QBkMo6mwIms0AZSr06cZ4u3AxFnGm5F7gorQE20urRr600e9AyPkLFT1nK1je0tHkWcqFqeqwC9X_pz8MLbR8AknaWkY2UHZ-QrNXXkFqm-DmPoUE42UjwuaFKRqS6pAON3qjPD36GNRZu1WbrW6XiPAi92QLoUUOsrGCMnkgppmqxzjdHFvIdJmLeNlbHT_2ON74jDrPU6kXnZUxQIabF0lMgTCUL0iMJesqeSER3xYVZ2WNiHnoGTjLCO-lTbDSSTrLG4YrRpYsLcgJL57CyyA_ZGqy8hnTItd7bYnPlolr3ZXSlE3qBgt7utFfUPKAswsvwZoPPqApRHkX0v2rQc--DxbsU8l_HWFPJQvbiUDlNj8eSBulP7nOfoH32dhOYd7WRD79sA-jBMq_FyMtE2rk6Ve-gOd3mayJHqKCCz0MEfxO1zw555nfC5QHEgX_Y4-qSA2h5t-ejvH6Q2mpNTfBCmR37q8jxMl59f-SFXFXmKi2NBXXQTX0ud4wdCZ7J-ajJnEYeri_0wjAzs1FkeWwHAz57D5srIJjo-lA2XzXowtQFKNKMgFgcV3yBlKVEaWmEkiKR87f0FGepS09Nb98h5iMByqjTaan1p97Q-t9FDS8kDhnsehf5kTInzQgjncpuivxoiVmN1ifurVBWIaOn2C3QQqkxqRjw7XBOatOfDWhohX2VbcROAr_5LeCcu3DtBD_d4Gd6p_Ah5b2FDTC-yEnXC3s_TPcCH5sROVg6deH35b75WnWm7D83bKw10o-4YOLNxSTBOQFgN6zH3Oyf4PGbWtshNh0ohJGaWIgsI3BYB5jhNeVgKnnYaunqCUJCMJ4oqaKnAbnBDq_2HGuKC2qcwr4zAyAb8NzR2cTdutIHbLpQbKrBhxwmcP0KbrVTsMIlkdG_vicou34TLo5Eo60X5JEulAyHiy-_k0r0hoss7hnbabVeSgx7Y__ImzPCxGSUWQFfTc2ax4SefDEET_HwOz_1d1xNKzI_qIYp7Cva_HCs6oFOmsk1ndAHEooUe0dNdpcZHLKHdqHvBYu-rVm7LEyLzvmWlRAag-FBjW6Vda6Rq2gmhw7oXgIlH9HATPbiwBTITeMWiHTGPnuIrWrqpYyt9l5k195aU95Ck_CQIBb4TsdqwQzC4NwAQKuGWK-E_HoTiaP49S7qDpCsHNGR06m3IoSAyPkOeVHxQQ7zigo9MFHllmZLoJcTthInNQiqd5sJkIQTTabyFYuUNQHmElDUtgDAerQ1d_uM6dT1_kuZXIgrrPFhlJbBa8v_9zPgqsc7luUGc0JpJgbl8GwKyJ54lxBz6qBnxlImCq4oEyt0kdyf493wuenAe4ObygtLQjlC5pzW8aELbKNezCWWYpscFVGVm0edG2YXW6pz_dUti3Ao7Jvxn5MLYvA3_m3_z8gzkA1NrBc89vNF7Ma7fCamscT0m57FVwjY6z6v25Dwb7B1Y20_4FKCw3CI2N0CQ69Nlf_rhYL0Y7Ej3dx6ytpgv_9yZ9zzOoiqOum9vXV1Mm44Q94LPLsdmKjYYLS4lJOLmB2bX3LbnFN8OvrQhuh8A9H9qfqrRoQ8z0lz906ROAJRjpHHaH1fDnEG7Q5dwTlznSsiYiq-hjvRYQTs_d4XnpOuSa2LpNoy3ihzl4aufhQmah4bTdJRY5-kqAOGVtYxovG-hNfiut4psyOo55--E8JWCLfcOfro6COII10CIbnqHM8A4TtvKVYBBfnO26lSm2xabeNw31kRhfbCSIGkuHkSVu2LwlHJzPud0Mf1aMk-aUXveKUr8N3EeFdw4yf_bIdxoDMGvJEq09yoqzYck8axkJAWf-Nne9WAo6Y4sl0rU2r5xRH0GZIP0X0C-RdWSdPenmDD7l8rsU-RaDJVp23D6Xn6r6bWM5Sn3miFqkqOXT3Mm_fXTUMZqsdJKyROTs1H-VtI4DKEErYiyqB-_glJkMO8ZKzM_PIeAihWACDGLoI7j29Rm07epQr1y5Jcun6kwh7_cQmifXGSmrNkXq1zQjQjfWRH0Qb7IMcO1HJgdqEzH2jws5vBSN6MoP1cEjhGy7IKoQa4KgbSvWObRKkof4ygGdVAkHTSjdaHZQEa-k4rzLBZ15-aYZaq0HGhEPfleAnb1hhhWXnnXLcw6EAeNkv9pKdY2w9b8tElSOp2t-HRDD66cqEJbVb5Bw0SKLn_oODkMFLhInQI_ja1c7kpbX8S8d5cdSxF3ufYecdTqXZghgaeS6qdr43jhltFl7ClL50z1UYUbmhxiohIl7l9kAOTucDLzZkwrLG5OQky77zmuO7vDOju959UD1ejVNiXhRykGQS_3e0NMwnfcwtrbDSrksdSeS2IORxyXpaWXVYT1CZ3bYy5Ra0XhM5mDe0yMqBeyTmfhU7S0dD7oyK_x0kuDKr_ZeiGPFB2uxKPiVCqSmtGcFmbp00wycHcHYxU7q35OsMhHTzF4aBgrcYXCD9jFgN2NOlczqQeyWjX9nAA2bGVL9LdAGemJyeD_G9zt5Jy7SS6iYZnP-Mg-iOlUmH4V6FgBvQ6__JD8gN62Yt4mtlCiNsGP3QbWe38nBQ8zC7OKtjOLOO-m3eJLjnjdHYq8OMa39_Lmf1_01Jnyq11kiZWfzNPfRul6F2G60CpYFYar4ksk34w5dupPh7zDeCDQMXvuygFPtK9quIt0JyKdi9HqDtox5KC5QoB4ojeSAKN5YSySHCgRQzFFTnopaOB-PMi_H_piGNlz645KOhZH2D-7ZLV_5JE4fzMoBwl_3Vp2NJob7HE3kbeY5ZVPE_-Axy6ufF3RoTFA5jJ2PbUQRKK2eFU6aspjSJwXi6ga1OgvOaykRxf-dX45CGZL3N2H4MQVSkybHaN_yUJBPd9xy6f2HiOZW-0EUjjhc_tY2fBnr8fdxZUVbmEgH_Nvv-uFGdjcQakLTNFJWef2_k98hezP_Tp0H0vdokTZn55lKx8eTK2vbA-uuKQ8Twl0k-lJtrvoDez0V_NckOO-7xT2Xhx_IIfJK2z2eJhjc0WLMRCeiw3-eQKGbtvJJeQ3qUttAKP4htXMI3kjt-qMgR3QQbHVrTF0AHAB_0UoTilDyzQJGR__hAw7khJ4INUOk2N_AIvmRFQJxhwNQ8P2Nh-FiRkAYs2VQ09VfxZ-Ej89562L3VNVYYwkAoGY-H0BO7o0tJgp9jXN_zRPA3uHykfWYoFRwP4gxwCM2lhFs2BtxHyuH2Mh2RmTCwJB4JHtoGdElVfOVRUiCzeVqU7qCPliVYt4OrybxCfkio8SIJTIFzaR9wOkOUgltPH5YdM12nk8KTRq3NbP_ilBnloKt46mVicAU6V8iTphGqCmkVodQro4Ugt26KjUEq_7YFxvR5iNcevgHOlBkJTTCqYnm32Jyi0_cYYiyL27PqCA_-nShIOBqBRobNHAg4v5_PC5YEOSayup5FeFZ0ndY7eMS5YTFU5LsXwGyukg4fjQuwFSuGOSEsS4pFNml-rmuX187maBXsy_TQxwu0Q0pd418KNQR7jJxWoFuTHoAuyEJA6LyrZBnaxPTeEdMvIkd3xoqfhGKDO8iuaV6gXd7RY4JFS1o6qwqnLc69EsNMFsHa0uIvKnesvUjz3xusTJejgdGGbntzC84mW9q3WgHTRy65WGz5J5AFVgqVo0-Qiiro7NN1DpvkcXz_yffFuFYHFnYMUZiTNVo5iA5c1WQqquZSNL-I_M5vYU7y3-YvUxnlO6ppVczbssVnYGfPqFwkobwXv1A3YCCOlCO6AGcgu7bzSq0N243rm3drwNgEn7yMtGG7P9_Cu9jkvawSk9iMBTYyhXjgr9pZlQcILNg4nFM9i998mZ3boMT-BaoVLQFT8Q7W3QjIvvOd-eT1KRWr_7bEf2hSSZ6a5FVzdmxeKEGW9aJ_Z0LIwlgJHIu_lC6XmTy7PjMTdSbxOe50Uvn3yDPs61B5w7LD2QcEB2SDXQuI18D0g4VLT_fZcaVKAECb94144uHZRBpV_uCVvpMOIEX2FC_B4f43_MGFeMPJO3bt_IrCXg2YiNyQDbcK3ByWxK23gxBsW2JIRIAqY2a6ef23ptKfsCRvYTRaEtVl9kMVml85efgYHyeFa-cVNgDsOqZYdIpU0ubpdfyJHJWlPDByTUosnFQ17HqQBobLWanEUEMURG6fll97jZYIvN9oNo_zo7nn_GLEnpARe2kvz3d1aBsp2DjhFczgyPJFsc44zDXE5LpZ9aL9D17nY5XKq-jJOv-K7qc1A4nRakJvUzEpOd_ExBOV3QCj5fq21j97nUd5OKrc_OqBKcCyrwJ2AzK_evMUbs4DhL9QBWTNT88O6Ee5wGn5JAinwUdsCGjqtgy-E3W6wwr-ypsNU_mDV_b9P5td_8VZgM4L8GgFoUW_9C6WXYukWtjYl1nYtcceQydxJkU95vByTfmB320Z-_WhDWLLKEbUNEPNI67F8PMsAMrUakpQOHn5-bCI3ZOmvixmyijgpYt9ox9qN4PNyJWGTjao2g9d3mecZMwH28f-CDS2vmd4NWsOtaAPn6XHFpXnpdIWMX4_KnikrYzvUy01Gd9yOO00VvFv40BON14eGwjLanWwpVnJo749aGFluKZkJzuSJ-dbku1eZWmzLGZaYf2AFtD1IpLORkmgxi01e-4abLLTa3p60Nnc-4SQ6ppctu0rVMVdYPNBncfhDhFj4u1jdS-boRik-pRzl3OaRkjCCIhSxx209GhBWhIV5Pj65EJ05w3r_GAb6SxPgpUtWJRuFalQJL1yx-dMj5duN2h5hDEGO_ntmqTcw9n9BX2exVJoDBERKcZdBULM-MWw5UwfKrMnB6eFfZZ5cYcZ5Y5AsBLGv0ggDp5VBIkA1OVO9jElZl-YldUatZ0onPaFO3rfovFMeQUul6QEz3m88YNs5915OliJfWmLBs6vP8MmwTvpuOhnuzknN0nlzYrsAR5a6ndTnKoNGbsyV37auFKUhhBF3PPC6eZfE6z2SM8Laepf8AG6BWa4mY7vThrxUf_yBgFQ3biFLpj6pUTZ6vSlDAgl4J1AYJNo8M3x0canQnFFiyluo1PHHWnCdmiilTI48lLwviHGiTx6QwOxV0wSmWheabzMUfS8lTalzLVm39q1NEArqfwZF7T3EbrxBZ_73CrhCFIOvCs06GOc4sOdLQL8cT_9nj3IchHWDZBR6c0qlaUMzBRybfdVevV2BRWDQleS50intjADpLL8YLUbnLb83U4uxNwNqumMH3ybu5X62PL9h7W8smdCP4jaJ7VqlzinBxeO5FcQNmSk4gZROkOXIX4mJB3vkNgKZmCIGoBMfZWInaKKVpHKbvozufEzb4FPjhPsjdzPQDdpW2enhesW4Bg862h1W3gOjOxZ7nkY_RX9GY6bP36gsKMzP_o_Vj8cK0VYJ_xc5L5s5lbUs0njQ0rb6iZez0ObeqE5L5wcz2XIokyP9li2ZHwofx1D81qWYalbicLVbL74nbTRUVwlSUdr71mDcLXNR6DqpTqzt7-8Icp6wg01ho_GLrLr7iyZk_L7WwLN4uIJ-PWZRPH9vUUowwUlU63CF9s-J9Lx-emfI5me9cTM8hxyDEoV-jLwo3L78synKbGjZMAx-17e9xUuAv41ogwWsZqCTNo3awQk45Z-enNNPmsM-loZo-_zJojT0PQI8-uLUrntsYxCnQsHewe7EZ9lIMChx3Cp9nspAvgdTBxaGZMELTnuXRz4sk755GvTyJ43VWfwDJ3-pN_ss1MID3IguVdbmmWOlAxy21OlIk78IroYO6FdGMOR9nZ3Za09ajYrl8vXfhdZNLCwjlSQfQwxFHDriklxqr_p78ezJxZbuvZd3Ez2o73Sb8HG5RNyycWwYl1RLku_4S0rymI3G502lSyh4SDwwGFFH3eA4AxOTCSPgbQg3tVMLexUEI_ASo6mNZwBLPyPaTc_QKnpZfhTH_ow2XRQDg5Zsct3RLiFFE4LT3Yy_DvjElfHpGmR0PuF-kScMtwvhOI648Btxf5WhpeJNLwPxlNrqnaiIHHJN1E55MrpUu-_Otk6HZZKDLY_qqPRFxmOIJc6Go5WiRsGF9chFTZAr7VoZbUkX_t29_vVWnba7XvU44lcKuEnIL80MCoZgjw7b2K3LI82giLAV8FFTOlX0W5cvMZ0o8sMWsT9tq-97G3HwWqUB3yhsKef4O8ZonOG0JZwOObABZcwjt7huf_gCUu_3OhBWl4Z1jMYI5yr-7u4_Cadd-QAvJXjyvv6ZPZmat5JVOB85lTJtsDpTwgydrsPBrHhqrh4_affkRswGE3qNrd1s1BpgUx5rhjvrV57E4Krh6vp0sCFjUA1QIJ9h_tc2GjPjL6TNSCxyPZ4F_eAlSWPMi59nM7AiqXYLnkui2TYRI3fyPa1bu7oh8n5WxeLYaZSzz9-jnF33YdOzisUKtKvew3c_2uwtJXFPTeUiGMbHDyfueQ_cI_sDw7smzMdXTKFsRVTnULR7MzTDTYFxeQ4RAEGdr3G3HZjEHpyoHXfDnloLU-pKERHSryDfZMKp9mgppg2t3Sqq1X20RHr_c9tb-gOygaJjTtz81ZJJkuK5PMOnfihgVFvWWhXEHSOJJ-ZnTZdeR4QeOsCQ5WefjpKDdDIWQF8pYbiF4rFydeFn8FdCfk-JxdR6nKmFSy7Ypw1CYJ7TdQFz4W894hXKhRF2RDhNQcwY1BG7n8gtlon3H0srs0BcC2u0lwxoIegITV3LM5qsTzzjR2b094WAWRRvs-pdQdOPK-lb93-xl9RxBWGscfWEPRB4_ZQdjbX1xpYwlGcOiz4dNZJHRKpukko0amRB-aNBiFbDqP586fyT0oVv20XuBvwpKJQ90eWn6xnr5cmMUMz2Sv4VOaFiUtJVxiJ_RElIPDJLGnGcfGfK3TfOJSpI9V-keduvXnf-lFuCr49JNZ1Ec2-rxXn0eC0ZzlIOxhTe7uKBd4cWNZlk64k69fxuc_YTJB4iawRZzIQ3nKYNd-ns0Vg-sC5MZvuWN5oLBDsLuRccB-kG3FdsJG9XuF1FR-4ft8cQerjOBgI0cZwr3qEUaKj8yEcySnfcPK4BHmdCG-famMsUXjcngzbcplVv47WobhqR0BVf5WOe90QGOYaDOaM7fc1yvXSBsUIcKz0MdibeAqifMy5ta5PAWL84q7OpUeKwcapzCz9w1Doo7RKoj6uKdfWYKJYAuqqdju2K7H96IYrca-7zgEge5c7IanCanr82ihMaUYoV6gsaCE2WSNcumSDlqzK9qm1jsD86VMZpUc_dcRPo6T43kvvimaiq8b6xFgGopM5BaxAgvNfDM2VcGwkBcY0xwu78bR8UCZ-ZXHpnKVaaEkG8O4pn0SmtvlpkERPxGf1O1BmMHLOP1aKNZVDDMlEmnfBxB-PlBOKoTfTGiVqixoEYNrVij02K9vbLFddtUm-Wl37p2pcMFlztDIgHwrXSn9zclyImyEMSAKrEYlhZtkzQ-eWdgT5b04_3yJNJIaeE99jicbhJXawf-8IHCybVZExehGvUoewR1u6be3_v9w6Q4icaHHejNP3es0kQPpvA9muMcn53lc6k_ovMKca7XhcPC-jqYKaAoyZeahUTX6SkeVy0OVep1F6KuWgdW-u4pRv8a92fH2xe9DqA2Oy5QU2U8IL5UFeg8kTaRmCPC_dX41YnFEh5k9YQSMnnFQF1_eKaP4qJBiu6W3vvMsimNt3FKs16qJrA7eEJ2_ZQflK5hhU-XvEZ1n6SjSl7ayz2EGjxPqLF2vYazvLoyiqHKL4LZyCLIN-02yuwEl5Kuu8XrmB3T2az5i50YA018G1LyQd6J_fVb8FZWt7Vac7Al6lAtiNpOChn2Cc0HQRRMMcWx2hrF1_lCxvQn0ce99WKypROopghtuEUsD92VnTMoYH0VtciRYeBg5cBc1jUci4lp1gOAocF7oTAyphmOTlf-44S7yxOHEetTAQzuDsTdFvixAWPsAa4aiUwkayPUi1Q-U8vw4S-TcBljYCtch_zvFFQ64NB_rI3JqunUQ8pO8htV21INXqjgWSYv21OS5iNfKCL6gwjR3jbYZPHDG6BDOH_zd0-Q1_5_gUJ6-UOZC6wOZHTZcIW14jfcUQk1eg6pIIxL7llIN6j_Q03SI9O8XNPCStBhYd3lOUIiEopCcsbk4hldbbADOSIOofiMPPsBn7X57jgRcin9-iLwemSsI2tkR2V6QnJ0HykPbPdzPatbYylVAj8MGobP27deX3CsAu65Ax4KlKsAZkXKT8CtEtCOQNYeKw-Pak_JNMCdqs1pcmbVgAZK5iQOr1VMDKGaj4QHaJqD4ja6jNQDdbg2n9x8s4CJ5DOvSoS57bgQlPgc0dQRzs4lqidk40FOqLl2thLvy-tx8giTTxNPS0XrxfCVdvhl6fEfbnFOgeI-AcAcKkaPlyDAJddLUZR5mEUqlGNJdTMFU1DbrAZT8qBNvNiW-woEiNeNJeX4CrR2tyUekysZmnmOIdUDuG8fvblcPTFifBw5ga5FRnZgdUeXQgjoxN2wHG0HC3xe-YjcDbsAt88xijdOPV3JUGd6o3gCtGeP1dxskvOrPwOxSP7X1diGzgYNA3YIlogz93U5rKYZQdD8qHdiE7P6uMF1RlD1ZU2DtrRz_oOMn9j8WXJ5az9YTqXWTqz08kxWCMtakx6zd2QPPygUENagQ2y3jrtbAaN76choEuaTFADJC_XeKTXaLVeR6kW_uapl4umAfvZrQ2Tp20AONpxLo0KkADnavA9QNJMC6EyVv1zOmNiiYpp_QXO2zOajSdQ3eugllfsZwvbJrSz2-icwcuVzfElgTkN4o3D9T7uxrPVrCz-r9KVXLpg1hxoUYW_rtvwXnrDIoaACUNKiEXwSCCad9srpvUAgsbE0ErXWEjyCwco8WLV7BxQLQttH2qPBF8nfqFeKDhacesJ2tuEqeeSGLFTdqGrKunDv-JF-4QmJtAT0vCfNEyZbYflaUQ1BZHBtW4D4hjsTcrtcyZ6qpU8P50_jM5iro_tLBwyL3cG4czGt01zQ3XjtNc9Xs5CH02ZaXKoeV5BIrXenuYmgDkYtnKwLUfpL-P7X9d6E8NSzQYC9PybdPzE0cxubAPeQqk-zS8iueh8CtQvBjKyG9rjkzlcRpb58MuRC5mRdCfHMlnExnlvwFSQnQGMok2LCZNHDZDJ1Xv9ggo-1YLDJRr3V5p-f_XeGUS16ZNhDpouWu-3lljl_Mc0ByuhfdvyUlkjpRgGBj6YyogiZibJxSojXwOkucU0nTCQKIdrAmAdO-FChMYtmICODyl3rNGMt-j-m-UCA2Qi6POV3mQuANbkGfuCtCOLwt40KoxvqN1jNFjVMlZK8kFp3XJo_SFoNsWHscn9gObP3J0wxx8FtjrFZF6GCvQTfffgtrG_dh8TwNLQ9STEj9MnZTTO4a4XrYkXM8iEnrQg52LZg_7Pv2GVqzYfHgcNQm9lGuZwunrEtjtK8PnPlYC1s7Tho3YZpSIt9_i5p7MU6roNZBKUkt0j9L987X3CW5nJM304Mh0tnzPa3V5rsdaHpjMkQMBtxAfztYlGbDVX7P549IeLUNuZvjF7i8xU1H-ywThEcV1_TNAqXUbhW-30XaTMFZB0WFVr57IuAgvIDyU0-wkmw8KUBxCJzEXI6Xl58SD3NUnsshFUPgNECthkKKD0WcoigO8wEPjtnBVqPE77iq8LTZTq7Qj1C5QjVpj63rlybaj-Isdb8BtYlrtmmIpVMGt3dIwoP0N37o0tMStNlY9iEwgnFOnTHzlQhRJIwsXlIJxvuXA2g8daExrF1HRyk_GenZD9zcUTJFyJXfGzZh2_scmyJ7YvgJgMF8vNBlj47eRVVCw8_CrI8VyZmKqXFUGicwHP3tPD_dqaF7fuY3412-Qx-NgXCgi2PEmuIhEtcnQitJZJHT9g-d1nXbHgsXEGyDwZeSEG9kgju4rTK9G0NNyyrJQi7Ywe4KPU4qllANViT-poDWAUUoM0nnHky7B2lVaQAnqzZQpfhtSCRmphxwdgIq-6iyj_e7JqwlDTizz0dDCiC5L8y8mLplie2YCsjDT8lpIaxKdXk0E30nN4nk-Cgl9duB0-qiagMd6RWvDT4UfWj2LlyuxiA6ZoIy2g7x9JS8MZ1JYKdmPd1XvysdQh1ye2Q4QaTcI0Zfh-DKHy5lhyvjGUi3zJxwDP6TK1TNzsVzYF_Ffp0dcGBu-rhKgJ_z6QMC-2eoHs-sCtHEleud-EOwzw90ur436zyO7G90uWwMYNovucyJLfivNKDjD4uJk54rD887X4wkuP9Syjl0GsFS-2YwREaDRnHxZZz3LRFNf5rTg7axloEZcEt6C_yWE4BXEe8kWHv0H9X98OwfJyebqNw-nF3HCahd_wBOPTuhjV7oq0-M7IzXnsXS21sl0ymWVmOn9IykqEqGoIG43H2ACVaNav4fDP3LVUeHW2dASsyZvJi2TUWx4et8FfwZaVeMqI4wXxPRfufm1PdmXwCCBrxticG5pnSenvJ-UhNtAgpm6v6A9kXiSYuB0H2qlX9KPWAc_u_Iql9qR1FXYmvlzQnzdeH4FheXkMwsvhJ6T484ExeBXqIxrtM43vwCmJ4aXerA_bYDFHtuCM6bnEoVsL1uQTHwkLklJTvOiZR1gUqJOrit1Q4Rc060-AgdAx7RpPFmkZ6n5bM6_Y6vVZ0O9VmenrfOS6fGI-YcAsdZRFTrXaFoKF9MIoiGaQ7rUm1u78RvzVW0wbrXCG_8YWLo8SqXrMrfqC3ddRk6GqbGxujQMOf6K2_KXmXCgC6KVYOOh2_kco3qwfz0iuu7lFf2Y5vYqJ2cMqY3GGfjq9uWcsfbOefygBs3Qb5Y51ZYrp7zobHkss70ho0VNr1P9PicYjpoi_ol9l62ajoP038Ya3Q52d1TWqmTXSGYn8jqEAo6PgCwVRe9nVtiy5wsPeSqsUJN7pBCljSRkw5gU6DWCsuq2uHJ83IXrWQDNbLlK9R-NPV3KVkQU7vb_pwLrYJJGFLdEwPU58poVFtdf7zei35LFXA35kL7E34y70naFTuwcrG7_j-KYRjD40ESYGmWJ1l9K5lclskYHLaQfGz8W4qFJVMTKuKl_fACscEiy_P3o6xzdz2H7L0oaTq-_CLo1p7IdIOMdkvvpFK1ar8NG0Hl33hce3_v89qp6yaip6E_Yq5GzQmBVmvploGAk1KoABrtNec2B2HG8vfNhY1EfWA36aSGG57FQBMJRVamt7czIiLWMpL1vA7O11YE8gNk6VMwD8Oftiv9_38fFHau6zu0dkuvX21YdRmYg5ZKAVJJVzJjxFvt8hk6qwX0g_zNNDnxUn0z1WcS3vkfLKm84KpJdiVcFbpLaP8k_t8hQeblw-fDJYWaO9KG6166EAFYsIFvX7T0SSQgImJpebcBwOT7Y3gCqITfkTQA2m0OijgHX1Y69M8ItpPMIbpKfw5h0BblYvjQtj_Xpi9jsv30rvH9eiP2tdoUMfS6Ej1BXfPquHWgAQOBvl14xEsjyk7uFyX-NIXAy2cOJ_HmxV34QZK4EN6HMydYCi7gyZ3nn3NpRIdkat7-95G_3oecCTtUB4JBSYcvm86ClY3w1y6HdYuVAy9lsYJmeceDFCD30vdkHTJ3wdvW0xxu0KfTOvxMhP9U9LsUh0fh7Tfg0UutrJpuAZnk4bA_C4yPdSmOBwxc_TxlwCNXH2J9p_ETBT26o13igSAb4oKR1qkoY0D4zTNiUIJdbZUqOgfuHErZwot97qEKyknZ266HceX1toY4WmjFy2WG4WmzWmBTl-CK2fjJc0xDfrdZMA-CeQzAw-dwh638PpcELnknYZ6DZ5oQyLyoYMR5Fp4JSCvf8lBRsa0Hckg-x9bYx4MUFMSfgzRkbqGjx3qrLCre9fplsQDap7arwL8qUnn1qa6JsIn9S2zntF-H03V1TPaN1ITSdd_2J4Uul4BINyFxuzb5QX7y85-mK2OCgrP-gdrHsi76QkzrXnmk6rjn9LPapK_DvaU0hJJ0y8pad9h_xeu8FhQRxssOsGkCuG1qnwmZNIsH-pcFEjrV-lR5U6EQ2_9aKfACJJkaBXz-g0YIASWsET1O6Qgyti0I7KayBI1UPkFMSdfBUsmJwxLeUUVZc8JELz6nO-Le1pai4VsEq5qE1PLsv-JF2AFjFVQeXLZBWCc4Cw78M2ENWhdTuio7-2JIZmexo2Ts1XtrWN-evDV8ddZz5l4eiOu7qTWyYcudM2f8DR3hDdpJhXbkqgJKJaw8z_yPqzymCS1lyyZHTQOyKVVF-Ftw5K-fMRwX-EqUjcDZYqbo30qhFFs40jS2SBL1IuNx3g67sdSRheC9K_R2CdtmZhlHGnhxml1sYKU97o1op4GDNCRDuCtEL1MCo15pGxjf5m7vsOeQYtl06l1Dlu2kBLvr3aPPMX5K6UV1QVg2p_4eKk0SjalxM1knbl4px6vDWz3uqCxGBlvtdCqq-NEkVai8hqOncnLC4GepTXi8SGebRfF4doE4rVMstEkoYGUjmaVa9mX-zCDyI1cxVKkcmocFkg9lOsOnCOwSEmQWAT5b51y2l84J1Xs14Kt9tU7YDWeZZdIMuUuZ9YLrMyjtOAN2r_LGdp9CBtk-z-AiNSwbiX_FnQS9KARvwSBg-Yz8iRY7K1R8jwSUtEtgyEhaKbwj_gaEKPGQdvzS9a6D8jO2vl4HpyFRF86V-p7Si-6KoO40UKNgud5quYSV7_OyN2gG0_oeqPIBjZ-wzKUQvG18kXIanp81i7I5l5IbotSK1DvGX5MuNF1HdyGKu3vpJUuj4xlFEYStROVP8mD34dkSesy4XXjU4cNhwnGPSQIr1XZu_jYChGx_OYmM5kQsm4rfsqah4sawuGtMrJwsRzrsFJKBaGb7n4Twro5B8OgJQNly97a40d0hvt0tph0cXrWJ9abRiDMSmN8KDDfNj5B15blgTNyv_mFcyMzBG0tdgzP_kyMxA4wpo1HE6t_fOa18wAkxB9oa5Iw7z_TPDYNlVafLcPsd767gBsVmrGc9HitwEwLChGz0BN0HhvhTi2vvQUquoseeOs9W5UuV7fxi-7v8See87FZfaLrjUClT-CIfSPoo1am-nsCwsCykRj7Xf_Tushe2KKXFv2mqWcIwSrUpsK2EWR0XNXNl91Vs1uQhxuGy29qY4yvPTmKGVwHIIaNYSsWGfNQgv_LYGJkL2zQEGkXPnLMId1Jvwp6yYB_R0VAfFey6DVtzBzlC9-hCRNIQSyVvDG4rXi5c4cr4MofwE7kIV0DYfbPoJHLx4PcUV-ol57RSh-ygF03HYcgzyhj6PwcHStU9H1bEqEl6iUrVEjEqI0fahy-zWk9CcU-KmaCYo6e14h0vIQIwMQBad7AyMI_2U3D-OOrtAxlj__j_BWDIqs0eeD8uiw1NksRMEwgZTEqC-MqKb5hdjxSCG4vyn6so3E4R7PrM1mUZ1WxDGfT_Tx8FkMKC_SJhRDEROlTY2-UOHqvMBcyiw9MqHy3c8BNonTmiLet1A51wiZuVwnelH0bQjSmlijmS3Vkqi2AygpWXkuFXQibo51Oi_ZqrYl84eeOcCI-iLeF3vJtLh_Y6SzOiXNCVtMq4SIQ-daFXUCdjchSFUiuy8_z3OAFO7P-qT2PQOLsKhKOCmyFmzsgBCR_nCHyT7DfrDO__CRy73e6qW5jG9r5kxq6MBI2KgTzPbCT4ERDjl1_h7EWSKgzmdd3bnWBd3oMkyPkj36eb-0qp-JLAvQd21cTyGZewENfT9YcDnDU2O4d6xjGBqTseHBWoqoFpOl9xWR-bSAOJ7t3lz9wze_7Cw7OiOr6uqra37M9IW-XKzCId1b5kk7q1j59dRTZ-D6icdew8sVJSgStnYQooac0LG50xMWZJXuMctKcCDTDCym_ehKAOpLjxedIkBCEi3hztMwD9wv6_RlADAFerXJWx8OECS8oHF930ow0oLEibFm2Qv746dXhh7QXaw4VmyxrWYaoECUasatl8kBX5lgA1yjecSXVJPJi87EOUHeaJZjwmEmo9KZI79H4iWjsbO5NhSqb8bSzlJ5oovizZTBAQhmqyORna4bV8wj9X5HaZCZmKbjcclrHzhZDNU3fyuXjEtXiUf5uBujur0sAanf0atZV5-5E4hibKhTS2viDT-HUj87T_C9RLEsclW_Hz_p6rxuRZ1ej6QU5SYK-xDTBDJ771u-Pd4etORsHU7YFiwa6UvvFsOQZvI-S3uZ_894boDHkvfWUIjNnHW7EeX3UT4j5UMeenDiMg4s_9QeA_VYkPRVtHuxkIiv9XxmsfsL-mEYDzBoXBXouYnsHuYcxVdQ6rVlWKtnp5jr0PbwgWLMIxwAGiqo8bZe1y7XAyjvRSnFILITvRQKf951VAXRW_uOjEqAt-evAt0yWzTlY2nUOu4aPRkOuu8-CwTF6wtz06bl_vOsnIlwOW1Bsxbtz1TZnrG8tEAl54q758zix_6mHilUJ2ZTsBCcAcDEbquww2t7kPccJyVHQ3212oPBhEknYXTU3zju4Nqdf8jc9-Oba4l7noDO6g1Q5Rc2bYlotjh5CzEbzqTFr4pplaJCjfg0Mi3BSkd-lsTuTlPKtfYBOs_7W8Pgr7s6iM_ESYoKcHulK1DLG0bWlCAdE8RJg0L9E9v9bXgvOiVSaeu2f1CCAKxD3NXkDVLzeG8fY6OtWaQwIxtH16VKOZSwj_j2pN-tlfBi2NKi8TedvFWjKpwyqZgrGrJH-kAiD-whbNfLz_S4kVRpC96UHies_H3n8se0TANUgflOv1nyt7ulB11xHLW3JvwTlw3GQ9pA2tJMKMsnRUJCAlYDO3yWPPg9KY-oHGQJ2yR7cU6LVy_66e0Zy70OAPIZlvx3dCI4De-ikX1LlqIB6hX_71IksPccnhkinasC9iSWkzqZHBslj5dzfRkYA-KPrWvnhKM7Muwx5ReF8m-WacwNU51waPea1DkKOtGkNw5G5bg77SbOvdekpQOLzA0WOpaxXS_Fm7-WkEsvtMEICXMB3zAcCaQENauQUUj_xSof-lqnvNkKNpE2sEvmfOpe2v-mQUUESKH5j3SklIPU2tjMX4frTllEObFVQsPAULGYGWLDt60ArZuFZqIGo-akAb-j4ZwOau3sqiylCbHZvsKKJudgKLUqUcrd-rGgU9pjeXO_W0ag9jPFmz_HTjcBogR33Gn5NMO8x-VxijODHQ9_ozUyuLgqV9sjXCvPC8CrmMguihDnucRRvc-fhtfw4GOwpeKy8qkZUZEG5QYdiY9lI795x8wfXOPMYWRGelgnMZwwZTi5QtYurA8wXwwIAW2XH0I1hZ2DbmjobtT5PoKIVUvWj26t0EX3wG_obC3AEB_Q7t0fosDXUY4QP_kOmKuTu03v6RlTMHaZtoHs1bO2Fa71MuLVrmJNuh6HtsqlY3Ko9-Qbq-RS5LXfmmcK7uhiTjdNmfi2GvJvnWsxIwEvxfc9Huius-QcJLXbNPkFbQkMNvUIrszUlIL3NlCUiaB7SqUKGlI5MSZUXJYg3dmzqaM4iv7w1LhInSTfEtv_lt_IcRtbDxKkmXDpc0-C6nDO5X_ugQrDMkx4cNdbT7MbOgpJY4yNFeIFhzihIw--SPSJgvQdrC6DThSKjfahxZGlG27wMNeq6XkLVgnP9Neqriv32rM4Og44GzXtZ-HfA8ZGIMmydK7WdpAKOnyhr7wQudBMsEu3d3LZ-X1laDLAZ1ieRiirhBKh9H843FOTVjb858JZMy3XinV2Sxidp23HSWVzXZPs-lHO5DjGc46ExsbHf8BkGaU2Dz68EnnfBSWIJjogbXFptkEMzVJYWEVt_pCcMzzE4DPIBSwJAaI4jy0moGYofZHIURcpwRMe-pJIaZqpwDg0_G_Kij5P6m-d47VjztTUtMKF1bNYpJ69jwaTU5XQmh-3E_tcJTNFhyY0K2GQDUlDixtKXHcDM37hj1ut2V7YYndCVGEUJIMjZtSWXrEOsREIulmtiaKOOchG4q4UNN9Ycn-Gss3veSr7WWZlYffnDoKM3imanufbHwGOcXMBTw3Rfdqx0BZFqQi875ZZdicGDeynvYUooVtHKpax4P6pFFsQ2NAkwe5qCuJ8IRpbT_OtoDvUmj9uPx9nqrBVJYu8WZuqB58zv15lUlJV99SAKzmkYmAp2b3s3UhNwpWaUbzvEi8TZJCMWUuZOBkByTtmQ0iLkgfHGavwFkAwOQBJk5_A9oics-K2A4vqPHbgNoYLEv_SJuy8mzjYqbUkNS3-o5b4UpiV5Is0d5wcSZYlUYhLx7_AcH29lZ82kp4mLBSrsBrbMoL7ScnaHKKTBO-I9JiGJ2VbeG8agoh4_kSIBa-BRQhJdqNUXYfBfFEE3JdwPgvGEiwt3VVdGSP_olY1x9qudscktdpsQP0xwKPDKZwqT5MC0qy0ChuCS_Kk0SKDzfmWLcrT6MqTI9ojJpHsyCSbSGS6XGl4w4fNaOaFbwZBZVBcJacRMXpttxbzFtj-uGBSnj3fJf_dg4Okth7kaVc9XwiwLntmtxZJFYp1cU2DXl7hCf4-CDJc5vur2wo2DfzXkaZ7jXdpsjpUU7qmmjKM3C49JS6inpmROZ0nUL-wDmrQwgo7mYgG9loIwuQI7BYmL_YHRAnpnaXEBJZeYO3taVLg5LntqKlC_3yYihxe7VzCj7wXyIAzQst4pdv3tQWtuQEHiYd5GDfvK0Pxuo3kzAWPkSb4c0xlbdcpyTcx6FIe8chl7ESjeLIP746Ay4Sx04WpfJ4w4Xhp34dlXU2wU3nIMXWf1qby9uLASH5oybcGJjjtfutX_3vRYTPC2x9KhQYUwA88cjTvqthLRI-ACLatVKIkNuXOSkSCHBOya4Z7XCPO_J9PPeK9DPM6xW8IIMWJ074D8LiqHoPKKvqUjKeh5G0hFwkz6kYoeFz4MNUeh6T1tQ-PQbxTpCBIoy-b7CMWNxVlP6tF2fB-bdRMnfRsAVRN_Fi4teI7PGjdeC_o4NKg6PCnWYWAdVED6uclaBl95DVtm2VNl4vPmzVx1uSbXHJc-Lj1rZdEKMo7RPbN9jP1xpiBWdFyPSVTKRKHeR6mMizbzrGnG4_Z4LN4SCsOhtvyzlvXSUTp_6xdqTQX0-x1Piov5S-3jrHru-HzD9ql-fquNwnlQ-oSvVqR8kB4-SatAIcbFrMTmB-JZUIwDUgdUnRDn3ylCPAY8EWq-Oqa4b0EaPqws86nJ7eN53W7bHjVWMqJdrRK4kOgshjteuBppHOunW-NEQT1i-iA33kbet6QPLHV6RVQk-ZichYkQxfwD5giKVNiEnSv4bJBNHQ5P9P9wWfWWiDlXh4UZL7ybrf5Zu0VU-cHSuv0jZ0ywz9GX8hel_F1yC79RS75KXmx9q8itEqs2nzrdAQSsMaLuLTjGtdiPpujb3Txr9tHK94U3Guta4kT_09jCacJHBfRNhYfRjz-6StxPu3wTmUl5TKUYvcenidkNIiX-rIEbv9kBcyMPGhS3MZtdjnEEqrZZxAue7WBVAii02ASBlxW9zidxa1PvYTVe2cuRg7kcsuRd29Uqe6DOauwMLIO4G3DdURFG0embXVD37_3O5ZRccidoo3vLfvxNH5ut1Ol9zHenDwPRJe3Q7PucHhMUSNmAeymYWy_G-DO5pX2l-h8HPWoNYihRnlaRcViOCa7M5CFv6p-Gsw2rDcXRPS-z3eDPOFbl-uYH7cGOIBxg0q-4bdNjJuajt--Bup8kFyJcmKBDO96loJvib5MY3HI3t549Ug-v2YSX636AZCFuqVtzme6fT2iWb6XkKLcJIYn4_bqzhACEgDS40CtEM4grIRwUOZgwNYKg99EsLyW8nig4sLECMaxIfHxIK_W-uylT0d4nhsdWL44TVG34E9iYdQ9zL04g-vq1rTx3IYaiM-OHJPChwl1lqtLPMk4oqrxxwBEpwC8rzMFOO8BRni8fiAEONlKwPPmqVjtcc0rZ3V7bGa_CXdn4I-Evisu-Ot8J9z9PXg-aBamOSY17bMuyaHvUobSFQ034i7EvYC6YbIvUMwVPPHVR1OWy1QTY7uyiBaVTlh-LcwbvYFG4dIfwcjOx1PkcADHTvrUmnTb7C5IhW-DsTGIlCjyG9OYawuM6xSWuEMTBmdTRDZVcW0lpGyaCXrxXgn2xy3iIEOT3btZTjimrc5IQHKEfmmBn4_UqD0v-kzQDcHP6sWIDWzx8LwjwKsB4pp19nFOwtnd_4SGWqIaHsjZMmyvcl1THGa2N0OoFUMuTShvlq6TT6xHhidtvnKRFQXR0bg-uFm8b4Is-buCq23GgeG2GEs4MLBrdL8FpeZw7KBR1GuG9L6HSQs_3HARSU2b8UGqknMoa-nWTmlHIHdULRQLqhkQCxhySPwAn2GrrQtOARk70bshXtLgFXPieenTvVfI6tDTR-WDmBIv9w7d35Svyez-LEzzyNXt5JYANaEU2VPkQsTI158RFHnn_bWOtGNYKzLUwTolI-BHKXjf2B5usZ3P2uT0fzd0vHc6CktP6zGtJUm5ttKqtS4elFWx6gAPQo-aqpEG00esfi4PjCVHhPdkMQYGllmXCq37IVtvzF0j2GyW_OwcKk0NK9yf_gj0I4CU5WxANuhQrqLMaoQF5LpJ2MwVA0tAWp2d4NgpuspY9AtPc-LAq8s7nuSbDffLSb6lfsiEW5yn0jvXqNbn2ImGDR61agAp8eHDomQfHMcEcBN997RV84Zbyd4-HvJk4cNmCmATI3VrbIq06WM-lMqEPGTIauliFdaHkIw-YrKD1ZQRdhXaINwxeco-3GrB1TbZiAwU-IzUahD4v77bBb1ZKSAwtSLCV7lCCNjA9C-ReMzHwAGREK7hX4YiY7sDKTmNGHTgp1p1N94ZiYmHNuAMBqNlbat2fcJ5r8ffNmg9koxFl8xhtuXMjPnnTwq21jCW2PQ_Al9FT48bztXXMO_WkO9q9Xeyjw7B3rG2eOh-mUSoKAlr9CQAkCCqeSZ-6_xnBnqQxIkfVhNPLKmxNWlpwVOMFLoCWvzlVGDOPuxelyPkYKdtHOvJHZeSWQfOmfuNpIKfS57L60jLx8RzgWdjPQoV7EM_wNBZFuwoP72_1y79ViJzRjold1gK6A1yKesz4asY8RWp7vCYoxx6M45KZS18p9b7FHspbgaDaNBCxiyxoRnyRXpzPqSBoPLWaBhnFKzz9-xvWe8TMMJ8cDilJsGryzitaXSuh3a1gbfE7WlaNzsYfI3_W8xC3lY9vADuLR33YNUih60mQcMR_LpjhXGEUVQNdpqZbTVVeywD52BIFttPZtvoPZcwF6RBOXW3w19KxLWrJfc6-zNk-O569Jq29547ma2bncZh3IgLmAuaIwR8j-5_5cKZC2rlj8nOjwhdM6bohprHTeYTIAAYrnE7rkppjM75GCC8cMS6kcmgq1XUc6RxbvSLKdMeNzQfn_09JYVRTI-09YeUzw2hrxRDWNQUh2lMl435g98WCZ8wNP0V_dyX2Z45EehXI-_I8ds-hPM01g7hWK0z1Vy3dXQlBcqp3J_caxQ8HJ3zP4_s4EMVlsCHsDpJSvadyIEbt3yCbP1mbvYz-ShhBH4JhaaTqNuYguDBQQ9_FvxYh9gkYHC8SkdPtvAqhn5vP3294M7jRq8AueeHrPpxvDJNqtBJvt7Mc4lErykDFsZkPzSF8oJLA9rnRPofIIFopYDQVN3tEgFxJHqNz7eS1lGWiwf9p66S3Z8MaVSJMJ2WUY18f876L_LsB8pHrui9ezyxZw3cdk4j327BPsyHBsMvs3ecldYe-Ybj8QXrsAIYeDlGCGk4f5CwL_8PAne6Mymeck0pGyLv6x1vZQS065k1jS4gZl7jJeP1mn7mL4QcqfUfsTUBFbyZ1ViozFEmJkS4wvmxd1inqqkj_0OVfnnd9FAz-U6scAu28KhEAzBLZ1LCYwwk5uc8EWD10qHXQ7soKcZruHrKt0EJoRMaJKJCumJwzd4KGb0dX63t6X82KYLT0qcg7eme_Vvt1Jn8BxBzpc3Die0H1_LbOFy_kQ4HsEzo37jII-IRu6EWM7Cd3mK1pVDMgiTflaVZO0rN7KHn7m_3Y7FGVEWnFahvhFKliZybhqsoZ6XVtlFNGdW3gccvj5SZAdAWIBUWcKH3UC_26i5fsbtwlaFgXs1bB8EYdfhQn78-NDD3wv_KhKmPh5mHGOT0CoX1iI8iMtPT6LYE2VCmaBXHAgdejAiHdvi7uwBqU1nbllSY7dYz08Keft4hPL2FhRQ_8ZB9GP4gbbBWZgpT6wqG3pKtyR6D3btFUkiW_wEcepa_1ae1R2yITAKURqK0N0geUTYyIAE4DykWBFyikAHYp_JzlI7jMVxfbcK1APOe2eM7rGlLnLsBecA9CLu9bhZ4gJOgEkEpYhpus5cwmUmYs092Ko_BPs3kMvjrSEUrFCaLjeISFisgol1bgcBLJqljTgrp5EeauAmONHmZVL6-LkM-5N9B70_FN00AveL4MmUp3CoIlY9UAH8PdXEfMSkvrkKD70-vjMXZGReVd4A2h_LH_dkS4y-Z_Ei4kN4NXPpv7IGabigWGbbK_wsL_QAS0CHokr9Yk-NpzcFeTHYngNCK46hK9O5cTnjsPICjqgbDQooUppwFJejaQeEQ_ouWVk87hRjdF93eWa27766eyDVxzcMw--CMhAZP6GuDpYgA40hgHsoFUOvBSPWUQsFF9KL1aDctzmEiPh0ZFlNYfTzJVDdo6Kpo_IRqBwUjJJNIq1ZVSbi8ZYV43VUbjIvIxVg-x-vockDNzBlDSt-k8eY5TlTJ73YnZChrmIS5_npF7K_tJrQYIQm_C8XqeXVrg84a9AJnjB5IUlC535SimjKzhpRgQjis7vZJrgF6rnEDWa6Ts6Q4iXTvTDEia05lvoHLgNKi4AbqlRZGoGSs3MvizAiu3C3dYNzSoRerxac7yZg6Hrxq0fDgKlmWYb4ndvyQR-CKxOyb-bQotVR5ykF0nMG0HvEdQRoYyD5LvtPMG9jC_x7-kKPboAETY5_KHIiR-fsv5pGxzhneHogsinv902VuDvcR7_0wQxiKrTzxk7y6QkdxS9Nngx_710hDgfRS69IYs7KSz2Qil_lRY7UPKJHm9kcqMTfzwr_dVqa6rC38xubnHtLeM5t83mJCc2wYCsiscWaAS6GdchEa69yb-Yy8VhCtKbHv3Krrm9T19Rh00gCZe_OMuEieVmHJ2xuvuQOq0u3fi4DQozfCbkX2Pq0UVMZ4amzSq7D42FD_kKnbd9yU5_jdrCR5sjjVcGBN6Z4Z8MwjeXEv8B1mMAHKmFDfgzIfCAVDJVUssWQa7Am5iOdIQKrKo988ltilmq2XgukBuoSoNIUn0o5wdGR0yJ_SjePL4rWaDVO5-1O5QzUDbVV9hEcSgIeru7CfxWTB_SFpl6XEsJCKnkOLLmYwjlD5RaNavHcuTICKv7Uv99ym9E-Q0DJbDJNadZfdD3GITKfLOPXgeZ7aJkiB-vSSKX-ZqCgUKhcyVOv2gR3TD08xZNEEdw_UMkJ-iR0ZaC6EYPPLxI7sAC9WMf_8MxFyblWP7pMmpeKnNz_5xKJZNqtQCMMEHuf2IiiNYaySAFoVuLbxLYKW4L3ehupxqo9dWeeo-B5GSvwuIrJu9b7TnyQJTQ3k3oUDQiAV0u7r5v_Y5HqHnkhTO3Mcj79wyBXaRyrrT9FnrVFKUcFMh3PFXmRbG8bsc28qFe0evzCEBg0aZuwhTqbY5IObDPvkA8RrtFCeBUC-_lLBbEhjkixDPq1M4Tul39wbTyUEZNGCpyQj0g5rO8bsEE66XJfH77TxD7YONWYUwl6hxq4G3UAcEcNjsK3qU8EBCu1aeTeoeGmkjdJBi8yNsdX1Cn85xjZuHp_hx2vVoyUEZSCN3GuqytdYVLYVmrVPse7fFuY4Io5iP8b3jFTD4WMcc6QptjJjgiSpfdl9n-2QY_1uEf9wYLrSQ1vUrU12BSzkvE85HMZP4s0c9i2s9IiF2_Ol42KA4LVkcaiknnLnf5zGojz7vCZPxJ4pslelcMQFWMGR6MdMPo1GUIoO6uzY8swCb_HV5uHuxUu-ZonZAbBotLw5UipOZ2Go001rTrWaWaVIXioFYcDVyUk2zHVKAxs695UAt8HtE1Rkt8LhQ_btfCeZ1rMMaThNXoDkxiz00koIlDabNbt89lPzO3E7Li4y39nH1mYguIrgFXH-Wabsb_oLAuW0YZZjHOWmi2iQEZ2iubb1VJbbydst5S31Guzrn_bIvaKf_SFDePS3pVaeph52uQANyCctib9EJIBMyzXJIoKA26zVCMOfMpoxXUpYDD-BPLGcNp7C52RgLIKOGLlDZ4CdMkEBnJwSksS5yoRSFBxVg0Z3qdE1jX2cABHQG5QCwxGz8CeI3Ox39f_gty_1mD3LdhKwquN67YlSPddqBn4j5sIa0WDmlj3H-6OCnDHO3kzSvH9ThNEjCHvCVPRs89ef1MBTYt9QVp-EL5sbg7p4AOIXzEKQEvkbNwbRNil7HSvmwMSucJ67Ck7b6EpG3HKtOScosSNvZeI6aDqBAG8PPAOwQ2hxuI83hbsUjpCYPUnUDBgBNJ0v2RzvNh0PL-eEX_x9nKHYVMsKPAhXqNrCQKT1SFUJEFTrICeOv3JclOL_tUGoViqlb6J9HBoPRPaMWShOAHwFDx9zl-Uk4nrGJzZZ-k-5VIk7Eh3fnPzVD-j-bww39Kf08wt5cH8I_IlW4RZiqv3NEot7fXJONzcwMl8WAJ6ZLdf4a3d4rNCWhxqKpvtYDn8Xt-tV0jgd6f_d5OmfMWlQKJXfYOaxa9vebic89McYDi8lMKOX2BZq4i-TlrhrwP-duP6aIUwtYPcfoiH0Gxj8SNJuCEGp2N_IKLsaTqXKcY6QBcs7j-Up3SoyLG3krL_LGg7fdhKMLYbn0ZUWXHkKgE2fpPANLDHmQWvxol7EDkVpIPK99HEYNTBVzldOcQ_bNurr1i7KV8d9GWp3KLCnUQFY-hOxRtDtRrsmnAUFpYcgmp4kUJIWQLBmdT4UeEhBpmfuK6BUvvq3qPXD_q4QeAdobnvQhS_ol52tepz78qT4PQMSPxqqVzKtLgvmIzR1fmEkp-8jCFWnSRMhEDtPsUJy-OysEQ1TPMthIAwUZcT76DsyXVqrxNcQR3b2u7gIXIdcwR-HkFHPwl8ZCClw--02Eb9voEWVdnu-Ii9Ac-oQrDMsgrsQQP6wUgIQ8c5rF_KqSEIO8ajWszp2jfBRNT8xaOUbGCVfxH9BlGx_XtiYlG366A5Hm2d4tk4fk6SRQx3ZnKOgzLnnpsxxk6kjffY2p9e1QPCWidp5kNjJxMjKnfg1Ucr8XejlUBl34l-icACNDXbNLy99wTuMX3w2bYq9EOGRBf3PN2dYVNjMfTiKVxTpwBUVzT7wBSGiEa5MQcsiN8z5IlvGWIfFUSvE2kksApS9DpEJiPxOHmSDRPHURqCfw6uqpZ7535xuFRtrPelzkUjA-F8CIYY4TB_FMLGCASTJFfFFVUcKzRzPj8iueBKGjf-vk3KEAorC-fkSF_jZlQx7rLAinum7VUwN1RIy-mZ9NAQqYbua2lZFe3DdYipdWCwpV_8JYuwr0mOKOwv2CQ2Gn6S9H1E82rkLiWekOhT4t4koC6MyoC72nP1Q5eMrq1oY-RF7yAiCRkclTEg-nMtdp5o-gETda-KWSbt0APpCz9uLEQkCIA4mUVtgJPFMx692fflKOSm9cm1ljwq7DtJ4rCdkhnyKN4GiLt4NYZkNAyTPq1KPN2BkrDCOtd8FHzJvt9jwb4qQ8s-6TExXCVtgdcLEBqVR_Hz07WfWkAArJLO8kL1FmoscBBPRZdnd_QB0hgqtdNoRlS60hpK3gZjmqEC0gHhoXzNJ4KwhBXLI_u3nTMc413A9DxvEc0OSr-PGckA5Rh3scJrjuaFpWrhGXtmf9an2sKFA_4zoxQAKHPI-tMfZkvYUXucX1_ztOYZNQZYHvt5rXL09Wo0C3-xyQLdpHic5pjeIrQ-lGccu4PvJlC8By8z9Eqe1j4FnkFJho0lR_ulXP1285U3Q4bzuPiUD8hJ31KgHTW1Fy9yPwcI0vgm2PopICYHc5JSj7DErKy7Yj551eIlpkGbzfPbbY9ERwfJIc2Rdwdda1Uayra9ve3OehKosRhsanoELRgnAF8naH2vD4M1xymCBkAEps-P9NamrNb5mWq0NKjltDSOifOfSpIuHLQFYTT8FJ72tcZZiWny-qH1kdiXCwbfoYyxg7aDcw_Vxp7EsBc6Kg-83dJQWi5fI0uOOuSxyEkCaBXueeUUaKSJ8BqSYNHVLNH74pM3qoVNOZSfqYQyAWLGYe-OXX30J4S3EnXDmZ-T8DBezRo_aG1qwYRJgbA_c8Nvlb7Mlob5CEHWUOBydxNzfKkTXKD8ibWXm0sqfwFMFm1yVa-EMp582L36ui7hECvE468sVs2FVfw3fW7O_LZzJsgB_wujZuNR28v3qmwFB3KDplpfHafBhu9LluGv0h1HhNcVaiTzhA--pW5IsSdeVBD82_PS0K0DVCyghsnaFIfwAwZIVSg-JcpKMxUfPJmAW4QvVOKsVeUUT-VAcLZf-NTxO4EKri1T20w24DPkjXa67TN5P9XG7potMovyiboNQilD799YffAIVF8_xzv_5MG25sJOtVOMV040Q9fhyD_8lD-bERZJxBphbwoAQHItSsFBpjwANAI1vzPaAMoZp1GvNIPey-NetXhHg84Qz1_ljPjvOrIaijzTqLzWYs6GdPBo2bersAeCxpT9bfFD17jtM51IByKKg3Chjpk2M_Jogn0_dhpn4nvU_i7dVDXKhfnLNbtEszq1IiE_-Msx7H2fmxa0r_9dmmyBtUEuf5Go22Gnt_3j2FsTeDaXaHv5OBW_8yZ-_3jqFcZzo9EsVekTSQhe6yqweCBQJqzDQq_DKKkulmUpyx1X3IFawV4NyWT4FKfhCcFb8cvuwDyKAwZBv_PzXXRtgT09HHiA2zbA3yRr2-plWrlRjNxiJ_81c6sRsKrisph1v-tXJMwRXWnj02V73Bs19LTebo9_8oHPz9vHztciwWNh4Zbi_m7v436C0SSE6eQl-Bum9J66Tfg0yi5D2Ld_qfOHGnBvCP72p-MFHmX2qAXThShQFQikK_-tIaa7RCjMNUZH1VdTN9990tl1VN7byMCb_F8jv3hoU9ML27iv3vHDIE18jRZpgrdAYcciP9UVz0ROjkGDIJ0bPTrZQi2vZvflfXp2N-iVh_tyCAtfGiaKvOJsecn5qYr_JZqfJr1FPfrTpicMjxilyZ8X0otwDeWlHGSl59ejZfkkciUwbP9R9HWQj21o5yfkEJEZAWDCnp8WHxtIf7BYIxYPDCdfncA-84JMJJ2erSvTEl6lfdq6M-QG1V3M1iPgRy0YDtAmZFTEU8YDXZizrY9wM9bm8w4XGiONeOs_r3-GhoseMvSD1j2WRRXBmGrxpl9TOwiOWVOxQCWrX_aeUhcPxOHdmeyNX5vXo5YAjOJVg5vzcuEDReKE5LgkEkTjrFPem-tB6GUojVUvFR_DQd43CA6V5c4ptzqAS18mw1MrRTOmWgOwrMSJ24-9iHJoMs09GmkEIXDE6YSC_zWGdSPQ5EfKhV3rP7I8HuL92vasZfh5olTkeWANulx_22BhGvlXVI8xtHj9akqsumWjNud6tdiRzBlhBvYPrO7eBg8CicK6mtm2UnTxQcPMJiQWDyTnifQ7oiQ4QEbncNTpQxDQXj2qjF5eoAAKAj5xYV9_8lKwEGy-1XidMnEsSYS2-kcZF2Uqc24bF6UE54AhokaFFNXU9grp83Vb3Vzt96M72JFuXbJOgALxmI0znlflhpRGdDyxYfvFTRkp2ECJ6__ispYBfotLwECMmbP7viw32HN56e8MvkvGTkVeLe1uhcb6mIlpm5zW1QG7m972b64wKNbHjPvJ1sRNBf-vPBWsK7VhCLFqFIrdQnXc_s2RqFRDbxBdNZYatteaaI8jg265upg4R9g4iOTX_b29SA7kbMN3BP4c5CQdV-J75DFGcLIautJH-CPfRDYU0_2BXK6ZQAroYDDKV88s1vriLBS9EYTkXAGFirBojy-FTysLGFD-fHqRimNGafKP7di7lCdiD4w-mkS2fOEmVGnMpVLsKCjzwBECP8t7p3wgwzAzI3s5cA0uohI-cqmaN6RwCGg78lBVH3W4Jx9upGv6yPVe-ZLRykUXJ4s-Ufp3IyxhtNiA-QYLeOtHnIRQ_934B1ZYMs14LAJ07lyXdOPhGJszgdHIwr4YZHnt0RyAhzXoV4r2JFw5UroAjdmj9Za_nyRTYkreb8lKicrpR43I612T0kUJc7RAFa9lj9WonklDuWZUhOaEiawbqVJOIGi05EZDT1T1nfxW-4JDU2fVMj4OBL5tZw1jiixzcKenCD_PUFJOkCQ-0E3KZ8UXDPOlHKT_9lQPdODG0wmJNlBBuzFAHxNed9QRGZMk9QH8r0m_SmZZR3nO37o3QTyK8YXNA7pxaLJlF5-hh01f6OVfiQqp7ZigXYKGuhJUpzlnrvlSLKQmodK9Yz8dloRwT32dQ6Y2_j-V-BbT2lCVswrS_-7q2l7EmNbOaQCkdgpDRSm4nAuLNhsXE_1Z4qd-MH1MpvM1rRzsmPgqzVNTIuet02Uokki0w6YANubBz9VFqlCTDwiqwf98PGzak5OIWfxWkg4A6VuWfdIYnn1r6QrbuQPWaz7fPmVNf8IKogc8cCmZ75__puMpW-eCMYh7MWus2B7e122pCG52JsXtqRdXXay0hMCsklpFrsqowDpU7rOLvWWz58qRzOdn7W9CBRu8531wprVAIY8vEj14uokHUd9RMD-t2oFQIz2britoyWgTy1YiU3zD7l6jLD6e7sN2mhkSu-Nl_Vtl6I49gfGC0GpUauhLkdLHsAMr8GcwWgiakRSn9ic0CnyiMMQmNxX_NAMa5PuCwZDD3_CvBDpwStGKywNeP4fAtKIX-RNZA-mMZnVgRJaO4fPJeQyITppFknZR9j8aNWNEXRIxZjTHIIujQ0whd894TQTpxYTZIrz9LpTTWWUfiDFrz6pzQ3D--Nsb-tzYfJfAZi73PnC1sXg-MsMj86W88NB7wqeq0GVOdO9ztDhNHiYLuejgUJBMXPUX5RRM_Uaz0rNWUzEGPhYWja9F8SdRLmBFGZKNnjk52lvbcDMRdpxzvvYZ7iAPcdil2xspPIlpPFC9lDUBqUQjHPG6qxEJ8maZY_YTDGeqECR6VpYnZzuU4bMVaCDShb1bZb94beoD3FMw16sk5DUCq4IKVZne2VSOJhvDXX-bKpGwgVmSRndKg4cZMlJlihVG9W15dgdCRTsd0cg-1Y_5qmd7vdH7pFAMm_Sycb2Iib6uWzP8pyawx3uyIBXbnQKJnmZOIH1frcneN1xmGGRoNzbAoehLRFMXPOZ3U-GII9qpnlJjJSV0wQ3Y6jQBEM3g1e33Et-Yf8fauRVUOJb5n-fT5Xk04ZaUtd3dwClDTLqtPl9YiEd7GzTyg1nutd50MO87kMcHccglr5WfjzDl6OlAhtZLb0gXbVOz_bwJoaZh5xgq71M3o6d9bKW5mXZu0TdpEDL0L1XkDC0GjPXqOuVjqKz2_-MNQshy99EzPFDBk2V5SNGhrgupSxZGh9g_KWzsaHZnOV2vC2-HIBWcPLqJdk8NX5h4zyuDLQ8z0F1K9sH0DpOHKpPQDPMB48BqzTZngZZ0cBpVI4vcPMiDAi2mWaEGpmakl3gX62z1MLoksKFjQPJRZFKP_Ja1ih5O1mdXfOB0WvVxoNNnZSzqvgOF9bIR_Rn_LPoBQnBUwIcXH2TkGPdAEai-b2u8teBhp9nQMwh7igSAz-44g0fhEeaH7gwYhvB6P0nNGwHtxZz_6cBYFXGX1XnqXib2vChxuv-7R15vUskQY1OMLgUe9JiE5oWFb70ufwohVZKFLALuKWHQC304o7iA5M8fK2aPFnRbQR6aOWf1QWq5EB4M01-_L30yaQSnQLTQWntB0BASvHqGpSYymAZWBuPFj7dEvUPVrY64NxVS-9ofgr7jF1QHXZAWYCaVDS7XrpWkAQ9q0uc5WdLfWnt7JqYpNj9GPVgEFrpdHz7kz8tlpXbSWYeqfys-6Lq8j2nX7aOSKE0R34Vq6acZTa8NBJVE0Cd_gMO0SVL3R69HUCWznZQLIi57NP8_eYv_EK7iTRlwPt6r5SSeXSU-E_eRcWOXDcO88o_8xmGwApwZ9QI1KW3WD92TStzN7u11qwktuqUxLrR5HxYtpGicPGTv1969heAMsPehNT5qugzX4i3e_RCbvuLQWJZCVDut04Ljk5ZGeV-J6ck61_iwikUmotCo9OzstVtByxoFf-0308h636xV7xa7T-2bjVpMMSdqw9zY25nFrLNT6c1FdyJqGu_hRGpccNsA5Zeo4JKcIBwwo-pGBdp0shmRa0BtA8XiVk_eEQOSBkBEoj7ePZjoEWhVcUyPilln2Od0pP_Xu3599NHLCthG4FKn0KYCFyQ3Xs5K5Uq3yUEn02mcXybrXk1mFl63Vn_3rl_deZegB_mzjm9TNnwcU4p-wl-JWWZM8gciHH03AAnYC2gVlNR9SPhj2UbtnvhpiO3gp5bmk9wiy94OX5HBCw0iRJOWXagKdzdl9SVN_N3q53XsyVR-PUHGHisklak6hVEvNv4aY8FgfKRQ0Y_qx7yPZZCv6S__Y1lvjLlK2cwYIIAy59O-dvdOPwTnKGZfT-clqHcHNfgGt1gXqEXPxXehJ6afm2CVv0XyfIgM34ulc5I541jcjwwbP7scL5NGNMTPFQcZGzxaSR9XwKYdSAJOt4eGQmzNO1U9aMErNjmOYjXap27Thz-dpR0FsAvJR2pdmei-sxtgiTeLKxgWh-M9sjUA_WHBXPjTS_Go6YLg8_xxhC6N75hJg9F8y9djUL9xUin9GrzQDA5PLJYX4n-pLI6rnYmZlXHzsXmd0Br3_yhN0kMDMi3YGU6EUJUj47MvcloSYcGKyr8mNDpVYnTPi8Q0_2Loa191WP0DZevXCsWC_nc5zznTCEVMh2Y1KWy0FYV_vSxV0pLf6Yte-X8lfBfiA5PuCAHH_1hxdjGFAiI7kLiS1KPyi_thF4j9Z1vEwdoX5Umz-Av4qcEGeexnldBKdtXB1rXBrROnxoNqQdcxoc6kicf7uI5IrvFaSQ4iy9_Q_hMbOlDNgE2iVE3yGq1KgHHhwBRP6VvF5BmAW8GNAXEJWkua1yv3rCOaBYtPmoCaLkDTrgMEpZZzIHbSnNkZ1XcD_VZftHkNVNGSHQAtbWtKk_uvXMJ7eQZYpiC7xiE-GxwE-YBONRxTB0E6HBNIx6IVWLDNVNkXvntdxMlSotfgqZPwcgMnhI4DCpAldWfzzF3-KIFYwc6D8FKcx-k5EayXO8oo2vTpQRLHdscpPVITXAf3JSFr9tDYm_3HhrLlA8pEf63RA9NznaqzCYuq6lH0NdL5TFD6YjrQOrGDCdxj5tq1TGNC7ETRzv_e6NURmrErWibh2HZccYgIXh4s-molcGddgxVjweHWp2mBPPAFTsxZLT3RSWhVMeyKNgDdUVAjGiy4rsh7cAED-1he76GNW5hkQbRT37ACI-y67qBTefpX6KA7vunS7SSBFNgsXD5GojMbW_nrulZLF2LZjYds7wpvkX0z8n2-yyyAsqU7H_JNxSXmwyKMjl7nf0GVCs2eSgFhpBIV3dlQ65IRu7h0LsOgvU3xXUfS6p2PX6J7t6LWKHkHVG_PHK3c-N5Nw50QILs7bllXhJSJg9jMoG7CPXGLVCinJMA_FQmhg2GrkH0hnDREqAx3Vbn2QB1J5EmgRslInzIhrLu1y0oEknICyWOU9ABCwMxevVFIhoXgPfqyq_mFOtFOIk2JJFrZ6s4cMFw_fK7Af6wwOpY_yNX_7sqckKuXyX5igu_CL8961hS7BXffuLP_Sxfg_Wslwe2QvcLwywNH4ER-gBOZuT7GXmbqUIP1xDgLR4vucoW3lS2j9UlXbu31CFhZIZU69QO-sa_o_K6fW-mCfKfTWnvjVVNUvjacRy_X7xSZlqxr96reJ5fPGqH9Bvs6if-fmsoRhBGyu3iYCUIyQUG0YPnZyvyjrRZQH08V3tXDLaLqA5TTx4oD5h-fhLYSPnsgQhgqhxS2nNoSEwgt-e_5W950alrNX5cDUKOyeTcAFV08jd5eUsoSOO5i2h12mpT2nLN8RHfKjCbRUsF6YankcWA7SybE43kpdHR3z33CndAvgA0WJtojonL5qFABrXiieeFA90SoEBNvJYBJmUHgH6tuWiFP5TqYnKCcMfxIQjsenQ1on6mvwpMc_q3-RDyHEZJ-MpQQSjjOuMDbQ34BY5HpjHbYX8FtCkLQFgCX8CuHRNDiVzm9rIYwCsre6D_M5Ka1IpHQwM1Y8fgdmfrdGr5DmkDSPQgiHA72izQMI_UYqjN8BRivZAeP160rVXwYl1bm8QUfXy_UbNdTQ3RK_ESd4kW11JFXSkQANXwXlVhYjFYXn2bG5f6cmC9cAeFdbrVtzTpyEOSsa2QODl-GiJhSIt31GhV4tkaVmSCRV9baopKPb92YATcyZ4fAYLHXnmrd8k4fGKr9s01O6s9V0xwQ-e2ZEw8Kj33X7q-9att3mft8JGuPRGXpRE7vrek17G-6Xxyr4nUEotqpa28ZLkfwqbpBcsJ_KrFa8Y3Xe7uBiVTUr88P00vEPgPdRt6ILK5iLW1FOpnM5eceqE8T41d402QpG_ChEwBpVBCDAFdTc7cuVxKWK8vGUPcjuSxRpwg4lOJTfnCfGvFtnuSTOL2XNEZlAVF3qxoow_MCuMJTKk5Ij5W_7nK2BOldPu-OBY8ekz5SlWutts4mWl6oaYd1C_aYc7XIo3yqqHGdGeqpN9oNQdc3Nbc8f0ovQbvf1KGMtB_eipVG3TWDRNLAUzGu4u2wpJkF3xhUYnf2lxU6lTkSvuMAT8Tw3CPbo9QGKndpfapRbt8KPbt5UGHXQEaLYOSb0Ao4WXvNIrMQv4s_EZO2LB-3EFeLwsshFSkZRJ5-OS7SOVj4cjHjZb_4oiDFJgeanVrcMOmard5YH-wx3v_6PWMGpGAc9oUcx7e1MvLo5-Nqi576hAvrTl8rZWzh2pJER9eZWTTZJGzhsJ7t2DfMZ0sDm3gaWDUNFl_J7LZZtMbo_ufcOEu4jv_j4DGbDZ5QH6Rqlnz43xOzVBZrz2KLm8YR6AL5VW5YgzwEqRd-A3PCZ4-7ChggU0nELJ7KBi9BZxNux_8BCfUVnAmS2bFuyNQzM0wA8mjBdpzlsdt-Y3YUBBOxfz3-c5nFUukhitEMDUgbpnoxHq3F-95lc2QdEn5fpl0imEJukbOA3hDudQ8BCMnwsTsDoNwGhfypneFLqM3oNiLiSTS8m2QgvdzNREJgtLXUVGPO0iJgV7JjGBuCyyOggc8Z_PiqlAo6t8wX3wRaXcA80KooWP95YvBkegPDR29gf54LdBGfa7JsAnwOjBojOc0Csc5evfIwszD-ai8gn17y_4vI1NwtbyJL7RDIZq3L6VVD7zage29YHTMo0nRJEbRvY-LqqiMtB030YWncR6tAerPIL470N1GScbQw5_pBmySI0TJaVZMSG6MPultIw6Ts92w0h-rbXdMkjFOuoSsY0j2XVFnG49p5LYLwcrlwzsDc2QhmJdRoELuO76b9LBSodemTJguLxSoT4pLdzS3OBb_Hn2v4Vt4tNcVLXh2i3mCv3XE3NUA1qbWCNihtIjI7_gqKaPEPWnZm4g1w57WYhZeYdUqnGrRAB54cYkACjPKa7f3awkHoC_hGtqSDM281by4bFg28_8GbJF9ysKo8NiRSxVXGH3KFRPliM3h0pdn-AZMplsYG-str6evSTE11wMjbmLAh029-wXtAOtzM5kBX6sCW5zDledD_3Wk-1332XqYpByzz5ubLXxILS1_ktC1GKcOnnyOSkWVOzn67sg_Vr23drNWi8Udo0tqErPbTT80Sv0QADJzenWuneDFsold25kncENG_ibP4-xwiJOkR2DCqT9wSf2G6O6nlfyqdbfxbA_3mc0yc8Df3t6CW_1vQOOBIh2-agYUvuOlDSSapO_Z18Pv8PO6OQ32iFY4QGDGIW_ISReYccLkvQ0mp7_M7WMgKCpunMMhRjOwd3da4plC8skqI_podXOhuGM2AKzIhB3JkXOU69kgzrh_D3eJ1ytZXn9tyi_nwMTl7fXLQ-xshIMal2iKStsIoxCTzQF-Uvy7gZWRfCJA1dT78Hi47xJzqcvJwgWBBmqC51ZwRWECGVHk81S_72fAOE6Xt7PnsVh_XmsJ927HANDdrqtcfVhaj4dxvVVDMebvXr1ZcgbeewtN8KINmwzU_mGTbT-X-ey-4LR5bSkqyvt5DOGOKp9ln_K2oNFEHZMO3-SJ51VVSGKG_XhiTmd6B1IpwLMtHarwSpX9OFxtPYJZWbD1YkuvkdFrj6v8OlsVuY1EtUlXXtWtxtop7aTIdF1Fzibpzu98oUUbGx-UcUFrvMuoIv_aIVWjn2pDcL0E6M8xtSNId0bAX22bwaRif9u1h2asuCshc2zILd1Dum4-nHoU4kiLqF0iQRJBEtqFam-H91YR5cgmw0W-zih5AL8JMzSOaRxgMRv5WgleNnx1XodvjORrSNYQrlJung131zCnFH_Wwj0U-rVgMFpsLxekvovmBfprI_W7DmTpHkl7ZpMJHb2-0EqXHY4bhlpZ-9HhkBU8JfhHZ3yLmf5qPHF4MBR8UOFxFnpBllsVgScq-Xtyf86zGMTxz_CduQOfAp451hR7Olz8XkhoAo_ineqn4TuPgI6LoFTVl3AB0wm9u7JEwqTgZwgdsppY0OUzhlkDN1k9EOgPodCXkdaPFP1d47ybrUVv2SuzFZRMVYrdWD8Ch3LkHPlMcOk80cdTFxP-2LetHh0QgZbspIMyO_1zPW1YzM-kycyCrgNwoe4WETCkObrvrkGB0hzUf1h01P_qM4f_sBx5Go-mFu3nUvX5uoy0eurn6LN2NuBdawtk-vjk3DHSN7y3DrYd0mMsb1Or3GtjMIOmhSSjeoYnZpTZw5m_hFhSvzyGkfnd9TP-XOqiaLsbnjEzt9oaDBkZQLxlFyppr3hI9gkIwsy0QMF8Nqj9U97mrlZ1DQqsAgRJJjtEdMtn9eaMk8HE2l9BkeXFj6nd0H5DLs8p0ARILH7fuxryiCsZ0g9qypkj0OveXrFpMH2_bpTgYuzoLLfKYmxRiBc0ooxRMEr4ep6yrMWOCGDEUEAlPHZADV6AmSMvLSdh4EDEbrfMQY3r5iAAA3VLWbtAUQOUIxV-QMW6CCawecRjojEjym8zaDsNLMDEJy_ISwk9d3OBnFzc4ghzIciz93tp5xDxr94VJsi-1EfUP9J5dOd_xtV9B21xEjusEQxKJK6Hr8weC2fd36_u6g-GDz51vBUjI__VJ8d5hzy_CnxwR2uBl6Tc-DFqnZo38-9rF6H3NZHrjGKQHBDkWw4OEv7tRWrHmFcQIXo8ePOM8-XuYisd3LLLce224AavAZjCsXTW7Nj_MmgDKku2k6h0YTwiYpYUAu7FyEjmV_ZaKcFkckY55LCswsLhKxipelGvenusbEW-JElc6xbR9zU7RIHGOPJ5FeuD-VKbgOpSwJgjjwVRUBUO_xUCkWxleMS7aNQWzIqzbyvg8lNl_2gN1JrX9pCq5MbUl6APbdJBQWWwxPFjXcgOAbN9rkvpQmUV1DUNyUA4ovFTp-s63LBLlTIrIAJIaklXBtVS5lfBjIS5tMwTHAqzbyiQzPaBBvtprViNoffJ3qXiLEnWqV74mAoa4fzKTYN33An0DLPjMimpCxCOl19WLnZ5Z_iCQFZCO3RQJCjW9Zf-2FrIysnm9GZ0Tz4WbC_KwjttVTHEDaASSLpJ1IchSfZLAfRqQ7Bfwvog6gXkBxXkXLSfxY7guBtNhCuzWT9kA2PUhEuBh0TTzh9UtMs1IcoyzBgumFvL-y6_Komi2-zg6zueZ-qCY10RV0zPZ4Nr0vJIfZd7mFL7EwXpupdZnlvADDwJvXU0-nx8JapD-4hRbhqOXMKDCkWLKcqolm0QF1JfyOOj969EMJMOqM4AUkJ_j8wZDqVK7eia2ySDPey9Cjv-eH4-Ou0HadMuLueu1E3pvJvS32BPp3eXMBFzwWSZZky1rWD3aVi98wzyII4GuVJSsSQEtbW0KlA4YBMdSdVc2KHgVbPM6-uOG-xXq7PjW3-CIFCUkU5tRn_EnmNf9Mz-gJv2tL11UoWD-Qzte9F3hpVUfSMd4YtfAKhlSj4GLNWYZlFHDaehfHnm6sL4NbT6C51-k4hRhk852Q-NDdTWSax77iLIeDDHW8TMWpFVQpzzjLWlj6XrS9Ab76zNmNaB9Bjruw07q2QrqirAQX6oUvV2R7s0gGVV4UR-WujYt-C08AaIRfddICFJGD22YBYTr-Vg-XdU3IRhFvVSU9H_PKYY9ZgyAgl9imgZkdPzCaud0odGYjuRKyPhal_X8HIijql6cFOpe-EWOfXyu1Vuot0IRjmuXLMy5Y2C1YIVAmmv8hQH91qpuo4SwCAiDDfwM4p2s_ogvNAyxuUVlsP_KK_BJvqK1EXFjaP6iwneOryx6IK9235kI_gwBA9LSjO6j58eHsCsumaHG3ZJNHXNmHgGqE6_ZLeRHoU3QeSG-kgh7Da5_I2G5LZnug7FRLtVoAmmtT9BbThDedZIvEQektBzphyi9dHpVhVCRT5TunzIC8EJqBDJ1YAvi7SBsM2a7XYODxiUpb_VlcDXsLeeH2MNfzQ8AjogPf4GRLuKFFvAiwYvu5kiJIDqHD-atbiBY4Zaa6T7_jIzdtozg_AUYGrYDcPEcLWXDVo6I6Oq8bY3AabfPwnvgS8llXVX7SOp6rewNyDnLgReyX3Az8QMAJKyPCoyGLy8DIADeTf3kxcnfFhcl18rpWMgUNFOPBs5qTLd3mXq0BopSN8bD-pt18dj0GIRd1zgr3C-3ohDm5D3JKma4llfkt9YAklA1aceEKbMiBI9-a3X9Omx4tlK9yr9clPojlXIZBpFFCe48suunCyazcWGqFoQqE8ybgxrEVIFMPExWUdHJio85pHkY089SwP-fRXo-ZOv6e8P8OCJVbCH-IEQbvlNHCOkGNvNClQzsf9-W1PeSsNUJFzzSvO1FqO2dqhvKR9fyNGvLwLGpYTOsxdwNix_HQ8L7zArEliGS7zwis31tnaRAixbabDqWHWaPI_-ZBfuN_Ix5DDa2KXP4Xw33l8sOwprA8wpqkruQOIvTgXcuN9PFsSdV1Ce-jgtPB6-FbKoyWnjwHsWy29lWi_o-5V-APQ8NnpNU79ZH_egGUNj9sFoelZHXquYXBdjpMpZa-UaKCLhUV8jeSACOcyhK7Zl3BCzocytJDCzrrdb5TjhZ_oyS52G97YIvod2OJRID4hQhGou13JT2FmPFGYiJAt7cIqhGoAn_cHz0cz_PYK9TxReH-eGmVoTXOq5i0RO_dLM28tVKDbStL6Er0raebpdEx35DeuSV1_CnFgJjbVptrLWXyeCBJhlwWQzFaZiWj65wU4DIqS9l41xyZUO4TMStzH_KOjEIidVDkvicCVOGgjZFraR39hOZ2Jvnih1KFnITl2CYGgOu7oBX1KbISeg_DyjszAnQfOTXRaqO1isyuBxErT3rArmizRY_QtIH6tZ-8OfnU_lbOh6vW2DH28jrOw3Q5kvjXR8az4THAEUJWC0ESe9t0_pTJ2gLPjPTiLRl_AkuyT7mywEmSPeZcoAVypmfRp63SUxrIXOTcBR48vYbw_-l6WcRWlBxJVj7FVs51d9NjypfjI61RGR5sOitmXv_AFBgym2pn0sINkPx8XPGkjNZk6g1qH_CnOOmn002bi3yAkt6_EuPmR5bfFku8rHafsSaDcCUBvwRQyazglwgwoaj7caRWeRK1ePJpWDWlzefmRenJJ2SUjP_bsL2Oe-8jh3MHFKutg-Oj2e6W7j51WMUZqY_tX09kg8G-BybBs-S5ZfUYAMZsYgsmj6_jrFSiCvBfw8UlI6uoMU3w3WsBUEOp3GIm4k-eOtlZ7cCghjsdce3cacUWZAAv9r38PMJNx0ulsYufCoHKdqEuPUM_pLF4Cs8fl1qamtmqlT1PqJYFSFiB-Gndp4FN1QCmn8U7n9mhSlW-gDnduv510vzLRqwnRPjAE8iXTHcRS7LvQet5PnNJm-b-K-Aisaw_OhbX25pbex9sc7DvD2JFHZ2Dhb1J5knwMhCYx8_SCSPgYOlvf032ReBfc5bsxLnQABM95R0cA7a8_flglx7cSQGdKXlkCX6JqHQKOSYZrbUXpi3gL_0kmJ67keX6s2pb_0tn3h_IwtFl3uWmJr13i6zG1jiydmWzd-msdm-p4YowCTH1gYoYCNOBBuajJTQwnZ3P9ePd32NvCaC8YUh6uLSAgNbluYqPtEH_Lb3Ao7J3q41SqU1vNx_3AEU248WU3LIbNQnMTEQqMomAWnhuafHJGl3U3W_sUfkqy11-hAV_IzQNPU0in2WkaYDkUXjKQO0AmCc5D-QIW8vuUNTQZQclYiodH4RQo02Z7ufQ0ERJunnWwKpbF-JS6jewAnTSqsezg5P64lwz5-5a14gUxQhMcxYV5Q7vR_IJqFdQBfx_zE6KchccEgvj6ciPHqL88Vp5HbrWYTe1uPY0MCgIWudlrjWsSON57WY-uNlDd8O5L4xiibeSD5NGO3oJVShRe73pZBHFm3W9xUEye6YaBpb6G7lhaOhw1D6_5h6JiRvZFJMA300XO3dJ88p30hxI-m5L1AlDUvufAyFXZbKlrQP9fdW7kY56BBC0aWt9aNQla1OsOIClkCKRfVi7FPAM-zYObbZZic-eA-03j0EB_rGE3UJYfYVZGvgrILUrpMJbDeCmXw_E8cYaleBggTgY9uF0QX9ufZ92DktS4RBxr5HEgcoplXGi1jM0u8NqR15m9vEyxXq9tB8gzTSQHVOs_X0UYouFbT4kR30lMNT81XWaUsNFLT9qBPoHSGU2BIBAx6QibKu8HC0M775FnFyf-8vmPE0ku8UX_dcgwdpBx1HSSTe2dTtH4FHY8yOheGc_7ScBPeVFJ_Fg8anpAW7cWxe-F5LDAWy1DfMn9rqX-qWF57hKU0ZPcZ2Z4Mc4XnNVZJ8hFojheqglLkM5sQOdtBK258SoDH3dYlZbMw2_xxk4DIqT-99UdTNJjrMKdjQwQQqJNbYrL85Un1xXTWcw87IUrqDIvEovbEN6866VGjR6DMkVyPeeWiuxnhN6iILue1VzbMRfVVEg9o7PAIhAOz5tQsagnUwJMnuDZ1xlAiZkuRK-7FWPYmlc3tNTxx77DlfzR9b_GWRzgbpnlAt1MgVgvMbxyexkSx4SUB8maTLEHj-LHcvn60-Rfqhv8S2GEL12R-o8AtrqSEm2GWHokMv54V5-Lm0K-rJRIaTqPvwIFkgUVs4k9sTSUzzldvabWpbo6elxKnioY7GB29WIX_qSwjHZ3m5aO1GMv9N_q6NDqMtA046LWwD1jrbksI6kYn9eaVxZHQxkkZlOmACJYL6o8e0tGlsNPPoB-De2u5rAg2G08iqUtWahYCOTB2jGwTxMuI7BBFC89JD9rStkInS7iRtWieNrwWOhMa4t42EWPdnUH3SfuZBkkaozY4tDgxfEgutygsVWENTooFQR8whV8y-rNtmmpBt-fxAjewfjVokI-AVnvEmRhLRXaA5JpXcqI-gyuvLcWU7cDdK1Kht8Cm8cUe4omUpYT-3_531EGvZQ0ut-0q9aVTRWE2K5HT4OcuYAzD9LiDFwUQ9LVYDctUuQ3i1lB6dlp_fvxMOqmheuI60rbKdhgSaGw4p8ilqa0nTjtqNcSX3xaH4E4sPr8yrq2vO59AgiP2oBDfa6eDes2nSrVSk238yU5snJ1unICKGoVK8dG9RJkTZ55ZsGDDwB1vpxxSXhx1vAoBsQmNNwYw96rU8E6Atwi9iHVEiXl6J_eS3IBO3W_X0xOYPXz16mDCBCYy6k8IyPG7AiVXn8vMIn5wl5-Ey9a_ksVgrECE7N-aj66r2bxrNTNSUPYCvYGBFtudB-KkzQuBEyCTU5BxR2LRtoUgkN7mHOy_mURriAi0vaHpe-Maah9C1jiaVYQUAn679qUA7yyNag7iAHkjVVQSfPdK5e51V6k9nWA1Od__K8k242NtMs41DQ8l_-d59z-YiTRmXGzCKY8vGYyxBXdYcCAHYlvM-gjg6AA3nYsWowjo5YCYw8mcux7j_u5gwhgOP4Bu-dY-O5CvjVUemDP9NQtNajSFouYPbmkOLtPxbS0dYFmIT3DmchUsrDAZ8LmRMF29eGgzVOnbbntui2nNa-YGceElk3ZrxIwPB67ioRhWbZ3pTdv5sfOxsMcLa43tC9iPHsPcVvN0gGio-N9e4LgP6sKhz9HD13flP1EsShedU35e34y1ShNqBhPibpUwgWooXuSTX9SxlDuCUQzNOgbbEPQpAz0_SriJAZuOVbunIzNF2NanxFsGKSNWHGaNy2DojgF1SxUmaRKaQCoVfvK-c9ooUlvBphLkBRMiG56I6DXHoxHcpQfotz2P8DQpn3QZM7I_xaQRspIs3IkW9jDUl_xN-lIXW0OpzWwg46MoVNh6_QBLJRuOU1XMTW1WREBkpudhVZo-pWyWElh9dSofvPJSRHEKqo7hnrtLyl9DWnAQ6gQU_3lBTr9ltOUxTPOQkto-zPszN-hDUiJgJR3TRj10HSpkoH2l2FuuPEtgRdAB9ePlFHey8X00Iv1T08poN0gq_LBIrdHL2gu0c1WeAEkLnpga1d-dyOJqbSuWDceVbvmhduh4cDEXNXEHdGpZR32TyhiyfLBlf-YJnzojl1lH7e4RKYJgeVP3nSH3lfMlS-QLqAck8PB7rsMuTeE-7TuWzplcScJIuhUUACnHtdLw1MLR1k1h7eBiaFrCWYeswaL4RXSQB4DvpB0wCbYY9Dz92X6BnhC6CA6NixQ7NV8ex4ToQ_Iv3kMu5UTZ6Ji9sygX7afDyQ18u-wZeWghdp7rPh9NcaKkdR3w_wVptCJsTia50BfT3OqPoVZZ0uPainOy3P4SYhpWI7uEKYp8tWG89iUeA5WiAwmXH6WWp6fn6Bfndt16vf2kLV4m2N11BbewWe7tNDQfh85eCuUORpkPAh99QSMeJbsYCrsTlsSiYefT0ulWXTX8pmuKgto7w8GfuehKF1QF9D-HPVx_Dc4hr1UY-HfvxsyhnpmRM0t_89hFKWJrUe7DZrylV6pVjJXMXEwrif6jtP_nZ_zOcHA4uLi42ejvifIiJqRS3J4PiD-ffCzIyqeftiQg_bxaku4xRmgW20ayVmMwSkUAMHWp9hxyOc6UQXlSNx7_yV_0Q4y8ECj8DL0uT0Oo56HKwydh9NpzIgZwn7QhcVZVzCdRcnuOvKMXaiBoYZbjIcEnkSpotoPbzl2vJsGzOo_jyoq02nCRgMWTpVPUfh1Kqs5Yrb1t6dhQNG0jAIicJy7fmtAlWLUw6ARkT4LdiCnuA2vToSHBcAEP6jAjB4LVeo_MjCoS68zkamriEImcH2G5Dgrs5u-zctQLjLi8UPD28Ta4W-znNxxJL2w9o41L1l_zkRHin5vfCnZz4ReGiwvdcYoSnrcc-tPtQaWZfluZZ-jRNUNw2i45TGqonas80-KWh-XvpaPek5Lu6saDh4ZlH-yw9SmsXyzI801wlyoMoHeXr5YBU6_Q-bz0ZeUgmiJcSUDY6Qkj0zrwHh8HxGfn51YTbp1KsoGfCbRUlQAMy-8F09CS_20z4LOKjMv5FbRjHON2For77Jbw8W4V7k38jJxtBuIEiQ4IwBqfg6LG0cOyFkLh87wzA4-PnNPZtQR2Ymf85RzbQaqcfK2h_XCjLWfTvAEzjx6eUMLu0_dZtTyaiSHI0QPYEorAxAfRfnTEzjtIyUD4urqg1nyPoEf_y3OY74m3gMp-vPw_e4msP0yXde05yjTv0P7LgJd-sx4KSGTJUz5_4WCyiTSsw-p7IuJav3whuok7deZJPwYGNSLKyKfH1Ow2PIfrR1Tr74FtnURZZcpdsMKv9dr8DBp_KuHJZq0ALD4Z-RWISan_lUXinYqSkb6ADXsVWzgB3ar5heqJlfjwB80FoTnO01L6-2D7WrCb97VXZiNpP7bTj1MzHx20mMe1c7Y6v6J53biHtddHyAyMa1iTLiTSMxiILVdxWEsmRvg81S3qcFNIdcLXf1lSGXTk6a9COe-kEg_MDUYvvBLD-bjyyBWPbje3t0u9lBnOBpgz65791YOdLdyjhtBgTrtcuk-ihYFyc7JXGkSDsOTXTHZoE7VU167XK5geXl77D5RU0xdQezi4b2Jynxll0i6FxHPa_kWHsMXz-0_ZphO6OLL65BEMG5iw9Rwe6MsPy2OqxU6cSovxkDfBhJO5WcFpdtRio0PX7gXQhFt_mMlSjkvn9SuyqbQsyFv_XWt6zVh8Mc47bMjJ2y_3xP0cR4yTTvrbCx68XcYGCXa8pxPFlIfiF5rrHXKXQHndm128p2u30yFMwL4s82EsSEUaiTiJQToBbMj4B3UfeukkhqvC3TcZCQGtg0wo0NBpFDe-z2tU6Y6IVBrIq5AjeyFQ1rc9K2aVt1F-6lVF_xj3jqn97P88VE5j8qlDJKIXqtN0IdPhIidJDd8j_v9rm1vM4BJINL91C8h-zAgrsLBUrchvtMiSFIQZ9B-U4VORLf8zBUSa2YmwcTSa0nNRE68DX5LW5sYhQinms_vznaHkWf9QRAhflerUEP3dfpdbE_v7z4MG2hyP3Oa9Y3yqt3XFbTCTAfFCAnIMDzCSXwdXqrY9xJ1smgja_bPiuhbl41x23jlUC48iPdHP7yCHNAeuj8G3d4HfBaOp3OrCyceFS-K010B3IYzE3Fs7qtBkK1nrgWNWfkdAmy7VtKIuK1NRcOr8_OzjUcIl8_LX2k0VfshRcaE-a_PH1NPbZD2Oqa_Z7rKIaTxxb3edvDyy02Cq8WB4lxSVz5q9JpznNhq8eOArrLcsko2HRG5bYQ93h9Klf1ZzPSGS89N_EOctpB14-VNSTJ7GtLOHDFkTxsl1NBQ-c2hU-lNDT9l_caQZmB8X3RtCL8LkCOTxsOL03eJukKL6HI4uApiGV5xxVI0sgVRbhUzgCUynpD4-K12-iGs-jrnkwsAu6eC_h_9frvmUVbSG9NPzhSHDTY18IJTk056PiD-zzLEG1_bRsQYvDSDmV6y19Xr5tkTXoEDmnChAIsCTqq_1cSizhwmXQLOLqRCm9_Vc3IF3Btcng2NqPZT3UxZnpfdWqQ2ayeSh8OqIhpmbtoz0xGM1M7NSNteP61V9T8EzQYQDzdDKcYJVK_vB9QfL3QmOF1E_oPBKD3XIicn0JRW4lF17-7gOG27_-AdKzDyVaLqZJn2ul0qrUekh8TWBaZI_M096auGehc9Pdoyin7dFqMIZseZ4Q7VHVb8ylkEeX-n9ECznYC9EZsIBhO6c5IKw3UdbCYJl_N7tpDVATG6940UiZWLeoR41KB8toLBopyF5mSDF400mT28AdZGeu58g1rb0fzOotXE5ShZ0MU0_1Di85fjHeFJrkup4zi6KTgHDZ_Wk14Gh0pwjJnRmgCJo9ZWZdwajWjJTa57yCcFvdWTBKiZr8It4iHIsNjTrhmy9VjgOhoQVrFrZB-0aB1AgOnHoixYfmyiQDzfsPD1gN0If4rswn2pW09SwnM75KmEvOi3BuRBmXS-jwWaVIS81hPEk1cHtBIKfVmL6Mh4gAXGd9Q_N79ECmYGoYD1mo6DqeutsGvSbxj4BC879Brpw2uuKb0RJeRIYMepEx0-kO6gRSM7bIPB-R8pN2N7oPSHdB-3Hw_Ktp04U5OLQAwIVjtH1-MA9v8L8PTkgX9vptHRD_Cb-W0nA35Ej0JwKXYWI1b44rOe5EV1-QtKEu2dcuos9Laid1V5R8lJfu-397jevkLgQjG5cyQhNc64dr2POh0SyStS1i0xigyY9EIGN4QwgEW_6FC7TUpqSgffrfI3e-RIsB0Cfbagt0GFSD-KFG9aaVCwUqAenH_beHF3EFdlnimhJ1mLtSvJ38QV6HCtN8Qmpc1Ntk2T1QIbgWsHxcbPKbZWaQUk1cjxXItd9joaGA8U_ojmp0qlDjtJjgDWo_57tYGUeqh_GkZ2E9XkVh8h-oOw1haoZ3RP8vW5J7TgYysc7cCbRAyWE2rpHrA_EisCAiw_LXRy7QPYDGvBgrsEZdTdyBty-Hb_IFui6TcVe88u6mgxTEYxHtqNL8n3czgKD-3ki-nEVu9kt8fL_j2nQ-aaYO-VYBlNJ1UL9wVqSFZU1VsSUbfN8xMd_sb2MdhxIdd0WZpZbEB7ShrfDwMeCJgEJU42KLw9InI_ZCkxVTpdaxAOB7OU6Zb22wLi6iUIOaH3P2rXCQ3WlGOOgYS7o2msBTlWOhlHaf3Mxp_Sk6Rf7vP7R6AJTlNgqv3ixQjvtO8KulK-8QAsk-[REDACTED]==",
+        "status": null
+      },
+      {
+        "id": "msg_0d93be3417c17ba9016a55ca2c8af081a194d4347269568331",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"stage\":\"08_counterexample_analysis\",\"mock\":false,\"llm_call_executed\":true,\"tool_result_summary\":{\"result_classification\":\"contract_build_or_instrumentation_failed\",\"tool_executed\":true,\"exit_code\":1,\"summary\":\"CBMC was invoked in the configured goto_contract_pipeline, but the run failed before any property was emitted or checked. The status record reports a pre-CBMC GOTO build/instrumentation failure, and stderr shows a syntax error in the generated contracts header. No formal verification result or counterexample was produced.\"},\"execution_status_interpretation\":{\"status\":\"failed_pre_cbmc_build_or_instrumentation\",\"formal_tool_result_exists\":false,\"interpretation\":\"The tool executed, but the pipeline stopped upstream of CBMC analysis. Because the GOTO build/instrumentation step failed, there is no formal CBMC property result to interpret for this run.\"},\"counterexample_analysis\":{\"status\":\"no_formal_counterexample_available\",\"findings\":[{\"finding_id\":\"CF-01\",\"category\":\"tool_result_boundary\",\"finding\":\"No counterexample can be extracted from this run because the pipeline stopped before any CBMC property was emitted or checked.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification / pipeline_execution_summary\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; result_reason=\\\"A pre-CBMC GOTO build/instrumentation step failed.\\\"; selected_property_verified_under_model=false; emitted_property_count=0; emitted_failure_count=0\",\"supports_claim\":\"The run ended before any formal property result existed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"CBMC produced no stdout result content for this run.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The pre-execution gate passed, but the actual formal-result stage never completed.\",\"confidence\":\"high\"}],\"uncertainty\":\"High confidence that no formal counterexample exists in the visible evidence. The exact downstream property status cannot be recovered because the pipeline failed before property emission.\"},{\"finding_id\":\"CF-02\",\"category\":\"contract_syntax_error\",\"finding\":\"The immediate trigger is a malformed generated contract clause in the included contracts header: stderr reports a syntax error before the word 'points' in a __CPROVER_requires line.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"error: syntax error before 'points' __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract text is not valid syntax and caused the pipeline failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps / goto_compile / apply_function_contracts\",\"excerpt\":\"goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true\",\"supports_claim\":\"The failure happened in the pre-CBMC compile/instrumentation pipeline and involved the generated contracts header.\",\"confidence\":\"high\"}],\"uncertainty\":\"The visible evidence localizes the parse failure to the generated contract header, but it does not show the full header contents or the exact generator bug that emitted the malformed text.\"},{\"finding_id\":\"CF-03\",\"category\":\"harness_structure_ok\",\"finding\":\"The harness wiring itself appears structurally valid: the entry function is defined, the target function is called, and the known vacuity pattern was rejected before execution.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The harness passed the structural gate before the later build/instrumentation failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"harness body\",\"excerpt\":\"__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \\\"TRACE_CLAIM:C01\\\");\",\"supports_claim\":\"The harness is the intended local-object frame-check harness and includes the target call.\",\"confidence\":\"medium\"}],\"uncertainty\":\"General semantic non-vacuity was not proved, so the harness may still be narrower than the intended semantic claim even though the structural gate passed.\"}]},\"failure_classification\":{\"result_classification\":\"contract_build_or_instrumentation_failed\",\"failure_categories\":[\"pre_cbmc_build_failure\",\"contract_syntax_error\",\"instrumentation_pipeline_failure\",\"no_formal_result\"],\"severity\":\"high\",\"repair_needed\":true,\"no_formal_tool_result\":true,\"parsed_failure_count\":1,\"interpretation_boundary\":\"This failure is at the contract/build boundary, not a verified property failure. Do not infer a concrete counterexample to mlk_poly_add from this run.\"},\"harness_vs_property_vs_tool_diagnosis\":{\"status\":\"toolchain_failure_during_contract_parsing\",\"root_cause_category\":\"generated_contracts_header_parse_error\",\"findings\":[{\"finding_id\":\"HD-01\",\"category\":\"pipeline_boundary\",\"finding\":\"The pipeline stopped before CBMC property checking, so there is no pass/fail outcome for the selected property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"tool result summary\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0; emitted_failure_count=0\",\"supports_claim\":\"No CBMC property results were emitted.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"No stdout witness or result text was produced.\",\"confidence\":\"high\"}],\"uncertainty\":\"The exact boundary between contract generation and instrumentation is visible only indirectly, but the failure clearly occurs before formal property solving.\"},{\"finding_id\":\"HD-02\",\"category\":\"contract_generation\",\"finding\":\"The malformed text in the generated contracts header is the best-supported root cause of the failure.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The contract header contains invalid syntax and triggers the parser error.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text / pipeline_steps\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h; goto-instrument --dfcc harness --enforce-contract mlk_poly_add ...; pipeline_setup_failed=true\",\"supports_claim\":\"The failure is in the contract-aware build/instrumentation path, not in CBMC property solving.\",\"confidence\":\"high\"}],\"uncertainty\":\"The error text is explicit, but the exact upstream generator bug is not directly shown.\"},{\"finding_id\":\"HD-03\",\"category\":\"harness_scope\",\"finding\":\"The harness itself is not the obvious source of the failure; it was structurally accepted and the target call is present.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true\",\"supports_claim\":\"The harness/entrypoint wiring passed validation before the later failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\",\"supports_claim\":\"The selected source context is a simple in-place coefficientwise add, consistent with a frame-property harness rather than a complex control-flow source of failure.\",\"confidence\":\"high\"}],\"uncertainty\":\"This does not exclude subtler modeling issues, but the visible evidence points away from the harness body as the immediate failure cause.\"}]},\"repair_guidance\":{\"status\":\"repair_required\",\"guidance_items\":[{\"action_id\":\"A1\",\"action_type\":\"syntax_fix\",\"priority\":\"high\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Regenerate the contracts header so every DFCC annotation is valid CBMC/C syntax. In particular, replace prose-like __CPROVER_requires text with an actual boolean predicate over the intended preconditions, while preserving the selected frame property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The current generated contract text is not parseable.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h\",\"supports_claim\":\"The malformed contract header is the artifact that must be fixed for the pipeline to proceed.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"If the rewritten predicate is too weak or mismatched to the intended model, the next run may pass syntax checks but no longer test the same frame property.\",\"evidence_strength_lost_if_any\":\"Any simplification that drops the intended frame predicate would weaken the current write-footprint evidence.\"},{\"action_id\":\"A2\",\"action_type\":\"re_run_pipeline\",\"priority\":\"high\",\"target_stage\":\"07_tool_execution\",\"proposed_change\":\"After fixing the contract header, rerun the same goto-cc -> goto-instrument -> cbmc pipeline and confirm that the compiled GOTO model is produced before interpreting any property result.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps\",\"excerpt\":\"planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true\",\"supports_claim\":\"The current attempt stopped before the formal check stage, so a rerun is needed after repair.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification\",\"excerpt\":\"result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0\",\"supports_claim\":\"There is no formal result to reinterpret until the pipeline successfully completes.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"This consumes another tool cycle and may still fail if the header contains any remaining unsupported constructs.\",\"evidence_strength_lost_if_any\":\"None; this action preserves the current evidence boundary and simply re-attempts verification after repair.\"},{\"action_id\":\"A3\",\"action_type\":\"add_preflight_check\",\"priority\":\"medium\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Add a lightweight preflight compile/parse check for the generated contracts header before invoking goto-cc/goto-instrument, so syntax regressions are caught earlier in the workflow.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; cbmc_execution_still_required=true\",\"supports_claim\":\"Structural validation succeeded, so an earlier syntax gate would provide better failure localization.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points'\",\"supports_claim\":\"The failure is a parser error that a preflight syntax check should catch before the formal pipeline is launched.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"Adds pipeline complexity and may require extra maintenance for the contract-generation path.\",\"evidence_strength_lost_if_any\":\"None for the current property intent; this is a diagnostic safeguard rather than a semantic weakening.\"}]},\"repair_action_plan\":[{\"action_id\":\"A1\",\"action_type\":\"syntax_fix\",\"priority\":\"high\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Regenerate the contracts header so all DFCC annotations are valid CBMC expressions, preserving the intended frame property.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract text is malformed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"command_text\",\"excerpt\":\"-include .../contracts/04_generated_contracts.h\",\"supports_claim\":\"The failing artifact is the generated contracts header used by the build pipeline.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"A syntactically valid but semantically weaker contract could stop the parse error while reducing the evidence value of the verification attempt.\",\"evidence_strength_lost_if_any\":\"Any simplification that drops the intended precondition/frame meaning would reduce the current property evidence.\"},{\"action_id\":\"A2\",\"action_type\":\"rerun_pipeline\",\"priority\":\"high\",\"target_stage\":\"07_tool_execution\",\"proposed_change\":\"Rerun the same contract pipeline after the syntax fix and only interpret results once the GOTO build and instrumentation steps complete successfully.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps\",\"excerpt\":\"planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true\",\"supports_claim\":\"The previous attempt did not reach the formal check stage.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"tool result summary\",\"excerpt\":\"result_classification=\\\"contract_build_or_instrumentation_failed\\\"; emitted_property_count=0\",\"supports_claim\":\"There is no property result to carry forward until the pipeline succeeds.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"May still fail if additional unsupported constructs remain in the generated contracts or harness glue.\",\"evidence_strength_lost_if_any\":\"None; this is the required next verification attempt after repair.\"},{\"action_id\":\"A3\",\"action_type\":\"add_preflight_check\",\"priority\":\"medium\",\"target_stage\":\"05_artifact_generation\",\"proposed_change\":\"Insert a preflight parse/compile check for generated contract files before the formal tool run so syntax errors are detected earlier and reported more clearly.\",\"evidence_basis\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The current structural gate did not catch the syntax issue, so an earlier parser gate would improve diagnostics.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points'\",\"supports_claim\":\"The failure mode is exactly the kind that a preflight syntax check should catch.\",\"confidence\":\"high\"}],\"risk_if_applied\":\"Adds maintenance overhead and may duplicate some of the formal toolchain's syntax checking.\",\"evidence_strength_lost_if_any\":\"None.\"}],\"success_scope_analysis\":{\"status\":\"limited_to_pre_cbmc_pipeline\",\"checked_scope\":[\"CBMC and helper tools were available in the environment\",\"the harness entry function was defined and the target function was called\",\"pre-execution structural validation passed\",\"the pipeline stopped during the contract-aware build/instrumentation path before any property emission\"],\"not_checked\":[\"bounds checks\",\"pointer checks\",\"memory-leak checks\",\"division-by-zero checks\",\"signed overflow checks\",\"unsigned overflow checks\",\"conversion checks\",\"undefined-shift checks\",\"selected-property success/failure\",\"counterexample traces\",\"any semantic correctness claim about mlk_poly_add\"],\"limitations\":[\"No formal CBMC property result exists for this run because the pipeline failed before property emission.\",\"The raw property-results and trace-summary contents were not included in the visible evidence excerpt, so no witness or counterexample details can be recovered from them here.\",\"The failure is a tooling/build issue, not evidence of a bug in mlk_poly_add itself.\"]},\"deterministic_reference_assessment\":{\"used\":false,\"status\":\"not used\",\"warning\":\"No deterministic Python advisory analysis was provided for this stage. Previous LLM candidate-context records were treated only as non-authoritative workflow context, not as deterministic evidence.\",\"disagreements\":[]},\"evidence_references\":[{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"result_classification / pre_execution_structural_validation\",\"excerpt\":\"tool_executed=true; exit_code=1; result_classification=\\\"contract_build_or_instrumentation_failed\\\"; result_reason=\\\"A pre-CBMC GOTO build/instrumentation step failed.\\\"; emitted_property_count=0; emitted_failure_count=0; selected_property_verified_under_model=false\",\"supports_claim\":\"The run failed before any CBMC property result existed.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt\",\"locator\":\"file contents\",\"excerpt\":\"(empty)\",\"supports_claim\":\"No stdout result content was produced by the CBMC invocation.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt\",\"locator\":\"stderr text\",\"excerpt\":\"syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\",\"supports_claim\":\"The generated contract header contained invalid syntax that caused the failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json\",\"locator\":\"pipeline_steps / command_text\",\"excerpt\":\"goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true; completed_step_count=1; planned_step_count=3\",\"supports_claim\":\"The failure occurred in the contract-aware build/instrumentation pipeline before CBMC property checking.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json\",\"locator\":\"pre_execution_structural_validation\",\"excerpt\":\"valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true\",\"supports_claim\":\"The harness passed the structural gate before the later build/instrumentation failure.\",\"confidence\":\"high\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c\",\"locator\":\"harness body\",\"excerpt\":\"__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \\\"TRACE_CLAIM:C01\\\");\",\"supports_claim\":\"The harness is the intended local-object frame-check harness and includes the target call.\",\"confidence\":\"medium\"},{\"source_path\":\"/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c\",\"locator\":\"mlk_poly_add body\",\"excerpt\":\"for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }\",\"supports_claim\":\"The implementation body writes only through the destination polynomial pointer in the visible source.\",\"confidence\":\"high\"}],\"limitations\":[\"The raw property_results and trace_summary contents were not included in the visible evidence excerpt, so no trace-based counterexample details can be extracted here.\",\"The exact upstream generator bug that emitted the malformed contract text is not directly shown; only the parser failure is visible.\",\"This analysis does not claim proof, correctness, FIPS compliance, cryptographic security, or any ML-KEM-wide property.\",\"Any repair suggestion here is aimed at restoring a valid formal-tool run, not at establishing the selected property by itself.\"]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1784007238.0,
+    "conversation": null,
+    "max_output_tokens": 128000,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "08_counterexample_analysis_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "08_counterexample_analysis"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "tool_result_summary": {
+              "type": "object",
+              "properties": {
+                "result_classification": {
+                  "type": "string"
+                },
+                "tool_executed": {
+                  "type": "boolean"
+                },
+                "exit_code": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "summary": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "result_classification",
+                "tool_executed",
+                "exit_code",
+                "summary"
+              ],
+              "additionalProperties": false
+            },
+            "execution_status_interpretation": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "formal_tool_result_exists": {
+                  "type": "boolean"
+                },
+                "interpretation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "formal_tool_result_exists",
+                "interpretation"
+              ],
+              "additionalProperties": false
+            },
+            "counterexample_analysis": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "finding_id": {
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string"
+                      },
+                      "finding": {
+                        "type": "string"
+                      },
+                      "evidence_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "finding_id",
+                      "category",
+                      "finding",
+                      "evidence_basis",
+                      "uncertainty"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "failure_classification": {
+              "type": "object",
+              "properties": {
+                "result_classification": {
+                  "type": "string"
+                },
+                "failure_categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "repair_needed": {
+                  "type": "boolean"
+                },
+                "no_formal_tool_result": {
+                  "type": "boolean"
+                },
+                "parsed_failure_count": {
+                  "type": "integer"
+                },
+                "interpretation_boundary": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "result_classification",
+                "failure_categories",
+                "severity",
+                "repair_needed",
+                "no_formal_tool_result",
+                "parsed_failure_count",
+                "interpretation_boundary"
+              ],
+              "additionalProperties": false
+            },
+            "harness_vs_property_vs_tool_diagnosis": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "root_cause_category": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "finding_id": {
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string"
+                      },
+                      "finding": {
+                        "type": "string"
+                      },
+                      "evidence_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "finding_id",
+                      "category",
+                      "finding",
+                      "evidence_basis",
+                      "uncertainty"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "root_cause_category",
+                "findings"
+              ],
+              "additionalProperties": false
+            },
+            "repair_guidance": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "guidance_items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "action_id": {
+                        "type": "string"
+                      },
+                      "action_type": {
+                        "type": "string"
+                      },
+                      "priority": {
+                        "type": "string"
+                      },
+                      "target_stage": {
+                        "type": "string"
+                      },
+                      "proposed_change": {
+                        "type": "string"
+                      },
+                      "evidence_basis": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      },
+                      "risk_if_applied": {
+                        "type": "string"
+                      },
+                      "evidence_strength_lost_if_any": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "action_id",
+                      "action_type",
+                      "priority",
+                      "target_stage",
+                      "proposed_change",
+                      "evidence_basis",
+                      "risk_if_applied",
+                      "evidence_strength_lost_if_any"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "guidance_items"
+              ],
+              "additionalProperties": false
+            },
+            "repair_action_plan": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action_id": {
+                    "type": "string"
+                  },
+                  "action_type": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "string"
+                  },
+                  "target_stage": {
+                    "type": "string"
+                  },
+                  "proposed_change": {
+                    "type": "string"
+                  },
+                  "evidence_basis": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "risk_if_applied": {
+                    "type": "string"
+                  },
+                  "evidence_strength_lost_if_any": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "action_id",
+                  "action_type",
+                  "priority",
+                  "target_stage",
+                  "proposed_change",
+                  "evidence_basis",
+                  "risk_if_applied",
+                  "evidence_strength_lost_if_any"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "success_scope_analysis": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "checked_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "not_checked": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "limitations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "status",
+                "checked_scope",
+                "not_checked",
+                "limitations"
+              ],
+              "additionalProperties": false
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_path": {
+                    "type": "string",
+                    "description": "File or handoff path containing the supporting evidence."
+                  },
+                  "locator": {
+                    "type": "string",
+                    "description": "Line, section, algorithm, symbol, property, or record locator."
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "description": "Short evidence excerpt or faithful summary."
+                  },
+                  "supports_claim": {
+                    "type": "string",
+                    "description": "The exact claim this evidence supports."
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "source_path",
+                  "locator",
+                  "excerpt",
+                  "supports_claim",
+                  "confidence"
+                ],
+                "additionalProperties": false,
+                "description": "Traceable evidence reference for one claim."
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "tool_result_summary",
+            "execution_status_interpretation",
+            "counterexample_analysis",
+            "failure_classification",
+            "harness_vs_property_vs_tool_diagnosis",
+            "repair_guidance",
+            "repair_action_plan",
+            "success_scope_analysis",
+            "deterministic_reference_assessment",
+            "evidence_references",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 8 analysis of Agent 7 evidence. It must not invent tool results."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 63650,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 19974,
+      "output_tokens_details": {
+        "reasoning_tokens": 14502
+      },
+      "total_tokens": 83624
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": false,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}

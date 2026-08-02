@@ -1,0 +1,501 @@
+{
+  "schema_version": "prior_authoritative_context_bundle.v1",
+  "created_utc": "2026-07-14T05:31:51.853857+00:00",
+  "trust_boundary": "previous_candidate_stage_context_not_formal_truth",
+  "content": {
+    "artifact_plan": {
+      "stage": "05_artifact_generation",
+      "mock": false,
+      "llm_call_executed": true,
+      "target_function": "mlk_poly_add",
+      "selected_property": {
+        "selected": true,
+        "selection_method": "open_discovery_feasibility_then_risk_then_rank",
+        "property": {
+          "property_id": "OPEN_CAND_003",
+          "property_family_id": "UNMAPPED",
+          "title": "Write footprint confined to destination polynomial",
+          "category": "frame behavior",
+          "verification_strategy": "native_function_contract",
+          "proof_obligation_kind": "frame",
+          "support_classification": "uncatalogued_candidate",
+          "required_tool_capabilities": [
+            "native_function_contract"
+          ],
+          "candidate_statement": "The visible body writes only through r->coeffs[i]; no direct store targets b or any other storage in the shown function body.",
+          "supporting_evidence": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++)\n  {\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }",
+              "supports_claim": "The assignment writes through r only.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration and typedef",
+              "excerpt": "typedef struct\n{\n  int16_t coeffs[MLKEM_N];\n} mlk_poly;\n...\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The interface distinguishes a mutable destination pointer from a const source pointer.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro definitions",
+              "excerpt": "#define MLKEM_N 256",
+              "supports_claim": "The function traverses a fixed 256-coefficient representation.",
+              "confidence": "high"
+            }
+          ],
+          "required_assumptions": [
+            "The property is interpreted only over direct writes in the shown function body."
+          ],
+          "cbmc_feasibility": "high",
+          "risk_level": "low",
+          "expected_artifact_type": "native function contract",
+          "out_of_scope_boundaries": [
+            "Does not rule out indirect effects on shared storage if r and b alias.",
+            "Does not assert that b's underlying object cannot change through aliasing with r."
+          ],
+          "uncertainty": "The source pointer is const-qualified, but the snapshot does not include an aliasing contract that would make a stronger separation claim.",
+          "limitations": [
+            "This is a direct frame property only; it does not speak to arithmetic correctness."
+          ]
+        }
+      },
+      "artefact_kind": "native_function_contract_cbmc_harness",
+      "verification_strategy": "native_function_contract",
+      "intended_check": "Check that mlk_poly_add's direct stores are confined to the destination polynomial r->coeffs in a native-function-contract setting, using a concrete local-object harness that snapshots b and asserts the source object is unchanged in that non-aliasing model.",
+      "non_goals": [
+        "No claim about modulo-q normalization or arithmetic correctness.",
+        "No claim about canonical coefficient ranges or overflow safety.",
+        "No claim about aliasing behavior when r and b overlap.",
+        "No claim about full ML-KEM or FIPS 203 correctness."
+      ],
+      "required_includes": [
+        "poly.h"
+      ],
+      "required_types_and_macros": [
+        "mlk_poly",
+        "int16_t",
+        "MLKEM_N",
+        "__CPROVER_havoc_object",
+        "__CPROVER_assert",
+        "TRACE_ASSUMPTION:A01",
+        "TRACE_CLAIM:C01"
+      ],
+      "assumption_plan": [
+        {
+          "assumption_id": "A01",
+          "assumption": "The harness materializes r and b as distinct local mlk_poly objects and uses a pre-call copy of b; no NULL, memory_no_alias, or __CPROVER_is_fresh pointer model is introduced.",
+          "justification": "The visible signature expects accessible objects, the function body dereferences both pointers unconditionally, and the property is a direct frame claim rather than an aliasing claim.",
+          "risk_of_overconstraint": "low",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++)\n  {\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }",
+              "supports_claim": "Both pointers are dereferenced in the loop body.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration and typedef",
+              "excerpt": "typedef struct\n{\n  int16_t coeffs[MLKEM_N];\n} mlk_poly;\n...\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The target operates on concrete mlk_poly objects with fixed-length coefficient storage.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro definitions",
+              "excerpt": "#define MLKEM_N 256",
+              "supports_claim": "The coefficient storage has a fixed, compile-time length of 256.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "assertion_plan": [
+        {
+          "assertion_id": "C01",
+          "assertion": "After the call, every coefficient of b matches the pre-call snapshot b_before.",
+          "checked_property_relation": "Concrete source-frame check for the selected property in the local-object, non-aliasing harness variant; if the target introduced a direct write to b, this assertion would fail.",
+          "non_triviality_reason": "b is havoced before the call and copied into b_before, so the assertion is sensitive to post-call writes rather than self-comparison.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add body",
+              "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The visible body writes through r and reads b.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration",
+              "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The second parameter is const-qualified and intended as the source object.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "old_state_snapshot_plan": {
+        "required": "partial_for_selected_property",
+        "reason": "A pre-call copy of b is needed to check the source-object frame subclaim in the non-aliasing harness variant; no old-state snapshot of r is needed because no arithmetic postcondition is claimed.",
+        "snapshot_items": [
+          "b (entire mlk_poly object)"
+        ]
+      },
+      "contract_plan": {
+        "enabled": true,
+        "contract_mode": "function",
+        "target_symbol": "mlk_poly_add",
+        "function_declaration": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b)",
+        "requires_clauses": [
+          "r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients",
+          "b points to a live readable mlk_poly object with MLKEM_N accessible int16_t coefficients"
+        ],
+        "ensures_clauses": [],
+        "assigns_clauses": [
+          "r->coeffs[0 .. MLKEM_N - 1]"
+        ],
+        "frees_clauses": [],
+        "loop_invariant_clauses": [],
+        "decreases_clauses": [],
+        "loop_assigns_clauses": [],
+        "loop_frees_clauses": [],
+        "source_patch_operations": [],
+        "apply_loop_contracts": false,
+        "enforce_contract": true,
+        "replace_calls_with_contract": [],
+        "use_dfcc": true,
+        "invariant_initialization_argument": "",
+        "invariant_preservation_argument": "",
+        "postcondition_use_argument": "The harness snapshots b before the call so the source-frame subclaim can be checked after mlk_poly_add returns.",
+        "frame_condition_argument": "The visible body contains a single direct store to r->coeffs[i] and no direct store to b or any other storage in the shown function body.",
+        "history_variable_usage": []
+      },
+      "relational_plan": {
+        "enabled": false,
+        "relation_kind": "none",
+        "first_call": "",
+        "second_call": "",
+        "state_reset_or_snapshot": [],
+        "relation_assertions": [],
+        "normalization_assumptions": []
+      },
+      "analysis_only_plan": {
+        "enabled": false,
+        "analysis_kind": "none",
+        "evidence_to_collect": [],
+        "external_tools_or_tests": [],
+        "formal_claim_prohibited": false
+      },
+      "traceability_manifest": {
+        "selected_property_id": "OPEN_CAND_003",
+        "target_call_marker": "TRACE_CALL:MLK_POLY_ADD",
+        "expected_claim_count": 1,
+        "assumption_map": [
+          {
+            "assumption_id": "A01",
+            "implementation_kind": "object_model",
+            "code_marker": "TRACE_ASSUMPTION:A01",
+            "code_locator": "harness local-object setup before the target call",
+            "rationale": "Uses two concrete local mlk_poly objects and a pre-call source snapshot so the frame check is non-vacuous without introducing unsupported NULL or fresh-pointer assumptions."
+          }
+        ],
+        "claim_map": [
+          {
+            "assertion_id": "C01",
+            "implementation_kind": "harness_assertion",
+            "code_marker": "TRACE_CLAIM:C01",
+            "cbmc_property_patterns": [
+              "frame",
+              "source object unchanged",
+              "post-call array equality"
+            ],
+            "rationale": "The post-call loop compares the source polynomial against its pre-call snapshot and would fail if the target performed a direct write to b in this harness model."
+          }
+        ],
+        "non_vacuity_strategy": [
+          "Mutation check: change the target store in mlk_poly_add from r->coeffs[i] to b->coeffs[i]; the C01 source-frame assertion should fail.",
+          "Reachability check: keep the original call in place and compare against a variant in which the call is replaced by a no-op; the frame assertion distinguishes real write effects from a merely present call site."
+        ]
+      },
+      "generated_harness_code": "#include \"poly.h\"\n\nvoid harness(void)\n{\n  mlk_poly r;\n  mlk_poly b;\n  mlk_poly b_before;\n  unsigned i;\n\n  __CPROVER_havoc_object(&r);\n  __CPROVER_havoc_object(&b);\n  b_before = b;\n\n  /* TRACE_ASSUMPTION:A01: distinct local mlk_poly objects are used, with a pre-call snapshot of the source object, and no NULL or fresh-pointer model is introduced. */\n  /* TRACE_CALL:MLK_POLY_ADD */ mlk_poly_add(&r, &b);\n\n  for (i = 0; i < MLKEM_N; ++i)\n  {\n    /* TRACE_CLAIM:C01: source polynomial coefficients remain unchanged in this local-object frame check. */\n    __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");\n  }\n}\n",
+      "validation_expectations": [
+        {
+          "check": "CBMC discharges the C01 source-frame assertion on the original harness with the native function contract enabled",
+          "expected": true
+        },
+        {
+          "check": "A mutant that changes the store target in mlk_poly_add from r->coeffs[i] to b->coeffs[i] causes the C01 assertion to fail",
+          "expected": false
+        }
+      ],
+      "independence_statement": {
+        "existing_artefacts_consulted": [
+          "agent2_spec_summary",
+          "agent3_code_summary",
+          "agent4_candidate_properties",
+          "agent4_selected_property",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h"
+        ],
+        "deterministic_hints_consulted": [],
+        "unavoidable_similarities": [
+          "The harness must mention mlk_poly_add, mlk_poly, and MLKEM_N because they are fixed by the target source and headers.",
+          "A coefficient-index loop is structurally natural because the function and property are array-frame oriented."
+        ],
+        "intentional_differences": [
+          "This candidate uses a concrete local-object model with a pre-call snapshot of b rather than any NULL/fresh-pointer abstraction.",
+          "It stays on the direct frame claim and does not attempt modular correctness, alias-policy resolution, or full ML-KEM semantics."
+        ],
+        "copying_risk": "low",
+        "requires_human_similarity_review": false
+      },
+      "deterministic_reference_assessment": {
+        "used": false,
+        "status": "not used",
+        "warning": "No deterministic Python advisory analysis was provided for this stage.",
+        "disagreements": []
+      },
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add body",
+          "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b)\n{\n  unsigned i;\n\n  for (i = 0; i < MLKEM_N; i++)\n  {\n    r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);\n  }\n}",
+          "supports_claim": "The function body contains a single coefficientwise store through the destination pointer.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "typedef struct and function declaration",
+          "excerpt": "typedef struct\n{\n  int16_t coeffs[MLKEM_N];\n} mlk_poly;\n\nvoid mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The target operates on fixed-length int16_t coefficient arrays and distinguishes mutable destination from const source.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "locator": "macro definitions",
+          "excerpt": "#define MLKEM_N 256\n#define MLKEM_Q 3329",
+          "supports_claim": "The compile-time coefficient count is 256 and the modulus context is 3329.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Sections 2.4.4 and 2.4.5",
+          "excerpt": "An element f of R_q is a polynomial ... represented by the array (f0, f1, ..., f255) ∈ Z_q^256. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+          "supports_claim": "The standard uses 256-entry coefficient arrays and coordinate-wise polynomial arithmetic.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "file header comment",
+          "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+          "supports_claim": "Formal contracts and proof harnesses are not visible in the provided snapshot, so the contract plan is newly proposed.",
+          "confidence": "high"
+        }
+      ],
+      "limitations": [
+        "The visible snapshot excludes the original formal contracts, so the function contract here is a newly proposed candidate artifact rather than a recovered annotation.",
+        "The harness checks the source-frame claim in a distinct local-object model and does not characterize r/b overlap cases.",
+        "The plan deliberately avoids modular-correctness, overflow, or ML-KEM-wide claims.",
+        "No build/proof configuration or raw CBMC output was provided, so feasibility is estimated from source evidence only."
+      ]
+    },
+    "critic_review": {
+      "stage": "06_review_critic",
+      "mock": false,
+      "llm_call_executed": true,
+      "reviewed_artefacts": {
+        "target_function": "mlk_poly_add",
+        "deterministic_recommended_gate": null
+      },
+      "overall_assessment": "The candidate artefact is narrowly scoped, evidence-linked, and ready to be attempted by Agent 7. It targets a local frame property for mlk_poly_add, uses a concrete local-object harness with a pre-call source snapshot, and stays away from modular-correctness, overflow, and full ML-KEM claims. The generated contract/harness pair is internally coherent with the visible source and the recorded build-plan validation, and the heuristic similarity screen reports low copying risk. The main limitation is scope: this is a non-aliasing source-frame check, not a general functional proof.",
+      "gate_recommendation": "approved_for_tool_execution",
+      "blocking_issues": [],
+      "warnings": [
+        {
+          "issue": "The harness models a distinct local-object case and does not exercise overlapping r/b aliasing.",
+          "impact": "Any result should be interpreted as a narrow non-aliasing frame check; it should not be generalized to alias-sensitive call sites."
+        },
+        {
+          "issue": "The contract plan has no ensures clauses and no explicit alias policy.",
+          "impact": "That is acceptable for the selected frame property, but the artefact should not be reused as a general specification of mlk_poly_add."
+        }
+      ],
+      "minor_issues": [
+        {
+          "issue": "The assertion checks that b is unchanged rather than directly asserting a post-state relation on r.",
+          "impact": "The destination write-footprint is enforced indirectly through the DFCC assigns clause, so this is narrower than a full functional postcondition."
+        }
+      ],
+      "assumption_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "Assumption A01 relies on two concrete local mlk_poly objects and a pre-call snapshot of b, without introducing NULL or fresh-pointer modeling.",
+            "impact": "This is a good fit for the selected direct frame property, but it intentionally excludes alias-sensitive behavior."
+          }
+        ]
+      },
+      "assertion_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "C01 is non-trivial because b is havoced before the call and then compared against a pre-call snapshot after the target invocation.",
+            "impact": "The assertion can detect a direct post-call write to the source object in this harness model."
+          }
+        ]
+      },
+      "old_state_new_state_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "The harness snapshots the full source object b before the call and reuses that snapshot after the call.",
+            "impact": "This is the correct old-state/new-state pattern for the selected source-frame check; no old-state snapshot of r is needed because no arithmetic postcondition is claimed."
+          }
+        ]
+      },
+      "contract_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "The function contract’s requires and assigns clauses match the visible single-store body and the narrow frame property.",
+            "impact": "The contract is appropriately scoped for a tool attempt on this target."
+          },
+          {
+            "issue": "The contract does not encode alias separation or any semantic postcondition beyond the frame condition.",
+            "impact": "It should not be interpreted as a general correctness contract for the implementation."
+          }
+        ]
+      },
+      "verification_strategy_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "native_function_contract is a suitable strategy for a write-footprint/frame property on a small in-place primitive.",
+            "impact": "It is better matched than a loop-invariant or arithmetic-equivalence strategy for this selected candidate."
+          }
+        ]
+      },
+      "independence_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "The heuristic similarity audit reports zero reference-file overlap and low similarity risk.",
+            "impact": "No additional human similarity review is indicated by the current audit evidence; the unavoidable overlap is limited to target identifiers and array-processing structure."
+          }
+        ]
+      },
+      "scope_and_overclaim_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "The artefact deliberately avoids claims about modulo-q normalization, overflow safety, FIPS compliance, cryptographic security, and full ML-KEM correctness.",
+            "impact": "This keeps the candidate within an appropriate local scope for Agent 7 execution."
+          }
+        ]
+      },
+      "deterministic_reference_assessment": {
+        "used": true,
+        "status": "used_for_readiness_only",
+        "warning": "The recorded build-plan/validation evidence supports handoff readiness and low similarity risk, but it does not establish the property or any CBMC outcome.",
+        "disagreements": []
+      },
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add body",
+          "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+          "supports_claim": "The visible body writes only through the destination polynomial r and reads b.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "typedef struct and function declaration",
+          "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; ... void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The target operates on a fixed-length int16_t coefficient array and distinguishes mutable destination from const source.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "locator": "macro definitions",
+          "excerpt": "#define MLKEM_N 256 / #define MLKEM_Q 3329",
+          "supports_claim": "The compile-time coefficient count is 256 and the modulus context is 3329.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.5",
+          "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+          "supports_claim": "Coordinate-wise addition semantics justify a local coefficientwise property for the target primitive.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.1, Eq. (2.1)",
+          "excerpt": "z ← x+y means that z is assigned the value x + y mod m.",
+          "supports_claim": "The abstract specification uses modular assignment semantics, which is relevant to avoiding over-claiming beyond the selected frame property.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json",
+          "locator": "validation / contract_summary / execution_profile",
+          "excerpt": "rendered_harness_valid_for_handoff=true; contract_valid=true; production_source_modified=false; requires_human_review=false; enforce_contract=true; use_dfcc=true",
+          "supports_claim": "The recorded build-plan validation indicates the harness/contract artefacts are structurally ready for handoff to the next tool stage.",
+          "confidence": "medium"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/validation/04_independence_audit.json",
+          "locator": "summary",
+          "excerpt": "reference_file_count: 0; max_similarity_score: 0.0; copying_risk: low_similarity_risk; requires_human_similarity_review: false",
+          "supports_claim": "The heuristic similarity audit reports low copying risk for the generated harness.",
+          "confidence": "medium"
+        }
+      ],
+      "limitations": [
+        "This is a pre-tool critic review of a candidate harness/contract pair, not a proof result.",
+        "No raw CBMC output was provided, so readiness is based on source/spec evidence plus recorded build-plan validation.",
+        "The selected harness intentionally models a non-aliasing local-object case and does not resolve overlap semantics.",
+        "The contract header contents were not directly re-derived here; the review relies on the recorded artifact outputs and validation records."
+      ]
+    },
+    "review_gate": {
+      "schema_version": "review_gate_decision.v1",
+      "created_utc": "2026-07-14T05:31:50.598108+00:00",
+      "stage": "06_review_critic",
+      "target_function": "mlk_poly_add",
+      "final_gate": "approved_for_tool_execution",
+      "tool_execution_allowed": true,
+      "reason": "No blocking tool-readiness issue was found. Non-blocking warnings and human-review caveats remain recorded for post-tool review.",
+      "llm_gate_recommendation": "approved_for_tool_execution",
+      "deterministic_recommended_gate": "approved_for_tool_execution",
+      "llm_mode": "real",
+      "inputs": {
+        "generated_harness": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+        "artifact_plan": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/llm_authoritative/04_artifact_plan.json",
+        "independence_audit": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/validation/04_independence_audit.json"
+      },
+      "blocking_diagnostics": [],
+      "trust_boundary": {
+        "gate_decision": "conservative_workflow_control_decision",
+        "formal_truth": "not_claimed",
+        "cbmc_execution": "not_performed_in_agent6"
+      },
+      "limitations": [
+        "A gate approval only means the artefact may proceed to Agent 7's configured tool or analysis-only profile.",
+        "A gate approval is not proof and not a verification result.",
+        "CBMC may still fail or reveal issues."
+      ],
+      "formal_build_plan": {
+        "path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json",
+        "valid": true,
+        "error_count": 0,
+        "warning_count": 0
+      }
+    }
+  }
+}

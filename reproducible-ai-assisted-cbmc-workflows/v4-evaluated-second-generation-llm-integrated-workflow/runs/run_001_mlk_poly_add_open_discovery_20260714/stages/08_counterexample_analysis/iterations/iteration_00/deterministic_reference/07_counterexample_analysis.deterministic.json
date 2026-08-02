@@ -1,0 +1,118 @@
+{
+  "schema_version": "deterministic_reference.v1",
+  "created_utc": "2026-07-14T05:31:51.849539+00:00",
+  "trust_boundary": "advisory_only_not_authoritative",
+  "content": {
+    "schema_version": "deterministic_counterexample_analysis.v1",
+    "created_utc": "2026-07-14T05:31:51.849001+00:00",
+    "classification": {
+      "result_classification": "contract_build_or_instrumentation_failed",
+      "semantic_outcome": "tool_or_build_failure",
+      "canonical_result_valid": true,
+      "failure_categories": [
+        "contract_build_or_instrumentation_failure",
+        "possible_harness_syntax_or_compile_error"
+      ],
+      "severity": "infrastructure_or_modeling",
+      "repair_needed": true,
+      "no_formal_tool_result": false,
+      "counterexample_relevant": false,
+      "emitted_failure_count": 0,
+      "emitted_unknown_count": 0,
+      "parsed_failure_count": 0,
+      "failure_hint_evidence_scope": "no_property_specific_failure_evidence",
+      "interpretation_boundary": "Deterministic classification follows the shared Agent 7 result contract. Textual semantic hints are gated by actual failed-property evidence; raw CBMC output remains primary evidence."
+    },
+    "failure_snippets": [
+      {
+        "start_line": 1,
+        "end_line": 5,
+        "trigger_line": 3,
+        "trigger_text": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/contracts/04_generated_contracts.h:4:1: error: syntax error before 'points'",
+        "snippet": "1: \n2: /home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/contracts/04_generated_contracts.h: In function 'mlk_poly_add':\n3: /home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/contracts/04_generated_contracts.h:4:1: error: syntax error before 'points'\n4:  __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)\n5: PARSING ERROR",
+        "trust_boundary": "deterministic_diagnostic_excerpt"
+      }
+    ],
+    "harness_diagnosis": {
+      "findings": [],
+      "assertion_lines": [
+        {
+          "line": 20,
+          "text": "__CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");"
+        }
+      ],
+      "assumption_lines": [],
+      "call_lines": [
+        {
+          "line": 10,
+          "text": "__CPROVER_havoc_object(&r);"
+        },
+        {
+          "line": 11,
+          "text": "__CPROVER_havoc_object(&b);"
+        },
+        {
+          "line": 15,
+          "text": "/* TRACE_CALL:MLK_POLY_ADD */ mlk_poly_add(&r, &b);"
+        },
+        {
+          "line": 17,
+          "text": "for (i = 0; i < MLKEM_N; ++i)"
+        },
+        {
+          "line": 20,
+          "text": "__CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");"
+        }
+      ],
+      "old_state_lines": [
+        {
+          "line": 7,
+          "text": "mlk_poly b_before;"
+        },
+        {
+          "line": 12,
+          "text": "b_before = b;"
+        },
+        {
+          "line": 14,
+          "text": "/* TRACE_ASSUMPTION:A01: distinct local mlk_poly objects are used, with a pre-call snapshot of the source object, and no NULL or fresh-pointer model is introduced. */"
+        },
+        {
+          "line": 20,
+          "text": "__CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");"
+        }
+      ]
+    },
+    "repair_guidance": {
+      "schema_version": "repair_guidance_diagnostic.v1",
+      "created_utc": "2026-07-14T05:31:51.848994+00:00",
+      "guidance_items": [
+        {
+          "repair_type": "harness_compile_or_syntax_fix",
+          "priority": "high",
+          "guidance": "Check includes, type declarations, function declarations, and generated C syntax before changing the property."
+        },
+        {
+          "repair_type": "native_contract_build_or_instrumentation_fix",
+          "priority": "high",
+          "guidance": "Inspect goto-cc/goto-instrument stdout, exact patch diff, contract syntax, target symbol and DFCC/enforce options before changing the property."
+        }
+      ],
+      "trust_boundary": "deterministic_repair_guidance_advisory_only"
+    },
+    "tool_result_scope": {
+      "cbmc_status_available": true,
+      "property_results_available": true,
+      "trace_summary_available": true,
+      "failed_mapping_available": true,
+      "raw_output_chars": 0,
+      "raw_stderr_chars": 540
+    },
+    "trust_boundary": "deterministic_diagnostic_not_authoritative_llm_analysis",
+    "limitations": [
+      "This diagnostic classification does not override raw CBMC output.",
+      "It may misclassify CBMC messages depending on output format.",
+      "The LLM analysis and human review must use raw output as primary evidence."
+    ]
+  }
+}
