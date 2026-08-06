@@ -1,0 +1,75 @@
+{
+  "schema_version": "validation_record.v1",
+  "created_utc": "2026-07-14T05:25:25.547602+00:00",
+  "content": {
+    "schema_version": "selected_property_handoff.v1",
+    "discovery_mode": "open_discovery",
+    "selected": true,
+    "selection_method": "open_discovery_feasibility_then_risk_then_rank",
+    "property": {
+      "property_id": "OPEN_CAND_003",
+      "property_family_id": "UNMAPPED",
+      "title": "Write footprint confined to destination polynomial",
+      "category": "frame behavior",
+      "verification_strategy": "native_function_contract",
+      "proof_obligation_kind": "frame",
+      "support_classification": "uncatalogued_candidate",
+      "required_tool_capabilities": [
+        "native_function_contract"
+      ],
+      "candidate_statement": "The visible body writes only through r->coeffs[i]; no direct store targets b or any other storage in the shown function body.",
+      "supporting_evidence": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add body",
+          "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+          "supports_claim": "The assignment writes through r only.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "function declaration",
+          "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The interface distinguishes a mutable destination pointer from a const source pointer.",
+          "confidence": "high"
+        }
+      ],
+      "required_assumptions": [
+        "The property is interpreted only over direct writes in the shown function body."
+      ],
+      "cbmc_feasibility": "high",
+      "risk_level": "low",
+      "expected_artifact_type": "native function contract",
+      "out_of_scope_boundaries": [
+        "Does not rule out indirect effects on shared storage if r and b alias.",
+        "Does not assert that b's underlying object cannot change through aliasing with r."
+      ],
+      "uncertainty": "The source pointer is const-qualified, but the snapshot does not include an aliasing contract that would make a stronger separation claim.",
+      "limitations": [
+        "This is a direct frame property only; it does not speak to arithmetic correctness."
+      ]
+    },
+    "selection_reason": "Selected after the LLM-authored candidate set was saved and post-classified. Selection is an experiment-control decision, not proof that the property is true.",
+    "catalogue_mapping_status": "unmapped_new",
+    "effective_property_campaign": {
+      "schema_version": "property_campaign.v2.open_selected_unmapped",
+      "property_family_id": "UNMAPPED",
+      "property_family_slug": "unmapped_new_property",
+      "property_family_title": "Unmapped/new open-discovery property",
+      "verification_strategy": "native_function_contract",
+      "support_level": "uncatalogued_candidate",
+      "claim_boundary": "Local selected claim only; uncatalogued status does not imply truth, novelty, or provability.",
+      "allowed_strategies": [
+        "native_function_contract"
+      ],
+      "target_examples": [],
+      "allow_analysis_only": false,
+      "require_native_contract_tools": true,
+      "explicitly_configured": false,
+      "legacy_compatibility_default": false,
+      "discovery_mode": "open_discovery",
+      "selection_pending": false,
+      "selected_property_id": "OPEN_CAND_003"
+    }
+  }
+}

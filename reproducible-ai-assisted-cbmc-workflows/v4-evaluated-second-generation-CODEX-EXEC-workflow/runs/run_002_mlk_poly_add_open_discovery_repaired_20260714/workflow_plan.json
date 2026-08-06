@@ -1,0 +1,205 @@
+{
+  "schema_version": "workflow_plan.v2.stage_layout",
+  "run_id": "run_002_mlk_poly_add_open_discovery_repaired_20260714",
+  "target_scheme": "ML-KEM",
+  "target_function": "mlk_poly_add",
+  "verification_tool": "CBMC",
+  "artifact_type": "CBMC verification harness",
+  "property_discovery": {
+    "mode": "open_discovery",
+    "catalogue_visibility": "hidden",
+    "allow_uncatalogued_properties": true,
+    "selected_property_id": null,
+    "selection_policy": "feasibility_then_risk_then_rank",
+    "schema_version": "property_discovery.v2",
+    "classification_timing": "post_llm_authoritative_output",
+    "raw_candidate_family_marker": "UNMAPPED",
+    "raw_candidate_strategy_marker": "UNSELECTED"
+  },
+  "property_campaign": {
+    "schema_version": "property_campaign.v2.open_unselected",
+    "property_family_id": "UNMAPPED",
+    "property_family_slug": "unmapped_open_discovery",
+    "property_family_title": "Unmapped open-discovery candidate",
+    "verification_strategy": "UNSELECTED",
+    "support_level": "unclassified",
+    "claim_boundary": "No property family or formal strategy is selected before open LLM discovery.",
+    "allowed_strategies": [],
+    "target_examples": [],
+    "allow_analysis_only": true,
+    "require_native_contract_tools": false,
+    "explicitly_configured": false,
+    "legacy_compatibility_default": false,
+    "discovery_mode": "open_discovery",
+    "selection_pending": true
+  },
+  "experiment_protocol": {
+    "protocol_version": "llm-first-v1",
+    "semantic_advisory_mode": "off",
+    "repair_policy": "none_initial_run",
+    "property_discovery_mode": "open_discovery",
+    "property_family": "UNMAPPED",
+    "strategy": "UNSELECTED",
+    "model_profile_sha256": "",
+    "model_identifier": "gpt-5.4-mini",
+    "source_revision": "903027064d6739140306d3e6f6ca8c66959ff1d4",
+    "prompt_budget": {
+      "max_request_bytes": 900000,
+      "max_retry_growth_percent": 10,
+      "max_stage_input_tokens_estimate": 225000,
+      "max_total_input_tokens_estimate": 10000000
+    },
+    "initial_run_requires_zero_repairs": true,
+    "selected_property_claims_required": true,
+    "structured_cbmc_json_required": true,
+    "mutation_non_vacuity_required": true,
+    "protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee"
+  },
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "max_iterations": 0,
+  "parallel_initial_agents": false,
+  "layout_policy": {
+    "stage_outputs_written_once": true,
+    "root_level_stage_outputs_allowed": false,
+    "handoff_uses_manifest_pointers": true,
+    "deterministic_reference_is_advisory_only": true,
+    "llm_authoritative_is_candidate_stage_output": true
+  },
+  "agent_order": [
+    "spec_extraction + code_understanding",
+    "property_discovery",
+    "artifact_generation",
+    "critic_review",
+    "tool_execution",
+    "after every tool result: counterexample_analysis; if failure and iterations remain: repair -> re-review -> tool execution",
+    "experiment_logger",
+    "evaluation_reporter"
+  ],
+  "agents": {
+    "spec_extraction": {
+      "name": "spec_extraction",
+      "stage_key": "02_spec_extraction",
+      "script": "agents/spec_extraction_agent.py",
+      "expected_handoff_outputs": [
+        "spec_summary"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed specification extraction; writes authoritative candidate spec summary handoff."
+    },
+    "code_understanding": {
+      "name": "code_understanding",
+      "stage_key": "03_code_understanding",
+      "script": "agents/code_understanding_agent.py",
+      "expected_handoff_outputs": [
+        "code_summary"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed code understanding; writes authoritative candidate code summary handoff."
+    },
+    "property_discovery": {
+      "name": "property_discovery",
+      "stage_key": "04_property_discovery",
+      "script": "agents/property_discovery_agent.py",
+      "expected_handoff_outputs": [
+        "candidate_properties"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed property discovery; writes candidate property list handoff."
+    },
+    "artifact_generation": {
+      "name": "artifact_generation",
+      "stage_key": "05_artifact_generation",
+      "script": "agents/artifact_generation_agent.py",
+      "expected_handoff_outputs": [
+        "artifact_plan",
+        "generated_harness",
+        "artifact_manifest"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed artefact planning with Python rendering/validation of candidate harness."
+    },
+    "critic_review": {
+      "name": "critic_review",
+      "stage_key": "06_review_critic",
+      "script": "agents/review_critic_agent.py",
+      "expected_handoff_outputs": [
+        "critic_review",
+        "review_gate_decision",
+        "formal_build_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed critic review and gate decision before CBMC execution."
+    },
+    "tool_execution": {
+      "name": "tool_execution",
+      "stage_key": "07_tool_execution",
+      "script": "agents/tool_execution_agent.py",
+      "expected_handoff_outputs": [
+        "cbmc_output",
+        "cbmc_status"
+      ],
+      "required": true,
+      "timeout_seconds": 1800,
+      "description": "Deterministic CBMC/tool execution stage."
+    },
+    "counterexample_analysis": {
+      "name": "counterexample_analysis",
+      "stage_key": "08_counterexample_analysis",
+      "script": "agents/counterexample_analysis_agent.py",
+      "expected_handoff_outputs": [
+        "counterexample_analysis",
+        "repair_guidance",
+        "repair_action_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed analysis of CBMC/tool outputs and candidate repair direction."
+    },
+    "repair": {
+      "name": "repair",
+      "stage_key": "09_repair_refinement",
+      "script": "agents/repair_agent.py",
+      "expected_handoff_outputs": [
+        "repair_plan"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "LLM-backed repair/refinement plan; Python controls patch application."
+    },
+    "experiment_logger": {
+      "name": "experiment_logger",
+      "stage_key": "10_experiment_logger",
+      "script": "agents/experiment_logger.py",
+      "expected_handoff_outputs": [
+        "experiment_log",
+        "run_reproducibility_record",
+        "artifact_inventory",
+        "checksum_manifest"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Deterministic evidence logger and file/checksum indexer."
+    },
+    "evaluation_reporter": {
+      "name": "evaluation_reporter",
+      "stage_key": "11_evaluation_reporter",
+      "script": "agents/evaluation_reporter.py",
+      "expected_handoff_outputs": [
+        "evaluation_report"
+      ],
+      "required": false,
+      "timeout_seconds": 900,
+      "description": "Mixed evaluation stage: deterministic facts plus cautious LLM interpretation if enabled."
+    }
+  },
+  "positioning": {
+    "claim": "Agents generate and evaluate candidate formal-verification artefacts in a reproducible workflow.",
+    "non_claim": "The workflow does not claim to fully prove ML-KEM automatically.",
+    "authority": "CBMC/formal tools and human researcher remain final correctness authority."
+  }
+}

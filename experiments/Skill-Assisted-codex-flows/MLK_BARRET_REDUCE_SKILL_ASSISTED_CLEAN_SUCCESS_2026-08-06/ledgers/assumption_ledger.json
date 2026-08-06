@@ -1,0 +1,30 @@
+{
+  "campaign": "MLK_BARRET_REDUCE_SKILL ASSISTED",
+  "principal_proof_assumptions": [
+    {
+      "theorem": "SA-BR-T1",
+      "assumption": "a != INT16_MIN",
+      "reason": "C int16_t cannot represent -INT16_MIN; the theorem quantifies only representable sign conjugates.",
+      "feasibility_cover": "SA_BR_T1_ASSUMPTIONS_FEASIBLE",
+      "does_not_imply_postcondition": true
+    },
+    {
+      "theorem": "SA-BR-T2",
+      "assumption": "none",
+      "reason": "Both int16_t operands are fully symbolic.",
+      "feasibility_cover": "SA_BR_T2_ASSUMPTIONS_FEASIBLE",
+      "does_not_imply_postcondition": true
+    }
+  ],
+  "environment_semantics": [
+    "CBMC 6.9.0 and GOTO tools 6.9.0",
+    "x86_64 little-endian Ubuntu environment",
+    "signed right shift modeled as the target environment arithmetic shift used by the production source",
+    "ML-KEM parameter set 768; q=3329 is shared across parameter sets"
+  ],
+  "forbidden_assumptions": [
+    "assume(false)",
+    "assuming any selected postcondition",
+    "replacing the production arithmetic body with an oracle"
+  ]
+}

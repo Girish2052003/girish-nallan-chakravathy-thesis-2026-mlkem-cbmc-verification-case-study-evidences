@@ -1,0 +1,502 @@
+{
+  "schema_version": "agent_status.v1",
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "experiment_protocol_version": "llm-first-v1",
+  "semantic_advisory_mode": "off",
+  "property_discovery_mode": "open_discovery",
+  "stage": "08_counterexample_analysis",
+  "started_utc": "2026-07-14T05:31:51.845860+00:00",
+  "completed_utc": "2026-07-14T05:33:50.648796+00:00",
+  "success": true,
+  "llm_call_executed": true,
+  "handoff_available": true,
+  "errors": [],
+  "warnings": [],
+  "llm_mode": "real",
+  "llm_success": true,
+  "llm_result": {
+    "stage": "08_counterexample_analysis",
+    "mode": "real",
+    "success": true,
+    "llm_call_executed": true,
+    "output_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/llm_authoritative/07_counterexample_analysis.json",
+    "raw_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/llm_authoritative/api_responses/attempt_01_response.json",
+    "validation_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/validation/llm_call_validation.json",
+    "prompt_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/08_counterexample_analysis_prompt.txt",
+    "metadata_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/prompt_metadata.json",
+    "attempts": 1,
+    "error": null,
+    "parsed_json": {
+      "stage": "08_counterexample_analysis",
+      "mock": false,
+      "llm_call_executed": true,
+      "tool_result_summary": {
+        "result_classification": "contract_build_or_instrumentation_failed",
+        "tool_executed": true,
+        "exit_code": 1,
+        "summary": "CBMC was invoked in the configured goto_contract_pipeline, but the run failed before any property was emitted or checked. The status record reports a pre-CBMC GOTO build/instrumentation failure, and stderr shows a syntax error in the generated contracts header. No formal verification result or counterexample was produced."
+      },
+      "execution_status_interpretation": {
+        "status": "failed_pre_cbmc_build_or_instrumentation",
+        "formal_tool_result_exists": false,
+        "interpretation": "The tool executed, but the pipeline stopped upstream of CBMC analysis. Because the GOTO build/instrumentation step failed, there is no formal CBMC property result to interpret for this run."
+      },
+      "counterexample_analysis": {
+        "status": "no_formal_counterexample_available",
+        "findings": [
+          {
+            "finding_id": "CF-01",
+            "category": "tool_result_boundary",
+            "finding": "No counterexample can be extracted from this run because the pipeline stopped before any CBMC property was emitted or checked.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "result_classification / pipeline_execution_summary",
+                "excerpt": "tool_executed=true; exit_code=1; result_classification=\"contract_build_or_instrumentation_failed\"; result_reason=\"A pre-CBMC GOTO build/instrumentation step failed.\"; selected_property_verified_under_model=false; emitted_property_count=0; emitted_failure_count=0",
+                "supports_claim": "The run ended before any formal property result existed.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt",
+                "locator": "file contents",
+                "excerpt": "(empty)",
+                "supports_claim": "CBMC produced no stdout result content for this run.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_cbmc_status.json",
+                "locator": "pre_execution_structural_validation",
+                "excerpt": "valid=true; entry_function_defined=true; target_function_called=true; cbmc_execution_still_required=true",
+                "supports_claim": "The pre-execution gate passed, but the actual formal-result stage never completed.",
+                "confidence": "high"
+              }
+            ],
+            "uncertainty": "High confidence that no formal counterexample exists in the visible evidence. The exact downstream property status cannot be recovered because the pipeline failed before property emission."
+          },
+          {
+            "finding_id": "CF-02",
+            "category": "contract_syntax_error",
+            "finding": "The immediate trigger is a malformed generated contract clause in the included contracts header: stderr reports a syntax error before the word 'points' in a __CPROVER_requires line.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+                "locator": "stderr text",
+                "excerpt": "error: syntax error before 'points' __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+                "supports_claim": "The generated contract text is not valid syntax and caused the pipeline failure.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_tool_command_manifest.json",
+                "locator": "pipeline_steps / goto_compile / apply_function_contracts",
+                "excerpt": "goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true",
+                "supports_claim": "The failure happened in the pre-CBMC compile/instrumentation pipeline and involved the generated contracts header.",
+                "confidence": "high"
+              }
+            ],
+            "uncertainty": "The visible evidence localizes the parse failure to the generated contract header, but it does not show the full header contents or the exact generator bug that emitted the malformed text."
+          },
+          {
+            "finding_id": "CF-03",
+            "category": "harness_structure_ok",
+            "finding": "The harness wiring itself appears structurally valid: the entry function is defined, the target function is called, and the known vacuity pattern was rejected before execution.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "pre_execution_structural_validation",
+                "excerpt": "valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true",
+                "supports_claim": "The harness passed the structural gate before the later build/instrumentation failure.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+                "locator": "harness body",
+                "excerpt": "__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");",
+                "supports_claim": "The harness is the intended local-object frame-check harness and includes the target call.",
+                "confidence": "medium"
+              }
+            ],
+            "uncertainty": "General semantic non-vacuity was not proved, so the harness may still be narrower than the intended semantic claim even though the structural gate passed."
+          }
+        ]
+      },
+      "failure_classification": {
+        "result_classification": "contract_build_or_instrumentation_failed",
+        "failure_categories": [
+          "pre_cbmc_build_failure",
+          "contract_syntax_error",
+          "instrumentation_pipeline_failure",
+          "no_formal_result"
+        ],
+        "severity": "high",
+        "repair_needed": true,
+        "no_formal_tool_result": true,
+        "parsed_failure_count": 1,
+        "interpretation_boundary": "This failure is at the contract/build boundary, not a verified property failure. Do not infer a concrete counterexample to mlk_poly_add from this run."
+      },
+      "harness_vs_property_vs_tool_diagnosis": {
+        "status": "toolchain_failure_during_contract_parsing",
+        "root_cause_category": "generated_contracts_header_parse_error",
+        "findings": [
+          {
+            "finding_id": "HD-01",
+            "category": "pipeline_boundary",
+            "finding": "The pipeline stopped before CBMC property checking, so there is no pass/fail outcome for the selected property.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "tool result summary",
+                "excerpt": "tool_executed=true; exit_code=1; result_classification=\"contract_build_or_instrumentation_failed\"; emitted_property_count=0; emitted_failure_count=0",
+                "supports_claim": "No CBMC property results were emitted.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt",
+                "locator": "file contents",
+                "excerpt": "(empty)",
+                "supports_claim": "No stdout witness or result text was produced.",
+                "confidence": "high"
+              }
+            ],
+            "uncertainty": "The exact boundary between contract generation and instrumentation is visible only indirectly, but the failure clearly occurs before formal property solving."
+          },
+          {
+            "finding_id": "HD-02",
+            "category": "contract_generation",
+            "finding": "The malformed text in the generated contracts header is the best-supported root cause of the failure.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+                "locator": "stderr text",
+                "excerpt": "syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+                "supports_claim": "The contract header contains invalid syntax and triggers the parser error.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+                "locator": "command_text / pipeline_steps",
+                "excerpt": "-include .../contracts/04_generated_contracts.h; goto-instrument --dfcc harness --enforce-contract mlk_poly_add ...; pipeline_setup_failed=true",
+                "supports_claim": "The failure is in the contract-aware build/instrumentation path, not in CBMC property solving.",
+                "confidence": "high"
+              }
+            ],
+            "uncertainty": "The error text is explicit, but the exact upstream generator bug is not directly shown."
+          },
+          {
+            "finding_id": "HD-03",
+            "category": "harness_scope",
+            "finding": "The harness itself is not the obvious source of the failure; it was structurally accepted and the target call is present.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "pre_execution_structural_validation",
+                "excerpt": "valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true",
+                "supports_claim": "The harness/entrypoint wiring passed validation before the later failure.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+                "locator": "mlk_poly_add body",
+                "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+                "supports_claim": "The selected source context is a simple in-place coefficientwise add, consistent with a frame-property harness rather than a complex control-flow source of failure.",
+                "confidence": "high"
+              }
+            ],
+            "uncertainty": "This does not exclude subtler modeling issues, but the visible evidence points away from the harness body as the immediate failure cause."
+          }
+        ]
+      },
+      "repair_guidance": {
+        "status": "repair_required",
+        "guidance_items": [
+          {
+            "action_id": "A1",
+            "action_type": "syntax_fix",
+            "priority": "high",
+            "target_stage": "05_artifact_generation",
+            "proposed_change": "Regenerate the contracts header so every DFCC annotation is valid CBMC/C syntax. In particular, replace prose-like __CPROVER_requires text with an actual boolean predicate over the intended preconditions, while preserving the selected frame property.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+                "locator": "stderr text",
+                "excerpt": "syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+                "supports_claim": "The current generated contract text is not parseable.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+                "locator": "command_text",
+                "excerpt": "-include .../contracts/04_generated_contracts.h",
+                "supports_claim": "The malformed contract header is the artifact that must be fixed for the pipeline to proceed.",
+                "confidence": "high"
+              }
+            ],
+            "risk_if_applied": "If the rewritten predicate is too weak or mismatched to the intended model, the next run may pass syntax checks but no longer test the same frame property.",
+            "evidence_strength_lost_if_any": "Any simplification that drops the intended frame predicate would weaken the current write-footprint evidence."
+          },
+          {
+            "action_id": "A2",
+            "action_type": "re_run_pipeline",
+            "priority": "high",
+            "target_stage": "07_tool_execution",
+            "proposed_change": "After fixing the contract header, rerun the same goto-cc -> goto-instrument -> cbmc pipeline and confirm that the compiled GOTO model is produced before interpreting any property result.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+                "locator": "pipeline_steps",
+                "excerpt": "planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true",
+                "supports_claim": "The current attempt stopped before the formal check stage, so a rerun is needed after repair.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "result_classification",
+                "excerpt": "result_classification=\"contract_build_or_instrumentation_failed\"; emitted_property_count=0",
+                "supports_claim": "There is no formal result to reinterpret until the pipeline successfully completes.",
+                "confidence": "high"
+              }
+            ],
+            "risk_if_applied": "This consumes another tool cycle and may still fail if the header contains any remaining unsupported constructs.",
+            "evidence_strength_lost_if_any": "None; this action preserves the current evidence boundary and simply re-attempts verification after repair."
+          },
+          {
+            "action_id": "A3",
+            "action_type": "add_preflight_check",
+            "priority": "medium",
+            "target_stage": "05_artifact_generation",
+            "proposed_change": "Add a lightweight preflight compile/parse check for the generated contracts header before invoking goto-cc/goto-instrument, so syntax regressions are caught earlier in the workflow.",
+            "evidence_basis": [
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+                "locator": "pre_execution_structural_validation",
+                "excerpt": "valid=true; cbmc_execution_still_required=true",
+                "supports_claim": "Structural validation succeeded, so an earlier syntax gate would provide better failure localization.",
+                "confidence": "high"
+              },
+              {
+                "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+                "locator": "stderr text",
+                "excerpt": "syntax error before 'points'",
+                "supports_claim": "The failure is a parser error that a preflight syntax check should catch before the formal pipeline is launched.",
+                "confidence": "high"
+              }
+            ],
+            "risk_if_applied": "Adds pipeline complexity and may require extra maintenance for the contract-generation path.",
+            "evidence_strength_lost_if_any": "None for the current property intent; this is a diagnostic safeguard rather than a semantic weakening."
+          }
+        ]
+      },
+      "repair_action_plan": [
+        {
+          "action_id": "A1",
+          "action_type": "syntax_fix",
+          "priority": "high",
+          "target_stage": "05_artifact_generation",
+          "proposed_change": "Regenerate the contracts header so all DFCC annotations are valid CBMC expressions, preserving the intended frame property.",
+          "evidence_basis": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+              "locator": "stderr text",
+              "excerpt": "syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+              "supports_claim": "The generated contract text is malformed.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+              "locator": "command_text",
+              "excerpt": "-include .../contracts/04_generated_contracts.h",
+              "supports_claim": "The failing artifact is the generated contracts header used by the build pipeline.",
+              "confidence": "high"
+            }
+          ],
+          "risk_if_applied": "A syntactically valid but semantically weaker contract could stop the parse error while reducing the evidence value of the verification attempt.",
+          "evidence_strength_lost_if_any": "Any simplification that drops the intended precondition/frame meaning would reduce the current property evidence."
+        },
+        {
+          "action_id": "A2",
+          "action_type": "rerun_pipeline",
+          "priority": "high",
+          "target_stage": "07_tool_execution",
+          "proposed_change": "Rerun the same contract pipeline after the syntax fix and only interpret results once the GOTO build and instrumentation steps complete successfully.",
+          "evidence_basis": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+              "locator": "pipeline_steps",
+              "excerpt": "planned_step_count=3; completed_step_count=1; pipeline_setup_failed=true",
+              "supports_claim": "The previous attempt did not reach the formal check stage.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+              "locator": "tool result summary",
+              "excerpt": "result_classification=\"contract_build_or_instrumentation_failed\"; emitted_property_count=0",
+              "supports_claim": "There is no property result to carry forward until the pipeline succeeds.",
+              "confidence": "high"
+            }
+          ],
+          "risk_if_applied": "May still fail if additional unsupported constructs remain in the generated contracts or harness glue.",
+          "evidence_strength_lost_if_any": "None; this is the required next verification attempt after repair."
+        },
+        {
+          "action_id": "A3",
+          "action_type": "add_preflight_check",
+          "priority": "medium",
+          "target_stage": "05_artifact_generation",
+          "proposed_change": "Insert a preflight parse/compile check for generated contract files before the formal tool run so syntax errors are detected earlier and reported more clearly.",
+          "evidence_basis": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+              "locator": "pre_execution_structural_validation",
+              "excerpt": "valid=true; cbmc_execution_still_required=true",
+              "supports_claim": "The current structural gate did not catch the syntax issue, so an earlier parser gate would improve diagnostics.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+              "locator": "stderr text",
+              "excerpt": "syntax error before 'points'",
+              "supports_claim": "The failure mode is exactly the kind that a preflight syntax check should catch.",
+              "confidence": "high"
+            }
+          ],
+          "risk_if_applied": "Adds maintenance overhead and may duplicate some of the formal toolchain's syntax checking.",
+          "evidence_strength_lost_if_any": "None."
+        }
+      ],
+      "success_scope_analysis": {
+        "status": "limited_to_pre_cbmc_pipeline",
+        "checked_scope": [
+          "CBMC and helper tools were available in the environment",
+          "the harness entry function was defined and the target function was called",
+          "pre-execution structural validation passed",
+          "the pipeline stopped during the contract-aware build/instrumentation path before any property emission"
+        ],
+        "not_checked": [
+          "bounds checks",
+          "pointer checks",
+          "memory-leak checks",
+          "division-by-zero checks",
+          "signed overflow checks",
+          "unsigned overflow checks",
+          "conversion checks",
+          "undefined-shift checks",
+          "selected-property success/failure",
+          "counterexample traces",
+          "any semantic correctness claim about mlk_poly_add"
+        ],
+        "limitations": [
+          "No formal CBMC property result exists for this run because the pipeline failed before property emission.",
+          "The raw property-results and trace-summary contents were not included in the visible evidence excerpt, so no witness or counterexample details can be recovered from them here.",
+          "The failure is a tooling/build issue, not evidence of a bug in mlk_poly_add itself."
+        ]
+      },
+      "deterministic_reference_assessment": {
+        "used": false,
+        "status": "not used",
+        "warning": "No deterministic Python advisory analysis was provided for this stage. Previous LLM candidate-context records were treated only as non-authoritative workflow context, not as deterministic evidence.",
+        "disagreements": []
+      },
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+          "locator": "result_classification / pre_execution_structural_validation",
+          "excerpt": "tool_executed=true; exit_code=1; result_classification=\"contract_build_or_instrumentation_failed\"; result_reason=\"A pre-CBMC GOTO build/instrumentation step failed.\"; emitted_property_count=0; emitted_failure_count=0; selected_property_verified_under_model=false",
+          "supports_claim": "The run failed before any CBMC property result existed.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_output.txt",
+          "locator": "file contents",
+          "excerpt": "(empty)",
+          "supports_claim": "No stdout result content was produced by the CBMC invocation.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_stderr.txt",
+          "locator": "stderr text",
+          "excerpt": "syntax error before 'points' ... __CPROVER_requires(r points to a live writable mlk_poly object with MLKEM_N accessible int16_t coefficients)",
+          "supports_claim": "The generated contract header contained invalid syntax that caused the failure.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/tool_pipeline/06_tool_command_manifest.json",
+          "locator": "pipeline_steps / command_text",
+          "excerpt": "goto-cc ... -include .../contracts/04_generated_contracts.h && goto-instrument --dfcc harness --enforce-contract mlk_poly_add ... && cbmc ...; pipeline_setup_failed=true; completed_step_count=1; planned_step_count=3",
+          "supports_claim": "The failure occurred in the contract-aware build/instrumentation pipeline before CBMC property checking.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/07_tool_execution/iterations/iteration_00/tool_outputs/06_cbmc_status.json",
+          "locator": "pre_execution_structural_validation",
+          "excerpt": "valid=true; entry_function_defined=true; target_function_called=true; known_run001_vacuity_pattern_absent=true; cbmc_execution_still_required=true",
+          "supports_claim": "The harness passed the structural gate before the later build/instrumentation failure.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+          "locator": "harness body",
+          "excerpt": "__CPROVER_havoc_object(&r); __CPROVER_havoc_object(&b); b_before = b; mlk_poly_add(&r, &b); __CPROVER_assert(b.coeffs[i] == b_before.coeffs[i], \"TRACE_CLAIM:C01\");",
+          "supports_claim": "The harness is the intended local-object frame-check harness and includes the target call.",
+          "confidence": "medium"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add body",
+          "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+          "supports_claim": "The implementation body writes only through the destination polynomial pointer in the visible source.",
+          "confidence": "high"
+        }
+      ],
+      "limitations": [
+        "The raw property_results and trace_summary contents were not included in the visible evidence excerpt, so no trace-based counterexample details can be extracted here.",
+        "The exact upstream generator bug that emitted the malformed contract text is not directly shown; only the parser failure is visible.",
+        "This analysis does not claim proof, correctness, FIPS compliance, cryptographic security, or any ML-KEM-wide property.",
+        "Any repair suggestion here is aimed at restoring a valid formal-tool run, not at establishing the selected property by itself."
+      ]
+    },
+    "validation": {
+      "schema_version": "llm_stage_validation.v1",
+      "created_utc": "2026-07-14T05:33:50.635257+00:00",
+      "stage": "08_counterexample_analysis",
+      "mode": "real",
+      "llm_call_executed": true,
+      "valid": true,
+      "attempts": 1,
+      "schema_validation": {
+        "schema_validation_enabled": true,
+        "validator": "jsonschema",
+        "valid": true,
+        "errors": []
+      },
+      "model": "gpt-5.4-mini",
+      "elapsed_seconds_last_attempt": 118.67452955245972,
+      "final_request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/api_requests/attempt_01_request.json",
+      "final_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/llm_authoritative/api_responses/attempt_01_response.json",
+      "request_sha256": "8e638c5a7cecf348a501ef2eec587d6b082d7ece094758f461814bbe3eca04b1",
+      "primary_evidence_complete": true,
+      "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/08_counterexample_analysis/iterations/iteration_00/prompt_package/primary_evidence_transmission_manifest.json",
+      "exact_input_summary": {
+        "schema_version": "responses_api_input_summary.v1",
+        "input_text_block_count": 1,
+        "input_text_chars": 234551,
+        "input_text_utf8_bytes": 242976,
+        "input_text_sha256": "83783d86b68f1dfc36041d012799159ab90fb001e76071dd670aff741b1031b9",
+        "input_file_count": 0,
+        "input_files": [],
+        "canonical_input_sha256": "b4e6d4228ecd670af7cac317ccdb6e0d2a59e2268beb60dd34136bb7c8afa599",
+        "contains_primary_truncation_marker": false
+      },
+      "provider_usage": {
+        "input_tokens": 63650,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 19974,
+        "output_tokens_details": {
+          "reasoning_tokens": 14502
+        },
+        "total_tokens": 83624
+      }
+    }
+  }
+}

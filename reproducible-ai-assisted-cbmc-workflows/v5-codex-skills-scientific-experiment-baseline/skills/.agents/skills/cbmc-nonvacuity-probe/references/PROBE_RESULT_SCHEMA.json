@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CBMC Non-Vacuity Probe Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "skill_version", "probe_id", "kind", "required", "source_path", "anchor_line", "occurrence", "insertion_position", "inserted_cover_line_number", "reachability_status", "mapping_confidence", "classification_reason", "matched_records", "cbmc_exit_code", "timed_out", "launch_error", "stdout_json_parsed", "stdout_json_error", "evidence_statement", "semantic_authority"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "skill_version": {"const": "1.0.0-rc1"},
+    "probe_id": {"type": "string"},
+    "kind": {"type": "string"},
+    "required": {"type": "boolean"},
+    "source_path": {"type": "string"},
+    "anchor_line": {"type": "string"},
+    "occurrence": {"type": "integer", "minimum": 1},
+    "insertion_position": {"enum": ["before", "after"]},
+    "inserted_cover_line_number": {"type": "integer", "minimum": 1},
+    "reachability_status": {"enum": ["REACHED_REPORTED_BY_CBMC", "NOT_REACHED_REPORTED_BY_CBMC", "INDETERMINATE", "TOOL_ERROR", "TIMEOUT"]},
+    "mapping_confidence": {"type": "string"},
+    "classification_reason": {"type": "string"},
+    "matched_records": {"type": "array"},
+    "cbmc_exit_code": {"type": ["integer", "null"]},
+    "timed_out": {"type": "boolean"},
+    "launch_error": {"type": ["string", "null"]},
+    "stdout_json_parsed": {"type": "boolean"},
+    "stdout_json_error": {"type": ["string", "null"]},
+    "evidence_statement": {"type": "string"},
+    "semantic_authority": {"const": "NONE"}
+  }
+}

@@ -1,0 +1,26 @@
+#include "vector.h"
+
+extern int nondet_int(void);
+
+int main(void)
+{
+  int result[4];
+  int left[4];
+  int right[4];
+  int i;
+
+  for (i = 0; i < 4; ++i)
+  {
+    left[i] = nondet_int();
+    right[i] = nondet_int();
+  }
+
+  __CPROVER_assume(left[0] >= -100);
+  vector_subtract(result, left, right);
+  /* V5_NONVACUITY_PROBE_BEGIN:assertion-location */
+  __CPROVER_cover(1);
+  /* V5_NONVACUITY_PROBE_END:assertion-location */
+  __CPROVER_assert(result[0] == left[0] - right[0], "component zero");
+
+  return 0;
+}

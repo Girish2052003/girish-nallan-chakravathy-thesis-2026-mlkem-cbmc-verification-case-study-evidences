@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness Scaffold Artifact Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "manifest_scope", "artifacts"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string"},
+    "manifest_scope": {"type": "string"},
+    "artifacts": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role", "sha256", "size_bytes"],
+        "properties": {
+          "path": {"type": "string"},
+          "role": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

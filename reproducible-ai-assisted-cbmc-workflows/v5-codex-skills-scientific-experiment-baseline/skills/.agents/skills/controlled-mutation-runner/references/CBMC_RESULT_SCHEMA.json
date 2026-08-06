@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "json_parse_status": {
+      "type": "string"
+    },
+    "label": {
+      "enum": [
+        "baseline",
+        "mutant"
+      ]
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "outcome": {
+      "enum": [
+        "PASS_REPORTED_BY_CBMC",
+        "FAIL_REPORTED_BY_CBMC",
+        "COMPLETED_STATUS_UNKNOWN",
+        "TOOL_ERROR",
+        "TIMEOUT",
+        "UNPARSEABLE_JSON"
+      ]
+    },
+    "properties": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "property_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "trace_present": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "property_id",
+          "status",
+          "description",
+          "trace_present"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "semantic_authority": {
+      "const": "NONE"
+    },
+    "timed_out": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "label",
+    "outcome",
+    "exit_code",
+    "timed_out",
+    "json_parse_status",
+    "properties",
+    "semantic_authority",
+    "limitations"
+  ],
+  "type": "object"
+}

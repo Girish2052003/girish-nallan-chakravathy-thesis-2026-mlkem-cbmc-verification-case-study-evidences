@@ -1,0 +1,48 @@
+{
+  "schema_version": "handoff_manifest.v1",
+  "created_utc": "2026-07-14T09:05:34.954996+00:00",
+  "stage_id": "04",
+  "stage_key": "04_property_discovery",
+  "stage_name": "Property Discovery Agent",
+  "stage_type": "llm_backed",
+  "authoritative_source": "llm_authoritative",
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "experiment_protocol_version": "llm-first-v1",
+  "semantic_advisory_mode": "off",
+  "property_discovery_mode": "open_discovery",
+  "handoff_outputs": {
+    "candidate_properties": "validation/05_open_discovery_classified_candidates.json",
+    "selected_property": "validation/06_open_discovery_selected_property.json",
+    "candidate_properties_validation": "validation/llm_call_validation.json"
+  },
+  "checksums_sha256": {
+    "candidate_properties": "5acef740f61d164b0305bebee236915edde5f05ec6a15ba17609c04145164354",
+    "selected_property": "efc8de768a1dd4e1fce9fdd75715873726b06e8ef771deeb07bf433df5aa5477",
+    "candidate_properties_validation": "3439714d6edf30ef0007d97f99832a8262dbb9cd10be0c3435ba2ca774f4ed0c"
+  },
+  "next_stage_consumers": [
+    "05_artifact_generation",
+    "06_review_critic",
+    "11_evaluation_reporter"
+  ],
+  "trust_boundary": {
+    "deterministic_reference": "advisory_only_not_authoritative",
+    "llm_output": "authoritative_stage_candidate_not_formal_truth",
+    "primary_evidence": "raw_spec_code_or_tool_outputs_outweigh_hints",
+    "formal_truth": "not_claimed_by_llm"
+  },
+  "iteration": null,
+  "iteration_reason": null,
+  "notes": {
+    "handoff_policy": "In targeted mode candidate_properties is the validated LLM-authoritative campaign output. In open mode the raw LLM output remains immutable and candidate_properties is a deterministic post-classified copy; selected_property is chosen only after raw output persistence.",
+    "llm_mode": "real",
+    "llm_call_executed": true,
+    "mock_output": false,
+    "agent2_spec_summary_available": true,
+    "agent3_code_summary_available": true,
+    "scope_policy": "CBMC-realistic local properties only; broad crypto/FIPS/full-correctness claims must be rejected or downgraded.",
+    "property_discovery_mode": "open_discovery",
+    "catalogue_visible_to_llm": false,
+    "raw_llm_output_preserved": true
+  }
+}

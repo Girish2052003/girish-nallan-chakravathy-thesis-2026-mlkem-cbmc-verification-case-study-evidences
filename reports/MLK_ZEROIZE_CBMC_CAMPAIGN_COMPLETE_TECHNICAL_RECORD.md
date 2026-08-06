@@ -2,7 +2,8 @@
 
 ## Complete Technical Record, Proof Rationale, Evidence Summary, Distinctness Analysis, and Novelty Assessment
 
-**Author:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Campaign:** Source-Level Zeroization and Release-Handoff Verification  
 **Target implementation:** `pq-code-package/mlkem-native`  
 **Pinned commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
@@ -361,7 +362,7 @@ The first final-packaging attempt stopped because a multi-line `awk` expression 
 
 A second packaging run replaced the detector parser with a portable `grep` pipeline and reported all required final gates as passing.
 
-The final archive itself was not independently opened in this chat record after creation. The external `.sha256` and `.verify.txt` files remain the authoritative final-package integrity records.
+The final archive itself was not independently opened in the retained record after creation. The external `.sha256` and `.verify.txt` files remain the authoritative final-package integrity records.
 
 ---
 

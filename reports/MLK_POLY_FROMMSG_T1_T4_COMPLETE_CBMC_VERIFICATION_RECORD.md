@@ -2,6 +2,8 @@
 
 ## Complete T1–T4 Campaign, Proof Meaning, Assumptions, Native-Proof Distinctness, Evidence, and Novelty Assessment
 
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Target implementation:** `mlkem-native` portable C  
 **Primary target function:** `mlk_poly_frommsg`  
 **Composed production function in T3:** `mlk_poly_tomsg`  
@@ -10,8 +12,7 @@
 **Verification tool:** CBMC 6.9.0  
 **Authoritative source root:** `/home/girish/THESIS-2026/mlkem-native_af4c5abd`  
 **Campaign root:** `/home/girish/THESIS-2026/mlk_poly_frommsg_cleanroom`  
-**Researcher/operator:** Girish Nallan Chakravathy  
-**Workflow:** AI-assisted candidate artefact generation, human review and execution, deterministic integrity checks, CBMC decision, and SHA-256 evidence freezing  
+**Workflow:** AI-assisted candidate artefact generation, deterministic execution and integrity checks, CBMC decision, documented acceptance controls, and SHA-256 evidence freezing  
 **Record date:** 25 July 2026
 
 ---
@@ -195,25 +196,24 @@ CBMC unwinding assertions were enabled. This matters because an assertion can ap
 
 ---
 
-# 3. Authorship, AI use, and proof authority
+# 3. AI use, execution controls, and proof authority
 
-The campaign used an AI-assisted workflow, but the AI was not the proof authority.
+The campaign used an AI-assisted workflow, but AI-generated explanations were not treated as proof authority.
 
-| Component | Actual role |
+| Component | Recorded function |
 |---|---|
-| Girish Nallan Chakravathy | Operated the repository, executed terminal commands, retained evidence, reviewed outputs, and accepted or rejected stages |
-| AI assistant | Proposed candidate theorem registries, harnesses, shell scripts, parsers, mutations, and interpretations |
+| Candidate-generation stage | Produced theorem registries, harnesses, shell scripts, parsers, mutations, and candidate interpretations |
 | Shell and Python integrity checks | Bound commits, files, hashes, property IDs, loop IDs, counts, and result lineage |
 | Git | Bound each campaign to the expected source commit and detected tracked source changes |
 | CBMC 6.9.0 | Symbolically executed the GOTO model and decided verification conditions |
-| Human review | Distinguished theorem failures from harness, tool, parser, or evidence failures |
+| Documented acceptance controls | Distinguished theorem failures from harness, tool, parser, or evidence failures |
 | SHA-256 manifests | Froze accepted evidence artefacts after execution |
 
-The correct methodological statement is:
+The methodological statement is:
 
-> AI generated and refined candidate formal-verification artefacts. Human review, deterministic validation, and CBMC decided whether those artefacts were accepted. The language model’s explanation was not treated as a proof result.
+> Candidate formal-verification artefacts were generated and refined before deterministic validation and CBMC execution. Acceptance depended on recorded integrity checks, result classification, and tool evidence; language-model explanations were not treated as proof results.
 
-This distinction is central to the thesis contribution. The workflow evaluates the usefulness and risks of AI-assisted artefact generation without transferring proof authority to the AI.
+This distinction is central to the thesis contribution. The workflow evaluates the usefulness and risks of AI-assisted artefact generation without transferring proof authority to AI-generated text.
 
 ---
 
@@ -1076,7 +1076,7 @@ Capture exit:                                 0
 
 ## 10.10 Evidence-completeness note for T4
 
-The exact final T4 authoritative capture path and SHA-256 were not included in the chat material available while this record was generated.
+The exact final T4 authoritative capture path and SHA-256 were not included in the retained source material available when this record was generated.
 
 The decisive closure lines establish the reported status, but the following values should be inserted from the retained local run before the public evidence package or thesis appendix is frozen:
 
@@ -1413,7 +1413,7 @@ This incident is valuable evidence for the deterministic integrity firewall: pro
 
 ---
 
-# 17. Did we really prove `mlk_poly_frommsg`?
+# 17. Scope of the `mlk_poly_frommsg` proof
 
 ## 17.1 Correct answer
 
@@ -1438,7 +1438,7 @@ T2, T3, and T4 then separately verified important consequences and interactions 
 
 Use:
 
-> We proved functional correctness of the frozen `mlk_poly_frommsg` C implementation with respect to the registered exact message-to-polynomial specification under the stated CBMC model and assumptions.
+> Functional correctness of the frozen `mlk_poly_frommsg` C implementation was proved with respect to the registered exact message-to-polynomial specification under the stated CBMC model and assumptions.
 
 Also acceptable:
 
@@ -1446,19 +1446,19 @@ Also acceptable:
 
 Avoid:
 
-> We proved all of `mlkem-native`.
+> All of `mlkem-native` was proved.
 
 Avoid:
 
-> We proved ML-KEM correct.
+> ML-KEM was proved correct.
 
 Avoid:
 
-> We proved the compiled implementation constant-time.
+> The compiled implementation was proved constant-time.
 
 Avoid:
 
-> We mathematically proved the function for every possible platform and compiler.
+> The function was mathematically proved for every possible platform and compiler.
 
 ## 17.3 Why the bounded result is still complete for the fixed function model
 
@@ -1768,7 +1768,7 @@ Recommended wording:
 
 Shorter version:
 
-> This work presents a repository-distinct and, to the best of our scoped search, potentially novel CBMC case-study artefact for exact semantic verification of `mlk_poly_frommsg`; it does not claim new mathematics or the first formal verification of ML-KEM.
+> Based on the scoped search, this work presents a repository-distinct and potentially novel CBMC case-study artefact for exact semantic verification of `mlk_poly_frommsg`; it does not claim new mathematics or the first formal verification of ML-KEM.
 
 ## 20.9 Claims that must not be used
 
@@ -1782,7 +1782,7 @@ Do not state:
 
 Do not state:
 
-> We proved more than the EasyCrypt/Jasmin ML-KEM verification.
+> This work proved more than the EasyCrypt/Jasmin ML-KEM verification.
 
 Do not state:
 
@@ -1859,7 +1859,7 @@ The AI could propose:
 
 The recorded T3 false-green wrapper incidents demonstrate that this risk is real.
 
-The deterministic firewall and human review are therefore not optional decorations; they are necessary parts of the research design.
+The deterministic firewall and documented acceptance controls are therefore necessary parts of the research design.
 
 ---
 
@@ -1886,7 +1886,7 @@ terminal capture
 summary
 SHA-256 manifest
 manifest self-hash
-human acceptance note
+documented acceptance note
 ```
 
 Campaign-wide package additions:
@@ -1948,7 +1948,7 @@ Professor/thesis summary extraction
 
 The final claim adopted for the thesis and evidence repository is:
 
-> We constructed and executed a clean-room CBMC verification campaign for `mlk_poly_frommsg` in the frozen ML-KEM-768 portable-C implementation of `mlkem-native` at commit `af4c5abd`. The campaign proved exact LSB-first binary embedding, relational one-bit locality, production `frommsg`/`tomsg` inversion on the generated codebook, codebook fixed-point behaviour, global nonzero-weight preservation, pairwise Hamming-metric preservation, and scaled coefficient-distance preservation. The proofs used symbolic messages, complete loop unwinding with unwinding assertions, real production bodies, deterministic source and property binding, explicit reachability witnesses, semantic mutation rejection, fresh-clone reruns, and cryptographically frozen evidence. The result is a bounded C-level functional-correctness result for the registered theorem family, not a proof of the complete ML-KEM system or a claim of new mathematics. The artefact is demonstrably distinct from the audited native repository harness and is presented as a potentially novel CBMC case-study and evidence-methodology contribution, subject to the stated scoped-search limitation.
+> A clean-room CBMC verification campaign was constructed and executed for `mlk_poly_frommsg` in the frozen ML-KEM-768 portable-C implementation of `mlkem-native` at commit `af4c5abd`. The campaign proved exact LSB-first binary embedding, relational one-bit locality, production `frommsg`/`tomsg` inversion on the generated codebook, codebook fixed-point behaviour, global nonzero-weight preservation, pairwise Hamming-metric preservation, and scaled coefficient-distance preservation. The proofs used symbolic messages, complete loop unwinding with unwinding assertions, real production bodies, deterministic source and property binding, explicit reachability witnesses, semantic mutation rejection, fresh-clone reruns, and cryptographically frozen evidence. The result is a bounded C-level functional-correctness result for the registered theorem family, not a proof of the complete ML-KEM system or a claim of new mathematics. The artefact is demonstrably distinct from the audited native repository harness and is presented as a potentially novel CBMC case-study and evidence-methodology contribution, subject to the stated scoped-search limitation.
 
 ---
 

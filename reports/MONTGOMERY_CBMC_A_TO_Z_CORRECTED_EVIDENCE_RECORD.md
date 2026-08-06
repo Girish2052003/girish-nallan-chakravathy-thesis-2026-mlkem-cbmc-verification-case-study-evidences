@@ -1,6 +1,8 @@
 # Montgomery-Domain CBMC Campaign for `mlkem-native`
 ## Corrected A-to-Z Technical, Evidentiary, and Novelty Record
 
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Document status:** Evidence-reconciled research record  
 **Prepared for:** MSc thesis supervision and case-study documentation  
 **Repository:** `pq-code-package/mlkem-native`  
@@ -63,7 +65,7 @@ The correct interpretation is:
 
 > No counterexample was returned before termination, but CBMC did not complete the proof. The result is computationally inconclusive and provides no conclusive evidence that the theorem is true or false.
 
-The approximately eight-hour duration reported for each of T2–T4 is a researcher-reported runtime observation. It should be presented as an exact measured duration only where authentic process timestamps or logs independently support the value.
+The approximately eight-hour duration recorded for each of T2–T4 is a runtime observation without independent timestamp support. It should be presented as an exact measured duration only where authentic process timestamps or logs support the value.
 
 ---
 
@@ -92,7 +94,7 @@ proof attempt
 completed machine proof
 counterexample
 computationally inconclusive execution
-invalid human-generated success summary
+invalid success summary without verifier provenance
 ```
 
 The case study is strengthened, not weakened, by making this distinction explicit.
@@ -342,7 +344,7 @@ This increases the solver burden because symbolic state and arithmetic are dupli
 | Return code `124` | Timeout; inconclusive |
 | Process still running without final footer | Pending/inconclusive |
 | Compile or GOTO error | Tool/build failure |
-| Human-written success marker | Not evidence |
+| Success marker without verifier provenance | Not evidence |
 
 “No counterexample was observed” is not equivalent to “the theorem was proved” or “the theorem is likely true.”
 
@@ -776,7 +778,7 @@ poly_montgomery_reduce
 
 The thesis must not state:
 
-> We proved `poly_montgomery_reduce`.
+> `poly_montgomery_reduce` was proved.
 
 The correct description is:
 
@@ -1028,7 +1030,7 @@ host OS and filesystem
 proof scripts
 independent oracle code
 SHA-256 implementation
-human evidence review
+documented evidence review
 ```
 
 ## 14.3 Properties not covered
@@ -1216,7 +1218,7 @@ Their defensible novelty description is:
 - Complete ML-KEM was proved.
 - The result is the first formal proof of Montgomery reduction.
 - The four theorem families are globally novel mathematics.
-- A hash-bound human-written marker is CBMC evidence.
+- A hash-bound marker without verifier provenance is CBMC evidence.
 
 ---
 
@@ -1247,7 +1249,7 @@ complete 256-coefficient loops
 in-place vector state
 ```
 
-## 17.3 Human review and integrity firewall
+## 17.3 Documented review controls and integrity firewall
 
 The evidence incident demonstrates that an automated verification pipeline cannot trust text merely because it resembles terminal output.
 
@@ -1445,7 +1447,7 @@ This case study constructed a four-level Montgomery-domain verification plan for
 
 IMPORTANT NOTE APPENDICES 1
 
-Akka ❤️ **no—not adequately.** I checked the Markdown carefully.
+The existing Markdown did **not** document the split adequately.
 
 The file currently explains that T2 was computationally harder because it introduced multiple symbolic inputs, multiple target calls, modular relations, conditional fibre paths, and a symbolic shift. It also mentions “theorem-preserving property decomposition” only as a possible future strategy.  
 
@@ -1546,11 +1548,11 @@ The reason it could help computationally is that CBMC would construct and solve 
 
 ## Important correction for the thesis
 
-We must phrase this carefully:
+The result must be phrased carefully:
 
 > The T2 split preserved the logical candidate theorem family, but it did not produce a completed proof because the authentic CBMC executions remained computationally inconclusive.
 
-We must **not** say:
+The record must **not** state:
 
 > Splitting T2 proved the theorem soundly.
 

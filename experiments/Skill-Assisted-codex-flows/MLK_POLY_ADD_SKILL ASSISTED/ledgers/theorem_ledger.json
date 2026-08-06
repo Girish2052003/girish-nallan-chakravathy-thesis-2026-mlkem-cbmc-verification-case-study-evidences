@@ -1,0 +1,44 @@
+{
+  "campaign": "MLK_POLY_ADD_SKILL ASSISTED",
+  "runs_occurred": 1,
+  "target": "mlk_poly_add",
+  "theorems": [
+    {
+      "id": "SA-ADD-T1",
+      "title": "Common-addend translation invariance",
+      "harness": "harnesses/sa_add_t1_translation_invariance_harness.c",
+      "preconditions": [
+        "x[i]+b[i] representable in int16_t",
+        "y[i]+b[i] representable in int16_t",
+        "separate automatic objects"
+      ],
+      "postconditions": [
+        "post(x)-post(y)=pre(x)-pre(y)",
+        "post(x)=post(y) iff pre(x)=pre(y)"
+      ],
+      "assertion_ids": [
+        "SA_T1_TRANSLATION_DIFFERENCE_PRESERVED",
+        "SA_T1_COMMON_ADDEND_EQUALITY_PRESERVED_AND_REFLECTED"
+      ]
+    },
+    {
+      "id": "SA-ADD-T2",
+      "title": "Arbitrary disjoint-support decomposition equivalence",
+      "harness": "harnesses/sa_add_t2_disjoint_support_decomposition_harness.c",
+      "preconditions": [
+        "a[i]+b[i] representable in int16_t",
+        "symbolic per-coefficient partition",
+        "separate automatic objects"
+      ],
+      "postconditions": [
+        "add(a,b)=add(add(a,p),q) when p+q=b and supports are disjoint",
+        "both schedules match int32 oracle"
+      ],
+      "assertion_ids": [
+        "SA_T2_DISJOINT_SUPPORT_DECOMPOSITION_EQUIVALENCE",
+        "SA_T2_DIRECT_EXECUTION_ORACLE_BRIDGE",
+        "SA_T2_SPLIT_EXECUTION_ORACLE_BRIDGE"
+      ]
+    }
+  ]
+}

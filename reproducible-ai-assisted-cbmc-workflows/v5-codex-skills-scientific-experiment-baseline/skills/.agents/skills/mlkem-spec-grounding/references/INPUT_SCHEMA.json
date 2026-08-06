@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/mlkem-spec-grounding/input-schema-1.0.json",
+  "title": "ML-KEM Specification Grounding Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "target", "queries"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string", "minLength": 1},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol"],
+      "properties": {
+        "symbol": {"type": "string", "minLength": 1},
+        "source_file": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "queries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "text": {"type": "string", "minLength": 1},
+          "mode": {"enum": ["literal", "all_terms", "any_term"], "default": "literal"},
+          "required": {"type": "boolean", "default": true}
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "case_sensitive": {"type": "boolean", "default": false},
+        "context_lines": {"type": "integer", "minimum": 0, "maximum": 50, "default": 3},
+        "max_matches_per_query": {"type": "integer", "minimum": 1, "maximum": 1000, "default": 25}
+      }
+    }
+  }
+}

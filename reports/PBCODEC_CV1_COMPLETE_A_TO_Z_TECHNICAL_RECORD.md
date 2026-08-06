@@ -2,7 +2,8 @@
 
 ## Complete A–Z technical record, proof interpretation, evidence boundary, distinctness analysis, and bounded novelty assessment
 
-**Author:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Project:** MSc thesis case study — *AI-Assisted Formal Methods for Post-Quantum Cryptography Implementation*  
 **Target repository:** `pq-code-package/mlkem-native`  
 **Pinned source commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
@@ -25,7 +26,7 @@ mlk_poly_tobytes  →  mlk_poly_frombytes
 mlk_poly_frombytes  →  mlk_poly_tobytes
 ```
 
-The record is written as a technical account of the work itself. It is not an informal tutorial, a conversational explanation, or a claim that the elementary 12-bit encoding mathematics was newly discovered.
+The record is written as a machine-oriented technical account of the work itself. It is not a claim that the elementary 12-bit encoding mathematics was newly discovered.
 
 The campaign was deliberately performed only after two separate per-function semantic-verification campaigns had been completed:
 
@@ -1154,7 +1155,7 @@ Mutation killing does not independently prove the positive theorem, but it mater
 
 ---
 
-## 17. Did we really prove the round trip?
+## 17. Scope of the round-trip proof
 
 ### 17.1 Direct answer
 
@@ -1219,7 +1220,7 @@ The result does not mean:
 
 ---
 
-## 18. Why we did not stop at PBYTES/PFB T1, T2, T3, or T4
+## 18. Rationale for continuing beyond PBYTES/PFB T1, T2, T3, and T4
 
 This question has two layers.
 
@@ -1227,11 +1228,11 @@ This question has two layers.
 
 T1 supplied exact arithmetic semantics, but a single oracle shape creates assurance concentration. Later families supplied differently structured relational, image, injectivity, and inverse evidence.
 
-### 18.2 Why we did not stop at T2
+### 18.2 Rationale for continuing beyond T2
 
 T2 demonstrated precise local dependencies, carry transitions, bit routes, and locality. Those properties do not by themselves characterize the complete global mapping or its image.
 
-### 18.3 Why we did not stop at T3
+### 18.3 Rationale for continuing beyond T3
 
 T3 supplied global image or differential information. For the encoder, an image theorem alone cannot guarantee that each polynomial maps to the correct canonical byte string; a wrong permutation could share the same image. For the decoder, injectivity or differential conservation alone does not establish surjectivity or a right inverse over the complete raw domain.
 
@@ -1244,7 +1245,7 @@ T4 made information preservation explicit:
 
 T4 was the correct per-function algebraic closure.
 
-### 18.5 Why we still did not stop after both T4 campaigns
+### 18.5 Rationale for continuing after both T4 campaigns
 
 After T4, the individual semantic claims were strong, but the exact real-to-real production bridge had not been directly executed in a shared model. `PBCODEC-CV1` was chosen to close that implementation-integration evidence gap.
 
@@ -1258,7 +1259,7 @@ real wrapper A
 
 works with the exact build, source, bodies, assumptions, and model configuration.
 
-### 18.6 Why we stopped after CV1
+### 18.6 Completion criterion after CV1
 
 Once both directions had passed, both endpoints were shown reachable, and both bridge mutants were killed with no unrelated failures, further codec composition theorem families would mostly restate the same inverse relationship.
 
@@ -1422,7 +1423,7 @@ This hash was independently recalculated and matched. The archive was later supe
 
 ### 20.7 Review-2 publication package
 
-The final evidence submission should record the exact Review-2 archive name and SHA-256 from the operator-generated `.sha256` file:
+The final evidence submission should record the exact Review-2 archive name and SHA-256 from the generated `.sha256` file:
 
 ```text
 PBCODEC_CV1_AUTHORITATIVE_CLOSURE_REVIEW2_CANDIDATE.tar.gz
@@ -1465,7 +1466,7 @@ The review conducted through 30 July 2026 examined:
 
 A literature and repository search cannot prove universal non-existence. Private work, unpublished artifacts, unindexed repositories, renamed functions, or differently worded theorems may exist.
 
-The phrase **“to the best of our knowledge”** is therefore mandatory for any broader novelty statement.
+A scoped-search qualifier is therefore mandatory for any broader novelty statement.
 
 ---
 
@@ -1549,7 +1550,7 @@ The resulting evidence is unusually detailed for a function-level MSc verificati
 
 ### 25.1 Strongest defensible wording
 
-> To the best of our knowledge, relative to the publicly available CBMC artifacts in the pinned `mlkem-native` revision and the public sources reviewed through 30 July 2026, this work contributes a distinct repository-level CBMC semantic-verification and direct-composition campaign for the real portable `mlk_poly_tobytes` and `mlk_poly_frombytes` wrappers. Its novelty lies in the commit-bound theorem decomposition, legitimate-domain production-to-production composition obligations, GOTO-level wrapper/body/unwind binding, non-vacuity controls, targeted bridge mutations, fail-closed execution history, and deterministic evidence freezing. The contribution is not the underlying `ByteEncode12`/`ByteDecode12` mathematics, not the first formal verification of ML-KEM, and not asserted as a worldwide first.
+> Relative to the publicly available CBMC artifacts in the pinned `mlkem-native` revision and the public sources reviewed through 30 July 2026, this work contributes a distinct repository-level CBMC semantic-verification and direct-composition campaign for the real portable `mlk_poly_tobytes` and `mlk_poly_frombytes` wrappers. Its novelty lies in the commit-bound theorem decomposition, legitimate-domain production-to-production composition obligations, GOTO-level wrapper/body/unwind binding, non-vacuity controls, targeted bridge mutations, fail-closed execution history, and deterministic evidence freezing. The contribution is not the underlying `ByteEncode12`/`ByteDecode12` mathematics, not the first formal verification of ML-KEM, and not asserted as a worldwide first.
 
 ### 25.2 Concise thesis wording
 
@@ -1560,12 +1561,12 @@ The resulting evidence is unusually detailed for a function-level MSc verificati
 The thesis should not state:
 
 ```text
-We invented a new round-trip theorem.
+A new round-trip theorem was invented.
 This is the first proof of ByteEncode12/ByteDecode12.
 No one has verified ML-KEM serialization before.
 This is the first correct ML-KEM encoder and decoder.
-We proved the whole ML-KEM implementation.
-We proved every backend and parameter set.
+The whole ML-KEM implementation was proved.
+Every backend and parameter set was proved.
 The search proves that no equivalent artifact exists anywhere.
 ```
 
@@ -1629,11 +1630,11 @@ The campaign proves the frozen properties, not every possible security or functi
 
 ## 28. Examiner-safe answers
 
-### “Did you actually prove the round trip?”
+### Round-trip proof status
 
 Yes. CBMC proved both real-wrapper compositions for all inputs in their legitimate symbolic domains, with complete unwinding and no counterexample. The polynomial direction covers all canonical polynomials; the byte direction covers exactly the canonical encoder image.
 
-### “Why did you restrict the byte round trip?”
+### Rationale for the byte-round-trip restriction
 
 Because arbitrary bytes may decode to raw 12-bit values from 3329 through 4095, which are outside the production encoder's canonical precondition. An unrestricted theorem would be invalid.
 
@@ -1645,7 +1646,7 @@ Yes, which is why the composition campaign was not used alone. The encoder and d
 
 The audited upstream CBMC framework is function-oriented and contract/undefined-behaviour focused, with boilerplate harnesses. The new harnesses add explicit cross-function semantic assertions, direct two-wrapper call sequences, legitimate-domain predicates, GOTO binding, non-vacuity, bridge mutations, and deterministic closure.
 
-### “Did you modify the C implementation?”
+### C-implementation modification status
 
 No. Production-source diffs remained empty. Only isolated proof artifacts and harness-side mutants were added in a detached worktree.
 

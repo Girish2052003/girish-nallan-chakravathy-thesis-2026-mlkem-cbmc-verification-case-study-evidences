@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Target Build Context Compile Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "source", "working_directory", "compiler", "arguments", "preprocess_command", "preprocessing"],
+  "properties": {
+    "mode": {"enum": ["none", "explicit", "compile_commands"]},
+    "source": {"type": "string"},
+    "entry_index": {"type": "integer", "minimum": 0},
+    "working_directory": {"type": ["string", "null"]},
+    "compiler": {"type": ["string", "null"]},
+    "arguments": {"type": "array", "items": {"type": "string"}},
+    "preprocess_command": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      ]
+    },
+    "preprocessing": {"type": "object", "required": ["requested", "status"]}
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/cbmc-nonvacuity-probe/input.schema.json",
+  "title": "CBMC Non-Vacuity Probe Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "skill_version", "target_symbol", "tracked_inputs", "analysis_source_files", "build_context", "cbmc", "probes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "skill_version": {"const": "1.0.0-rc1"},
+    "target_symbol": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+    "tracked_inputs": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "sha256", "role"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "role": {"type": "string", "minLength": 1, "maxLength": 80}
+        }
+      }
+    },
+    "analysis_source_files": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "build_context": {
+      "type": "object", "additionalProperties": false,
+      "required": ["include_dirs", "defines", "undefines", "extra_arguments", "entry_function"],
+      "properties": {
+        "include_dirs": {"type": "array", "items": {"type": "string"}},
+        "defines": {"type": "array", "items": {"type": "string"}},
+        "undefines": {"type": "array", "items": {"type": "string"}},
+        "extra_arguments": {"type": "array", "items": {"type": "string"}},
+        "entry_function": {"type": ["string", "null"]}
+      }
+    },
+    "cbmc": {
+      "type": "object", "additionalProperties": false,
+      "required": ["executable", "timeout_seconds", "environment"],
+      "properties": {
+        "executable": {"type": "string", "minLength": 1},
+        "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 86400},
+        "environment": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "probes": {
+      "type": "array", "minItems": 1, "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "kind", "source_path", "anchor_line", "occurrence", "insertion_position", "required", "note"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$"},
+          "kind": {"enum": ["FEASIBLE_EXECUTION", "TARGET_CALL_REACHABILITY", "ASSERTION_LOCATION_REACHABILITY", "CUSTOM_ANCHOR_REACHABILITY"]},
+          "source_path": {"type": "string", "minLength": 1},
+          "anchor_line": {"type": "string", "minLength": 1, "maxLength": 4096},
+          "occurrence": {"type": "integer", "minimum": 1},
+          "insertion_position": {"enum": ["before", "after"]},
+          "required": {"type": "boolean"},
+          "note": {"type": "string", "maxLength": 1000}
+        }
+      }
+    },
+    "notes": {"type": "string", "maxLength": 5000}
+  }
+}

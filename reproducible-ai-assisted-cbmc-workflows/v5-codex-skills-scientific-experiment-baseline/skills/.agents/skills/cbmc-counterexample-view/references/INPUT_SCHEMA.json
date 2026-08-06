@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "failed_property_id": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "selection": {
+      "additionalProperties": false,
+      "properties": {
+        "context_steps": {
+          "maximum": 50,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "include_assumption_steps": {
+          "type": "boolean"
+        },
+        "include_function_steps": {
+          "type": "boolean"
+        },
+        "include_hidden_steps": {
+          "type": "boolean"
+        },
+        "include_location_steps": {
+          "type": "boolean"
+        },
+        "max_selected_steps": {
+          "maximum": 5000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "source_files": {
+          "items": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "tail_steps_when_unfocused": {
+          "maximum": 5000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "target_function": {
+          "maxLength": 512,
+          "minLength": 1,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_variables": {
+          "items": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "target_variables",
+        "target_function",
+        "source_files",
+        "context_steps",
+        "max_selected_steps",
+        "tail_steps_when_unfocused",
+        "include_hidden_steps",
+        "include_function_steps",
+        "include_assumption_steps",
+        "include_location_steps"
+      ],
+      "type": "object"
+    },
+    "trace_source": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "format": {
+          "const": "cbmc-json-ui"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "expected_sha256",
+        "format"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "trace_source",
+    "failed_property_id",
+    "selection"
+  ],
+  "title": "CBMC Counterexample View Request",
+  "type": "object"
+}

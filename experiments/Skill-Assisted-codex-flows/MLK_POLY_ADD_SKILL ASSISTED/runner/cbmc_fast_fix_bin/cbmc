@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${REAL_CBMC:?REAL_CBMC is not set}"
+: "${REAL_GOTO_INSTRUMENT:?REAL_GOTO_INSTRUMENT is not set}"
+
+ARGS=("$@")
+IS_COVER=0
+IS_VERSION=0
+
+for ARG in "${ARGS[@]}"
+do
+    case "$ARG" in
+        --cover|--cover=*)
+            IS_COVER=1
+            ;;
+        --version|-V)
+            IS_VERSION=1
+            ;;
+    esac
+done
+
+if [ "$IS_VERSION" -eq 1 ]
+then
+    exec "$REAL_CBMC" "${ARGS[@]}"
+fi
+
+###############################################################################
+# Dedicated custom-cover run.
+###############################################################################
+
+if [ "$IS_COVER" -eq 1 ]
+then
+    FILTERED=()
+
+    for ARG in "${ARGS[@]}"
+    do
+        case "$ARG" in
+            --unwinding-assertions|\
+            --bounds-check|\
+            --pointer-check|\
+            --pointer-overflow-check|\
+            --signed-overflow-check|\
+            --unsigned-overflow-check|\
+            --conversion-check|\
+            --div-by-zero-check|\
+            --undefined-shift-check)
+                ;;
+            *)
+                FILTERED+=("$ARG")
+                ;;
+        esac
+    done
+
+    exec "$REAL_CBMC" \
+        "${FILTERED[@]}" \
+        --no-standard-checks \
+        --no-unwinding-assertions \
+        --drop-unused-functions \
+        --reachability-slice \
+        --slice-formula
+fi
+
+###############################################################################
+# Ordinary proof or property-inventory operation.
+###############################################################################
+
+MODEL_INDEX=-1
+
+for INDEX in "${!ARGS[@]}"
+do
+    ARG="${ARGS[$INDEX]}"
+
+    if [[ "$ARG" == *.goto ]] && [ -f "$ARG" ]
+    then
+        MODEL_INDEX="$INDEX"
+        break
+    fi
+done
+
+if [ "$MODEL_INDEX" -ge 0 ]
+then
+    ORIGINAL_MODEL="${ARGS[$MODEL_INDEX]}"
+    PROOF_MODEL="${ORIGINAL_MODEL%.goto}.proof.goto"
+    AUDIT_FILE="${ORIGINAL_MODEL%.goto}.proof_wrapper_audit.txt"
+
+    UNDEFINED="$(
+        "$REAL_GOTO_INSTRUMENT" \
+            "$ORIGINAL_MODEL" \
+            --list-undefined-functions 2>&1 || true
+    )"
+
+    if printf '%s\n' "$UNDEFINED" | grep -q '__CPROVER_cover'
+    then
+        "$REAL_GOTO_INSTRUMENT" \
+            "$ORIGINAL_MODEL" \
+            "$PROOF_MODEL" \
+            --generate-function-body '^__CPROVER_cover$' \
+            --generate-function-body-options nondet-return \
+            --drop-unused-functions
+
+        ARGS[$MODEL_INDEX]="$PROOF_MODEL"
+
+        {
+            echo "ORIGINAL_MODEL=$ORIGINAL_MODEL"
+            echo "PROOF_MODEL=$PROOF_MODEL"
+            echo "TRANSFORMATION=side-effect-free body for __CPROVER_cover"
+            echo "PURPOSE=exclude custom coverage marker from ordinary proof"
+            echo "THEOREM_ASSERTIONS_REMOVED=NO"
+            echo "PRODUCTION_FUNCTION_REPLACED=NO"
+            echo "PRODUCTION_FUNCTION_STUBBED=NO"
+
+            printf 'GOTO_TRANSFORMATION_COMMAND='
+            printf '%q ' \
+                "$REAL_GOTO_INSTRUMENT" \
+                "$ORIGINAL_MODEL" \
+                "$PROOF_MODEL" \
+                --generate-function-body '^__CPROVER_cover$' \
+                --generate-function-body-options nondet-return \
+                --drop-unused-functions
+            printf '\n'
+
+            printf 'ACTUAL_CBMC_COMMAND='
+            printf '%q ' \
+                "$REAL_CBMC" \
+                "${ARGS[@]}" \
+                --drop-unused-functions \
+                --reachability-slice \
+                --slice-formula
+            printf '\n'
+        } > "$AUDIT_FILE"
+    fi
+fi
+
+exec "$REAL_CBMC" \
+    "${ARGS[@]}" \
+    --drop-unused-functions \
+    --reachability-slice \
+    --slice-formula

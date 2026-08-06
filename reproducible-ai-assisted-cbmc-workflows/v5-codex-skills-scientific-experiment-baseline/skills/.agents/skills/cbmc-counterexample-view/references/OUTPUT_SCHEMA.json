@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "analysis_nature": {
+      "const": "MECHANICAL_COUNTEREXAMPLE_PRESENTATION_ONLY"
+    },
+    "failed_property": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "property_id": {
+          "type": "string"
+        },
+        "raw_trace_step_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "recorded_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schema_version": {
+          "const": "1.0"
+        },
+        "source_location": {
+          "additionalProperties": false,
+          "properties": {
+            "column": {
+              "type": "string"
+            },
+            "file": {
+              "type": "string"
+            },
+            "function": {
+              "type": "string"
+            },
+            "line": {
+              "type": "string"
+            },
+            "workingDirectory": {
+              "type": "string"
+            }
+          },
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "property_id",
+        "recorded_status",
+        "description",
+        "source_location",
+        "raw_trace_step_count"
+      ],
+      "title": "Selected CBMC Property",
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "report_status": {
+      "enum": [
+        "COMPLETE",
+        "COMPLETE_WITH_WARNINGS"
+      ]
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "semantic_authority": {
+      "const": "NONE"
+    },
+    "skill": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "cbmc-counterexample-view"
+        },
+        "version": {
+          "const": "1.0.0-rc1"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "type": "object"
+    },
+    "trace_counts": {
+      "additionalProperties": false,
+      "properties": {
+        "raw": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "selected": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "visible": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "raw",
+        "visible",
+        "selected"
+      ],
+      "type": "object"
+    },
+    "view_outcome": {
+      "const": "COUNTEREXAMPLE_VIEW_CREATED"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "skill",
+    "report_status",
+    "view_outcome",
+    "analysis_nature",
+    "semantic_authority",
+    "failed_property",
+    "trace_counts",
+    "warnings",
+    "limitations"
+  ],
+  "title": "Counterexample View Report",
+  "type": "object"
+}

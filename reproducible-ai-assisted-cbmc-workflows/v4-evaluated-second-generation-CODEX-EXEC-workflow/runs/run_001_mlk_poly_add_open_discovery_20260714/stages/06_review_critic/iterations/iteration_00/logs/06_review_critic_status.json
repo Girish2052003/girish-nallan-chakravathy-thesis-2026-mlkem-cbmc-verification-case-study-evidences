@@ -1,0 +1,235 @@
+{
+  "schema_version": "agent_status.v1",
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "experiment_protocol_version": "llm-first-v1",
+  "semantic_advisory_mode": "off",
+  "property_discovery_mode": "open_discovery",
+  "stage": "06_review_critic",
+  "started_utc": "2026-07-14T05:30:12.117603+00:00",
+  "completed_utc": "2026-07-14T05:31:50.610083+00:00",
+  "success": true,
+  "llm_call_executed": true,
+  "handoff_available": true,
+  "errors": [],
+  "warnings": [
+    "semantic_advisory_mode=off: deterministic critic diagnostics were withheld from the LLM and used only by the post-review tool-readiness gate."
+  ],
+  "llm_mode": "real",
+  "llm_success": true,
+  "llm_result": {
+    "stage": "06_review_critic",
+    "mode": "real",
+    "success": true,
+    "llm_call_executed": true,
+    "output_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/llm_authoritative/05_critic_review.json",
+    "raw_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/llm_authoritative/api_responses/attempt_01_response.json",
+    "validation_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/validation/llm_call_validation.json",
+    "prompt_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/prompt_package/06_review_critic_prompt.txt",
+    "metadata_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/prompt_package/prompt_metadata.json",
+    "attempts": 1,
+    "error": null,
+    "parsed_json": {
+      "stage": "06_review_critic",
+      "mock": false,
+      "llm_call_executed": true,
+      "reviewed_artefacts": {
+        "target_function": "mlk_poly_add",
+        "deterministic_recommended_gate": null
+      },
+      "overall_assessment": "The candidate artefact is narrowly scoped, evidence-linked, and ready to be attempted by Agent 7. It targets a local frame property for mlk_poly_add, uses a concrete local-object harness with a pre-call source snapshot, and stays away from modular-correctness, overflow, and full ML-KEM claims. The generated contract/harness pair is internally coherent with the visible source and the recorded build-plan validation, and the heuristic similarity screen reports low copying risk. The main limitation is scope: this is a non-aliasing source-frame check, not a general functional proof.",
+      "gate_recommendation": "approved_for_tool_execution",
+      "blocking_issues": [],
+      "warnings": [
+        {
+          "issue": "The harness models a distinct local-object case and does not exercise overlapping r/b aliasing.",
+          "impact": "Any result should be interpreted as a narrow non-aliasing frame check; it should not be generalized to alias-sensitive call sites."
+        },
+        {
+          "issue": "The contract plan has no ensures clauses and no explicit alias policy.",
+          "impact": "That is acceptable for the selected frame property, but the artefact should not be reused as a general specification of mlk_poly_add."
+        }
+      ],
+      "minor_issues": [
+        {
+          "issue": "The assertion checks that b is unchanged rather than directly asserting a post-state relation on r.",
+          "impact": "The destination write-footprint is enforced indirectly through the DFCC assigns clause, so this is narrower than a full functional postcondition."
+        }
+      ],
+      "assumption_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "Assumption A01 relies on two concrete local mlk_poly objects and a pre-call snapshot of b, without introducing NULL or fresh-pointer modeling.",
+            "impact": "This is a good fit for the selected direct frame property, but it intentionally excludes alias-sensitive behavior."
+          }
+        ]
+      },
+      "assertion_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "C01 is non-trivial because b is havoced before the call and then compared against a pre-call snapshot after the target invocation.",
+            "impact": "The assertion can detect a direct post-call write to the source object in this harness model."
+          }
+        ]
+      },
+      "old_state_new_state_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "The harness snapshots the full source object b before the call and reuses that snapshot after the call.",
+            "impact": "This is the correct old-state/new-state pattern for the selected source-frame check; no old-state snapshot of r is needed because no arithmetic postcondition is claimed."
+          }
+        ]
+      },
+      "contract_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "The function contract’s requires and assigns clauses match the visible single-store body and the narrow frame property.",
+            "impact": "The contract is appropriately scoped for a tool attempt on this target."
+          },
+          {
+            "issue": "The contract does not encode alias separation or any semantic postcondition beyond the frame condition.",
+            "impact": "It should not be interpreted as a general correctness contract for the implementation."
+          }
+        ]
+      },
+      "verification_strategy_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "native_function_contract is a suitable strategy for a write-footprint/frame property on a small in-place primitive.",
+            "impact": "It is better matched than a loop-invariant or arithmetic-equivalence strategy for this selected candidate."
+          }
+        ]
+      },
+      "independence_review": {
+        "status": "pass",
+        "findings": [
+          {
+            "issue": "The heuristic similarity audit reports zero reference-file overlap and low similarity risk.",
+            "impact": "No additional human similarity review is indicated by the current audit evidence; the unavoidable overlap is limited to target identifiers and array-processing structure."
+          }
+        ]
+      },
+      "scope_and_overclaim_review": {
+        "status": "pass_with_warning",
+        "findings": [
+          {
+            "issue": "The artefact deliberately avoids claims about modulo-q normalization, overflow safety, FIPS compliance, cryptographic security, and full ML-KEM correctness.",
+            "impact": "This keeps the candidate within an appropriate local scope for Agent 7 execution."
+          }
+        ]
+      },
+      "deterministic_reference_assessment": {
+        "used": true,
+        "status": "used_for_readiness_only",
+        "warning": "The recorded build-plan/validation evidence supports handoff readiness and low similarity risk, but it does not establish the property or any CBMC outcome.",
+        "disagreements": []
+      },
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "mlk_poly_add body",
+          "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+          "supports_claim": "The visible body writes only through the destination polynomial r and reads b.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "typedef struct and function declaration",
+          "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; ... void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The target operates on a fixed-length int16_t coefficient array and distinguishes mutable destination from const source.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+          "locator": "macro definitions",
+          "excerpt": "#define MLKEM_N 256 / #define MLKEM_Q 3329",
+          "supports_claim": "The compile-time coefficient count is 256 and the modulus context is 3329.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.5",
+          "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+          "supports_claim": "Coordinate-wise addition semantics justify a local coefficientwise property for the target primitive.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.1, Eq. (2.1)",
+          "excerpt": "z ← x+y means that z is assigned the value x + y mod m.",
+          "supports_claim": "The abstract specification uses modular assignment semantics, which is relevant to avoiding over-claiming beyond the selected frame property.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json",
+          "locator": "validation / contract_summary / execution_profile",
+          "excerpt": "rendered_harness_valid_for_handoff=true; contract_valid=true; production_source_modified=false; requires_human_review=false; enforce_contract=true; use_dfcc=true",
+          "supports_claim": "The recorded build-plan validation indicates the harness/contract artefacts are structurally ready for handoff to the next tool stage.",
+          "confidence": "medium"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/05_artifact_generation/validation/04_independence_audit.json",
+          "locator": "summary",
+          "excerpt": "reference_file_count: 0; max_similarity_score: 0.0; copying_risk: low_similarity_risk; requires_human_similarity_review: false",
+          "supports_claim": "The heuristic similarity audit reports low copying risk for the generated harness.",
+          "confidence": "medium"
+        }
+      ],
+      "limitations": [
+        "This is a pre-tool critic review of a candidate harness/contract pair, not a proof result.",
+        "No raw CBMC output was provided, so readiness is based on source/spec evidence plus recorded build-plan validation.",
+        "The selected harness intentionally models a non-aliasing local-object case and does not resolve overlap semantics.",
+        "The contract header contents were not directly re-derived here; the review relies on the recorded artifact outputs and validation records."
+      ]
+    },
+    "validation": {
+      "schema_version": "llm_stage_validation.v1",
+      "created_utc": "2026-07-14T05:31:50.596985+00:00",
+      "stage": "06_review_critic",
+      "mode": "real",
+      "llm_call_executed": true,
+      "valid": true,
+      "attempts": 1,
+      "schema_validation": {
+        "schema_validation_enabled": true,
+        "validator": "jsonschema",
+        "valid": true,
+        "errors": []
+      },
+      "model": "gpt-5.4-mini",
+      "elapsed_seconds_last_attempt": 98.35608172416687,
+      "final_request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/prompt_package/api_requests/attempt_01_request.json",
+      "final_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/llm_authoritative/api_responses/attempt_01_response.json",
+      "request_sha256": "7ae8614801fd1c68a48e0c2822d38f9b7eb136460bdce673e5ba198d1498b31d",
+      "primary_evidence_complete": true,
+      "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_001_mlk_poly_add_open_discovery_20260714/stages/06_review_critic/iterations/iteration_00/prompt_package/primary_evidence_transmission_manifest.json",
+      "exact_input_summary": {
+        "schema_version": "responses_api_input_summary.v1",
+        "input_text_block_count": 1,
+        "input_text_chars": 442955,
+        "input_text_utf8_bytes": 451596,
+        "input_text_sha256": "74f4685fcc44c59586a44aca478cb001505667d57cb2c0e926953cced428983c",
+        "input_file_count": 0,
+        "input_files": [],
+        "canonical_input_sha256": "8dd6884fee3dd38e7bf0fc5efe03a5e2844e3387a2788a51c94cbe4a272cad23",
+        "contains_primary_truncation_marker": false
+      },
+      "provider_usage": {
+        "input_tokens": 111306,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 13586,
+        "output_tokens_details": {
+          "reasoning_tokens": 11912
+        },
+        "total_tokens": 124892
+      }
+    }
+  }
+}

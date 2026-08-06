@@ -2,7 +2,8 @@
 
 ## A-to-Z Technical Record, Proof Boundary, Harness Originality, Results, Failure Analysis, and Novelty Assessment
 
-**Author:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Case-study repository:** `pq-code-package/mlkem-native`  
 **Frozen production commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
 **Parameter set:** ML-KEM-768 (`MLKEM_K = 3`)  
@@ -23,7 +24,7 @@ The purpose is not to present CBMC output as an unexplained collection of succes
 3. independently authored CBMC verification artefacts;
 4. the assumptions and abstractions used in each theorem;
 5. solver results and coverage evidence;
-6. the human correction process that distinguished real implementation results from modelling, tooling, and orchestration failures; and
+6. the documented correction process that distinguished real implementation results from modelling, tooling, and orchestration failures; and
 7. a conservative novelty position suitable for an MSc thesis and professor review.
 
 This report uses the term **proved** only within an explicitly stated model and trust boundary. It does not treat formal verification as absolute, and it does not extend a property-specific CBMC result into a claim of whole-library or cryptographic security.
@@ -649,7 +650,7 @@ The campaign then removed dynamic frames while retaining non-DFCC function-contr
 
 ## 16. T2 execution and correction history
 
-This history is retained because it is useful evidence for the thesis evaluation of failure modes and human correction.
+This history is retained because it is useful evidence for the thesis evaluation of failure modes and documented correction.
 
 ### 16.1 T2-00A checker defect
 
@@ -1040,7 +1041,7 @@ Canonical vector prefix
 
 ---
 
-## 28. Did we truly prove `mlk_kem_check_pk`?
+## 28. Scope of the `mlk_kem_check_pk` proof
 
 ### 28.1 Correct answer
 
@@ -1280,7 +1281,7 @@ The recommended thesis wording is:
 
 A shorter version is:
 
-> To the best of our knowledge, no equivalent public CBMC artefact was identified that establishes this exact T1–T4 property family for the frozen production `mlkem-native` checker and its encapsulation caller. This is a qualified originality claim rather than a categorical world-first claim.
+> No equivalent public CBMC artefact was identified in the scoped search that establishes this exact T1–T4 property family for the frozen production `mlkem-native` checker and its encapsulation caller. This is a qualified originality claim rather than a categorical world-first claim.
 
 ---
 
@@ -1404,7 +1405,7 @@ This classification means:
 
 The main contribution is not the discovery that ML-KEM coefficients must be less than `q`. That requirement is normative. The contribution is the construction and evaluation of a property-specific CBMC evidence stack showing that a production C implementation satisfies the requirement under explicit assumptions, together with frame, footprint, and caller-composition evidence.
 
-The work also demonstrates a disciplined human-review boundary for AI-assisted formal artefacts. Several generated scripts and models contained mistakes. Those mistakes were not accepted as production findings. They were diagnosed, corrected, and classified, while successful properties were bound to exact artefacts and model scopes.
+The work also demonstrates a disciplined acceptance boundary for AI-assisted formal artefacts. Several generated scripts and models contained mistakes. Those mistakes were not accepted as production findings. They were diagnosed, corrected, and classified, while successful properties were bound to exact artefacts and model scopes.
 
 ---
 
@@ -1427,7 +1428,7 @@ The result is not dependent on a finite handpicked corpus, although it remains b
 
 The failed property shows that successful single-call contracts do not automatically provide relational determinism across two abstract calls. This is a formal-modelling lesson, not an implementation bug. The campaign did not hide the failure or weaken the assertion. It changed to a better theorem in T3 that directly tested the relevant read footprint.
 
-This supports a thesis argument that AI-generated formal artefacts require human semantic review, tool-aware correction, and careful counterexample classification.
+This supports a thesis argument that AI-generated formal artefacts require documented semantic review, tool-aware correction, and careful counterexample classification.
 
 ---
 

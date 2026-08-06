@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/cbmc-execute/output-schema.json",
+  "title": "cbmc-execute execution summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "skill", "request_id", "semantic_authority", "analysis_nature", "report_status", "tool_outcome", "analysis", "inventory", "source_integrity", "execution_artifacts", "warnings", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "skill": {
+      "type": "object", "additionalProperties": false, "required": ["name", "version"],
+      "properties": {"name": {"const": "cbmc-execute"}, "version": {"type": "string"}}
+    },
+    "request_id": {"type": "string", "minLength": 1},
+    "semantic_authority": {"const": "NONE"},
+    "analysis_nature": {"const": "TOOL_EXECUTION_AND_MECHANICAL_NORMALIZATION_ONLY"},
+    "report_status": {"enum": ["COMPLETE", "COMPLETE_WITH_WARNINGS", "INCOMPLETE"]},
+    "tool_outcome": {"enum": ["PASS_REPORTED_BY_CBMC", "FAIL_REPORTED_BY_CBMC", "COMPLETED_STATUS_UNKNOWN", "TOOL_ERROR", "TIMEOUT", "UNPARSEABLE_JSON", "SOURCE_MUTATION_DETECTED"]},
+    "analysis": {"$ref": "#/$defs/invocation"},
+    "inventory": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/invocation"}]},
+    "source_integrity": {
+      "type": "object", "additionalProperties": false, "required": ["unchanged", "changes"],
+      "properties": {
+        "unchanged": {"type": "boolean"},
+        "changes": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "execution_artifacts": {"type": "array", "items": {"type": "object"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "invocation": {
+      "type": "object",
+      "required": ["name", "argv", "command_display", "working_directory", "timeout_seconds", "start_timestamp_utc", "end_timestamp_utc", "termination", "exit_code", "stdout_file", "stderr_file", "stdout_sha256", "stderr_sha256", "stdout_size_bytes", "stderr_size_bytes", "json_parse_error", "parsed_summary"],
+      "properties": {
+        "name": {"type": "string"},
+        "argv": {"type": "array", "items": {"type": "string"}},
+        "command_display": {"type": "string"},
+        "working_directory": {"type": "string"},
+        "timeout_seconds": {"type": "integer"},
+        "start_timestamp_utc": {"type": "string"},
+        "end_timestamp_utc": {"type": "string"},
+        "termination": {"type": "string"},
+        "exit_code": {"anyOf": [{"type": "integer"}, {"type": "null"}]},
+        "stdout_file": {"type": "string"},
+        "stderr_file": {"type": "string"},
+        "stdout_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stderr_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stdout_size_bytes": {"type": "integer", "minimum": 0},
+        "stderr_size_bytes": {"type": "integer", "minimum": 0},
+        "json_parse_error": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "parsed_summary": {"anyOf": [{"type": "object"}, {"type": "null"}]}
+      },
+      "additionalProperties": false
+    }
+  }
+}

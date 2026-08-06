@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "execution": {
+      "additionalProperties": false,
+      "properties": {
+        "cbmc": {
+          "additionalProperties": false,
+          "properties": {
+            "arguments": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "executable": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "sources": {
+              "items": {
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "timeout_seconds": {
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "executable",
+            "sources",
+            "arguments",
+            "timeout_seconds",
+            "required"
+          ],
+          "type": "object"
+        },
+        "syntax_check": {
+          "additionalProperties": false,
+          "properties": {
+            "arguments": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "executable": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "sources": {
+              "items": {
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "timeout_seconds": {
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "enabled",
+            "required",
+            "executable",
+            "sources",
+            "arguments",
+            "timeout_seconds"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "cbmc"
+      ],
+      "type": "object"
+    },
+    "expected_transition": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_allowed_statuses": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "mutant_allowed_statuses": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "property_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_id",
+        "baseline_allowed_statuses",
+        "mutant_allowed_statuses"
+      ],
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "experiment_timestamp": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "mutation_allowed": {
+            "type": "boolean"
+          },
+          "path": {
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "role",
+          "expected_sha256",
+          "mutation_allowed"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "mutation": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_effect": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "mutation_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        "patch_path": {
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "mutation_id",
+        "patch_path",
+        "expected_sha256",
+        "rationale",
+        "expected_effect"
+      ],
+      "type": "object"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "target_symbol": {
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "experiment_timestamp",
+    "files",
+    "mutation",
+    "execution"
+  ],
+  "title": "Controlled Mutation Runner Request",
+  "type": "object"
+}

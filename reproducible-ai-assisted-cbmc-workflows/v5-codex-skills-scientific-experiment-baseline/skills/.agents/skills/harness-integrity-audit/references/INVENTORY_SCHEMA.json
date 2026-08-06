@@ -1,0 +1,56 @@
+{
+  "$id": "INVENTORY_SCHEMA.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "condition": {
+            "type": "string"
+          },
+          "kind": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "line": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "normalized_condition": {
+            "type": "string"
+          },
+          "obvious_truth_classification": {
+            "enum": [
+              "TRUE",
+              "FALSE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "line",
+          "condition",
+          "normalized_condition",
+          "obvious_truth_classification"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "semantic_authority": {
+      "const": "NONE"
+    }
+  },
+  "required": [
+    "schema_version",
+    "items",
+    "semantic_authority"
+  ],
+  "type": "object"
+}

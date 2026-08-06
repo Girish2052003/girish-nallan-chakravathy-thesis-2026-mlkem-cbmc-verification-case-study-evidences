@@ -1,0 +1,219 @@
+{
+  "$id": "INPUT_SCHEMA.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actual_build_inputs": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "expected_sha256",
+          "role"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "allowed_build_inputs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "checks": {
+      "additionalProperties": false,
+      "properties": {
+        "compare_build_inputs": {
+          "type": "boolean"
+        },
+        "detect_assumed_assertions": {
+          "type": "boolean"
+        },
+        "detect_constant_false_controls": {
+          "type": "boolean"
+        },
+        "detect_duplicate_assertions": {
+          "type": "boolean"
+        },
+        "detect_obvious_false_assumptions": {
+          "type": "boolean"
+        },
+        "detect_replacement_definitions": {
+          "type": "boolean"
+        },
+        "detect_trivial_assertions": {
+          "type": "boolean"
+        },
+        "inspect_undefined_functions": {
+          "type": "boolean"
+        },
+        "require_target_call": {
+          "type": "boolean"
+        },
+        "require_user_assertion": {
+          "type": "boolean"
+        },
+        "scan_assertions": {
+          "type": "boolean"
+        },
+        "scan_assumptions": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "require_target_call",
+        "require_user_assertion",
+        "scan_assumptions",
+        "scan_assertions",
+        "detect_obvious_false_assumptions",
+        "detect_constant_false_controls",
+        "detect_duplicate_assertions",
+        "detect_trivial_assertions",
+        "detect_assumed_assertions",
+        "detect_replacement_definitions",
+        "compare_build_inputs",
+        "inspect_undefined_functions"
+      ],
+      "type": "object"
+    },
+    "diagnostics": {
+      "additionalProperties": false,
+      "properties": {
+        "undefined_functions": {
+          "additionalProperties": false,
+          "properties": {
+            "expected_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "format": {
+              "const": "goto-instrument-list-undefined-functions-text"
+            },
+            "path": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "expected_sha256",
+            "format"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "harness": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "role": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "expected_sha256",
+        "role"
+      ],
+      "type": "object"
+    },
+    "production_files": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "expected_sha256",
+          "role"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "request_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "authoritative_definition_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "minimum_call_count": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "symbol": {
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "authoritative_definition_path",
+        "minimum_call_count"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "target",
+    "harness",
+    "production_files",
+    "allowed_build_inputs",
+    "actual_build_inputs",
+    "checks"
+  ],
+  "title": "Harness integrity audit request",
+  "type": "object"
+}

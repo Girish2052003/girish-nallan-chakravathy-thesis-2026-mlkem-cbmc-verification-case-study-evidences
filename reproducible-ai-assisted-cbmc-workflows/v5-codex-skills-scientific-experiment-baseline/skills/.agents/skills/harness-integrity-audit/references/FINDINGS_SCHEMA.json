@@ -1,0 +1,61 @@
+{
+  "$id": "FINDINGS_SCHEMA.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence": {},
+          "limitation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "CHECKED",
+              "WARNING",
+              "NOT_CHECKABLE"
+            ]
+          },
+          "summary": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "check_id",
+          "status",
+          "summary",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "status_vocabulary": {
+      "items": {
+        "enum": [
+          "CHECKED",
+          "WARNING",
+          "NOT_CHECKABLE"
+        ]
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status_vocabulary",
+    "items"
+  ],
+  "type": "object"
+}

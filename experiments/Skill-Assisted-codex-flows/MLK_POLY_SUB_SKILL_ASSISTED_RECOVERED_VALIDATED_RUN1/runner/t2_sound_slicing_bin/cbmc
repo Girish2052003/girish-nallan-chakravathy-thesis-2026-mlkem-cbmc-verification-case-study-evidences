@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REAL_CBMC="/usr/bin/cbmc"
+ARGS=("$@")
+
+for ARG in "${ARGS[@]}"
+do
+    case "$ARG" in
+        --version|-V|--help|-h|--show-properties)
+            exec "$REAL_CBMC" "${ARGS[@]}"
+            ;;
+    esac
+done
+
+IS_COVER=0
+MODEL=""
+
+for ARG in "${ARGS[@]}"
+do
+    case "$ARG" in
+        --cover|--cover=*)
+            IS_COVER=1
+            ;;
+    esac
+
+    if [[ "$ARG" == *.goto ]] &&
+       [ -f "$ARG" ]
+    then
+        MODEL="$ARG"
+    fi
+done
+
+has_option()
+{
+    local wanted="$1"
+    local item
+
+    for item in "${ARGS[@]}"
+    do
+        [ "$item" = "$wanted" ] && return 0
+    done
+
+    return 1
+}
+
+if [ "$IS_COVER" -eq 1 ]
+then
+    FILTERED=()
+
+    for ARG in "${ARGS[@]}"
+    do
+        case "$ARG" in
+            --bounds-check|\
+            --pointer-check|\
+            --pointer-overflow-check|\
+            --signed-overflow-check|\
+            --unsigned-overflow-check|\
+            --conversion-check|\
+            --div-by-zero-check|\
+            --undefined-shift-check|\
+            --unwinding-assertions)
+                ;;
+            *)
+                FILTERED+=("$ARG")
+                ;;
+        esac
+    done
+
+    EXTRA=()
+
+    has_option --drop-unused-functions ||
+        EXTRA+=(--drop-unused-functions)
+
+    has_option --reachability-slice ||
+        EXTRA+=(--reachability-slice)
+
+    if [ -n "$MODEL" ]
+    then
+        AUDIT="${MODEL%.goto}.reachability_only_coverage_audit.txt"
+
+        {
+            echo "EXECUTION_TYPE=REACHABILITY_ONLY_COVERAGE"
+            echo "THEOREM_PROOF_WEAKENED=NO"
+            echo "PRODUCTION_SOURCE_MODIFIED=NO"
+            echo "HARNESS_MODIFIED=NO"
+            echo "UNWIND_BOUND_REMOVED=NO"
+            echo "PARTIAL_LOOPS_ENABLED=NO"
+            echo "SAFETY_PROPERTIES_PROVED_IN_SEPARATE_PROOF_RUN=YES"
+        } > "$AUDIT"
+    fi
+
+    exec "$REAL_CBMC" \
+        "${FILTERED[@]}" \
+        "${EXTRA[@]}"
+fi
+
+EXTRA=()
+
+has_option --drop-unused-functions ||
+    EXTRA+=(--drop-unused-functions)
+
+has_option --reachability-slice ||
+    EXTRA+=(--reachability-slice)
+
+has_option --slice-formula ||
+    EXTRA+=(--slice-formula)
+
+if [ -n "$MODEL" ]
+then
+    AUDIT="${MODEL%.goto}.sound_slicing_proof_audit.txt"
+
+    {
+        echo "EXECUTION_TYPE=FULL_BOUNDED_PROOF_WITH_SOUND_SLICING"
+        echo "PRODUCTION_SOURCE_MODIFIED=NO"
+        echo "HARNESS_MODIFIED=NO"
+        echo "THEOREM_ASSERTIONS_REMOVED=NO"
+        echo "SAFETY_CHECKS_REMOVED=NO"
+        echo "UNWINDING_ASSERTIONS_REMOVED=NO"
+        echo "PARTIAL_LOOPS_ENABLED=NO"
+        echo "UNWIND_BOUND_CHANGED=NO"
+        echo "FULL_256_COEFFICIENT_DOMAIN=PRESERVED"
+        echo "OPTIMISATIONS=DROP_UNUSED_FUNCTIONS_REACHABILITY_SLICE_FORMULA_SLICE"
+    } > "$AUDIT"
+fi
+
+exec "$REAL_CBMC" \
+    "${ARGS[@]}" \
+    "${EXTRA[@]}"

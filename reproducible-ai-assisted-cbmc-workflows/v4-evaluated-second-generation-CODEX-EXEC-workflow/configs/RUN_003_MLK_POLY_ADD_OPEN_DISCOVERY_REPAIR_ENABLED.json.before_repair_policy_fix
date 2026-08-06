@@ -1,0 +1,122 @@
+{
+  "run_id": "run_003_mlk_poly_add_open_discovery_repair_enabled_20260715",
+  "output_root": "runs",
+  "target_scheme": "ML-KEM",
+  "target_function": "mlk_poly_add",
+  "target_topic": "Independent repair-enabled open property discovery and candidate CBMC artefact generation for ML-KEM polynomial addition",
+  "verification_tool": "CBMC",
+  "artifact_type": "CBMC verification harness",
+  "max_iterations": 1,
+  "parallel_initial_agents": false,
+  "strict_outputs": true,
+  "inputs": {
+    "spec_paths": [
+      "inputs/specs/fips203_clean.txt"
+    ],
+    "code_dir": "inputs/code/mlk_poly_add_run_001",
+    "code_paths": [
+      "inputs/code/mlk_poly_add_run_001/poly.c",
+      "inputs/code/mlk_poly_add_run_001/poly.h",
+      "inputs/code/mlk_poly_add_run_001/params.h"
+    ],
+    "archival_spec_paths": [
+      "inputs/specs/fips203.pdf"
+    ]
+  },
+  "llm": {
+    "mode": "real",
+    "model": "gpt-5.4-mini",
+    "api_key_env": "OPENAI_API_KEY",
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "verbosity": "medium"
+    },
+    "max_retries": 1,
+    "max_output_tokens": 128000,
+    "attach_files_as_base64": false,
+    "max_inline_file_chars": 2000000,
+    "fail_on_primary_evidence_truncation": true,
+    "store": false
+  },
+  "tool_execution": {
+    "cbmc_binary": "cbmc",
+    "cbmc_function": "harness",
+    "dry_run": false,
+    "force_run": false,
+    "require_gate_approval": true,
+    "source_files": [
+      "inputs/code/mlk_poly_add_run_001/poly.c"
+    ],
+    "stub_files": [],
+    "include_paths": [
+      "inputs/code/mlk_poly_add_run_001"
+    ],
+    "defines": [],
+    "working_directory": ".",
+    "extra_cbmc_args": [],
+    "unwind": null,
+    "goto_cc_binary": "goto-cc",
+    "goto_instrument_binary": "goto-instrument",
+    "extra_goto_cc_args": [],
+    "extra_goto_instrument_args": [],
+    "step_timeout_seconds": 120,
+    "pipeline_timeout_seconds": 180,
+    "structured_json_required": true
+  },
+  "counterexample_analysis": {
+    "allow_missing_tool_outputs": false
+  },
+  "repair_refinement": {
+    "allow_missing_inputs": false,
+    "render_candidate_repaired_harness": true
+  },
+  "experiment_logger": {
+    "strict_required_stages": false,
+    "allow_missing_previous_stages": true,
+    "include_checksums": true,
+    "include_file_inventory": true
+  },
+  "evaluation_reporter": {
+    "allow_missing_experiment_log": false,
+    "include_thesis_wording": true,
+    "include_rq_mapping": true,
+    "include_failure_taxonomy": true,
+    "include_threats_to_validity": true
+  },
+  "provenance": {
+    "repository_paths": [
+      "inputs/code/mlk_poly_add_run_001"
+    ],
+    "source_revision": "903027064d6739140306d3e6f6ca8c66959ff1d4"
+  },
+  "experiment_protocol": {
+    "protocol_version": "llm-first-v1",
+    "semantic_advisory_mode": "off",
+    "repair_policy": "one_controlled_repair_iteration",
+    "prompt_budget": {
+      "max_request_bytes": 900000,
+      "max_retry_growth_percent": 10,
+      "max_stage_input_tokens_estimate": 225000,
+      "max_total_input_tokens_estimate": 10000000
+    },
+    "initial_run_requires_zero_repairs": false,
+    "selected_property_claims_required": true,
+    "structured_cbmc_json_required": true,
+    "mutation_non_vacuity_required": true
+  },
+  "property_discovery": {
+    "mode": "open_discovery",
+    "catalogue_visibility": "hidden",
+    "allow_uncatalogued_properties": true,
+    "selected_property_id": null,
+    "selection_policy": "feasibility_then_risk_then_rank"
+  },
+  "formal_strategy_reconciliation": {
+    "mode": "evidence_bound",
+    "allow_optional_contract_to_harness_fallback": true,
+    "require_cbmc_frontend_readiness": true,
+    "forbid_contract_dependent_downgrade": true
+  }
+}

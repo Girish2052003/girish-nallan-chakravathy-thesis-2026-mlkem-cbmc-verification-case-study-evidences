@@ -1,7 +1,8 @@
 # `mlk_poly_tobytes` CBMC Verification Campaign  
 ## Complete A–Z Technical Record, Proof Interpretation, Evidence Boundary and Novelty Assessment
 
-**Author:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Case-study target:** `mlk_poly_tobytes` / `mlk_poly_tobytes_c` in `mlkem-native`  
 **Repository commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
 **Primary configuration proved:** ML-KEM-768, portable C backend  
@@ -13,23 +14,23 @@
 
 ## Document purpose
 
-This document records the complete verification campaign that we conducted for the `mlk_poly_tobytes` serialization function in `mlkem-native`. It is written as a record of our own work rather than as a tutorial. It explains:
+This document records the complete verification campaign for the `mlk_poly_tobytes` serialization function in `mlkem-native`. It is written as a machine-oriented technical record rather than as a tutorial. It explains:
 
 - what source and build were frozen;
 - what the upstream repository already proved;
-- why we created new clean-room harnesses;
+- why new clean-room harnesses were created;
 - the 19 frozen semantic obligations in theorem families T1–T4;
 - the assumptions under which the results hold;
 - the positive, non-vacuity, unwinding and mutation evidence;
 - why the four theorem families are complementary;
-- whether we can truthfully state that `mlk_poly_tobytes` was proved correct;
+- whether the evidence supports stating that `mlk_poly_tobytes` was proved correct;
 - what was not proved;
 - the strength and limitations of the novelty claim;
 - the hashes and evidence identities needed for reproducibility.
 
 The central conclusion is:
 
-> We established property-specific functional correctness of the real portable `mlk_poly_tobytes` implementation, reached through its public wrapper, for canonical polynomial inputs in the frozen ML-KEM-768 CBMC configuration. The result covers exact ByteEncode12 arithmetic, successor/carry behaviour, exact canonical image, invalid-codeword exclusion, arithmetic recoverability and injectivity. It does not establish native-backend correctness, constant-time behaviour, compiler-binary correctness, `mlk_poly_frombytes` correctness, out-of-domain behaviour or complete ML-KEM correctness.
+> Property-specific functional correctness was established for the real portable `mlk_poly_tobytes` implementation, reached through its public wrapper, for canonical polynomial inputs in the frozen ML-KEM-768 CBMC configuration. The result covers exact ByteEncode12 arithmetic, successor/carry behaviour, exact canonical image, invalid-codeword exclusion, arithmetic recoverability and injectivity. It does not establish native-backend correctness, constant-time behaviour, compiler-binary correctness, `mlk_poly_frombytes` correctness, out-of-domain behaviour or complete ML-KEM correctness.
 
 ---
 
@@ -37,7 +38,7 @@ The central conclusion is:
 
 ## 1.1 What was proved
 
-We proved 19 frozen semantic obligations arranged into four theorem families:
+Nineteen frozen semantic obligations were proved across four theorem families:
 
 | Family | Purpose | Core obligations | Final status |
 |---|---|---:|---|
@@ -216,7 +217,7 @@ This arithmetic formulation was deliberately chosen because it is structurally d
 
 ---
 
-# 5. Upstream baseline and the gap we addressed
+# 5. Upstream baseline and the addressed gap
 
 ## 5.1 What upstream `mlkem-native` already contained
 
@@ -277,7 +278,7 @@ The repository-level gap was not “there was no proof at all.” The gap was:
 
 > The audited upstream `poly_tobytes` harnesses and contracts did not state explicit byte-level semantic assertions proving that the unmodified portable C body implements the complete arithmetic ByteEncode12 mapping, its exact image and its injectivity.
 
-Our campaign was created to address that narrower and more defensible gap.
+The campaign was created to address that narrower and more defensible gap.
 
 ---
 
@@ -407,9 +408,9 @@ T4 proves:
 
 This closes the losslessness question explicitly.
 
-## 7.5 Why we did not stop at T1
+## 7.5 Rationale for continuing beyond T1
 
-T1 is mathematically strong and, together with elementary arithmetic reasoning, implies many consequences later made explicit in T2–T4. We nevertheless did not stop because a single oracle-centered theorem creates concentration risk:
+T1 is mathematically strong and, together with elementary arithmetic reasoning, implies many consequences later made explicit in T2–T4. The campaign nevertheless continued because a single oracle-centered theorem creates concentration risk:
 
 - one oracle design error could affect all conclusions;
 - the proof would not separately exercise carry cases;
@@ -419,13 +420,13 @@ T1 is mathematically strong and, together with elementary arithmetic reasoning, 
 
 Independent theorem shapes provide cross-checking evidence.
 
-## 7.6 Why we did not stop at T2
+## 7.6 Rationale for continuing beyond T2
 
 T2 proves local changes under an increment of one. It does not by itself prove the absolute output for every input. A consistently wrong encoding could still have plausible local successor behaviour.
 
 T2 therefore cannot replace T1.
 
-## 7.7 Why we did not stop at T3
+## 7.7 Rationale for continuing beyond T3
 
 T3 establishes canonical image membership and realizability. It does not by itself prove that each particular input is mapped to its specified codeword. A wrong permutation of canonical codewords could preserve the image while encoding individual polynomials incorrectly.
 
@@ -597,7 +598,7 @@ All four mutants were rejected with exactly the expected explicit failures and n
 
 ## 9.8 T1 external artifact review
 
-The T1 candidate package was separately uploaded and reviewed.
+The T1 candidate package was separately retained and reviewed.
 
 ```text
 External review archive SHA-256:
@@ -615,7 +616,7 @@ Final T1 closure record SHA-256:
 
 The external review disclosed two non-blocking packaging details:
 
-1. the raw positive GOTO binary was not present in the review archive, so its recorded model hash could not be independently recalculated from that uploaded package;
+1. the raw positive GOTO binary was not present in the review archive, so its recorded model hash could not be independently recalculated from that retained package;
 2. `FILE_INVENTORY.txt` omitted a manifest-check file created after inventory generation.
 
 The original campaign retained the model hash and evidence. Harness source, build command, call structure and raw XML consistently established actual portable-body execution. These packaging details did not alter the theorem results.
@@ -1094,11 +1095,11 @@ The harnesses did not assume:
 
 ---
 
-# 15. How our harnesses are truly distinct from the upstream harnesses
+# 15. Distinction between the campaign harnesses and upstream harnesses
 
 ## 15.1 Comparison table
 
-| Feature | Upstream `poly_tobytes` CBMC harness | Our clean-room semantic harnesses |
+| Feature | Upstream `poly_tobytes` CBMC harness | Clean-room semantic harnesses |
 |---|---|---|
 | Calls target function | Yes | Yes |
 | Calls public wrapper | Some upstream harnesses | Mandatory for semantic claims |
@@ -1119,7 +1120,7 @@ The harnesses did not assume:
 
 ## 15.2 Distinctness is semantic, not cosmetic
 
-Our harnesses were not made distinct merely by changing variable names or file layout. They introduced new proof obligations and proof shapes:
+The campaign harnesses were not made distinct merely by changing variable names or file layout. They introduced new proof obligations and proof shapes:
 
 - arithmetic specification refinement;
 - relational successor analysis;
@@ -1130,7 +1131,7 @@ Our harnesses were not made distinct merely by changing variable names or file l
 - independent-oracle restrictions;
 - mutation-sensitive theorem closure.
 
-## 15.3 We did not change the implementation to make the proof pass
+## 15.3 Production implementation remained unchanged
 
 The positive model used the source bound by:
 
@@ -1250,11 +1251,11 @@ Because every target loop was finite and fully unwound with active unwinding ass
 
 ---
 
-# 19. Did we really prove `mlk_poly_tobytes`?
+# 19. Scope of the `mlk_poly_tobytes` proof
 
 ## 19.1 The answer
 
-**Yes—under the recorded scope and assumptions, we proved the portable `mlk_poly_tobytes` serialization semantics for the 19 frozen properties.**
+**Under the recorded scope and assumptions, the portable `mlk_poly_tobytes` serialization semantics were proved for the 19 frozen properties.**
 
 The strongest precise statement is:
 
@@ -1275,7 +1276,7 @@ T4.P4 separately establishes full injectivity over two symbolic canonical polyno
 
 ## 19.3 Why the statement must remain scoped
 
-We did not prove:
+The campaign did not prove:
 
 - native AArch64 serialization;
 - native x86-64 serialization;
@@ -1301,7 +1302,7 @@ The novelty question must be divided into three different levels:
 
 1. **mathematical novelty** — are the packing equations or injectivity facts new mathematics?
 2. **formal-verification novelty** — has ML-KEM/Kyber implementation correctness or encoding correctness been formally proved before?
-3. **repository-level artifact and methodology novelty** — does this exact CBMC campaign exist upstream or in the public artifacts we located?
+3. **repository-level artifact and methodology novelty** — whether this exact CBMC campaign exists upstream or in the public artifacts located by the scoped search.
 
 These levels must not be conflated.
 
@@ -1403,19 +1404,19 @@ The contribution is not a new cryptographic primitive or new encoding algorithm.
 
 The following wording is appropriate for the thesis:
 
-> To the best of our knowledge, this case study provides a novel repository-level CBMC verification campaign for the portable `mlk_poly_tobytes` implementation in `mlkem-native`. The contribution is not the ByteEncode12 mathematics itself, nor the first formal verification of Kyber or ML-KEM. Its novelty lies in the commit-bound execution of the unmodified public C wrapper against 19 explicit semantic obligations spanning exact arithmetic refinement, carry transitions, canonical-image characterization, invalid-codeword exclusion, recoverability and injectivity, strengthened through non-vacuity witnesses, insufficient-unwind controls, targeted production mutations and deterministic evidence freezing.
+> Based on the scoped public-artifact search, this case study provides a novel repository-level CBMC verification campaign for the portable `mlk_poly_tobytes` implementation in `mlkem-native`. The contribution is not the ByteEncode12 mathematics itself, nor the first formal verification of Kyber or ML-KEM. Its novelty lies in the commit-bound execution of the unmodified public C wrapper against 19 explicit semantic obligations spanning exact arithmetic refinement, carry transitions, canonical-image characterization, invalid-codeword exclusion, recoverability and injectivity, strengthened through non-vacuity witnesses, insufficient-unwind controls, targeted production mutations and deterministic evidence freezing.
 
 ## 20.8 Wording that must not be used
 
-We should not write:
+The record should not state:
 
 ```text
 This is the first proof that ML-KEM serialization is correct.
 This is the first formally verified ML-KEM implementation.
 No one has ever proved ByteEncode12.
-We proved all of ML-KEM.
-We proved the native assembly backends.
-We proved constant-time behaviour.
+All of ML-KEM was proved.
+The native assembly backends were proved.
+Constant-time behaviour was proved.
 ```
 
 ---
@@ -1448,7 +1449,7 @@ This directly supports the thesis position that generated formal artifacts requi
 
 The T1–T4 structure demonstrates how one small serialization function can support multiple meaningful formal property classes without modifying the implementation.
 
-## 21.4 Evidence about human correction and assurance effort
+## 21.4 Evidence about correction and assurance effort
 
 The campaign records important failure modes:
 
@@ -1458,7 +1459,7 @@ The campaign records important failure modes:
 - the need to distinguish a candidate closure from final closure;
 - the need for external artifact inspection before publication promotion.
 
-These are useful findings for an AI-assisted formal-methods thesis because they show where human judgment remains necessary.
+These are useful findings for an AI-assisted formal-methods thesis because they identify where documented semantic judgment remains necessary.
 
 ---
 
@@ -1631,15 +1632,15 @@ A future reviewer should confirm:
 
 # 24. Examiner-safe answers
 
-## “Did you merely prove memory safety?”
+## Memory-safety scope
 
-No. The upstream repository already had strong contract and safety infrastructure. Our campaign added explicit universal relationships between symbolic inputs and all output bytes, as well as image and injectivity theorems.
+No. The upstream repository already had strong contract and safety infrastructure. The campaign added explicit universal relationships between symbolic inputs and all output bytes, as well as image and injectivity theorems.
 
-## “Did you modify the function to make CBMC pass?”
+## Production-function modification status
 
 No. Positive runs used the exact source hash. Mutations were isolated copied sources used only as negative controls.
 
-## “Did you call the internal C body directly?”
+## Public-wrapper call-path status
 
 No. The semantic harnesses called the public wrapper. GOTO model forensics confirmed reachability to the portable body.
 
@@ -1651,7 +1652,7 @@ The non-vacuity campaigns deliberately placed false assertions after representat
 
 The 14 low-unwind controls demonstrate the opposite. Reducing each relevant bound caused an unwind assertion failure.
 
-## “Did you use `poly_frombytes` to prove `poly_tobytes`?”
+## Independence from `poly_frombytes`
 
 No. T3 and T4 used an independent arithmetic decoder.
 
@@ -1663,11 +1664,11 @@ T1 is the primary exact refinement theorem, but T2–T4 provide independent rela
 
 A global first-ever claim is not justified. Prior work formally verifies Kyber and ML-KEM implementations. The defensible novelty is the exact repository-level CBMC theorem decomposition and mutation-hardened evidence workflow for the unmodified `mlkem-native` C target.
 
-## “Did you prove all parameter sets?”
+## Parameter-set scope
 
 The directly executed semantic campaign was frozen to ML-KEM-768. A broader claim requires separate preprocessing/source-equivalence evidence.
 
-## “Did you prove native assembly?”
+## Native-assembly scope
 
 No. Native backend correctness is an explicit nonclaim.
 
@@ -1675,9 +1676,9 @@ No. Native backend correctness is an explicit nonclaim.
 
 # 25. Final conclusion
 
-We did not treat `mlk_poly_tobytes` as correct merely because it was short, because it looked like standard Kyber code, or because an existing CBMC harness returned success.
+The campaign did not treat `mlk_poly_tobytes` as correct merely because it was short, because it looked like standard Kyber code, or because an existing CBMC harness returned success.
 
-We froze an exact source and theorem registry, audited the upstream proof boundary, created independent semantic harnesses, retained the real public wrapper and portable implementation, fully unwound every finite loop, proved 19 complementary obligations, demonstrated 36 reachable theorem scenarios, rejected 14 insufficient unwind configurations and rejected 17 targeted production mutants. The evidence was hash-bound and family closures were created.
+An exact source and theorem registry were frozen; the upstream proof boundary was audited; independent semantic harnesses were created; the real public wrapper and portable implementation were retained; every finite loop was fully unwound; 19 complementary obligations were proved; 36 reachable theorem scenarios were demonstrated; 14 insufficient unwind configurations and 17 targeted production mutants were rejected. The evidence was hash-bound and family closures were created.
 
 The final technical conclusion is:
 

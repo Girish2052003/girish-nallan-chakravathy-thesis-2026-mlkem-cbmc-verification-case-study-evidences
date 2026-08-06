@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "manifest_status": {
+      "enum": [
+        "COMPLETE",
+        "COMPLETE_WITH_WARNINGS",
+        "INCOMPLETE"
+      ]
+    },
+    "missing_required_roles": {
+      "items": {
+        "enum": [
+          "SOURCE_REVISION_EVIDENCE",
+          "SPECIFICATION_EVIDENCE",
+          "BUILD_CONTEXT_EVIDENCE",
+          "HARNESS",
+          "CBMC_COMMAND",
+          "CBMC_RAW_STDOUT",
+          "CBMC_RAW_STDERR",
+          "CBMC_EXECUTION_SUMMARY",
+          "COUNTEREXAMPLE_VIEW",
+          "INTEGRITY_AUDIT",
+          "NONVACUITY_REPORT",
+          "CODEX_EVENT_LOG",
+          "SKILL_OUTPUT",
+          "ENVIRONMENT_SNAPSHOT",
+          "REPAIR_LOG",
+          "FINAL_STATUS_RECORD",
+          "PROPERTY_RECORD",
+          "OTHER"
+        ]
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "unlisted_files": {
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "manifest_status",
+    "warnings",
+    "unlisted_files",
+    "missing_required_roles",
+    "limitations"
+  ],
+  "title": "Missing Evidence Warnings",
+  "type": "object"
+}

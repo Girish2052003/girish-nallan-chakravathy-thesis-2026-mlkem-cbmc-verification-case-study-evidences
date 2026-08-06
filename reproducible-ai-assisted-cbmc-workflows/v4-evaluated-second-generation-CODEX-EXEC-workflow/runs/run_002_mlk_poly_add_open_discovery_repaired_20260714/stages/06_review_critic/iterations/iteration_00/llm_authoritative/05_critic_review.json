@@ -1,0 +1,190 @@
+{
+  "schema_version": "llm_authoritative_stage_output.v1",
+  "created_utc": "2026-07-14T09:13:21.647907+00:00",
+  "trust_boundary": "authoritative_stage_candidate_not_formal_truth",
+  "content": {
+    "stage": "06_review_critic",
+    "mock": false,
+    "llm_call_executed": true,
+    "reviewed_artefacts": {
+      "target_function": "mlk_poly_add",
+      "deterministic_recommended_gate": null
+    },
+    "overall_assessment": "The artefact is narrowly scoped to a local frame/footprint question and is well supported by the visible single-loop, in-place coefficient update in mlk_poly_add. The verification strategy is appropriate, and the harness avoids modular-correctness overclaiming. However, the readiness metadata still reports incomplete traceability markers, and the only explicit runtime assertion is an indirect witness sentinel; I would ask for a small cleanup pass before Agent 7 execution.",
+    "gate_recommendation": "needs_revision_before_tool_execution",
+    "blocking_issues": [],
+    "warnings": [
+      {
+        "issue": "Traceability metadata is incomplete: the readiness record reports claim_markers_complete=false and fallback_conditions_satisfied=false, while the rendered harness body only shows the witness sentinel and the target call marker.",
+        "impact": "The contract-based execution path may still be usable, but the handoff is not yet cleanly self-describing and should be tightened before tool execution."
+      },
+      {
+        "issue": "The selected property is carried only indirectly by the rendered harness body; the actual footprint claim depends on the external generated contract header and DFCC instrumentation.",
+        "impact": "Review-time traceability depends on separate contract artefacts rather than the visible C harness alone."
+      },
+      {
+        "issue": "The A01 disjointness assumption is redundant in the current harness shape because witness_obj is a separate local object that is not passed to mlk_poly_add.",
+        "impact": "This does not look unsound, but it adds clutter without materially constraining the proof state and could confuse later debugging."
+      }
+    ],
+    "minor_issues": [
+      {
+        "issue": "The harness does not snapshot r for old-state/new-state comparison because the selected property is a frame claim rather than a functional postcondition.",
+        "impact": "This is acceptable for the chosen property, but it limits reuse if a later stage wants to prove value-preservation or arithmetic equivalence."
+      },
+      {
+        "issue": "The harness uses local distinct objects, so it does not exercise alias-sensitive corner cases such as self-aliasing between destination and source.",
+        "impact": "That is fine for the selected footprint claim, but it means the witness-based sentinel is not evidence about alias behavior."
+      }
+    ],
+    "assumption_review": {
+      "status": "acceptable_with_redundancy",
+      "findings": [
+        {
+          "issue": "A01 is justified as a disjoint-witness condition, but it is effectively tautological for the current local harness because witness_obj, r_obj, and b_obj are distinct automatic objects.",
+          "impact": "The assumption does not weaken soundness, but it can be removed to simplify the harness and reduce confusion."
+        }
+      ]
+    },
+    "assertion_review": {
+      "status": "supported_but_indirect",
+      "findings": [
+        {
+          "issue": "C01 is non-tautological because witness_obj is nondeterministically initialized and copied into witness_before before the call, so a stray write to that unrelated object would be observable.",
+          "impact": "The assertion is a valid sentinel for unexpected writes, but it does not itself state the selected footprint claim; the contract assigns clause still carries the actual frame obligation."
+        }
+      ]
+    },
+    "old_state_new_state_review": {
+      "status": "adequate_for_selected_frame_claim",
+      "findings": [
+        {
+          "issue": "The harness snapshots only witness_obj rather than the mutated destination, which is sufficient for the chosen frame sentinel but not for a functional old/new-state relation on r.",
+          "impact": "This is appropriate for the current local footprint question, but it is not enough to support stronger semantic claims without redesign."
+        }
+      ]
+    },
+    "contract_review": {
+      "status": "valid_with_traceability_gap",
+      "findings": [
+        {
+          "issue": "The planned function contract is well aligned with the local write footprint: the assigns clause is restricted to r->coeffs[0 .. MLKEM_N - 1], and the build-plan record marks the contract path valid.",
+          "impact": "This is the right contract shape for Agent 7 to attempt on the selected property."
+        },
+        {
+          "issue": "The readiness record still flags incomplete marker coverage and incomplete fallback conditions even though the contract path is valid.",
+          "impact": "The artefact needs a small traceability cleanup before it is a clean handoff."
+        }
+      ]
+    },
+    "verification_strategy_review": {
+      "status": "aligned_with_narrow_frame_property",
+      "findings": [
+        {
+          "issue": "native_function_contract is an appropriate strategy for a local footprint claim about writes confined to the destination coefficient array.",
+          "impact": "There is no strategy mismatch here; a loop-invariant or relational strategy would be broader than needed for the selected property."
+        },
+        {
+          "issue": "The selected property intentionally avoids modular-q correctness and whole-scheme reasoning.",
+          "impact": "That keeps the verification target narrow and makes the contract strategy a sensible fit."
+        }
+      ]
+    },
+    "independence_review": {
+      "status": "low_similarity_risk",
+      "findings": [
+        {
+          "issue": "The similarity audit reports reference_file_count=0, max_similarity_score=0.0, copying_risk=low_similarity_risk, and similarity_review_required=false.",
+          "impact": "No human similarity review is indicated by the supplied audit, though the audit remains heuristic rather than a novelty proof."
+        },
+        {
+          "issue": "The unavoidable overlaps are mostly fixed identifiers and standard CBMC primitives required by the target function and verification style.",
+          "impact": "Those similarities do not by themselves indicate copying risk."
+        }
+      ]
+    },
+    "scope_and_overclaim_review": {
+      "status": "appropriately_narrow",
+      "findings": [
+        {
+          "issue": "The artefact explicitly avoids modular-q correctness, FIPS compliance, cryptographic security, and whole-scheme ML-KEM claims.",
+          "impact": "The scope is appropriately local and does not overclaim beyond the visible evidence."
+        },
+        {
+          "issue": "The visible source body does not show explicit q-reduction, and the artefact does not try to infer it into a stronger semantic claim.",
+          "impact": "That is the correct level of caution for this stage."
+        }
+      ]
+    },
+    "deterministic_reference_assessment": {
+      "used": true,
+      "status": "used_as_readiness_hint_with_caveats",
+      "warning": "The deterministic build-plan record validates the contract path and target-call presence, but it also logs claim_markers_complete=false and fallback_conditions_satisfied=false; I treated that as a readiness hint, not as proof of a clean handoff.",
+      "disagreements": []
+    },
+    "evidence_references": [
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+        "locator": "file comment and function body",
+        "excerpt": "Implementation semantics preserved from mlkem-native commit d9613cf60de3132d32475c102d8c2781d84feb34. Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded... for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+        "supports_claim": "The visible implementation is a single bounded in-place update and the snapshot explicitly excludes preexisting formal contracts/harnesses.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+        "locator": "typedef block and declaration",
+        "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+        "supports_claim": "The target type uses a fixed-length int16_t coefficient array and the function is in-place via a mutable destination pointer.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+        "locator": "macro block",
+        "excerpt": "#define MLKEM_N 256\n#define MLKEM_Q 3329",
+        "supports_claim": "The coefficient-array length and q constant used by the target implementation.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+        "locator": "Section 2.4.5",
+        "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+        "supports_claim": "The selected local property is consistent with the specification's coordinate-wise addition semantics.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/llm_authoritative/04_artifact_plan.json",
+        "locator": "traceability_manifest and selected_property",
+        "excerpt": "selected_property_id: OPEN_CAND_002 ... expected_claim_count: 2 ... claim_map: C01 (harness_assertion), C02 (cbmc_builtin assigns r->coeffs[0 .. MLKEM_N - 1])",
+        "supports_claim": "The artefact plan intentionally combines a witness assertion with a contract-scoped frame claim.",
+        "confidence": "medium"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/06_review_critic/iterations/iteration_00/validation/05_formal_build_plan.json",
+        "locator": "strategy_reconciliation",
+        "excerpt": "\"target_call_present\": true, \"target_call_marker_present\": true, \"claim_markers_complete\": false, \"fallback_conditions_satisfied\": false, \"contract_valid\": true",
+        "supports_claim": "The readiness metadata validates the contract path but also records incomplete traceability markers.",
+        "confidence": "medium"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/rendered_outputs/04_generated_harness.c",
+        "locator": "harness body",
+        "excerpt": "witness_before = witness_obj; mlk_poly_add(&r_obj, &b_obj); __CPROVER_assert(witness_obj.coeffs[i] == witness_before.coeffs[i], \"disjoint witness object remains unchanged\");",
+        "supports_claim": "The rendered harness uses a disjoint witness sentinel and does not itself state the destination-footprint claim.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/05_artifact_generation/validation/04_independence_audit.json",
+        "locator": "summary",
+        "excerpt": "reference_file_count: 0, max_similarity_score: 0.0, copying_risk: low_similarity_risk, requires_human_similarity_review: false",
+        "supports_claim": "The supplied similarity audit indicates low copying risk and no human similarity review requirement.",
+        "confidence": "medium"
+      }
+    ],
+    "limitations": [
+      "No raw CBMC execution result is available yet; this is a pre-tool review only.",
+      "The generated contract header contents were not independently re-read verbatim in this bundle, so clause semantics are inferred from the validated plan records rather than re-extracted from raw source text.",
+      "The review relies on deterministic readiness metadata for traceability caveats; those facts are treated as logged hints, not proof of eventual CBMC success.",
+      "This review does not establish correctness, compliance, security, or full ML-KEM equivalence."
+    ]
+  }
+}

@@ -1,0 +1,1070 @@
+{
+  "schema_version": "raw_llm_response.v2.per_attempt",
+  "created_utc": "2026-07-14T08:59:08.155366+00:00",
+  "mode": "real",
+  "llm_call_executed": true,
+  "model": "gpt-5.4-mini",
+  "attempt": 1,
+  "elapsed_seconds": 111.86061978340149,
+  "request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/api_requests/attempt_01_request.json",
+  "request_sha256": "ce2b465bd6bdb52550e328b24992d8db13e517b632ef3b1e150aea0a1ce29a66",
+  "response_id": "resp_0f6c4db51a601c15016a55f9f69ea081a099b7f5358537bde8",
+  "usage": {
+    "input_tokens": 43637,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 18061,
+    "output_tokens_details": {
+      "reasoning_tokens": 9503
+    },
+    "total_tokens": 61698
+  },
+  "exact_input_summary": {
+    "schema_version": "responses_api_input_summary.v1",
+    "input_text_block_count": 1,
+    "input_text_chars": 152763,
+    "input_text_utf8_bytes": 161176,
+    "input_text_sha256": "718294067b09ded934946bda58ae58d5b11bb6a9032e5503fe36d7cca04901d3",
+    "input_file_count": 0,
+    "input_files": [],
+    "canonical_input_sha256": "5c433089715808e8c1b1c7aa469876f0bff1898f4013c00d03de85eb5015c207",
+    "contains_primary_truncation_marker": false
+  },
+  "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/primary_evidence_transmission_manifest.json",
+  "provider_status": "completed",
+  "incomplete_reason": null,
+  "incomplete_details": null,
+  "response_text": "{\n  \"stage\": \"02_spec_extraction\",\n  \"mock\": false,\n  \"llm_call_executed\": true,\n  \"source_scope\": {\n    \"primary_sources_used\": [\n      \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\"\n    ],\n    \"provided_material_complete\": false,\n    \"missing_or_unavailable_material\": [\n      \"Implementation source file(s) containing mlk_poly_add or the target polynomial-add routine\",\n      \"Header declarations or type definitions for the target implementation\",\n      \"Build, proof, or harness configuration files\",\n      \"Deterministic Python advisory extraction output\",\n      \"Raw formal-tool or CBMC output\"\n    ]\n  },\n  \"spec_facts\": [\n    {\n      \"fact_id\": \"F1\",\n      \"category\": \"definition\",\n      \"statement\": \"The specification defines R_q as Z_q[X]/(X^n + 1), with n = 256 and q = 3329; polynomials are written as f = f0 + f1 X + ... + f255 X^255 with coefficients f_j in Z_q.\",\n      \"verification_relevance\": \"candidate algebraic-domain fact for later polynomial-addition trace and coefficient-bound checking\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The standard gives the algebraic definition directly, but it does not name a standalone implementation function for polynomial addition.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3; Section 4.3\",\n          \"excerpt\": \"n = 256 throughout this document; q = 3329 throughout this document; R_q is the ring Z_q[X]/(X^n + 1) consisting of polynomials f = f0 + ... + f255 X^255 with f_j in Z_q.\",\n          \"supports_claim\": \"R_q, n, q, and the polynomial form used by the standard.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not identify the implementation's exact data structure or function signature.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F2\",\n      \"category\": \"representation\",\n      \"statement\": \"Elements of R_q are represented in pseudocode as length-256 arrays in Z_q^256, with entry i corresponding to coefficient f_i.\",\n      \"verification_relevance\": \"candidate array-shape fact for later C-level assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a specification-level representation; the actual C struct or buffer layout is not provided here.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.4, equations (2.4) and (2.5)\",\n          \"excerpt\": \"An element f of R_q will be represented in pseudocode by the array (f0, f1, ..., f255) in Z_q^256, and the i-th entry of the array f will contain the i-th coefficient of f.\",\n          \"supports_claim\": \"Length-256 coefficient-array representation of R_q elements.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No aliasing, packing, or in-place update policy is specified for a target implementation.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F3\",\n      \"category\": \"array_arithmetic\",\n      \"statement\": \"For arrays X and Y in Z_m^ℓ, the operation W ← X + Y is defined coordinate-wise, so W[i] = X[i] + Y[i] for all i.\",\n      \"verification_relevance\": \"candidate algorithm-to-code trace item for coefficient-wise addition loops\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The notation is abstract array arithmetic; the concrete implementation may use any mathematically equivalent procedure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3, equations (2.2) and (2.3)\",\n          \"excerpt\": \"Let a in Z_m and X, Y in Z_m^l. The statement W <- X + Y will result in W[i] = X[i] + Y[i] for all i.\",\n          \"supports_claim\": \"Coordinate-wise array addition semantics.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The text states coordinate-wise addition but does not itself add an explicit loop index bound for every implementation.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F4\",\n      \"category\": \"polynomial_and_ntt_arithmetic\",\n      \"statement\": \"Addition and scalar multiplication in both R_q and T_q are performed coordinate-wise on the coefficient arrays; for NTT representations, ĥ ← f̂ + ĝ denotes coefficient-array addition.\",\n      \"verification_relevance\": \"candidate spec fact for later implementation matching of polynomial addition in either ring representation\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification describes the algebraic behavior, but not the exact C routine names or buffer aliasing rules.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise... the addition of two NTT representations in pseudocode is performed by a statement of the form ĥ <- f̂ + ĝ.\",\n          \"supports_claim\": \"Coordinate-wise addition in R_q and T_q.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The standard does not state whether a particular implementation must use an in-place loop or temporary storage.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F5\",\n      \"category\": \"modular_arithmetic\",\n      \"statement\": \"For z in Z_m, the pseudocode assignment z ← x + y means z is assigned x + y mod m; modular reduction is implicit whenever a value is written to a Z_m variable.\",\n      \"verification_relevance\": \"candidate bound relevant to later C-level assertions about modular wrap-around\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The rule is defined abstractly; the implementation may realize the reduction via any equivalent integer arithmetic.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.1, equation (2.1)\",\n          \"excerpt\": \"For z in Z_m and integers x and y, the statement z <- x + y means that z is assigned the value x + y mod m.\",\n          \"supports_claim\": \"Implicit modular reduction on assignment into Z_m.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"This does not specify any concrete machine-integer width or overflow handling strategy.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F6\",\n      \"category\": \"pseudocode_conventions\",\n      \"statement\": \"All algorithms in the specification have access to the global integer constants n = 256 and q = 3329, and subroutine arguments are passed by value rather than by reference.\",\n      \"verification_relevance\": \"candidate trace item for function signature expectations and loop-bound context\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The pass-by-value convention is pseudocode semantics; actual C code may use pointers or copies while preserving mathematical behavior.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4\",\n          \"excerpt\": \"All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329... When algorithms invoke other algorithms as subroutines, all arguments are passed by value.\",\n          \"supports_claim\": \"Global constants and pass-by-value pseudocode convention.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The spec does not define the target C ABI or whether the implementation mutates input buffers.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F7\",\n      \"category\": \"implementation_constraints\",\n      \"statement\": \"Implementations of ML-KEM shall not use floating-point arithmetic; when division appears in the specification, it is to be interpreted using integer or rational arithmetic as appropriate.\",\n      \"verification_relevance\": \"candidate C-level implementation constraint if poly-add code shares helper arithmetic or validation logic\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a general ML-KEM implementation constraint; it is not specific to polynomial addition alone.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 3.3, \\\"No floating-point arithmetic\\\"\",\n          \"excerpt\": \"Implementations of ML-KEM shall not use floating-point arithmetic... ordinary integer division x/y computes floor(x/y).\",\n          \"supports_claim\": \"No floating-point arithmetic requirement.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The addition operation itself does not require division; this fact is primarily a surrounding implementation constraint.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F8\",\n      \"category\": \"parameter_sets\",\n      \"statement\": \"The approved ML-KEM parameter sets are ML-KEM-512, ML-KEM-768, and ML-KEM-1024; n stays 256 and q stays 3329, while k, eta1, eta2, d_u, and d_v vary by parameter set.\",\n      \"verification_relevance\": \"candidate context fact for parameterized harness generation, though polynomial addition itself is q-based\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The target polynomial-add routine may or may not depend on the selected parameter set beyond q and array sizes.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 8, Table 2\",\n          \"excerpt\": \"Approved parameter sets for ML-KEM... ML-KEM-512, ML-KEM-768, ML-KEM-1024... n = 256, q = 3329.\",\n          \"supports_claim\": \"Approved parameter sets and fixed versus variable parameters.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The function-specific dependency of mlk_poly_add on parameter-set fields is not confirmed by source code.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F9\",\n      \"category\": \"indexing_and_bounds\",\n      \"statement\": \"All arrays in the specification use zero-based indexing.\",\n      \"verification_relevance\": \"candidate loop-index fact for later array iteration\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a notation rule; the implementation may index differently internally while remaining mathematically equivalent.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"B[i] denotes the entry at index i in the array B. All arrays have indices that begin at zero.\",\n          \"supports_claim\": \"Zero-based array indexing.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not by itself specify the concrete C loop limits used by a target implementation.\"\n      ]\n    }\n  ],\n  \"constants_and_parameters\": [\n    {\n      \"fact_id\": \"C1\",\n      \"category\": \"fixed_constants\",\n      \"statement\": \"n is fixed at 256 throughout the document.\",\n      \"verification_relevance\": \"candidate bound relevant to later C-level assertions and loop limits\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"No implementation-specific buffer length is given, but the specification's polynomial representation is length 256.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"n denotes the integer 256 throughout this document.\",\n          \"supports_claim\": \"Fixed constant n = 256.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"n is a specification constant; the implementation may use compile-time constants or macros.\"\n      ]\n    },\n    {\n      \"fact_id\": \"C2\",\n      \"category\": \"fixed_constants\",\n      \"statement\": \"q is fixed at 3329 throughout the document, and it is described as the prime integer 3329 = 28 * 13 + 1.\",\n      \"verification_relevance\": \"candidate bound relevant to later modular-arithmetic assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification states q as a prime constant; this summary does not infer any extra number-theoretic properties beyond what is written.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"q denotes the prime integer 3329 = 28 ⋅ 13 + 1 throughout this document.\",\n          \"supports_claim\": \"Fixed constant q = 3329 and its stated factorization.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The factorization is included for the NTT context; it is not specific to addition.\"\n      ]\n    },\n    {\n      \"fact_id\": \"C3\",\n      \"category\": \"parameter_sets\",\n      \"statement\": \"Table 2 fixes the following parameter values: ML-KEM-512 has k=2, eta1=3, eta2=2, d_u=10, d_v=4, and RBG strength 128; ML-KEM-768 has k=3, eta1=2, eta2=2, d_u=10, d_v=4, and RBG strength 192; ML-KEM-1024 has k=4, eta1=2, eta2=2, d_u=11, d_v=5, and RBG strength 256.\",\n      \"verification_relevance\": \"candidate context for parameterized harness generation and cross-checking\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"Polynomial addition itself is expected to depend primarily on q and array length, but the broader ML-KEM context is parameterized by these values.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 8, Table 2\",\n          \"excerpt\": \"ML-KEM-512: k=2, eta1=3, eta2=2, d_u=10, d_v=4, required RBG strength 128; ML-KEM-768: k=3, eta1=2, eta2=2, d_u=10, d_v=4, required RBG strength 192; ML-KEM-1024: k=4, eta1=2, eta2=2, d_u=11, d_v=5, required RBG strength 256.\",\n          \"supports_claim\": \"Approved parameter-set values.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The table does not directly specify any polynomial-add-specific special cases.\"\n      ]\n    }\n  ],\n  \"algorithms_or_steps\": [\n    {\n      \"fact_id\": \"A1\",\n      \"category\": \"array_arithmetic_step\",\n      \"statement\": \"The array-addition semantics used by the standard are coordinate-wise, so a polynomial-add implementation can be modeled as looping over each coefficient index and applying modular addition at that position.\",\n      \"verification_relevance\": \"candidate algorithm-to-code trace item for later harness generation\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification states the coordinate-wise semantics; it does not prescribe a particular loop order or memory-access pattern.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3; Section 2.4.5\",\n          \"excerpt\": \"Array addition W <- X + Y is coordinate-wise, and addition in R_q and T_q is done coordinate-wise on coefficient arrays.\",\n          \"supports_claim\": \"Coordinate-wise addition semantics suitable for a coefficient loop.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation may use vectorized or unrolled code while preserving the same semantics.\"\n      ]\n    },\n    {\n      \"fact_id\": \"A2\",\n      \"category\": \"polynomial_addition_step\",\n      \"statement\": \"When R_q elements are represented as coefficient arrays, the semantic result of adding two polynomials is the coefficient-wise sum of the two arrays, with each coefficient interpreted in Z_q.\",\n      \"verification_relevance\": \"candidate postcondition template for later C assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification does not give a dedicated algorithm named for polynomial addition, so this is a semantic extraction rather than a named procedure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.4 and 2.4.5\",\n          \"excerpt\": \"R_q elements are represented by coefficient arrays in Z_q^256, and addition is performed coordinate-wise.\",\n          \"supports_claim\": \"Polynomial-add semantics on coefficient arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No standalone algorithm identifier or C symbol name is provided by the standard.\"\n      ]\n    }\n  ],\n  \"equations_and_bounds\": [\n    {\n      \"fact_id\": \"E1\",\n      \"category\": \"modular_assignment_equation\",\n      \"statement\": \"For z in Z_m, the assignment z ← x + y means z = x + y mod m.\",\n      \"verification_relevance\": \"candidate bound relevant to later modular wrap-around checks\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The equation is abstract and does not encode machine overflow behavior.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.1, equation (2.1)\",\n          \"excerpt\": \"z <- x + y means that z is assigned the value x + y mod m.\",\n          \"supports_claim\": \"Modular reduction on assignment to Z_m.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not specify any concrete integer type width.\"\n      ]\n    },\n    {\n      \"fact_id\": \"E2\",\n      \"category\": \"coordinate_wise_array_equation\",\n      \"statement\": \"If X and Y are arrays in Z_m^ℓ, then W ← X + Y yields W[i] = X[i] + Y[i] for all i.\",\n      \"verification_relevance\": \"candidate equation for later per-index assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The equation is stated for arrays over Z_m; the same style is used later for coefficient arrays in Z_q.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3, equation (2.3)\",\n          \"excerpt\": \"W <- X + Y will result in W[i] = X[i] + Y[i] for all i.\",\n          \"supports_claim\": \"Coordinate-wise array addition rule.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The equation itself does not explicitly restate the modulus in the output line because the arrays are already elements of Z_m^ℓ.\"\n      ]\n    },\n    {\n      \"fact_id\": \"E3\",\n      \"category\": \"polynomial_form_and_bounds\",\n      \"statement\": \"A polynomial in R_q is written with exactly 256 coefficients indexed from 0 through 255, each coefficient lying in Z_q.\",\n      \"verification_relevance\": \"candidate array-length and coefficient-range fact for harness bounds\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The implementation may store the coefficients differently, but the semantic object has this shape.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"R_q consists of polynomials f = f0 + ... + f255 X^255, where f_j in Z_q for all j.\",\n          \"supports_claim\": \"Coefficient-count and coefficient-domain bound.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"This is a mathematical bound, not a machine-memory bound.\"\n      ]\n    }\n  ],\n  \"candidate_preconditions\": [\n    {\n      \"fact_id\": \"P1\",\n      \"category\": \"input_shape\",\n      \"statement\": \"A candidate polynomial-add routine should receive operands that are valid length-256 coefficient arrays representing elements of R_q, with each coefficient in the range 0 to q-1.\",\n      \"verification_relevance\": \"candidate precondition suggested by the specification\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The specification gives the semantic representation, but the exact implementation precondition for mlk_poly_add is not explicitly named.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3, 2.4.1, 2.4.4, 2.4.5\",\n          \"excerpt\": \"R_q elements are coefficient arrays in Z_q^256; array addition is coordinate-wise; assignments to Z_m reduce modulo m.\",\n          \"supports_claim\": \"Candidate precondition that operands are valid ring-element arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The target implementation may accept equivalent internal representations rather than literal Z_q arrays.\"\n      ]\n    },\n    {\n      \"fact_id\": \"P2\",\n      \"category\": \"representation_choice\",\n      \"statement\": \"If the routine operates on NTT-form values, the operands should still be valid length-256 arrays over Z_q representing elements of T_q.\",\n      \"verification_relevance\": \"candidate precondition for later trace matching if the implementation uses NTT-domain buffers\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The provided specification supports NTT-domain addition semantics, but the target function name does not reveal which representation it uses.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.4 and 2.4.5\",\n          \"excerpt\": \"Elements of T_q are represented as coefficient arrays in Z_q^256, and addition in T_q is coordinate-wise.\",\n          \"supports_claim\": \"Candidate precondition for NTT-domain addition buffers.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No direct source code evidence confirms whether mlk_poly_add uses R_q or T_q buffers.\"\n      ]\n    }\n  ],\n  \"candidate_postconditions\": [\n    {\n      \"fact_id\": \"Q1\",\n      \"category\": \"result_shape\",\n      \"statement\": \"A candidate polynomial-add routine should return a length-256 coefficient array in Z_q^256 whose ith entry is the modular sum of the ith input entries.\",\n      \"verification_relevance\": \"candidate postcondition for later C-level assertions\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The spec establishes the semantics, but the exact return type and storage convention for the target implementation are not provided.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.1, 2.4.3, 2.4.4, 2.4.5\",\n          \"excerpt\": \"Assignments to Z_m reduce modulo m; W <- X + Y is coordinate-wise; R_q elements are represented as arrays in Z_q^256; addition in R_q is coordinate-wise.\",\n          \"supports_claim\": \"Output shape and modular coefficient-wise sum semantics.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation could write the result in place, out of place, or through a pointer parameter.\"\n      ]\n    },\n    {\n      \"fact_id\": \"Q2\",\n      \"category\": \"semantic_result\",\n      \"statement\": \"As a mathematical result, adding two R_q elements should yield their ring sum under the specification's coordinate-wise addition semantics.\",\n      \"verification_relevance\": \"candidate postcondition for semantic equivalence checks\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This postcondition is derived from the ring and array semantics stated in the specification, not from a named implementation contract.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition ... in R_q ... are done coordinate-wise.\",\n          \"supports_claim\": \"Ring-sum semantics for polynomial addition.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No formal proof obligation is provided by the specification text itself.\"\n      ]\n    }\n  ],\n  \"candidate_verification_relevance\": [\n    {\n      \"fact_id\": \"V1\",\n      \"category\": \"array_bounds\",\n      \"statement\": \"Candidate bound relevant to later C-level assertions: polynomial elements are length-256 arrays with indices 0..255 and coefficients modulo 3329.\",\n      \"verification_relevance\": \"supports loop-bound discovery and index-range checking for a repaired-engine replication of polynomial addition\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The concrete implementation may use a different internal layout while preserving the same external semantics.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.4\",\n          \"excerpt\": \"All arrays have indices that begin at zero; R_q elements are represented as arrays in Z_q^256.\",\n          \"supports_claim\": \"Index and length bound for polynomial arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The specification does not tell the analyzer whether the implementation uses signed or unsigned machine integers.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V2\",\n      \"category\": \"trace_item\",\n      \"statement\": \"Candidate algorithm-to-code trace item: the specification's addition semantics are coefficient-wise, so a loop over the 256 coefficients is the natural semantic pattern for mlk_poly_add.\",\n      \"verification_relevance\": \"useful for later harness generation and repair diagnostics\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a semantic trace item, not a claim about the exact source code structure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.3 and 2.4.5\",\n          \"excerpt\": \"W[i] = X[i] + Y[i] for all i; addition in R_q and T_q is done coordinate-wise.\",\n          \"supports_claim\": \"Coordinate-wise addition suggests a coefficient loop.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation may use vectorized instructions, unrolling, or other equivalent transformations.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V3\",\n      \"category\": \"precondition_hint\",\n      \"statement\": \"Candidate precondition suggested by the specification: operands should already be valid ring-element arrays rather than arbitrary byte strings.\",\n      \"verification_relevance\": \"supports later input-shape assertions and repair of mis-typed APIs\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The standard presents mathematical representations; it does not define a target API for arbitrary byte input to the addition routine.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3, 2.4.4, 2.4.5\",\n          \"excerpt\": \"R_q elements are arrays in Z_q^256 and addition is performed coordinate-wise.\",\n          \"supports_claim\": \"Valid ring-element array operands are the relevant precondition shape.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The exact target function may expose a typed wrapper that performs decoding before addition.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V4\",\n      \"category\": \"modular_postcondition\",\n      \"statement\": \"Candidate postcondition for later harness generation: each output coefficient should equal (a[i] + b[i]) mod q, with q = 3329.\",\n      \"verification_relevance\": \"supports per-index postcondition checks in C or CBMC harnesses\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This follows from the spec's modular-assignment and coordinate-wise array rules; the implementation contract is still not provided.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.1, 2.4.3, 2.4.5\",\n          \"excerpt\": \"z <- x + y means x + y mod m; W[i] = X[i] + Y[i]; addition in R_q is coordinate-wise.\",\n          \"supports_claim\": \"Per-coefficient modular-sum postcondition.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No formal proof of the repaired implementation is provided at this stage.\"\n      ]\n    }\n  ],\n  \"terminology_to_preserve\": [\n    {\n      \"term\": \"R_q\",\n      \"meaning\": \"The ring Z_q[X]/(X^n + 1) used for polynomial elements in ML-KEM, represented as 256-coefficient arrays over Z_q.\",\n      \"preservation_rule\": \"Preserve the exact algebraic notation and the associated 256-coefficient interpretation.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.4\",\n          \"excerpt\": \"R_q is the ring Z_q[X]/(X^n + 1)... represented by the array (f0, ..., f255) in Z_q^256.\",\n          \"supports_claim\": \"Meaning of R_q.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"T_q\",\n      \"meaning\": \"The NTT representation ring used for coefficient-array forms of polynomials in ML-KEM.\",\n      \"preservation_rule\": \"Preserve T_q as the NTT-domain algebraic object, not as a generic array type.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 4.3\",\n          \"excerpt\": \"T_q is the image of R_q under the number-theoretic transform; its elements are called NTT representations.\",\n          \"supports_claim\": \"Meaning of T_q.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"coordinate-wise\",\n      \"meaning\": \"Addition and scalar multiplication are applied entry-by-entry to the coefficient arrays.\",\n      \"preservation_rule\": \"Do not reinterpret coordinate-wise operations as polynomial multiplication or any other cross-term operation.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\n          \"supports_claim\": \"Coordinate-wise operation rule.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"mod q\",\n      \"meaning\": \"Arithmetic on coefficients is reduced modulo the fixed prime q = 3329.\",\n      \"preservation_rule\": \"Preserve explicit modular reduction in any later assertion or harness.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.1\",\n          \"excerpt\": \"q denotes the prime integer 3329... z <- x + y means x + y mod m.\",\n          \"supports_claim\": \"Meaning of modulo-q arithmetic.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    }\n  ],\n  \"deterministic_reference_assessment\": {\n    \"used\": false,\n    \"status\": \"not used\",\n    \"warning\": \"No deterministic Python advisory analysis or local extraction output was provided in the evidence bundle for this stage.\",\n    \"disagreements\": []\n  },\n  \"uncertainties\": [\n    {\n      \"issue\": \"The provided evidence does not include the implementation source for mlk_poly_add.\",\n      \"impact\": \"Cannot confirm the exact function name, signature, in-place behavior, aliasing policy, or data layout.\"\n    },\n    {\n      \"issue\": \"The specification gives semantic array and ring addition rules but not a standalone polynomial-add API.\",\n      \"impact\": \"Later agents should treat the current extraction as candidate semantic guidance rather than a code contract.\"\n    },\n    {\n      \"issue\": \"No deterministic analysis, CBMC output, or build/proof configuration was supplied.\",\n      \"impact\": \"There is no cross-check against local extraction hints or formal-tool traces in this stage.\"\n    },\n    {\n      \"issue\": \"The specification allows mathematically equivalent implementations.\",\n      \"impact\": \"Multiple loop structures or optimizations may satisfy the same specification-level addition semantics.\"\n    }\n  ],\n  \"evidence_references\": [\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Sections 2.3 and 2.4.4\",\n      \"excerpt\": \"n = 256; q = 3329; R_q is the ring Z_q[X]/(X^n + 1); elements of R_q are represented as arrays in Z_q^256.\",\n      \"supports_claim\": \"Core polynomial-domain constants and array representation.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.3, equations (2.2) and (2.3)\",\n      \"excerpt\": \"Array addition is coordinate-wise: W[i] = X[i] + Y[i] for all i.\",\n      \"supports_claim\": \"Coordinate-wise array addition semantics.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.5\",\n      \"excerpt\": \"Addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\n      \"supports_claim\": \"Ring-level addition semantics relevant to polynomial addition.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.1, equation (2.1)\",\n      \"excerpt\": \"z <- x + y means that z is assigned the value x + y mod m.\",\n      \"supports_claim\": \"Implicit modular reduction semantics.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4\",\n      \"excerpt\": \"All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329; subroutine arguments are passed by value.\",\n      \"supports_claim\": \"Global constants and pass-by-value convention.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 3.3, \\\"No floating-point arithmetic\\\"\",\n      \"excerpt\": \"Implementations of ML-KEM shall not use floating-point arithmetic.\",\n      \"supports_claim\": \"Floating-point prohibition for implementations.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 8, Table 2\",\n      \"excerpt\": \"Approved parameter sets: ML-KEM-512, ML-KEM-768, ML-KEM-1024; n = 256 and q = 3329 for all of them.\",\n      \"supports_claim\": \"Approved parameter sets and fixed constants.\",\n      \"confidence\": \"high\"\n    }\n  ],\n  \"limitations\": [\n    \"This output is candidate specification extraction only; it is not proof of correctness, compliance, or implementation equivalence.\",\n    \"The provided evidence is specification text only; no target implementation source for mlk_poly_add was included.\",\n    \"The standard does not define a standalone mlk_poly_add symbol or API contract, so any function-level mapping remains an inference.\",\n    \"No formal-tool output, harness artifact, or deterministic local analysis was available to cross-check against the specification.\"\n  ]\n}",
+  "response_error": null,
+  "response_object": {
+    "id": "resp_0f6c4db51a601c15016a55f9f69ea081a099b7f5358537bde8",
+    "created_at": 1784019446.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.4-mini-2026-03-17",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0f6c4db51a601c15016a55f9f7d2b081a082752ac5e139cede",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": "gAAAAABqVfplq6Qs_fxaPgq9LG-vgJ8cNx_MkFk_BgoIOouefdOPTEnNpiwU_PwOkJWhmA3_enH8ZiMrtfk6lHJluufSpesWEYeKUQzLNbEKL8gLyPleEE4P7NWMv5MgLG1O5q1bh1s2zXb-7P90_NXwASq83lAmOrffJHMbVcdA1GK0QejQjpnq1h1RligErnoEXPD8E20TDVMj6CpatUXwhv1ojBCv2fVELOggC8QCqM5pQjRhhzKj1y5mcidBb5WxHHM0tKTaeuSAggutlUbIPdQcpPchatRZ0ol4tRC7-N72R2t24Zhuiwpb9FE5AtVcLDmAoZFY8g0mj6L9E57whLfvdkK1FSZKBZqVOT2bI0TYNsewkmn8OiF1BPpTvU1PfOrIPo9snJyzfOh-yMUbWZgtlSrEwSvhsnRdmlsFCbyEUbiEoGnmqRR_Dfmavsf8Gw0utlvYKwyJgz4UnzHqO87xPO2VIeggR4ZcHMggocPNT7X8ybWHnsiiFL4qjSEntvdLZXEDa_rm4BlRS_iQ_YwKQU040gA4j3tExqI7AXYfcG58GhpEOGOr1FdjBjSe2y9M20SJYVmqmG-Sr-ByazElvvxj23dungpDVeWIFgVHqEqDCLQQryypoJwi2gp4cZA6LxsvNdb7WYoE0LLCcnv4iFTNeY_m8rLWTyBNoDdxku67yuEb5jOYtAlFl1E-yXpMvdKWIYtHOjqPJUuoR5-AdOU85pmh1P4s8qbbIub-cv-wA0s4wYqlWYSH70Ak_b80ygcNcXi0Jeufjg9iBMs__FPm5T2Bmr5rhxLJMCJVd8TxPTzVADtHiZzGsdgcWaH0NPsckBmql6LwTw9qF1Z1lp5pJJGptuUP_effxgwWJWJ_WExE9G1jXP4EyFVxXIK9IvYvdbx9NxiV8bWslsdT3k0CWL5JSklhbm_wtcUwYWdvx2EJPApgYeN9O4yZjh5NvFy4ckN37swGqivy8I4woJ362QP9KHobuDszEzU3HTpdxy9kyQJckf8fsOeVTispkMDrh8ubmWvwbELg2Jy-XITY4zh7BZTslPLt4DyhvtZvYf1lSYcJzeXMsuW5rkNAaCPp0EZgIcvy5OXYMYia55VjfKc51D6JRk7eK9DfhmRkX0S_AQC1zLcBLalEZkXn_tVV-bcbS1r-05QxGCyIT1FpvaOTFMZgrS2R2IYRozUa2ZS5C1EvHT8dXSZ9bWxs4OhYrVJ6zEPRgXF-PFrd0c5PCggp4XZz7EQWohwa__rO7H1puQLxxmfRqQWVonwW-Is2WWGQ7WOluqdIR6kQxi_HtrIB3pJ3l-a2Z3jv5vxjRA_IddlovH3_igHNSLgAVcO-v8oY5Ga9sE5y0lR5u9mqoZUaGaE1xk0GE5HfidbIUnCKGtThHx8c8EtBr_98wbllls85P4-Qd7GNuhorBVq0XW5JEfS4sXP7Wh9ryy1Lqh2J_NhVS1T_guzMRplFUtXVLQZfcnecuFqQlpatS1ckhGnzRqcJ4LsmQSiGIyYcDOhpqcOhdPH8NItYqkhgkWnfMD5Bw9fmUv-7Sx3oaF2andkeEbeLqXSeaEhSVWyiGJgL0WJX0nM3PU1ll4i0Zk9sS24jxLZc0wkGkH9JhenB1L6nxb4cfdVo7VpFruoxpSSAVPmOWmWzvxOuGJ4ls4WL5JKptw-Kj8rf-ys9XoiV9b-04DqsK7wdU5706nG4Snd1uFT_lfAvm_z_GYpiHnbWbmODY1sOU3Cp-MNg7YGrfEyzH_DuB_mL7ut4bijexnNQN284RdfvqcrkFd5n43QuPgbTM7zZDS6egCOm8UwEwmLRF4A_4A75_mNaw3LJOweeJK-uLNzrd_rhi7dVrq-MSMVRBOSrzQzTnyMKh9McB5sCXX7uzzCTwz_njIIZSbZnQo_IxpWFVswz4GDNRzolxyMa8NAotXkQ_IgDrgXf4aG1ZWbEFXyPfNlGVfO7R-79JhslAhanci98K7phl_zHZ4d9vlrVYk41rhOq1oZ6Z_Ap4hICrtzT2QXbM-x85tcnCDOebACaUmxJfo0Fvc_UM6kg666wt76Xxmp1--HiZEiJ9nheFoMNVcxfkWls0eCDNsYZ21L3dteHB4V8t-tIqNx-2oEBK4gL8TUwZkaKXhM6tsbc42YwQwEL45U94r9ZWZoDmsWNjmAKgqIIEUt9Tu6ZNG4COtGqJ89CyY4r7G0nkQhbUUSeVhniqcwI48EQg5RYtuxdzXqEQi0jjt7TOFRHG9rcfdqb_91S53EYQ4pcazpaDkdhvGDzWLXL9kjM_1HOkdSw1_91BA9h9d7VOGCiDip0ZquUIPWQlNkF_5y2ewNvPMXbQnTbGaGkFvH-v3RwnP-L2PffV0dncEGUF3n-kodLQypdsBN-Y9PHtdiSi5l3vJK_q1KGbeZr97DuDycSOou0fK_hyIfSdnuTHBulXBG2D-2_wGyppHM-bAQdT1zR-YHMrZpKbu87EhEsW76bxIdAOX6EONWlPYuhPWQsFUyiKFkMTbePIbVdz7lf_A45n1dmU24Uxc3BCt8eewQxteVLfz1IafyUO9tqcSiLpvRJ9WpUtYBblIa8WG39hzTyBA3YwfnG2EmuZ20gs1iuYVRc0rP8Xz0rGJru6dbWhF3Fa1h8ZYiIAuXaGxnSXUphTTirAdU2Qf1W7fUIpXJ3vpeAYBvQKhNtSJq9i9im1C-RRTSGDqB0H1ey6yWdcVjzmJTUZZzqGUdvMJn2LoIJ14hI1xLzsC8izpzQBuBYNKgjWplNn3Wpo17g2HWjymD88LpeBjAdl5C72f-J6ziDPJt6V7UO0qGrr9nEXypqmPbv57w0iArYPC1bDtksubnMvG7V9f2Ma-kxJj5QeXy6D30F9Cxz6cNgQhNllWVTm3C37H4ILDn2ESFucysVg-sHxbsLx1C9iv4OHOAE130rr48Gb-l7HBIXmklbI7Y-JoJeH1rYIvtx5WUprgH2ypeIonkZoGlaz0nt5J2qN4LKYJdOVsS2F6ukDxbMlwf1b34cg4hI-diW10operXRLJl8W3Qvbzm22II2g7mWv2HaK_XFpGW2uzsQr6diTc2fs58106MO6f6PdX4fBgT8IsZ5d2IObwVl6aqKZ38Ex9p3776UFJZSgTe76QcFn6SaRHZnbkKge9ulbad9787k8A4Yj515en55IX62unCbz10QCMwWTckCryTZS4VM7WcWA_g0iOLIr7pPCDD5w6tec8IauSH9o-Emz4sEjM4cfIVzNjghZRHv3Qhh1kq1_gU4W3xpBZS5A5r_r0I9AzNJzTunlgFGCOzKrRpcbAoSygqLAPRUKI_8pfIYjoH7QF9jmd3LKgGr45jnsuu6CEEeAjZvUrQrgVKqXSypdc6jMCox9ySUaSkQb2S0_n5c1zXKRpHEZkDQLgfn4PYHwwFX3uaU6754eilr8lbmoOLA5fXieNgdGF8BtiQ_CZOVpc6wHnfUSmgbi6Y3M3JHL0QR364nloSH6uSVKQ8LoUt3cBZuyfTbXIryp6JfwCMtuKX4APsiZvEmBdp_nNiwnrLkS_IB2TF7XFPnDCJL47z8Z6NArHx2J22D7KdmKGua-oD4WVdVPPAMEE4Vx76mIKSCzSD10Y8Q6_Qpfhg2d1X9tJ7jxjx_zxiGrNYGZQGft4QucGL3yzphG5rJwKDkcYZi9jnRh_jdtlxd2NhvqoHvHqs-KqS_n90Y7NtpCYSNmxcvfJlEG4pDPnzaWk75KbXRo9Lg2z-eNhjJmd3YNv72S5KL2eP9o6EhwKb_wdLKC5GXQ849UGclwk8wBJ0tLgoMj8fr4yqFyycP2KVDUvWTE-eNS_cHGumbmuvqLx0J2u_b3uLesE93Mw40yDEI7QKaUHaHawalwQykmHopthLEnb4I06GC93jw9UUUfCyUxAXiuM3wPOcI8iSzHBSFaJmzFM5iZQVQpn5xU8DGyRyo3-Ynt4bKXMZCeT37k5w_VsT3L6v3vMADOhnocuoFwb2-n2ZNj61whsQ8jFvQqQ1b_xtPqEQIMloacBlK11lwVlJUW0gn9RssIZbZvndO5KPLXztywn3Pqj7H945dH3lTPPX4VMa4V-5r8Rscp4zlqEyKKap4Siv45Pc8RjVvHzz2Zr2udWf0kWE9xlWJqaDKS1qzegqrMeCSh-X6FVmY_bChGpZNSSt9u2pytkCKbX6la5CoHfr-kE4SSGpnP3xLqhxqrpaT7ZECLSLGErO55sMPxYhnNvEz6-Riw5c-ZInrnV31AJ5ol-47b_HuXdzawj5DR3sov_lt7QMQxK4DcJXDhjutMCQZS6IDTpM8kYT1IUpL5NwIp9N6xSKflx5pXy4nTXJXITWZM08JqusjW-YvcJUckoCNR51G1TUYFtTvyawsG1955-Luxy0KNLaTcfpk76oHv5qptJEPCJU5T3shkpup_HGFlnwfh-wWm3Czv6TQ3GVZk1k6QDDn5eyLYYZXX1CaPBfeEqaqbzMsKRAZA0wIXxzTBoZdLFO3BfZY0SDfY3fWqAdyVbktEYlu6t1rwRE7-h9XgCCnunWs0PM0iB1VUnQM1sntP56-lWNLZQo4lIQxaN1OiHUtU4wEeD6_QWd2SFnAuawKa27fVw5bvFs_sBGpsITJaUBZ7aSBzKvsyZrLIstAya1FzBGDEug-QD8rIpq5rdlCQhlJKqjWrwhMp7f0HR_4fsuJsIv1YHbAFA38y6dXcVqYURqVwfC58IAlMIyxrYa4jQ_bl6L6aOK18lzRB9uWFnbFD9Nqg7iFncooI0_ynS8VImttjia8cUv6eidS9MNlfktKUE0zvoXEdIZs6MiYWV9X8lQRPNIHlyelnFv9kmulis4ciws8NmOMwQnbwYGCGgrFuM3W7LTBmMVWiBdqZUaiIHH3vmA1yEgk1FFjeLO-Al3pzzR5VvfuuGWUxqmtfUKrp-E3KksZPAmgFWevRC2iDQGkplUHxN18_McJuNvAb5jBmoU66eKEJAgns_L-rbqhqHSri5L2I8HE4S2hXCKcqoPMj5gSMV6waPr2Phl24twFG5sm4L2id_UWd3fpuZO2_e0KUi6o77v-PLLvFTxpohxeR99gA62WTPgSEMhq1WAJPbDOI3Zuhz8o791ix1bCmtZMDvw7hrSXw5hqB3Z2pJYfI8gtfXBgMiE1Ww_jk9Y9u6EXMgJX5feXLcZl8dYsj_H4MA7wJNeep6JA93A38B6RUXvpQiZHTRxVwUctnhqvKKIi6FsUCq-NcG3HWwg98RjynEyZ7CTyeCtTFJH8Vm8fAxaZ9WEbQttdnjc1lR1Xpu4eR5sglHxAiOJHIyZoCBwEUSl9eSSn4W0svzgIoTISGtoQlZu-Nmy-E6YTSiKiXZQHLjVpWnn6cgHJ3O9YHJOrPRztjJ9rwm_xZnO5GDsvjIWd5k-9NuymYB77ZVeNb5JbyY3d8WlrkMNva1ft-M5hRVU71gy08G1XMeNOVJd2OqQVqexMKyC9nTn0C4eQ2Y31dVpNGKYtmHzCfU_SmuZnN2FtoRvcX1Jy1ktiivPvVJYuk9bogoMRsbYP6U2CjU2HkVlje5IXXfZ2eJiUa_VeWGBT7qoEYt6hx2ZuO3-g22EFiUgdCcxkRud4wqLgoVJ-5zAOt87B-iu8V9sS6OPv81s4DGq3ktjMhZTAH5hAxgxCqpL-anqGr5mHUGPhNQkoMOk_apPGINPDbUc5Gn1LfuQwswEPOQqMhOWQuBjkroR31pB2pJO_180S2e4kUSY97Ir8cW5KExnyXf3MWsJkvh-fhCaxw0uXIwZGaitNnQILDEchn44ZLuLwXmxy7KQkctv_SjxQC9QOfuVIpwyhixywE6w9FaljEaDp4gC3hNr6oyM5HH8PD5rzAIQJyXNxD_3-B3rhwR6T-eJ1luzpZ4kMmnlFD3l-UEaB3r9D0AJxwZXmuOYlw1EJk1rzlYE8g2b7BqDf0_3l_O8k__Lhojx3zylt2Vh6wsvdkKkfOqyg3MCMbXZIU4QeUFRaYI3EUCEj-EGDDoANI8X4YZB1fjUJzxT8afJ3C1GhHZBjYMqoP_nZULVrzTk0D0H4vfSOzneHkyGXA3lfiynxhJ9sw84QuMpyMnyOMP8Bfij9YMJl1D_GQ5y1GHhUkvRl7jrwkVDBwIHmeGGJxdWaEZ9CjsWq2pMRmzuuwW78iIrRPxHF8k4HbXfrCVsorPMGfeFZiCrIpggdfbVv_CX0LmP_2AbTFSCTkk9-ZquCiKQPeeSGhhr4kSM6oNgAj_o2xxisPMgf2OZvjpYExhEre2yEI4ETTNU5HT5ASocWKN6Glw0b8fNX4GXly5e3ZNiR-rV-SDDGODlVSWXfZOIqcUb6kNoKsx16m4XjkfUzXN_QQu7A9dFSDotqhmxNdtJ2XWomLIMJ3URXoif0lxHVsos5KmupzTW8GgXVpsE_SbbUs_XgLTYuL3LgaAId7I9RG-P0PPRjdHdLkwrHYAODGIOg2dXEXGIUvLUOGfT0Io6ymZIXkxH5R0a7O35LUZTup0Ahxn86jIKaKWUlX_BwM9vale4BdDCXxh7sAOzkx2GpDN1Sp5nCy1s8c06so535ffqaqFXJ2-ipisIFzjDKf88KL9nHKkoJ-8HvlHH8I6nko-XwF7cmzuejPcUl0Ptexc0F4BqB1uPLrEFmhtqYSK0tkdGfcqOhiE18-BmgAsE2RO2Q6GdB4wM1hJMJ7wxhKL0IKWZ6xuW81o-BhABVHo9UL7hEfc0sFSm-inHGe2kW1mTeSfSzZJbJJduXPBeajz7AX7M5Q4Wn8FsluIdU-0iLQCTba1bPzh1UBds-IFi1yp2QNVVrRhZM5OG2B1-PgYtB7MXu0TyedYDMhxrgeZIeYYxEWM_PLro-N8rOisjW-8tiG_DJVhAXmBpLHTLqtN3r2LfayWwH5ZAo2iop9WxhidTWwePa4-y8AdAB3YXBRbzhzPglMjZ9gykV0qt75g6BdqCQvp66u6tqYp3MrXgLo1Xv0dbfeDyqmN7XIedobV1IPjzRsu6kQ-c4zGJtvuoe7lqnvILGXxIuUHCIa2byQkDRNY-1CeRU06sEAUQs9qJMid04M0cM2uf4bt4vA3doQ3d6YVy6jlpMgSK9ZqnGEPEscYdZGPLtxZfKwlyrB7zC1aTAPJ4BQoqjrJ43NIfwmyqn0b5o2kMDHX9tI080fJML6Z8lbgmGlxO-TOz93GCvnyx3cLVhD-IUCoMKHyWUzxnEW-cFRIbPsOt_vbn5d52f9ooY3rhDlcpzOuXI01jq0sQgkk9zXz7ko-iO_ZBUZLq2A73QLxCceqlhLCGTV4nSzxWyXcpTRhsDSxlHmNRdfdrEbwbDmTRp6PJdwzbtDTEbi7v48xNj9OfQUFUYPlW8IYXOUEpOOFDQNORZfkO2sD1UUNHrLTPdPWb8enfXI0NGHnoWbwW6am6kWwtfYaE0tOQxrNaQWujrdNEaLH1KxwCtuOtBaSQZzWJO4EZuoJGTb9FH3yzH1LJfFZiA504gQg-8yXxTEgx4YNTD3ZItMsTyPTKeF6jIFoyBIXfNj6FTdCJkdlw5aUx4SIExkxTCecOpy_cxpSZYkKqc1i_-YahQGPibuz8fY2v6RB2QTQo9LbzEqxcq6zyJR7JeRF9HTwakOvQWy2t3GNYGb5GyWwK2Uc-xBxmYABXM4m3lg-jQ2ZT22qtTUnCKpjuUjZBmsBk90mZaPXBPNs_jOSOa-iUeVclIF4PNjSB7OvaPV4FaffqtUHqQYtkYCRLrbYI-0eMR4j9mW62BbsGj0SjSr6X0FgjoD8az1IiWfa057I7WFUXbd019e1sc2oNd_XAOo_Rw5RmcGn44J2uZGmuQo1Ia2zYszpExQllhHFjC4Nh-858SL2J6KRUuVYx5nP1OqqF09DGIXOh8Ii77IgMctQ58U_Dpnx0-bQ9lZcKmwwayyVltE4SadqsBZfmg_yKm5NVofOytY3uDoH4AzBYfK9zIU0e3ce4J8uXv2ZHrYTL-Bs6wtggX58wlI02WWkkZz7iNLMyie6gennLvqZTeAzQLqpRR5i0zsHTY3_ESjpB3l3NT2x0YxrJ2HL49ffa5ep1mwccXDIoQhGBleVg3fvJYiseEMAGbFF_UOVOcscKMfVfUa-L3zWvCg11Pze8drjEZ7M2noIUsLNBDIp3hahNY7Jgf-OJD_Zvz0DLwENgBub5lXLeA0HkCb0wrWI2HA8EuPx74mb4r8Efa6_tbRvf3EQN8ph-tpHBtkKWH0fkKmyCr2M_w8EQVgK7bMxBrajTLDgVUBAyojWGLac6yPr6DDgtCxIs8JL19TlTI34JFBk10z6FKlcwuYGORd94SdzWAnRmtkc9RbL6XZMn3kGUuTdQPQwHB89p9dGG15oxyDtjGzpPlU4G-g3iY8LK1BL7x5-cIWpmJjuzFJ15wV49vUG0U0MGcBW54fUyaclygi8St0esxgg0jf1OH8dm2-NHmXpfOkMTCmlqmxevA7Ed9qXBMXsRNO3fZ7x_HCi6z7A5pRCM91gTh5kSAhCdxZQCoI-SELuhZIJhvY0kxqTYdOfISRGazmRFXSRyeNqx8FoRkrapSiIttPeCvg2lHEe-lE0d_hQiEONqh9VKKqPHeEWY1jxO7hfC3BUd2RM8Jl2LuvZ5sqItmvPfNezXAPrQyaZiSW0maKhm3JFXubjALRdY6gc2mQJearpkIHZYvkIDWpeJu-rqpVHIsauB9bLYkGIlTyjqlQRplTUDGFuFNqU32U8nJxPyU9lpxcaIwiB30EPR6nW87LpAZP0-3_dBcq7Mmbmd8B2LRyCnxpvtosU42WfRHJIulBkIeSQac86DJI-GUSTdBptLo6mp_2ON4ziySocwWOtPgiPKkj4mE-rqHeXl7hThhN6FOulHI0LasQiUV9ThXzySwm_Dr2pPbyYV9vJqQDoj_zzyCHk36DzhRxlWIeb2TCVdbLigPSn8ThmF48ovEZsSuDbhrXPoYaqNw0bZ9aJJmyTXEH3AeOeLsN9FpKeyB27W_ta_lckBp2I5zAfcKM5ElW7hlwzgnETc970HC5qxT6o7ZNYYOpGrjFHj5kW_AptR6uGQcJitmWLs86PMbwNqtZCnRH1kAHb3KVRLfKh00SraxikN6DYmT6Yu2RbH7oSHKUIp7XW0HOTWpVFR1iFB1f3Pvs0KBCaPElVnhI-jo5wpGc6BJVcF7I9jfugQIZaaykbR1MGXS6h3xhy6HzzakP0PAx_jK6dySFHj4VZg9J4GlPj6kScnMy-7ZKPhGXu-HS-GVnCgbh3q1R1aklrzpd5KtkIVPk-kbTlny59auRjE51ZSe0wldqm1-LNstnPM6rjeppmSGUkCXME1L1TPix9r_WlKTyvfoX4JCK-6QeHIE3EACXALOD6_0JvefiOQgBiJJ5egtEW7OYOeuUsRTTIsCbVB82OxDtap8rFfX5GLUwUm4_xJtWJHUZUWw-Xtgvy0RjH_lcSQYOYiSTsrDUCEvxnepqQPC88n-Bry1C8Alh5vUJsBwgN2YJB8wYP2kTkGhtveIgMtx06fIXywCAf1Ty9RYc-VjDZzgjL9VSi_G5Hj8oJ8e4mU_UXdO9PohHS5aJsDU3LZLWCNyOrkj3tvhWq9C8-DwKMTf19a4qUmwy6h0J8qA_kIdqZS3FrmBhuZ6kF9DHbUAMNrLtU7_Ep2KY3WyZfvg0r2NHMF66a32rwvUBJrp492GW5USym2UpTPIpRiZV2LDsl6AjIRjx0JPA_mtaoD7J5r66Mde96zUW3NFnVCxHwnLDl3zcgsQsGBm5cENT-cakxSq3toGhpaKlr_-l9zOZhr8kU0w2KJPq4m_UvzDye3m9vwsHWr-G2nj8c4tDq4KDXW25lkjxSEMCiTMy70fKcHmXR-iUIWMUw18SFvf1rgYcSe-Tm9A37s795B7KyqeBZqCgH-QmGmyAP5xScf_1RPsFL1OYiLABK-Cjgc_VMpwqys5d6SOKT3z5AS3t8Ww8qJ4Q-gQSWL-fAJWqXsu-fx_05ca4EmhbqICN-PE1lfdVqYQoAtEF_k-wsjn26FYfQ9ZlYrTEnutiT9DyhBAuMl7HNOqV4cnax7WxThKvBGJ0IfrRDiHq6pSB_COKURQaW5ATObr9-X3C35Tn7zKqKqXWJut90cZUKwv9T44__cpdkEGcLfANJBo03Hv-8_piBZYbOH2SMQJoKIlaRs7oPl5FWKnkMi2VuV1OkYVwZp-tHXwBs9H92Eab8tGbu7ELqRU0XjjWsxQIoGwdrT1DP6TbX1igkzXjNh2QMGFkkqzRVK0denM_MDN5kfKzJUwvVcO0yr8BUjetpiEwWVGBcBmxwT7y-jHASUWzBBsDpCPwlINGOOQS02bpjmeAvUEEmbU9pLsIw49Nu-Z7qmfYo_GF_m_TAqRV65zDyT1pRclrwdHiyQ9FtI8Srdauv2gPKmKyvyqNKudjXoUbJ6duBoXo75wkG_fMwqjYDBlh-awNV3vk5M81FfZTu9zttTaYw2v6776X1MM38iJgbaISRKR51jljoUXcITNrglS3vDUXuMao4Cdki2wQt5x40MXyfDD86xr2tie1tVZl8sTlJL_CVus9zIWF_H4D4LtEfxJp2pu0p1jXqK53byb_HohIJ3V0ANZ3ayWrF7zB_LJmEqd_c347809sbJzdDvX_-EmxOifthKHYePaidxm30HOwhbAr0F9ye4wQUuhRZqPUykvkVXa4yY9J9FEJx7pKg4cGvzsVbqRJ5ATOgRTwrT4ewAwU61ZhUGmykuT5M_SKjzrG1LhV2CWGMXuBXpwbK6baIFyYgD4hBszW0BoAO9Ls1xiRicg4w6gbQsz0m_zpqtJ55wuTQRK2YGvoqUWZc4lVM8JhIcI0ZB3q1lR5ZcJQTIdenxVI_waJg_JVfUeXjYC-MvvBJI5udMjIUoFFekGrkjv5YM-vvgO7U3jid4JS_rpXkGg11Vln091GsFJXfD5eMGf5XMSzWfyJKVznVhXYfbn9h6pDI_llCuPn7i2UAOtZevZNfJ7VF3a0nBik9p8oPMVgO_03y1pDzCulFNhdcuwiuHpbCtUOwf0IRXBra-qyLNzTEg69MWMl7jrifl-NEyJhzEbQy9BqO4uMTutl-cn9-eeB5ODDVNPUmMArM0PQGKJnKNciX7ERwwnMQHr20EIwbyYx8-eTx2kgHFy89o8pqxGTXb4x29mGS2W94MYo1WlHuncq8k1dV-yO1Eky6fVV0h3v4bzpWDyvPPSbrhdaxJi129zrxx8UNB0XjkEUMkUrVVaTHTW27fgbWMAIMav4Cc0DkhgaBBny92Qk2uze_KIYdU9H2FLBTRd32WrachNDtew7iLdlk5ojDXEUm-M6QcFuP8dBbB-E0rml2Svdah3-LxTssC5QGOzsVQTEaZzSkHHNFQJF_yxZI6Y9Dr5JtD8dBlf-yjcElJ2vYP6NpszcZD5bIOH7LplUYi9dEKZx_XmoIa4MHWYZc-GBC0VUHmjvl1jY8Z03zx2LSZ236M8o74zHQc6rpPZuycuO6zQku898Jyu-yICqCGyelrhRrSDhgT7CIDF8LjrlYtdzB1AW_X_C0CZ2FpmLASnTyrgT5YjwlFmmBsakV9851IfCaAJdrxmQSNXWpUxjfLUsQY3_ooSPLVDi04CBb9rIJxDDpJ6mzTdGkNMlrSKxq2DpifJ2D-DLAQ7IQ53pqN8eNTMeghzunsFY3nvzvUUzRP_yo2vXN5DiB_9l_AB_Ya4y97ix5_Fjgs9o7MZFlxn8b1fz_wXVZ2G5K3XQt578rXljrcKon76xZr8tiEe6I8h8akKDfDHp5uJSLmR_mDCfKa3CpDX8kXNVetcKq9Y4ayG9oAITUvhCdizk8XKQ-eWHTZ58EB-EE0xjPesokLqpJ4sOqYCwdoN60szklpYLeA4eznzf1ygKm-YFIEmxpXEUoi3TErl7ze8_1bDzaQwF_PP1Fqj_FPSdz7ROodW6IwN4gt6xRkGL60kllGG_d4l9yXrRU4nOAkKAtzWdHt02t6-46c8lE0L_GhrHIyVedoIvRRBUEp45ZjdSGSz5BpGvHpiZcYpx6Qf-QMMUIpguwiVgbKuBTUEBo3UXXs3Pplf9JQR1QW6mmciFLnKvXA_jUsRDrnI1cUSF5z6bj-1dvbCInSkzcotWUwYJE0spnGYBi4yYDSnFwGyVrEvX_nBaompFi0wmV6sZ2xILL30q9559rvOVVRjdPX_7xtc2QsjfI7Vm-Uid0cWLlReLaOwTkHjO50xgwScdOdW2eCgV9IfztlU7wFNcA5EDeFzrqBcLMIsg2vcoQfosz7dzM304t4chHSiyyYQhK8yoSS_Vj6K4m03pi7QDi7QiaypitlsR7eUfYS6PHWTRMb2WSjEWjCVzNK5XDXg98hZ9yPp1RkFqM-Z7A3WahpNigK97BkO7ZWKC66DxjZt2ZV--aMgvtWY9EEG693-cn_U9rQTuLQkD8_LsNV2ql-UkfI-g4qAiJxg2-1reDLV3M-FCQjqtEEBPNbZnjb9d-SA1T3zyQFGOjLJTtIGhCSweOu3mk_4pXNb4JvxY2IDPKq31MRMfbHLWkl8UoIalltc_oCRiFL-wEDaZOZx7iNDZPJheQqyYCt2hWGJ7LJHQrGqZ5aazCpkLVzT9GAhtxxUQ9Pzb7mkSm5ZuMF3WPySfP_QazwE7oE0GJaag6QNCJMrq6BxmecEj7res3i-8UevRRbPbQxLxldzq3iNUr0fH0PZ93AeYms6GLHEQSJC_n41AutQuxjp6k0Pn2F6fd70vCHAEM_YvwUcnU-jaa6hfrLvj9_QOnhrUBmWtdRyiIoLBckONc7QJLTikaUl5fG7Ma4JB8fuHUc4orIxR3TBPiDkpVde1fY29EWAZyS1lmdAHJ22CuJ1Icra7r2p2b9HHlu_ondEBzpGU9_jDcaoym-Z9BWGKeXG8CUp61YFyOgSrF0HSxkiI9_t91eTOWazs1cqgXXGFP67rlqzKww_IlXlYb3AoNmzRZgVAyNy8ggzr-eVqf4ibbcVo7hnACDXc1jsLLB9anVzdz-04VknInpin_xDwZJQxRHKAQmhV2AXZxkclB5HBSyn1Zn-sVRAxvxzU8ZflRnMrGyNa5tbZk12DjMQepML-LQob0Z_uPGVqQjsGw1wTIiHRJBF9FZoSCMGAegtZT0GuJ7dcG48wm6smAhYmG0C2p3DeaalWfMgXKqj6MgSWLzX6Jx_mpucB1KVkRpSnmayw6HJE2Ux1PCFF3_WPrhKvbN2SwWDLbKQtqhPwtyYe3dyEji7ILlAOn8VezpGPgtViXPFDyoo0t6I26sSkAaMIxYJiw_fOUaj0MbUtnt0WMGqiNdE1mDwii8NZ8c4F-JK6FZe7JaGkRJezALP7S5lBumY00HIGJqzwH-DRnGAAGbsTLeWed3jqiNvIYrW_DwhlCcioHgy5VLsQ6nyRage1LllVD-axnmWlOhOEisUT3-S8xF5p1I23ZDPe9JQNUTRchm9TOpBYOm5FapBlhBVKiiQdFNH3lZuuQ43XWFheTpyCpkSc6qltb7VR4AI1tCBaEv8kLmjBqk7ReHuITkdD5_Puh4zaRmowM3zwUWG8bXomVd_j8C6sZydX_E2OzS2ZxZvajzkkQoeSBRV_gDnhr9LhRSEz51j-3CMy_mp4E56SMlyrpedO9TB25MHNdd_FitiXzDTRBndUY1v9KytsToEHs5_8gtwtXqCG3ZYCNSYTyzNkt2J-FuXtIEP8HezlxxxJKkAxpeW1X_tw98El40ynBSqiFxuQiIpSgLJ-R_wR0YYWx-f-m29CmUOe7vEP21DueJMD2xzbAinpAb-rKfc_cEBfB2NDb_iGljP7G6wQ8YYAc9TNWEdriGrrCVCkjpKx5V3CZD5uzxDCGvizVyEGQRQcU-vaiE_VNZMiJMxBnlnmKyrrOH0bQs5kaQW1VUXmlOuJ6js1osqvuuST1KRl-q8VrE3HwO4dbGS4pTqeo9spIODq9E4Yk5NACPowrQecGn3Shi5Zho5KfZKr9iwsP9Zsu5ve4FieS1P99s_oav9gW-1-vHxm33pMZWVF9rKgbP5kadNZ5N9xc4Swmemnfv4iEMeIsJKqrxYJpJfE3s3UyTV4IX1Li6dD5l1YhID9ZIrgw0gKpSDjZd4K6LNBhdQUlCt5sAmXNsNsDNibAySNTdt3GnXxqzJaaJwiFp_5h-sDVIAmXdGcu5Bs2f0ZycyfiTZjkHsJCseMM50j5HczaLH-x5IKWv2Pw2gN5NcRJpmGbu1R-sheEHhxzL-AtAhvb4l3GTN9NnMSfrSGG7PGu5-r8EeHlfwDdgXyoH0f5LMdjcaM2J4ip3CoTcRU0ctdkbtJa41hYGABMtdXTPWpMr-L-nJD-9HhIko7vlz0czrols1WF7uPtdOJbzWdfe7J7yNEeQdtMbLr6pW1w7VrRiH3wrU1oPkh1dm3hGfsHqmmkJQdL42iT05q-7GXNtpJ6PqM2ubzy9kuqiNj0vVIYWd2oMd4679csjmAnwvyixgwZiCxiM8pczOmsQhO7Eho00SHxDnqHTXMAG1lACM8PaKaUMnt_C5bH9FCe-FkRqTFpto2x_Ok6cr00Ke5nbOIMIgvADQmPOkj2UKqkFZRwLrkoVZ1oZrLTUTO2DW2FDVqXzYJmjUlMvI_Rg2b_c9518mB6U7FUKyIbP30v2IQUK2ZELpVflZOhkpECnqKXdqY88Yb8BADi11kiaSafIRFFZqNG0dM5RK2m7uVIcv8LJNQrGk2_b_2ORBEj80LZ89iSwBzxT4QDv2sSGscWPKVBiVKRCVr71-ObdnDFor1gsFhjNN2IUlHf5mTa_jVXvWaYHI9MW6Wi_nJ7GCvwMWK3cTBMjvVQT-BqI-3Vb9lI5LUByc1oPdzBy2TB9EzFh99DwTDNyz1aI1DCaFOGOY7wfyX3YU0xRIM_87LCbpUCOk7iGPpUl2voBlC4wlEDJUt4RfSfyBc9dzafS7LxI_--nuFidiC1-4YtMPsYIjqoghMlsOUxfPzRtdS3HpiTw-CzgTwp927amhYi1S7MPr_eOIzN8aWRMQFYliKbnGwY4AXoii92x_Zvl8-qSLEyk2EQtKUWPspN9mReCcrS_zLbUm5-zLjVxdktyE9NG9rFp-vRx3-wKKq96cTK_WOoi8WM1UjYb6EfwWsiWkAh70kXg_Muq_o-2Vs9BLs3iyvtpJbAV_0yoJS7e0iaTULYIXxsQWrGbuIKXOeAlnCUif95_YxyKVGKOndX1jzn4VgvNtrmR-xPLsgmm8LmvbOrR8y5m98HOl9LMkHXND9L-XaqJmtqXknipnh5tDpG06zm8NwbVLNB1DFVs9b3KPkk5v_qCsHkQxLmJqmnHAOmDprAPf9QYiq_BylrD2M4XwXdiwZn2q61rspXgyN6XKqra0TjYmTsyhebjDa-GCQi32yCaQu5irNbYJU58CEeQdYx1R0B2IUOC4L_f569CMn-F1GtFVPwodYOjS74h54j3C8q5NCs2Ic4XoKlGmcpB6mZET_Hb501Q9HzIVgfh2kI6GRMykYyvchcPSK1NF40wYLTO9hIjzGcB9jPsbiuOQKTOssj0PzNijbVwCoXrBNoQnGfeoARa3vwv-x2YM8TALQEOXZDV8BWtXsqLo0bEyZ0ctLOvyAMvdMCo93XgZ-9U1WyKv8nfYlR1DkGAmIjmEgCoG5BWLbG-UJCkr0Zr5DWUdXoWFtUvVdhPKJDZwbmMo8FYEF7N6Hl-EQAkZlZXow6nUm47Wk_nV0P5aipXsX5Y3dMUPD4xqlgXRRdZpSXpl1WKJpbJLBYH6Fzzzfi989BD5QTN0e-DwvuyQALZX5bBCCCdrbSpMgqQc7W6NV2EywpMUz8Wn9MwDILFXQmlkP9f0Efc3IA2uBCUzvgO6MpZprDab9eecKFKhKykkdrllUOth6cYHNAs3k50iGov2al9d-2VMsf7P5XacvJzDJ1BfNjiWdycWZFzGl8v0YRCPV-jb0jCiO3NxIFyda9oKL0CVfu02pkJwQeuEAGuq2-aNLgjq6zxJCQ2tAT9AsiO_Sr7_aoJaYS6NFoNIUt8Z8THZL6PF1HwwBPeAjfk2-c0v4Sx0DdqzF2mF_YweUl4X0lcLWd18u_XN0QO7YBq8yKhFpIIKy7Ono0FP-HiC72bhEa-e0PktkPEpRwTeRd8WDAORp5JoDh7KaC-8hOoZFwCVhuFFB5HPDOku2johmzlsU6DrEv82uCQAwAguzRONo50jUxGXh6jvMDut1gxBQqpGv_JKkekN1nSUaBI0MafYWzxed5F9MGkDdr5zcFfSQhMFzZZKs4HJs0GXzzz7sjrOD8lN517LfB3Keu4b_FBqkPwn5d49NprgfN3cYNbrr-4agQ5P0cuZ7FrSh6HBr48Zg2s0g3_k_e4Rt5t6qRvpQf9_jbNvaanGOQa2iCYNJEoSmrlO9Ay2BztFrl25FTxYGvvekslCn4h0eEohZJKllw5KmKbCyM-JSFx6MpXahg5XgKlSho7t2KQjrxCLp1BQxF87rVfI6DUyy971SNuSUWk1pdtvJmqf84jVwA0UjV704ZeRu4YkV4C-G3Cd3VeqQhLLbLVMdXw8Ukk_Y_wuEwYChCzVWz_ZmErPGGZM-Ymd3EnuW458oPL25HyAkptcfVIA-ibDp1QPJUo7Y6VRE2t4HihykEl8-tb5FkyZWwGQLXQN9Fes942IJrx_Fcq8g3kdvoSwp8B3fIZpLJVOVgh08sUX_BizF01ewenTXMNJC9l7x35dbwPM3t3r50x6NztsZHq17FC_iEGMGrnYJNFNFfk97AhLVSN8LRkNVgjFBYW9RVAU1544j7Q2hIK7kGqIXFG5MUph7kxQxKM3RXq5puCS1NzvvCkwBKj2Rv0RV2-LoIhjSVP6DUuM7lxf9nmRlb9p3HlEhHeFg3sqItkK7-P4wC4CHJIj7U4FiRiCVH6yFqDQBBwacPogC_0-9ePSRweqKcETB-rG6U8XdMHpxgpli_hnGyLKpixHdb6Tx3W_MQ6lAlICTyMt8_fVF2cPHPbvidtnJvEWXMAiVe4KRP9lgWjKRXCYK6bWerHYCsc84Wm-MePO7_e9vsAjE8ol1DkujW3n1bCNZY8LN0pgYY4MjqLXGkQNkZ8cDhrB34SGY2KWXmQUBWpfmm54vzbYMiAnfbto60yY_lD0EofpyZrVSi254K9dLelas86-HncsF6hkGsydwtKa_alzY4trAZaNNtJrqn6BLMqSLWLAUSWtQEqGcNdhxIOrn5WCHDkJY8XQTyMu6XlnYykB6g3VjkqvUDzn1_PFAsG_-EbqujMLWW0KE9QNYwDewbG9UhWuO3qJ_NYmysHaCvSqSmopCDjwSBTU0GulW6nfQRcM_jF8vmo-c_bXx1kS7HC4b_7LXXCq8CHtlMkIYfBPK882tnitrPUhb2HvOaMh0Uy5wgLXFiTNAuDIEnVLDKOHaczJ2mNcuQUSDRmBYXryOWHnSqrkIa8QOW55t1aB5TPwRLBUliLBhLah3dDewK81x7jviDe6JTJjQeFXi-HrVPLYnToUNfemcLRMavdPQhYM3GTRCCSATWo7X4hxbGhuHWFVVoo5Hr20-mjU2qgQuJSwHhHoXOl71pkCQlRkqyxasqKHAlhEAIJbqnklGIzBEtwN2Akl5vqgkNsxUQSS1gdWsCbyDLG7_PUlGHS59afOtbt4zsrdNR25Q5sirsn8tMNXvhFq2BK0eXtd6yOREDZKCOAv9_W8XSKjJkUsgY78VL0z3Uv7O3tIA5SBag5T2NP-LSzhIicCkdp339NpsOFvDdAfZM8c4ciZIrvl0yIrXu763plrY9CyCQv0mhdize-bdFq5LnPDSd5pVXG4fd72mjUm4zoJPPe7xHil1DjmcxtihWT1P4PnnC9FP6f3QP0L8BKBJr2NixduRnPpj3TDpVI-DYtgr6TVHzVumF1OzrpXBpgpVz6p8_NQfdXk2emcm6q_t_c2CqeCNzlkd2N6zcaUK_RCePYmsM2pZSjiPnzKUHd-pZ6Zm8HMQqUil9WLDFqFtwHrY9EJL15iShqSqNkNwPjNmiV0EsNBypKfl_pA9XDt4NZiCHXQo0NV1NP0Un4YmmPYi39v9CWK1D79OqP0po_j1Dv7DbZ7Mby883Gn1qgxJsYvFc_eReiEWogf1psk7wICvyKXiUdf7v2hGpH8xvRO_Hh4_uGi2iJyiJBYUZPkIu17lIeRK6jJSCm8fUqhfXu6tTAArHNU4hJ7F2dbEz8gPLpJ1sB1bMTkAxGgjYRl_BwZ6WLYhzNDaVkbHkOy2PGz7kQsAOAvdrXpr9AcoUaJcHEmggjATsEi1ryRBiAlUWtq5bsG-m2cbCB4OUiUIA7hD_mwWe_qjRnGQcA4zcpJggWeVCXOv5sLcTMJskX6VFT_gMjKYoL0oj_ElPmRgQAxNBWuaxtYgUSZBmVO2mIJ7mUZh07Pd8o4qCfyu-I6ynkt9KnbrWDEUiRz-6tFAvnhYQnx5F_JljFBhH5EUJsvKLuSKeteh4mvbwLlHL3yZxngEMDgNFMiQNM5f8fy676ALkPxQzwAzrgjIliPKH6Ug2vc855cdu2zgThEur9f5njY2PVG8XGdTYA9MGXXGQeYAaBw8iXcQ_GtDvs9nA1USBPOSaxemkAOQjxsmQfjrbzLRUL9hXhK36aWwE1PJojNUHFfU2UySpH08aK5Za17QXcZPMEZPhPwf7slyNmjS_XIfySjWQkV6XA1eT_ZEYdiiWAdmitCO7AzbskE_CeFUgeR3QpkaPFOrG7S5568u-_YT0SDKTSf0_61QKPkFPSQk3PuZodFBhUaV4h5fMUe4Ma5rpl_3BBVqnaKiYVGWtiK-qA_KPieMea_hGHPB3_4sIilP4bkYLoAhMbOY0WPVEArkn7tA--LCWtrYRgD_eUrjXBtzQPfF2FCk2ToKAxfXgiQeq0YLZWF_j77OUJAvxTBAkBJvy-owv8dbJznc-aB2Fvz72cm9nDFhD11rprlElts36CMbBIRYo-NUWP6BORSInOzGczbxBWghGldLBIWTRN9Ft5r84SF9Gjd99j9FPCEsJFbHoYp4QX-EtKiLHVyJCI9xdywdK2SOOYjO64ZiF493gWdQWPvtou4ORwNdh6ObKUT2t6rdvp6HFmHidwlVpig__MHrZ-q0cbkSpNuBS3uHOVIN3xqd3nRX8F9mk18jR3XZ4h3taRLr6tXXlK1WnPjZVcGYqPcOS359cET54RPuXV1Yay2fqOu94LuopiK-XKX6VF0PYvnYdDe955v6rAX6dLEjLsFmpzBbsNGmZejhqaDqaKNZhiC1umyXIX2EF9SpI_qGWn0ysAojbZgIo7H7BrhsVrqTSoVOkINsR7TGRwsv5nkF_vEUzKUD4MZF2Fkwc3XmjaoEqmf-Jzf3KQ45jmljb3w1mSnNsh_5Vz1IJlnJ3EYKHg3hwlTx3iWhBavmqrYOwEN0TSJaO5JjECEbB-D_7Lu3NDbh7N3XCQDBw27J0yl4TegtGhcqqZZ9I2PkbrEywAu0dpgS-lx6en_aMjT5aU9NV4t70xU30zZv2cTPVVzFnb-1aZZpfp7l0npQZNbTL1apqk7gokmr1_b_YKvud2apomF0BpGMPdUZernT6Ge1gjD03OcvJMU08W9JhAOMUaUJg0ZqNsSUvFAV4Fu9WyBfYF-aMxU2MLnjnIMhKc0vEIaRwfKIMvyym0uyEzuWA1_UvToE40g6CISa8lBPOD_PpfzqmLOtAVOXtpyJ2WVbto_TVl-ly-rZAmH23W_MOtFfXJfgpy1nWuvvSnUc-RSBlvCtdJGhFOR2VAOApPtUiHZnvrEhjKy60loPPnh_UEiVhS2YazOvD55N5ZhcuUSXBO4OJh7bFkYJaqW7CSISrGQJmK0XTMvjndvrHBFAZRhFmSZlgWEMMc1SHJnhUZ9DL_aWoiAibi7LGcHcEh2PkHIoCvcMVT2R7zZxRVslxibjFOAiEEGDUYfdeijepzMGvWqebvTzq2c1eChiK6hfal7BWmqtsUBUvzKD-MtqzGUKGGR5iBH_gDlWyRftuXqBkSnrNHAedFFa0IkWF8iLBz8W8MiTGWoUGu5gSI5cj0XbbSauR6-bLt2wTqTGcdHIqcy9ALenDbah-6SFN5ktFHoauiV5L1w38p0fvLO6Nspai6hy4aYF964p1p7QdfyFIdwIgo4OyXnkeGndHKdNAEUhgu0V0tqQIWkDfrRal2xZ9jQ3ltdBrrn9BKvGSXrgnCUrl50Zh9NFDW5wox_f7-_guEsZXtchfM_GSAGWRq_f9CsxcwN_CK6L97wqUlxpG9W2JtoBtHFqccjRclDR0f5EOpz0u4uN9QmiKwRy7QmH14ozvkscOhTKQYAi8BO6POINrc53CGxxgPfS8sYe_TZ9O_5Gicgv0KtO-DWhlmPKyBcJqJI0McP6iiJ_2Q-JFt4N_uRUCmD-NEfQhhdf66a9829BPaMCkTbwmQU6UzoIH8-Z9oO9h42jqhQ3J4dq0AfpQ3Ofh2QH9LaRLfs8nNc4gPqyuzJTKSArhtM4R4VylUUDGYKSF4tMkb6RebWmAR_FpOg41LWWEnITpqu3463aFQoW1pThjKU6htRppobLGqOGchb48FqLRRDzAGpqL7cQixAOL6nVRhtdUvCCfIJ6jgcjTeAqKC8UQ9y_VozMeJQQKA5TzjyYUMD-hP5rAjL2rpGziyM7weAhPd0kyyMmN33NJVnw0YZ3vEVKhnBoahvb7wzZ0q36uHXxnHyhUYokXll5DvCTYqv7e6UtBmiDZ06TGJs2UvxNIMH7VbUnFj0fqwxxjlC8L3f4DLLInC4R9MeMHR8aA0qPZfqKs1-7UYKAVp-Ka_J0xnen5KefXi-BMF33yN7Fb5VUEAjzmjhSqVcjw5CCREHKrhOmFVYAc91zASPD-bVrf8Enu6xAqDvG2bL_dLEhR2EkhELYy2mmz9QWsstgAy0iANFpC_x5pbKjvzY_A9i516xrMI4lB3VkaNK5pPRRL3J0drLil-MXValp4EKog53LLYFjt_YHZrO5M5jyIEHEEBLSqZtQ1ftKNJqit-xFhkyIf-e3MwkIDy90A5VqEiocuG_m_hI5twdKSg3x7ga0BSgLw4ruJgdPxwhk09CCIZ759oX577qTG8DZyku8qtcvbnnhs2RafQMl1LJ5oXqw883DJiJ0LtStcIgn7u5rIIXLFlnbKClGvO9xZOeG4424OYIO9dc44zMsGlpr-YcpHHxdqTSmJEPjhSgT2izkuGUSHvOD8EPxlPqDhVptvowiblrICxIx-qHk1yF-jr1_njIjigfhbCrgggtqhAZVL4qwGg9zLop6IRPQh7u7zx4Aik6lXwe-YSyMp535pyKa5Op1YkeU472crDSlo56RdHN4mkXHNjSIPhgKr1TKw16PCzqF5piY1M4ekuoWur6z25nPn2nhHCTEGQmR346qd5HR0lQC2HRRtFRug5Ilvsz-7jXmvPXV7QmMszQ3ah7tP1GiilKb9tIKWvNJi2Wd_K8Ik4LD7uGUTY5o6v_GpVYmWOnMjGwTeb8jBYXbZETGyIlMwThzjNAkPFycUTB2JcM895Hi5CPVyCdGldvt1DoV1lmdbvk6QBGL52kzJWS92JMK2QVFxJdC8tAGn0xSqq2gwkT3jjOqH9aUcyTclkc2YTZ1F2IlQ7NVf8COIhx9K8vFshe_XOhU6VTbgs7U7CYWf3CYLVm4v73hFgmqP1XBN3_KxxO5nO10b0-gMTXDReNjJ98OkkP6yGLhvK9zAivt9KnHFJKp3LQ-OnYW3kS6bT2nCNXtDOCZScYuj2i2Vu0G8fdWZQs4ONb4B4FcDkx2RjaZoE4e4w20nzklpTbnhWwN96MLFVkV8RWVlUI3aCpKqyFFDIQnbiN0WU_h4cFHYRaqsXl6682-LsqSTbOl5zcmVVc1m2NcbJpMX1hWNMKhrvWosKR5eKOEhhT_0nE6WVySpMCZg6ZScF9vDboD5Fp8UpsA9JIJUL_i79QRvJtgioMn3WRZWTsokKFkqnU987BEUG39cOkN9iMgz9mu9RJ9_95S9EuDRcXonCw79BKmcF1JJNrLC7l1VAqcLfdHxkR1T2poJIQeCMQy6kcoDYbJ9pigovKZA1cPts-y6jdnfQYlyn-VO7i9Bj6WgNaEMnUlf7RIuLeUiwmxsC3_56uRIa37goIdja6FMtERrZ6ittf-Lm5-wqFlLQfmtfhoZwsr0xZBaE4Y-4wHo-mYxE4r5AQ9BxAHaEUa1p7EoSij1ocfhok57ni8xFEAy_CW_9mWmSm-4rgCiNRaCybACyHiImhfE2cOlJNnKLGE-e5P1F0MNPhGxVe__o12xlD7s1wh1Ld7gXiToohnE5ez15H1csnmtQfFs6OyU2CeRXy75162qyYhxIYxD82tia24VYyjkC4AlXiBawUp_XZO08Vumv-zRWWN_uNuUmbWnXSSMUA7PhAP7ixqzI2slJTDvoaZKcVN0rL-eQsXkB08mFu3LMlY_Vxb_8N17OfufeTXQY7JgvzDYmx2DeQ7y6XYbPYhH6ePx30DXK_lOTvZcvvNEIEI83vrfM_jaHZZmH5wXSnhlOgX_897RclWc_IsO_f7yJIriYyPqF7GHWaOErfz_C41PVchu3kIS3GvEuG44jMjkOhXYfWVpv3CMltqZP8GTlGJcSDWlmu5ESn-jiJ_NOpL3SQimUISF3oGasR8JaJE0mKge-9JKO2AyofF5jiDxnoyd_CrVQ9mveVJWIRzSSEIE3sK7dW9W8WE40hidefZ004j369dCveRz75daPjnI129i1bAazCjejHE9YEb9Z4bCHXp2X5ayPNX92o-x3g1iCSX9qWBhjjEh99btIPPxcg0EXbEL1p5LggKIuVzJiJYqyv4RBVrQI1yqP3O7XqDeEL1d033TQ6gFk0TGushnSO7R_gM3eMVUrayIqYmfNWOrRgOmFI2CWPSfRZp76BZySJLc9bKlTl--0kn7CkK7Z_fKBY4se9fXjkTG-0L_Tt-3MNY9R6VPV6WllDPmBB4EyuFgIdwQfFB-eYPO79JZ_5o9mOsXWiWYgov8_5aw0q6VXJdf3CR6URCSXvxMSVr010i3kNhG2WZp6ZqPD1wM0rN1YHDwWZ6jmcAWgGs3rFdE9iCwsDGWO5Ao_iD-bEXrEZ6HMKTaPgbDCpkroUBU0X29QKaj-QmVkzedvz2bV9t3oVk5tD5O1dLhKNHWCGuGftW-zxf5S6JOnOjBROE1To6_5d2am4wSacKGMZClL8JNkoW-KiF_lcRjvkD8UMx79-mVPZt1-wjvqseSpqwDxUbS6zmcPVCHqM0ZmUtGEy_q7ZjsJjzZxE0m1EKaLuteSn3WuhiOFzU6SL97oacN8ZZ5ZdcOV2BCS-n4Ijhc6qth3lgGX3FAq4B20wxW-jAmRrU-2qodZ4QV-oD87w9uIrMjAaoMfAivwQJAv1QjcZGbjBmy_QrvD831j5BGHQeAGOI_4A1LzIURGWV2GUD2oXGISBHIVbGTA-Kp25KPGc9T_poINgiPHg9WVJsG9FkoOmrs0XuD4VGqSmQKZyanoH4_qV7ztZm7Wa6NyWiQVJFllsD1VquxKGhCZWi4kgW1c53YX3EzUqKDI4xQvpGJnTnSO1MJax5xV30C_kS6y2wm7MYsXP9aiV-CgwU1B0wdJeAmWmfvqXJOIjHYKX7K_A5E6w86FhBep7WfnfvK0kOP9jbwTHwclPOc3qicXfWzzVO0Kk6bJsTyiqmKliFKcjsWJByqT3n88r8LZ0UiPjBBk8NjMqIgP4FmHLSYOMFLUgC1h-DjHFqUasMhDGp3ro5coTsHRKandLOXoGn0sJuIuuPrCC34r4KyFhwlQDHIMRRG6ZjLSz19DrqzMUYmglIQEYIpaFc6OxiIaFKGUrxonf1B8w0Ie4O6H5_7S6ckLNZDZOsQw9TgndpEnJCvImkwjvporwARg9BceUTR6KGcdd0mwcNXb2NvNnWriNnX5U5PStL91YxoY2tIqen6qwDSiv85PNmgVcXJ8hdtnUEH66c36KkQqevPUStqNNaQ7Ki8Lq5K6l71MerDyqXaK49gmcO3yIjwTVXwZ1Lj7T7M-Z2G20ugMQe52pcbMdAVyRcM1WpsJI6d-75tmg0FJafgRFLaDCv1ZALraTbXASE5QmRVvG7jjbOtCVXYt_arGK6uKFiOqXw-pcPJj4ppG51FILDMieN16Rlo_oYfcT4wIM7Boimunxyu4lbvEnoa7C4X8Xsuv0veGsilVnNB6aQArVNFmZwq62mGx7HsDBklnfSa-NnFrLWyjIlZXz05PfP7JCmaPMFjF25cqDNmJDL_T9Mhx6v7Twp_hEygyv7iRI4pXUcgTYV821s9bhximPpzBuYskZPdQh4zogfPEt1jT_p6QAy7rLFNnj1Yjc1TJ2kxDalb6VYJLuuGbDhkb5ESgqAjZffhZWageZGpdr4PnUvMQCW447jLlb8Dm8cVOn1Eon-dAEwMe2TCOT-dmdZEU6BWOCDKpeO5aLarAU7bCRkFF1i48DOvmmPyXR2ILtMCYQ7abiPzDp3TJqMmsVgphOoaxcKenaz_LNYKYUP6j0_EiQMZojAUpLOV_dMneZVLUb6LkZVgU_D4Br46fT_r3krbSi0ZiTcHPy2YAJWAjxgzp_eBjaiQvXvIChj8OgYU1Yr1eNZMoSNrFqfVFph9JBnwFo89MYVsqGobpj4ZnSbxDPKlpLrELC0ygUOGGn_m7-JhLwf3RseLcLcpoXOTUbVPXVPS7lsZsekGYzIqA3OMuafvaWNeKsbV5hG-aV71axB0LQOMgoTugl35w9pi3V098sWHAN3EG0CUahvjqVF5IvbzTXvMbz4D3Kx4igE8aFKPb73uKf9TXoqsozyt0Kmv_ppSGj3KJu_OgEVhZSGHljll1-6Hu8tgKpTixsrR7YVxkjXsR-PqEwurD9VMoeSorbYCnkah7a1xtJ1aZIh2ZRqK_H0sAJ-Qv0RIqBUxAl0tR-QXxobZE0idmIGSV1CcXKm5u8t8750KaqD_zAa7Y3Ew4MH9u6nVcykH85aYLsX_zHdeOxtpBUPvc-g_ZN7gU9t98MyIOKKM4p-oRmmd1lb9Xj0eycsaB5ShRXPRWSO5cxYYXBgoteAO1uqDF9iOlrXWiJ4ELIU_OnQWCnIaDGwDIwHXLxmKJwa9X3nt5KQLwiuzq1mlULU_CunNhEo_8nw8Im9PIc1vp76CzDjlVyEHooKEjmhqgh4SS1WsOj_yhza1J9JXAG0pOx1EFApOTyy2FdBuzU5Box9xQxDWXLX6pfE6aWNeXLJANwMD381d3U8G5d8JNA8U60-wZAEfC9I7JuGGXy4S40XqwuTv3lM3Bbrb6AV1rTOafMoHsK0YcZGexR6zLkNPQzkNUDnVtK6UJkp57iVyC3YL3c6zWyC36hNmdFgIgEJDUlOTzOARSxFMqi4vV6zmSeKofh3bhoxlhBJQgma44jH0WFxJ6KqbwN1Hj6gVMKDWwpygx2124qambGCDjGa4cp-Jt5AWgMlO7eVRKzq24zw5zmaUFFwNjWWX_VXT1GZO6BPzsWjkw5Jfxmelkw82DV160EdVQzrOYZR9tZZfRDf090CeEB0Gbs_qhAULgugHELWCzqumlcVyVfeKXkbas5CDJAaf3YGHyl7MlDgImcHuagzT98Tfi2QSjrZH8_X1oVaAWERSR7ElDVlgZf79jJM5vEvKGLU2dxQD3RbFlj3iTgGPdEG8rN_F7I7rhKII5iW6qim41h4tSMcmcuWDsW8A4-G61cBCdvIHhCsHk0WGDfpB7mMOlxkNW5JiGA3eK1Gz9FFDYR_5HBJ5PxwThb0WsNeTpLnYjz19fNoUml5kY00IBolQJVz252KYvU7SsEWVZDSJ2A3hH0sUlzSKGdcNWp6Cp1AC69t3Kg_U7fKP0JUdSSumbHraRWygd6OLjAA3qZ8jFDIgUwNlxRw52Vee581Y8j28V3AcDWgwYASUUOND3W2lNTw9bXPAIAqTy8o13soNhNepR7xpmLou76WO7rOHo8xN7ljkrmy8MnocsHSTsNkgh2SlMOomGC-eBNgyPOdtTMwyDIkOKrs_NdpM59fvybjTBscoIG3PI3m6r4aeJqoDscrzJBZ4Id8h7qkQsIc8UQzEoA7GiRBq6LQZUUngW5Azl78Yq-xovggkvDsf3YsxK5hNfd9Ar2rpF9qq1LVyqScjH_0nuOddJw7i-RGjgr2IYXDkB6XmEmIq8KU8KNz8RM-vGNCkcBEoMMvxar0zhmi5alh79S5Em91b47JzzNoQd8mcHJLO4Tgt3p-H98k-28_anfDUkE6XsFYS9yeYU3iCNWdge82CYyai0IJtk4g7yHhqdfLcuP_5OG5Cl5MkUnSM6Sfi_-Z4e_zcb3xeJed40eghBzlLzZ9IDixOSjSpF2QNq1DmGbnyvHelMhtqbzIG4tlzkphfw-94SVPq-TWeM78SRuMSiHrwI7NcbKg4vO6srIlE0d0TNy2qyaFPI6Hr8izKZi8GvPKYPfG3AIB7gNQwvHlk4WrfZOSiD98-7f73Y9iBKVT4Z9B1uSqwt7TNLG_ot2HCpNtxKjPND-7g6hvLSCsut-zEmuag2QkEWof2g0BbWnOEV6Xqab6HMOK0xxK_E2qy-7dsewvHjkGP8616Za4kkCND8Ovl92Eo6u22BLQIAZIzVGNcJ1FY2ZFOdwhRrcX311Ylj5lLF9uVyq1ltpjV9FWTVt7472L8vK0eTpq8THOVqsb8MxwCOM7mHOgJj1sB98SHeFnja0l9BHfWKAZwwRYZqyya7PrVNoEzJhWtC6HAys2bJl3AOPRHMjHSwlgKEpyqMSs73xk3brPnT6B4hYv2_vFf7GcYrx-F1NiaHTqGUYZFqUfXUwiBdkpjUy6CuDS-cjddog4d-DddBWOAWlD2H8WQKPxTsnM8EdwyJH-JdbdF0p3YqWUHxwDqRMRAKG1QBODCIQ0p7VQgLqjxWAZABL8e0uyrZRzpZ-vhQzcVi3-5XYZXdb1xzz7Jfk8QX0OKSjNpm8qXz68TXKEVerjIIbU0v24jGcG5h6LdIm5DDXSQfAiUNTvgbQqefpUzVZMaAbyQWoufqx5eQKJdJX-uglKRdY8sSP35pt2JcNSeM7_cKgLY0lftS7Nj0SD3tuPuS3hb5QuhqvO3WnQbVspAeT1U_P5pFSa8lmC7iIOpNzJLQcbuJPcfaSh80CiPNrysxKdPOFV9jWiMaDBeZym1CMTA3DhjAAKg2gaaZGrXKt-L6OtY6csBn6nZ0NxUu6cjqoEm0IfOHpvQvACMJs_IpbUjmVZS-9E5TQQo1q3NrEJqNjRJwRnVZugz0eGTff2nTFQq9EVfT4xS8SvBMcQehcZ4NC0yyXXSpBGgdAlt6Vb-LpgG64QOHtDQJKoai25KhPnWBO4zMGJ9Vhgvx3F_WgM-MkQ8ECv1UuVVYrOgDJRq97dUg-wFWOOa2XloNdiKmHFYgxx84jJtCRP_sRqjfqoHWfLVahGd0yps9HBp6qF1meHqXJYM4BZ2eCUs8C1sh53iptmUUKP1Ec8whfyHyDMluWIzJUK8jkSnzxyV8ZgYLISJl9MaRrjEflEcE2D6BNwfr8fc0NhcRRQTSFSY_6IQKaA6F_-auDsY8nWWZJN7tcMJK-w5uPToPR8yk007VhKzmEJNIufF7-LJphxlIEmlT_T0GbfcVDt3abrW4aY8bULn0XNlPFCZsIX1s8zpJrF-Q6IxvkLXFP3TJdZ2i0Cx-3_fmKzMrG2F8QfC8UlPvRsnYpKrz0hAgzihzmrkvKCrAaXktYc2tty8L-PCPuLQmepf6qnZ-ojFN3xBZGJ6QsbeQ6CJnss8xHjolaH175Jss8IFX4IRQEqSrKreUng_PwHqjMH3ebS6H0hvkGAbg8cfbFEh-S07NEVh9o-WVoqzv5Yg-GRyJJuxRJO6GzNZVywfJQc1o4rv4Hmy7Rhm_DLmwXZuX35p1KFy8Fe9fjOcIlxDI1xeynVyDMbtC_428AIXdbWxmAP96wnz2Fpe5_E_QPcFUdZPGXX5g54LQz57YNOCRhEQdxfXvn5JAbIYXqLSgmuBNNjO0XrKOJB9VUri_PAHQYAQA4YeLgG2Ferq182bAULYSUNNpSwvUHLHCu4kzrwXw7TiN6pubnmzUJxh_kXAF1ld2ZbugTsDP3Xs6gY8uCQeLByY4h_Sjv1wbKPdAaQ9VViNRHt02GmHtlzu5Msxp0U-rzEl6f8nnRylmXTbUhdy5_554f3qc7SMUCNdmNK5m4TfwUFnomVO_ATBfkM7A1XjYv1OVlVtU1RqPrwKWedLXsmJ8qEWqnMJLcoBGnACWhc07BkH-3AWWm4qCuOG7EUsWv0oeGaI0z6KI7lht1m1JRTuLUIMuYElGDxh5clyPick0avHayME1uIKXy-6ltfQKDeh_Qs0QURqTYchC4xSlZu6axQK7d_Woup0PvsU3sG3c-3bPdFdR4cDX8FvIQnozLzIFNR686_mlL90B-CGy9bkPls7g9U1U-BmGpj6oQYmvFxCbnLLnjqxeeRurzjsTxnsAIw-yQzwcRl4g4mGD2JF8mbUL9waa7DJluQk4VtuQ7_nkRfatNI3H5_gZoWD_6MHj8aw18RgWLiKGbmN_WYkqTxfgZkUUWuBC5P3DFs-5VhziSy0pupiEAlvnNi6NUV6RTleHHrEQ6CrXkcxMWJb4GGSiYizvgBz-XjNKe156kB9CQK9WQQRf2mE5ri0ejUNZ2s38PNxIR-W3eTXKteuOtsLjwsg5xUFbOmq6YlwrQZpRSfo715zCZZs5LY0YqxBjOWhyeWUtnyAgpqkTHo_5HHPJi4uuZ7WrUkP8sXcnUCVDXSy79c5cgxIbnHxqCcllbTi1nMxUfGtTF1XIUTDiusnrVJJ9Fe-pAv1oiwLvY-ZrFseJMCpKs9FL3SE3zjYbCMwEug1R6Fje6D5-QgTDT5vF-p3QkBMaHm-4aqeeaGFOehM3N-x16PGgNFnbJTNc2eW3kTb41Tq_w30FfErjrSdU1P9_2ukOfe7Ewd3-_WcCvUHTDQ_297JqeyaNv_Fu7JFdY1feO9ANiH2iuuLg8tqd4ZXldar-QmdNJ-RNiNXDhfhk9OOWXFrfbbTGCv_B3ApTsQ0bUXphfW3KmG-MDQ1q7f4JkNHIJIILuH7ltMryFbMd9ntes6Ybqgoe8ELXYD4g88X4THwREkuoRyO5yhkK35M5eu9F-T3KuRyBhh5oEclZRM37EmnxyORz3GUjLef3C9hFezchTMg5guZHqKEpZXYVBLdWoru0lL0gLTA_1KQ91HpQoiPOkAOQ9A4Jp1y80F6_ayhwZogbwxscKAo0aZ4U8Mux-GUGXiV4UcACUBDh31Hi2EsXUh3p-t6YpQ_0vY8sMTXqA82hVPSMoXVB2pGBArye1IQ7qhfLgmuJIV8HBAlT261rZjtF7KglsZGepAlwMKSNm53erBCT25wFJsJ0wJKqAzUW1X6rmVwHPE-ZU16vCKEtJb9m2mZCc2TyzsjSwiPrIECSCIdqASY0P6NRHnFWoDU4zXZsfhW89R5RLcSpYP4GpfMdp-dfHbevyQpn0P-T7fb4Yt3f9zetsKe6utF6P-XPRtX6mkQuyjMlK7m0XQ-1BpYJBBSNk1RaK3mZMYYxbrTV8JGvWz2WLXEF3w9Cw2P--NPAWes-E_eYqON8zYledPx1EQxVaiXvJEkW-yrqnMdbIuDixQbRoPRmBugcaDWAxkbbH7678W1jBCrsTKUyA71w11h0OUuXRgzLxVJjHh1DadE3je3J5NhGbnMp9L-GWA9-oaaIfiIBmHngRel2aAvE5rWnSlNweqqcD-SlYxgBRWnYv1AwPEFX111L6h8zes8_-10p7vlCaoEkYEea1-hoFIoIk9NS_pWe5q1aAuS6_alcZ4lsWd4tmJpzFzn3MHqQaRaGAydUm8V5slnYwkMiu1vbzn0mWaRmDqcoTHEksAOQyRW_4KzkvHQHFiTJnKoWAeTuigexn2GleHQYoJbHYO0DzokZtmXV80Z6WXhMxCrjzf7jk5tDUTzCg_DRsHk7npl2rN9EBwTBGHa_TiNtPOw_czpbigTZXlygmVRf2ca0pi88BZvlD1GaO27RcW-Tiw-lM-ZzEEAuS5JHwAu9tU6vKFcWR2-kY69YzHv5LKil8wAzS9gHJjsS2ekDRoZIjLLNUnBEz8Cvjug3kTwSDvwf0QO8tpzhJADnKFy-CBLHYXGD8R1DmUXl8zAUU6wig0YKkaUyGjLmTEGIA_AmRwkwvp16b4azufVUgmf8zPM5_HrCchvbqBYHG__HgE7E_gEnYVNBP3pmrO2CTmQ6ELEAHr6dPRHBNk6JRSyyjK5LGgcNr38uRZt40mxLdaIzkFpkh2Uj5zrOg6qCCMH27uqDf5WPKxsPzd3MoTmBEbrH-fkcSPbvLKsJRPlE6ABKNQ90tPhcQVBkNwYI5EAwK7WtmO6spRBsXE8BSmuuQmGUjBeBK2ehqaSBsH0KSOs8yrnFNgDc3safxiv4Y3kkpCUGaU_nXPhdJlso2gUnmem_rHtnEfPVWEqYrejbw1PmcD8VRTqrLDj15rR301jgYWZD-UFtrijTKDxOg2c4G-wVszmTgjjCmpOrFhRgmHg7lL2_M2JUdYGgD6vSON59f48F9oIleveGFr0zNbL91DEtj4KzPJxy9eU1KRfBURK3c3S7oCJ8i7Aohpewl205HUz4Mpxg64aFXoZBbVJzXK3AQgK-dHzo1xmOLqbZu1VuQOrjb1FxqGnudajtw-CSeqjw7y5wdL7bK5KAMPqV3fF3YD6YNa0eZF43fGHeKfki4YndMXS9IoEr71qnerEZVW-ZZcq5DCLwIWrB4m2bbWjwYdQalgwpw_waTRSc1blDnkPnkG9QTB24osO7syLzOAFUb03_c2SigwvuCq6F-tNX68bEWuaanYFc1700dp-Q5yzIGcTEU12PDPK85PPxjNK4CuAb7_g19au1AMNdW41Jhq8NMHLTM-gxWRSv53EG-wWidbhlTjA2BsCv12An968WSI-MJvsk0p2nepZSRl-fvGW-dUZi8qoQfsZenxF95Jo-zQsd8jGo0WW6TDHeaRmS8qZmXkS7JM9rWn6Ph04CPshtkbYDSfmTNlTZaKzih7UkI1ZDWZSa9Cul143sDADzp06gEcWB-F34tcktUblR1cDTrJ_T6idBI8i0zmRCLeTTHLQ_TST4qjjZSCEkhUUPY2qjjJfF_4HPXf7jE9PrLXXGg4Xkv8u3bQsbpoXrd5_71yZPiRhI2XTkPjkc8eE6FLxGx2uwTm2ojSQwDkvfyAIGz8zh6D07fy2Ss6IjOeV0DYmbEaGaweAnr6FjSLK-rZfo9bBVsjQRZBs4YRm1wxGIgGRCYGQmWwtm0f7zFbnugecaNOGXzM-_5EqEhE-jog4jJIcFo-OGT0xnOg9M5QLEYkng84i9q5AkCX-j5uDPS_MghsqGzpOkVj8ZFjp2L3Qh_z9PGJCEloilN9uRCzsJ7c8wR3YeNX1js41GYRP6yMQvPr6yj2SHk9dqgAurxxdgP0wtjMDWM5voutgKvnQRurEVJr0tb0mtFRaOzscaYCaTCKb9Owqj2pcL8KpRwteVwifZxtM4Xh6_GEt44J4kxs2YF282ml0Ro7DpwWIFzy8gMSlbgJVsYEvQGwDAJ6wGJp-UI1EJjPemdQPfXHoZPeUlAMZEk2iEMtpHI5RXlR3xfyjqmEDxwwVtMVhWtUYi2OPJhJ0HOVlGbCXesRs8dNOac2m_PVdt47vM8d_loyUe2ZfdkkP1OkIfUrEOnKvR8EtI7dhXLOsS_iJDTDNbmHEs-VHvjVY-HxmyaKSx3yGHHBW4MPn0BQ0ojuOdkT0KnbVIHDBKD2GVscixjkX2YqMXFSMQPjnJYT2lhk2Ygb3lXjtl-iaFlyU6FQ35SZZ5yxvjFye1htFvtNRiwTcMJQcOHJ4XuUB5bddcw4bP9XzwBRpYJxgSjYYDzMBd-Bd1NBOzdixHTU5F4TQcXt7gyCnBH__KFydMQUaB0bQjxYgmJ2HCPEvCZMIOW9xG38tvcf_98TMyb20TXngsOBH4rac8aGx88fgGNHTIQA0LncfOPsm9LLoRBxBmjeqnmUMohbknLklQlJcpYD9piAaeLGDDbXbNpGJqVLSNRx7kJ6a3nM7_ibrYEurAZ1YrSwu1QKLDclHDjL22ZVWq_RsvKJ0B8W4rTnPX5Gnv6qSoO2kygwseh2IeIkpVuOjYCA3DyvtKNat71G5DvK_p8MxVTotxM5zri2tHb0bsjt1bPvzNM4zJQNLaqLcigQgWaRCZFWA5qwmYEvKaOHTipnDrM-jx9_K25y3FE_a8eUjzq1VGhv8aPeKUDhAfj8VnW_s9oN2ttVcyFWzUu1GIsUSo_1U0DO4HtUObRiJ6jE4qqL92r60pqve0D4PYBRRBSsDF8woeybR0jQ4-cz_EDq5S_I2TnDNducGC-pPquxz_err6a2is2kYHdRurgnE3LBDdYKY_bTxklqll2GsG6kLfuWY3y1oroz5udqpShNsrcpdraBeh-sZ99vq-ikzHlKj2TivS35gHNZ6FHSrLDfL_M14ASeEYNzdvlm-_QoEBEwJ7IfV-2ZKbMtFl3CtwPiTZYGXz_6VjqKZWxIAwHpRJMZjTkQidXihdEQFVzyxgc96IMubWidDx9GTZgUQOYRLk1lBEhg0F66P3mmn66LY6XKAUpPydsDjv6WGHttuXJs-zljLujKTrjKEkOMpYRG1BH9yWhq-umejGDZOaiSNaH3IXsq-DHsiOSXYUGdbZEK3QKd4hI8kwBJ7c_-PqD98ZY9u6rm4Ovtnqj5zF4ckFE7_O9zGvli57itwERXbAqTO24yLpxGYzAVfGvIgGVJcgt-I05x1AUBhKCp0QHRT2MCS2Hsikysu0tOR9YfqfYsr6VnVDWgyiTFDjuYO-z6p0U8bjmZJ3uw2b553JieR12hLEHrwEIcLdwm8ReOsfFbEOqitJ2I2KfVlHSUPNvrQOnbdtARsW5P9amWHa29Z71Ic6pulHr1ZAbJiBaI7fso6N3Qq7najYgk78fdW3Mn-zh6m80JFob08CUCgwbS0kZnNfc_3tfolR3jjqL6YZS4zEn1Yte5t5tkmT6_zKpfm0t8q1xtONmyNtAhR_fIF5yV3ZSg0XEbVdYoLV105DksBi25RqLDQIe61Y7qr9rMOjkaowvju_UOU4shuoDjFYfFa-_X38dUTT_kHXuD6o5g4TsuBmmi-DMhG5OikIW1-8DJVFPqZak8H1KkJgv2rdUjSOB2y2B7npIXXNHsJxR6iniIlrQOwqvu1YwMCPB7iwlLUyY1k91oDhfXHaCqsDNypIp1SrT6wPbTTDBr4enGPS-Rt4hzidhI087N6fwMpJQTqNgC-cpfmOfoEwjt5vN-RKEIDGuRQ8X4R5xh6HxbYRaDg-MM93rEnlAn6blNeIB3eEUwBzXLih2uC1Ds8K--xJGsvGBreFtAkaXFYmEFkw0ze371WOIGAwnQ4YVlHSO-e887uapUdqLsESYnm3jxarv-yx0pCnsWL6E1RdqG6N78pXEwBLVVH2mHWVOOMBLyBKkVjLgJNx7MvRVXCt8okQ6KAnnHkWtDn9mtaaaCCBKzWIJ9RvoH7rDfC6udlVeTP5FrKke_BZYx64mvwKk0g7RvPyrI5e57o_OoAeuUfV34A22nZyXWD6JQtHxSn38rCYdhc88S4-z8iul3FX1qaMZzWgOtYGRbhnSDI5m2YkxgADMr3m_1v272KExai5EPexuH2VLv_1k5UdAv4MnBiZbUsurk8CADl1WILkElUQqsEQyn32TTGwDVF4QJkvwTpC_X7N8d7IwHl5aNHmrbnJ1hXTz7FJPbHxhWBqtqqxhU1ynfC9p9m7kln3-30t-dGz2TaFHyCGs5OG9X_e8DpTSVKTCOxNTM-cLWVY8hTiFzskDMzwehw06ej-zgzpgAuswj3d_1XN39mF1xbTy_BkRzAMDl6sxz7IjHU5pk2H6gYmNncwjYL9ImXmN0KqlRjt-JDNEsB6aRMpzPiTFLAm6D158t0GXUHfUBfJ-SWXnH5yCdngFc9Vgd4owH9RMPLyfTT07AVNnr9b7QpE4K7LdFlpMYeXzbqCwv9L16LehTcQ4GSFDQP1cVz-e2wZDid3uZhEIIE4k0ORb3tplleRXr2oY6ZOsD_GXjqLhOWiHkfmw3x6a3NxTjimJuToY-EhCjzQr5DXNEO1Gyr04YimpaO7RgEZcB9v-5KCoQZhkjzOgwYbDAWniNCvE80jSMBJxOhCVSH0H6AEf6DvNxOv4RVw2oRHoN2j_IUStvZ5wJX_Ht_bskXKiwf5ZruI_iul4STnn5UuszritghUBS-bx3NsprNvnmjxCxD1_i1aM0Wy7Amlq4Td-9_I-ak3f0znP_dxVDOh-BYkZ63Um4C2LJrvgO4R8oQnvu5-ePi4lKAMUdDvBoGfNIhi7_Ru6rHtsldzGdIMO1OekJLjdLWQLG2PVVN9_yzvqinUeRd2uSDrbR_sXsoKyNsMABlq-gzw3s_W9WPzdS_1XuPqowGseK8vT_DecjvcyQllMHllIBd9QEMz_peAYfte6rDo8Ubp8u0c-p3ytWl1lpZHIZJFWWPMww8iKqR7QB8w9wWwVUt4vtqkUnhjNFLhb6GLyGuNZr4moF04pdF8hTnhk-gjPvhd6srn1DvtNaGWVdtjdkv1rwh4TWxDfI7pKiiqw_AbWqLZBOvJykJSgj4gYJZY7eq6IuSn12aMYXYWqFwkL0zHsD213uhCGkzueuzQuVnF7NobTXLVLp_mDtM4uNA_gxGMFnymx6DiuQNm5qWpoJYpGMJvCAx8q1rlI_XqV6Osjt3DeT6YuvuwNmXnqes3u3Wv6uTQ3F_rgBhtkAuUwMfEXnrR8psrT4Q2MYa6xsOhtNcJ_zPUY8uNplYnsUaPjJU6Lu8z8GjTMF2IWgPMu3HNRPmIGnJ1cqiMWPg3P5yzw2SLyZR7ZvqmPdOzOO79o4LvmfRFRyVYGpnGA42-ZLq7RhV_dKjoduj3_QBEkiZXwEbycttmYUMFl-Qh10SHBn1TKopiHNro-dkpoP-saIGPCxR7C0h-xDY_1pkA977eRYnxxCq8qwbjfYYLkIZJQncrRvg4u0ZzilBe7Q8lRaHthNAN8l15uvvSumU9FTbf1NASUrYotkUa2hrkMmOg66yJNgMc9cUiCZOCHHd8f2-Cb2ZfWEl6EbNBhTiX1U_k7eXloucSyipekHTHlLfIw5zW6ZsghlHvmKYmVONDQcV5_nshL6WDIgnBfJbiAj2PqHYpite4z6hXA6dzVsaykA76JmDmyP6S0Es5nZqep2r0QXry_Psw7PnUK7Yuz3zksIK3LGjrjHHR5_5v9rcFIM-GUFaZcfy7gW0Z3dXDVP_OebpnaZg4W750lkRK4k3Zvj4Nx1Fgc6HH4y7wm1VrifCEKBr88Jt8jqVS2UGSxzbAYhXGLw9nlHo7p_cAWaflrI-Do302t6Ygy_t_hHopSgvUVj5DRbD8NHmn1ZElhYfM4VCUHAUNtlP-lKpjl-7EfuyNCQET97_CYMO9ScHf4ADieUshgIcTme-5zgu5mQMHPV8maYNufKxVaFFL7c6IFi8dv-z9D1SbX-XA7MHPONkR5GlLXkBOAvjsLtnh8KnPoqrKreBFPVVr493h5yYfANr4Cbf3B2zT6NHGukC-weuEM3QcYZ0rlZbgTH7C2PNrja-HC1JsouuwMMEZZ8F69Md4VtWcB9LT7jCtjBjSJWUQXLlpQDpxe6lZ3BXjEKJ4W7yEqJ9BDzHLbcjIdqpTJxFnf7TgIQ32ORLdCekClGi6HW0uqa2Mdk715fkUac4IhNKi8-fdi_tPiBeBbMc8-ZtV-fB1Fh3BAMMtSDa4El3YEnkPRdGx4MlmAGhk0BeYxTPeKoZp17i8fXRYg84ttWmKZ_tcdYF3exPB0wgPfI2Zjjx_N1nA1e5UXZGKtLXobQZ4Rn8AnT2fHFSoNaoHA1jue4kN2J9MdwASMSHHJELpAAJyn6TZ_tbonR4uRC5_jAY3lyuyHa0cLDzQm0gdp4o0rzgIAlrPT7j_ZsvT8CJpqUmpkt_P5HhAk0Nn4uH7usN7fQhSJSYT3xfgvK7TlLy7iX_XAlnZQ_22PdT_49kMbOx_x7YkNjXAwz86nyZ6xlW_XnuUJpNMsliNCXPTDcMfiTUVJavitKoyisSUTL9PW9XL5iJJv0zihGQYRlFz_ijxEiaV1EhW8Lwg5Z9VXykYdeA5lyU7GcGp0xIQjMXHUbjAkAEgiZkw13G5ZZa41maSZq83dikOp3gqbvsoxui8WPw_aqElzLJjXJNea6rkmVxZgd_hFy30Y3jlGuUTdWqkUVhUHs5foYqJkwB5HueXIhvgxXnFMIg_W0d07g-AlfG7wB_HZ1o_XQqdypVMLQ2RkEBT3AKTiHAuOmvcYmRmcGQve6-vVji-1NrYwI1KmZthQvp0F2eXhkcthE7yx5CKZZWh7wJ0BF44ZCktvxmrc2wgcCJekvW7VvMWv-YWq0jWIYWiIWjyMNxjB6PwcXUASKrgIHKIJQS-wAgquJ40Fht_in4mYbClgaptD0NolaVAl5rYY6-YZP6rEiUwmtM4wf25dr_VkyA16g6OhUMws5FOBrbjkM4R10VbsS-5Dx6XVJ0d5-F4VVwyq_D1lBN-Fm4AQfhm9qG99mTSEkOdrNERSnm4NrV-eyU3iYResrlaUvng4Y-k6hQ2hqa153yi7Xv0MRK9gqnR8cp0zD21xqMOEnDEtjuKxrJnXf9MPtVpBcgnOLwgIB50BLDNQhyn22Ymc5TRSsJeIebk-yFWK5v1oRKvnDTaYR3boX4dy5pBM1dQEyOx2CeyUHNeExVXL4bhAy5yva2DGWWC8RfY9uQPqhjX1O9Kkx7Jas4x493o_tUtWQr3_PZ4QrqIG52QWi4xhIs5Dw8C4HEKXxIWtdAQ8YK-sdyt3QEfBBn7KYbsqSj-Lcp-7KAhb-Oi0lR1AnQiAgWdoIn8QxU7gqNMFt98VRUf-2jYpq27f4TMJe5qZjzVhgehYvx3D9IJ4xJ8-fP6tiIyhdu1BPnPfQR0yofRKdmULVmL6U3dv2_HSVVNQEDJk9k_zv2doEMc4WqfTvP_5x70O1Oc4D9na4CL25BkAoCpaaHFv7eVAY517OPiPh3_MUPz-gW0_MQhPjbTqCFJiGvwEuD2-S_6MqwTXVy7hB3gI-n9WcFZLy17Z4tY7cohDcsUCaEd72axV-SiBloN1Sd4WxlIKhbDvIyEa5lGsjcHH7gP__UmW8OTWm_ET3RPXaioTVESCavFHvkqoH0SaYiFbAlXUF9B3wesruX3N6PCVPkSkdA5ZT5Llz0hvMXWzNaJIlLDih7Su0Weo4L-PeDkcd9LKKrNKTvkGP9zsXLNO2TJ1WYar0lu8pSUO5nXBRC7Zl5RvJRVxhIsWj7cUlz5hlLbjAXAo4wWAsNeMRtebySvt8q1FTYSSlNbQW_zheie-LJss-BulgSsx8VVhsa5cQ-Pcuh3IVnzKwPArsBvYOAGST_YX9x9AVSwdHxUIVnn8tqaR2Yg7Jq38LcYB4EjDnEJD-g4pV4QNziI-kxAKulsDQItNEvQIPasTUSzGKLnXAaIBrJxzViypWimF9c4Qu5aQDEXOJqEfspmNkPMSGb-yNpYh0ShBFzyTINfOXtqAdeUENKy1I8N-vBvHua_TK3yIisms87fxLifexB6ia7z6GHAnL3kZqrQ2t8lWTys3IrbN-CFoT2e6APUu5URcBRLNgRqGHZPu3eNjDLMXCH1z6foJdk9p9G2R3DJx8Z5dPOUxAhwKWY3_PJhgBcCtlHq20ybLGzChqm9AMhmdE9RnL7KIPV7wbCbYyzOXUnWEJbS6FAyapp4sAAGOvdMPzzv0Yt-tPvjNOyw7MK-V-Ka5lQjWIufsnI689kli9J3MUkUx2DKBiLgJ_znflRGjwsuccbQQKDm8q6huHs7-4l11mT8flX0BXYPURDrb4nWW7UdnXOfUlKHVY-zN3JzpDPyHPXCFhGkf8VyFMC2Fzlh3NoO1u32f2SxH2pPHrMNZGWc5LGnnyY4S3Pd1dWI_Lv_ewXmJanKiXzF06O7Ed47rpdHAUKSXsPzOrSiXiC5lTOOt_gyAa8oqwNcFHX5ib0jJF4mAa190UTKldp4TKU2-txmt8kImI_Cc_ASyPYj0OKnChss6JD03KAN5mNEjjS6zqKsQP11xJ_LicJ0lu81kBzH8qL0BgSOWlDMBZYeidn3YCYop0JTFwyzNt-sbRrGvyHlDYM94QvCxOVjG5J-zHwcbXLQ-xVoWySaTyTAJsO_LA777B_JJF2x9nbe1k6vuBKG08aT2V4hrBclfZAdfndtsJCEl3CYAOmXKmJbkKb-RXU8QFYXFmCA7wkHNTOuRs0k-tIAml3HyUAKLZtxIB63wAeGQR2ntwKu6XvRksGAP3z0Irc4QM44qS1y7yaeZUoTVVpSi10yEILFJj90v6eNb_h4wOn9316VjNqCI7gNswnXKfj5Lh-4upzB4Hgg5gHJXuJAzsNs1G8TA4m_PLuj9wsGtu_MQ9D4PFRRS47FXSyNN_FTA3tcQfWk4k9ZhXqeDQgZihBUzZVPvdN14BXYty5ntp8mbvgJasI0SXsTDDqG1hQyLYqdgNxT5-x0TFcGGwlaUkIxH8VqXV-qnNGqjNeIB_zQiAewV2yO9HayL4tcSEy4U1aGoWzJyu72Kv9cUk6IvLNwaw5kuEUQgVW0gD3H85a-KA546zft2IjwxhlbNqa0al6aWnFIcf7qzslNMAcsePjnzw3rFMF1UbqZ_57mIjGyhQ2w3JLMfJxu55F0hhCIa3nkXjSc1WjK0aPTYh-TKbh3o4IhMlXbkzqNoTo8bEJAiX2PCCu-DXv1oMqsxPZKtwGy651wKKkOLi0H2k69NJvazh2RiLj9CTpw0vj6JwjgMgCw-ZtWMBHeDibTNkuyFPCba2GeuXfJetIEsb0ZHUkD-CvciVZJX4rRi65T0IzULPBiChQrwhQPCrwkJR5-Dzv1NYGhtUOmdhEWJVLp3kFG62J_hCaJpmgcu_mAiBeLHJXlt475I60Mno4DkYKN_ol11s1oGtMNeESGDdu9dParmZaRgMP_kuwo3HyKW22NY4XAfXZ9TXhdj-KbpA6EE6SqiUpf6OlQ41KWAqEdyGN988LpgWgG_Y8tjnptLD6nOQ1TAAFbomIlnjxUVOgs2kSCV4hcBz-K2AYtg5yf_D6DXuQNZl7dYKemIQd-b6HBw97CsB_iIbQLA_Qttds4lbyvboq5arrCtbS_EzjuEedLdXsUODGVH0IxI1GfHSy5LN9DtGyOzh6vzQZ5kq1KlP27i0s2JG_M9VDUE7NaAOlM8yC6b7ZT7kQC4Mp87hCjckzX6NTEFWV5NVJa4R1BqQl769TXCCF6x8HwJ1s4wp9kGjBeGNp3ZwLrRk7gFNYORbUEfPEM1bmXhSZlisvhi09yXqPmU_TmOHuKVeHSl7C0RBLXHe0IENQpuD9f_D8Fmw03-gPpP0jvkdm0bAu_yUhCreoJE9HChV93zCemkUs8JV0L9CGnymK7It8NYw59WoQq0G-QCN8Qr50yXMb-kldnxcGFBb6eONaPqDo7qJv0eK4uzNWxznJOWs5wHKBjCvVMeINCIY8qKOe6w_xzgdE-yUvm5APJOtiALIalqEityq13z4Ykjf6HWyWHqA-z-hAut3vB48Vt3UKUimkbBJGFpMxMzMCT_OGpJ_STREllsMm8RxxmbS_aRSFblEI5fB5Hgr94QP9PTgg1G-Qy5NdT0FP3t2FmDt43d6r7ipc_HjnzedFhHRmTio9IHueRnEGSbpwsTfTE7eIgZRVujZDcIFKyhVjtH3saRxH5AbpMom1LwLjtlf7qdIN1kgP_EMJq95ALJxAREALQX8T9Qoqwizub6UYsCHVWXT3L-G0BoxkxMnWtZsVYJIEHeKrTbZR_A2Yh94DY6GMm6MGw1X6xAsCEYjoKV0rWs2fD7bvjpNLcvNZeMOBr6Wv_Wo3CMK4QGoerXuJnz7loL-PzG-20UdELRkSQ30YBa5jdP6ytuRQTdD2fmfGBI-pWV431S14XvJof5l6kE6D-hDpVr2CWDqFMjOgGadEYZVKHi3R3gXynEKSiQEOSTOFv5_rLS9RI8Uxu2Hbp07W1SrI8I6ILvcA5NG-_kTbsOPw3DfU2VvoFcvAYnYlgkxC6mUAgi3I6L_lHKZBzbP0Ik-jK_Niu-YR6ae8RB8Mi4AZ19dbuiWgZUFPjGinrmStdyCzltn8wuO1LJ777VfCtYHTP8_nE-j7Gcg-aNtzhDsKagf1AWD7Oy9p0qolDhZX_mtgyuWCk8B89T7ft4-fTBZeGeoslx5-EgD5HEvWmfSomlzr-CHdzXWJG098ICeErs7nFhM1Vaaz_91uXwyN1orAITOicj_uavKuUTZa4-a4EW1sUWidX2jZLtcbgQMFR02BgK5Gw-CINUun9s4pDXcWDNRocYiOw_FCX0JiD0VGm2wMEiRQNPn7UOEDzTmlFEvPgudaCjTAS2sjp5nYUFjg5cTv_QEXWUzBkvY24B11ppEDoGuE1ZSPYdosyioxfEKNMTBIdw3veJ39rf27uRfyVJGQJAyRIAOKkSLxcpsqJnk3DTnT8-_dVwJQ9HwDl_Ezgbm205wwIWIMDHxyRzWbitEfwYcJ3FVCu6dQTmXu8PzFe7VabyPw0keshTAKQPp2MF9tgu0dMG2buckTlUyOv6Mr8NiLpCSOVUc_8pCnryLJK36T_DBGHv1IUIq4N6uV9bwkkAk-R23ZhfOLGkwgSG8XzpRVf1U592A_WfYbEwkBT1ZBtEsbUxHXu-u32Tzqd9ss0Y7i9DMbEzalrHWeWw9DPC5h0aQMkkojwr-eg3Rn1YitcC__4u-ZWyA63S-GH3ZCFT0MbD4-nb1a1N47Edw6aylyMAoBdqTJNYTbN1sBGOYziN5ggl8qWWNhvYikuUgZySv-3mKW5r9fHJViY9KdFdCcUlL2gz7tEKOGQ8MsN-lmapdY0MjgCsNydJs58oP-OpIxOzhiEjpSYD9GNntQeWf3HD-cFlK9hhJHrfVWMAlbhNNlvT3BtgNIJSmVp4jGVXP_RAuuerPi4bFLs81nzQ3B4nHAovYyY13VuvK38Em0OfUsd8YZ3-fAk_3Ybi7rN_8BUMwkDzfblxxg30Nts2Xoo-hxFLrR4oEqpYiR6ZB6ml6auWk1_blhzrV6vLJAOnmMPAFVG-U4DUnQ_kQxKrFJXvKZHVx0trIxBti1hT5cmhuZWbJ7jiB_oDgD5OsReRCgmgjWnv4_60YSm2RNl8KGPD7jH4-6M1lKXLLDo2eOVVqsUXUrZ4YeYkhm-bbtYF3xawvx6QKUtapwnNUW66s9vMxM_eJ4cpMIgtoL8ttwHVryeYU5v7J_KJvLodEIVAsIXwog4m_VOKPniBHaq0Is5sd5Q2_CGAKWtjpTm2Ax5gBM_Hc4JNswW5qnze_yDNvOH8upBQqYEn5YdxcGsQOhlU9_ZZVgxR4Esxf85QZ8qH5qWk_XqJPEH0ZvlHEoA1he91qJhiTifijyeMmR6kc1Ir-fD3QUjHPReKjenSex8pXpuEzfBd11JTeR6ZMNi-wAzA5aKRv9pn_KoghWyyQtM_5-vT1SXaiG9c9y_GpH4V4WvDqoHGs-niRqSO46kbdc4lh2H_NPiTmYK1w50_ZmdrS0zXLREpGbtELyA7FwZad6scSaB6Q7BQqNArJ-IOlIKrbE5QhdnmZBiiUX3sB-wOBCIvDgsrdfEcdDn1-0Vm_MietADLDF6hDS38IEJqGo5gvmbQXIMbUYtwI0gqpU315L2PblI1Ucg-skSOcTpdbewd0cxtDtHjCMUa5d77CuURdESoZr603QUMDBqgf8eauXlz9KfHlNdJ3qRKQkNqvvUl--8KupyHKzdsbYQcL6lIHPS3K-R25xHhKlPVMrWE-oRfffUpk3sxxI7msJ3D3KYISydopA-2yfMWpwJ40GLwyiEjBLaZ3UYnPhr-jqWXxUrZJ9A1JEEL_8HKlBCmfuAyfAvWw-GJh-alvkSxgwiHa6HyUEYkZjuhfsPkYC3SqC-MRvRICSs6T1pYitsPgZchnSj8soDBCF3HVIgUOiS81RuFXMgqb9bj79tg-nDOscviTcTdkQc58UfUTNwuqPk3N3eFA5OR5OsyZlduFDoF1U2EMWdJGEpyYlTtJNoEv6HqHmfebt8CZRCZF2IVL949oOwOwDEJ8EFbnjccff_ANHoJP5zojGEbFmx4CWbE-fr4LqtJWDS3x41izskc23aLiXB0sU48DunaC7B-PvzTqoD_mp1pC1d_dIgQJld1q0BxfYClop-BPd7boTt22EV0XAYRtd_9DH1P8iaxEr5TPjWbm480F09fS3Qa3DdYktsY_WF46nyccDYnxoh1GVig6_O6sD82Min75SFRJ-SJZMSZLrKNLJkgKCnyJ1nta6Fh0z7TN7AYnMniz3J6JgJbgc31o8tUk_I1nf5OG5IeyJmkxwOE2wxXbhKcUeIlptTWP8bXwD_IDfTXbUEXylZttwfZSLMvPqNwm1pSvCuw3umweursKQUd82Gtj3YtXUbmKwQ8PfQu8pdVhGY36FRZ1KHrcx8xv-DbIX6176AVQ7GndPgBqQcLmicadNemiwsbOEVsTkb1o62IvGinQSIuJIfe9GQTCnhUfH2zsqeOkO0nVwy_sm_kUP7A9rYnDOmvRTa2EX-JRfFDYdYFmSCbWr8Seo05vlM1UrHp3C5H01v_V3YdWuCksz8ghhND3U-XK9KTdigevwvrC5xJnBVziRQhusqgCgI0oAMT_8S69HdWa60jB4gGVgwx4P5QAnz1BE4Q3QvEMDfNAZ4Rf3apcrYZLXAX4cn1AKKGLwi1gYgsXhcXO__M98SYySq5zfNsETkyBhAFj6i0i4vevsNm4xG3r-rSscgwCxic99cPw5HQzc3LcM0peHJ9rwSq-2k1XrKgsaV-lbQ0XI52lXgVGR3f5Sil4cawKHiCQonipnR9dqIu8zR_U3PbZ0xyF5w9QsfBWqKxkK9fa3TBTHe35xREsu-o8fO7QT_NAEvQN6lOgMnwPVc1r2kABwKb_mwk7efINsBsj7JkhjXiqbf4MwRCPAl9P0kplXvPbmzrMCyhSh6PmQPn3GHz2o3325VI8TkY9FF43Fqojknr0nIFenwJVjblfLXjYlQq9vUFLmRnvreQacCPe8cP-_Hm9maUNpI2z4F1ej-QfycU_E6KYNrCOm2xhSd-nLEXHHUkpEO3ykejr_JPiOmSmymd5HGY0By_iv0X1t8UuIFYKjopdjklf98-StDyc68ElUqf82rsiA0NQxagTaxIsg2msobh3qhK5Q3K7gbBzovoL6C9_lQxgwk-CFUxGUVeh82tFJzPtgs92CFJNddy6CodFwGTzQ4tEJu163RPOA8fjuJr8KWdtuQAYYWWVYbVwFtQM_8DYlz1M3_KG9OFRt0oysya0NFB9Ucw0ES_G_M9D2WN7HjOfJbrMurRtXp2Lf10azGmFcC1LT5rJThV1i6nRu5J_AXvr41UrdhwNriNONs4xqfjBAaTZYvQIc84grMtsMvIGO0gyBWlxDcjdxTMVEXZAzG9WwBaBhFM2A5fPequzHyIAvReybQnfCuZtWMEVqWR981sBFR1BAASMs9I-YwVyc6L4UktR4hp4t6LJIB2QbzXbmnUvQiYqf-cAmpHDI7pmkm8GlYZlfiyWWO38P-2J3bxMn1icTJosry1sox2iS1guVKh4fYm9j98mILQtdtsqUsokMaDRBNGzHBZCBs0t6-N86mbX0gA_l3bneF0teGSyM_J7fvEyri1e7LoTiH9tCEoHuTEMvjnSRGc4xfmtgUfugSXS6DUtecKYGVDjFEmlAO1NZ9fZN2rL4jh8Cq7Sy7blH5iVUHae4-gaZFeY-RMfyvHtXPKkGMAGDenggLDp8ds0MHQt4PTcmJThmPEx9Hq4LlZN1MaWGxCk1Yio2vqhFjGdMz6yM3bBNu7NAkrDZGnDw4QJh7n1gCtgN_LZJ6D_6fALonM8pxs1oNF4WMxs_EEbNqD16RF339-xhjicFwLfC7jjdzrMId6eE2tlCD4GQ_OJ-bhA8VJl04nk5r0eb8dfIjpOMtzZ_m5Qtkj9Z7qVcVHQgddYHl1UvWs-SSACXHy7qM96O26HmFFuldrpHpNHYA0IM_8gVQ3uC6eyKkQpwivFzdA_ghkwIvEL8O_24YQCct2GyYQAvnP9iCXLPA9ZNww-6ENwlz-FoM5Z9mpfvkjh319Br6JPOz4qzWsD--MPF5phe3BUVs4Aib6-D-a6WWOGU2_9-Cfi_c8P2--0gyZ4DbxOz14VDThX-In2kMmtcXMwp8baqSsVhn16dpB7LFgAD3hTNBRnQAp4hVoOaQcV25ukQ53WRomt_t3F5q2Mbwj2b2l_iRLLTeXyGFlVLrWsXmTd3oVH4S97TH7uvGfo8ZbEwqIbk0egWW1lz_Q6hCe4dOYES3rFkUclFhoFSFukmmUnmP3jAVXrI6Prlq1SDR7lEZKaBJM4V-0fcq24mxaGBkgKjd_3y6fPJQ4cEZi84ywxt8CR3TBnu5KOCFd6CA5PeH-hgqft5Tcwj0AzYESsz07OB34_cCaJ9AoW6Nm1ppHsWkfMKYDa3jvq352QeIv6j2-CTAOkPWc0y9hiWPSc_5POQxZdBxrBuxF1CEkL9uqB4zhVVO3EVvSqdl3fS-Nf5qtznHYbrZ_6UrUwkCZs0NmLDE8l3wgo3WOM6LtnKUD_W3pjQl1khadQyrhGt8ef8sRI_c-6zeFqBZayDsErzeR-cLfRB6_2XVCKwyIo_EBYHW2UncQCBGWfSsJyzOkgmEmepsv7oQFgb2cKqYfDeBWyw4GC9AxUzLGmX4OvIlt6aBc8FlZH4UQa1tJBO3p46jCC0nVvHbElBqBDmD_Dz45lCW35uzOxnR0j60MceQLsFcfTjN6utEQr586F4Ozm5Qn5rPEHPBZzZ64ptbkVVu3cQclkPBSpCsysVopvvY5idObvCuBjHH-RGTqJEyGQgALeEB22gUMZnoww5xzBMiuFCQaTMEPyLys-s9jC7N-dflZoVfN_O9__Rh2rl-MpMm6zwtJ6537NmOfJKHa526MxocdrZ1MD9Qpn6fPHQm2G_sZtjyWo7FF3LDaEQdPVNnwUbwjRz4xuLNgbeVr_xYg3GTyw9FtsnjJ1AdEc72omj8wgq6RtaqijIVOJWvKR685mccqSFuOrl3Vf6CQBUPKKIPFDUYbyzccysEEXwuJ6tDzDXxhDGAxYAr0v-UhHiAnSkSnWTk1FmSSMmlV_sATWUWE1cznwXZP4sfQ1WMaEDPfW0OAKIa1u1cAgpvb8Ytyf1mzFRM_8oidlkRvn6sYFWpllqXhi0b4UEZV4kjV5axSx0Z70d_nlGsZkzctmw-69D-BttwMDV-NiSxzrtcfXrNuKmE91aqoynz1DTIyJHnR6ZISnTHvbAjjlMGUNPEE9hTDU9-_Zkkt2VDW3rBcyBTLrpoB1GdRBhjzmMTmL8tNex2_KZBqli7eJCz66V_Dn9STlQdz97Zc3oJAE1ZvggNLwtgH1XxOsFV84Uc_EdVC4gD1nRxCf9MBr2ieRqTLFd00cwuE515Ar6RYMeaDJ20bPuiw8ldXmR9yl_tbCIE5AfcBjEIvtrVK1Oi0iTiP0R8lhntFDilgdYwmn4ttEijiOqGEzwSKkDfbvcmwlow5afhttBeeCZv4yD3Zt3v-cHRE2n0yjnZOgdEzXYJNEOovSWOHOnfiUul1xSdNxWGe9BoWvQ5iynzJAxgpNC7CBzXOl451GcBOYkmcvkbcs6mBo0ywa2AOm4Hlb-ICcpHuzw02QXM4JEeP6RuFLVe3OvQqEMAv7oqlcrq7tgkCMnzjjs61_DF3Mxd_iSLgN8sMl_h9FcJ1Pc5Wig7SjBhO9L3S0U_GH053h40lIRNN_FrN-g4xmi-ervnSkK5NupfM3prsyL8N7HO0Rc29RmN-mZiz8miJNUQZW_8o0htebNuYNW_ijU71GG8ARZBpUm3nulNeDEe4UxbVQIWuTzG4Ggu3CeHK3b2lVh1ZjeiibInMQcPvYEokbqYaHSASK-RRRactOLbDcaRbwbHueXcj9YUu_3n1jZn-IByPpdCc6anKO_YdBbqUMlvYoMatxSf3EUC_xhrBZvNVzgcc5M2dfhgXt-tz8K2z4BLSD-FDFUBWmrE4PJlJRd1T1GUL45iWw3IVvlfcn-9i9Y17fCQHAvgr-ASDD5dL-9Nl2OyUQPQyXlbQdS_DJj7G6KZ3sSHi_mfVzhcsPeAplIHeiAFtUXJtC4DylDJH9W4ba0vvqKOpNiYoMJpt2rL-Ga8YPN6EUUc7dcMwU8fCSdscv7gQp1w0Cl4gIuk6LDyBDv7As-8oVVYB4XxKGcIhVhuCsupYu2eDWwktz0IUlghlGGF3hBYczh_5NMM5KI5NWnQOdNOS5vV_z4YxejIgL8x75BLHD2IcmrnPyv68MPTD0tHpIGfxlKDwPNUvHO4A8xW7cSvO-4M0AD1SI2c-jFLabMvAsmMNP3ncvbTX0bJsc6BcOj63InG2Zzjm455K_AvsxNfVcZGj0iA45dFJYZHLGJ_PrdA7LAFT-wcwwcKzC7ETIpumiBL1WyJsrC9YkY2DYzDBHcXoe-rYkz0DN8OUnLNNODjyaeA2vIPFtIpNDV9v3vGd7HWLaO0YgM0dIJc8AIHp39G8AmoVKiFzhtzyZb9_QSy0oNia4LmjhfUFrJomXtG1zNljdt4Q-Eh5yH4vSojhKHuuX6q_xSZ7dTI6LofMkeNmn570j-7LrqzUbBX7G91MhczQXHakSPGB3TJGI7QRq1a1MLBmFSl5_TCyg_Rl5PpsZmu5Z_Dxorypfbz-wWEKSXpsA_feP8RT65lP1amQcwoE31n9ZQ9juqbkw4_gahw4Ru11wbPGxdQ_iMUuPbnzC8HxY3Y5QXWBNEV3okrDNJTVxyxXogjJebNdq3MJCDycL9DMXQbg0PdUO8LfwDmPKqm1mV0ngl3BwQanhpdiGj_AuRlrYR_gUxdQGWLfQ0PGQQor6qVkb0_YhLrKOCPe_FndNy-KbCR7YwBhDGqzOxYgwBllWpk426wtOiJAYvDOPEYtn84Jqq3qXwFl9n9fMbfF4PVCigbbeNVaD0t6jpS-KKgpOChWG-3qWJzaamvanDieBGNvCYnaDUfVU1KAZJK9Q4WtKnsxTxYEq3T7Sa2X5IizcpKH8PmERZcm_SiaExGvbZtIVtke0HrmOk2ksKeUOmdzYmPEHBzR_BtxUViBOgyMAmWqLsVxsccbaefheT7vvwB732zD8rS3md39LKX1l1gEurmDT2s7OXOmTjxPlgRPJmhriRiodJTAKWITNdg95f7GrFGvxqgnUpjpDSu0Ze1lCOmnEngiODbIG8FvxS3ppS18Q8E76AHuMsdQFrmkwYGaQFo4e0C53it2OOs2V2lkd5glbNeaLxKRB94HxP3KRLmJCM4HuSwnhGiX-cFCVY3FGCjOXp-NXWCTbBGCYFf5F8_C_gbHZxUP6xQzXFdRiEnc_4GJGruW1P0Y_J2j9xWUpKVv_LalW2lUh125a4NUpSw3NbsXumlAUyczPPl_Yo8rv0qHLdaLIerjOnyMnEbBXDL15eEgHm43Wq8e7Kfx_us6EVyVSZIblRTiIF6WHQyjsGjkZhCQxEUpUXrLojLqmYFTa9bW81JUFKx0UraRGp9q3thVG7D2lDU_6OxIoOKwE5XNUrzf3eC2FdFxnFzKUFmGj_6B7pxwgnwhHuo3FRi9NoNLPa084qJoF0_sEUSdJflDbS8yP45FQMNOK51_1JTMeGTAR3SNQzvpTyFAFXmzqV7FbG1gAuFgDSsh1aEcdoSOlDwQyV8UX-ZxpEspisywE212iWWMf3NGxjfK8STQ5doouCbrr9l5Vb-KjZH3Q6warCk61Rmo10AbTMD5pvJHTR4i91Cio-fQ8J10mRCyomsD_F02j9n4UqPJLoUI84XhsFT7cboJtYX16YWIuYQVBlCIEQbzMkxlDfVfcB-EjCcs2Kwh_ltjRJf10gEJzDlsq-Crvtz47AJkuO8NBbBD_OBDBDeH39nKkY5PeqGO17c-Q9UOOVQfUOyY9H4_zA9L6iVi1MrH0OW-969yubEtFcxIiKGMdWUIY8wzWYbX-RDkDLcaA8-K86BQQlLwaAEfN5-V0DkDlzwmlbodaQHKRlMQTrjx_BUTtSKTqm02cpK0XCV3yomNzL1AsR9gY4HhVsUMpnrW31aJvCBzi-3J3a8qAiRn6-5_DPblhwyXm_7qt_a3HGfuI2SxEmYc5lVxS6C-fWdIBRQrx0w1AhUzpO29HG02JK0FwzQHFVQjgEj0deDAVcpO3Mhiu4LpD34UBZZlg67uK5ed0r17ouTRAGYUgDp3WSgVhTnIW0loWozcIjSQCy81ixYXQ-ylinfRxXm6bTea0QL2udyDTjbI6siYT3Zz0NvrsQyiFvmnDLbdjFs881zJ2otSK45AXn0F0t_2H5UUUqHgNyodASihMEWOqbu4ugVFV--KU5bH4tlHZ2wnkYIezQLUVpNnQDlTO3gBNRWNS7FMFAp2dOGwSBMntSdp3p3C2dAseaAw2mFg0gAvLk-B_ZaA5YdHqLbsNgsRrbjY_6Cn1NtRcelWIVHZLfWG1pIwZrAB3Qwjj1VhgERIG-vm_rUa5CPAW-qj0XnWnO863S3J2QI1cNFvJqLsnu0UrwIh0EyIFd8ycn2_8idEDf2bKakazwTMlD0jwtDO1LZFYYTq2rHSXawPqdKHeakG4Np9t0_zqanmk-TwxsCHQr7wY-FAu5aaCfU6Va20yFGu1tB_iPrs8yBS0S6TVl5hVTYL0R9n9lbW7oHwxWQmPJ0aksIoWiqpP_wSgs0Z3HJcaXeYRM37T87hdWnGboVfr9QkhJl--Pb1qabmEIo7RF-4Shm5DH5KDHpyow3bI01ZzDex5d1hNPfkSGgQaYLd_E_GW4nPwJ8yP5hbIBu-LlvqVUTjbC9aFoDT3qhCJVJSxwhcnjSnJizhX-PvnBwwOJ3pIusW0Up2p3xi51Ic6dqs5IhLLDKbKzoFhrdeQyaOmPF3RZWCPLMakxTK-1YCVx84wyo-v521zhri0gYMkG5amYcmiVzaZqa9Qcnmo0fPQdqJ1v-jLLAgFr0hmJfSgsTxN1_8jxgL9Ihm6gnt-VN4eoAqEP-qj6nYUk1RXYnVm0QFNU0ypewn1hRdLc5kSy3TTVQvCYmaaFAmfr4xgowSU2cKzX_J-DXsCOzz5ATV_RNo5AtGNTeKmuyzGxyOW-WNeacp3spixOAG0M94lwp4JfyXIyVDaNasIhMzbm7nn369C3zzB-WLWpFgXJEVLaDadi5s03pmReZpuKP003YtKd_LmhSqtnIovFn1tWK0QtEsRn5_J7yPe656rwxXywmMFVIc8nw8YqDFYFtDbp-E5RN2R7S7guzfW_CdG3i0Rf99_cgKybVRwE9l_n7rExypapj5QyhDak6HgkdGQULUvZGJJSYd6Rx4KDCvOpzQ-uYUOIpdjfDejVOyBtqvFqqEC3H79_irh6bv35rbFKwjrq-FnT1upu5T-f0ONKMM8qoeYu2stRmSAn6JpOKOAA1Y72ky8WXVirhTad8sAnWmMhotDgan6andSVURhU_NKKw92P4lUkAULM2LphY-S14SRqxAPUdFLvMJZdqnCYVzwlZTerHH_ohd5wCo0Z7ZSrYT27WE8XDENH71mxAPwB7Bd8vZJMbBi3Rrbu4u_oTrXf_jzQlgkO55Nyc561T46-sXZWodpNf4pUEWJIXuPj9wxOFVFftbspEPmFkmpcsjCo1h4zRzsLhsXKuYu0OSvgCR1yxK445T8VazE71KHgyKF02SRuxt4BGA6UuzUOjzFJHdD_fNKAlW7rDyfgAZDSUTTvGfoK21gKXVotrCbYIsuuRxxopYef2nb4dbKoOsq9jkjOw5X1j1_vppF4CS6VJt9BCSbsTt4tPeZWz_TLR4omHJ9TNSilL9XGooZn1X9wR33S71QHXA8oDo-ooGdC_eky3jV7S5gSMm6z9lbZOrQvf49xDA4HKQoIJcUVmfK9iCIRqnMPDTtb3KZMTxF0Jj2Y_xqFXdmo8L5XPv-ByQOsQpGMgF9S_zZROO6UgwlS8F7qER422Zxcfz1y47H2bxZfJORAcHw3GJnIhvCLfW5mO_objtk5Fj8wWMkl5hSh6r2CbpljKH7Sdjx0Hm7tKwz2DLE-72US3M55wxd3wfxWUhNUNM2B1IDqeF_3aYpucU2woxYTrxT5B_MXp0XNiDgBR0yF47tWbSjGb2M871_zYSHwqTJV_xmY1Gf3AeGbvt8t7G6lK9yoX3Lj3HCpfOZmDMk8MKU7oyrHEHCZ23OT2RhBsXv8Y5guV52n573ocW-MddUV3EOSP8Gb1rvhT5iB3WhwNZ_kTR3B4JVpPgdm0XNQtCRyqaDkiEjX-rAbZlD6Zx-TKfsUXol85xyo41Xf6enagaz4t7kf6pkK5Lo9yP_wqWNqF3aQiGLeDxhDqkFg7ATQEr2aayRCu55c9BJ1ikcFtnBE0WKNUyn63sZUvLt4dfjj9HNSdvWGLjEq26WPcK_6OLLFSgJmJwVPcjaGFmHA6JgTljYoPBDtNY0JbT8OvfpffReW_OGnffM8g64POAbmbMAJR46Vr1ljDRiKNN9UkN090rmVY2ajvWkojSrGiSmPbX7sbLTivN538veYhv1BtuBaD45yJeSaoRnMGEJSHvuOdNqUz7O_Dd6ZZ5ASzKrRJiSg7sjeOcQj1I1s-H2qSBMqvfGzqiEFRvBfR4GnSBUiZZam1qgc2acFsobFwVcyjTHGdIt3G9tnMGnQyuxk5IcQyOVVP5CyFuYMPjVxee0ChCrVVAhglLTFW0HexiyvZV2oVe5S_Tas-T_zjcrfpcEPKyOPhuKWsJRLtZAqujxNYErxOccuRyhd54WcLHZClpau6G-rpV1qmTUHii-Sc4Uwa7fKEXLI-04d-vid0dYIO-n1cAc_cT5vXKGVgDMRwfYkUEWqQ3G-5wdgpJv8J0cWlmVbL2HrRyZulFg3Tp5aKDrLUxq6iv4Ar21LsDfBG70lSc2Prpy5NsAFzIuZsUCEZdQiCqgkF35NUh6ijGYtaEeDx99I6Q73yPhuRHtOWd3ZDQdH62wWMwYKwpJf5l7p1zgSwTbGCqLpDdjrnLqoJ4Ys8YoT-UFno5p9lq9p4StnNDFymYM7WV1yuToLCqj7remQMTiB2mtJK-yVUbs7GzUPPEvA_S0eoJ_Lx5rBqG_VrNsZwlytTPS_0nkzCMktIuae1GLci37ZCnwI1zpIqNRQiwre8h5rnYotxe3UkmJxOC1rVx0C3wZ-vXOxOdT_9DTzPKYBANyxkNSjY5bngC3Xj1PiBB8hNjRqqMGi0wEvbeWvFPcgyXPBosTAner7j5DcsfC51EBxwFr3ZzSgAbjrJBHCUuCaFqHIhuWZ0c3ivPikuPL4zlON7-HPi1FSBeYZfcJLifW3tZ0JC0oC-R6G0A3f8OmoliUZ9A_EIWkKrHfUkv0i6UqZ9-2umITVF8sgEO6z6tY86gv8qI85qHP1qWeoZ2viVQ8O6Br8ohcJ0RyAEWBou_vPuGoFTYXzANMsXCJzvlkcM-OpzuvFkmTtbiLtrndD5pW0L-pKWXeqD_xJngWxMXrNTfiuqcDKViXSt-ZgXC8eLJHFkDff6q6IUmP3KXkiDrE0E74aHjuHX2xAk2UnhRcZXRbbFZyYmhHDc0mCG3Ybya3PlNbyUw21Tfww3pePx8w7L0kMC5MxqyB8GDK37Z4L3frOx_ChtdFZE1zIQhwdOIIdL_PK7hAKPVt8JUyx9IhLH84AwHSeRjzAJiRlTQ1hkj8tBwDBsNnUvReCXeN1NxWIrh9OIkqloD0_VW5bp8-HCiRYRX0U6ZFKRXPZZxgdDk3c52tOs1FKjdncXoqdFB5jBgP_iV2qPb7xRDnRHS0DKRUX-1hrolNFIKZOPEaFHCmLKsWnAqJrKTJPhJOvDVkgvZw-malMxn28XOZO-c6tt-0OP0HKUUVVQcaBIbjfPHLR8XiknMMIKD8Ec_YFYvJN7BX5aheFqkohw7J0X1xUUtZPsAnYVADNZlvQJCA3S8UdjAiS_aX-DkBbYJABjY-n9DYdpdOnFtrTxQRG5Mq5Q91fzLStwAuWC1s3bQ6L3H4KLjHtgRV8CXJSEM_SefYbmy0uEo9oGMLEQetJpT7y_Oq-h64-vo8AS4vD4m2ZN7fJAum2lpE-xlnR1UTUnG1Uii3Xwj1UcEiVE6-zijMAN9YhzgOVicykk1eObbIfTa4H9_jeWGHjGHfR3wkMkVsn4JVn6nNpCt3kQpPCpBSDvkOxIUoLOVkefpFNW_KPGEBMrRgDyYF2LXoe7tOWZT7UEG80zUtCqTLBhVVzXFQTWQZ3c-oY7_Y_1enqxQJZ0CjBOsBhUfi--y3HBumlypbkTcvkr-QT3H0-ihuQA95_Sgat-xCAdpTefMcG3EIICp-lBz3isgyQS43Si3cT_hTOi_sNigwa8z536UpFDi5Crdq-ij3ufJYKi9jQFSUiNzcWXvZpEEEEgd-f3ZiW6IW_CJfixE_KPpKN6vfk16JAveXbo31mpkztkiyhgcacx7JYINz_LN6HzOsoY7QO-Iwi-Nz9TCv6nPK-3KXX_lyUuATJ_y1N5BvdgKGTnHMiPuGA2bWK51m-L09nz6W8vsXC_aFj82oOnU2lf4bx08XiWDdWzOlzytPSFUEWKfvS4ei_R7RP-X6S-_kQY4j56-sMp46TA3xovGhQKR4e7pWy7HQyYu0WGeDjEGMTZzqUcyXjC9NfH-Uz8BtI1VtzlcMZyoQFq_zpSj1PMPtwOPqUeG0MAaL4F23GRhZIaNUbSsE9Hvi-iV6hMMjjkULdt6ZUdfKz6CFmo1jAWxQ6ApJFDgzjc4tzk5DnIQ9qMU6Iao1D8U5qWS_QcH6jNdX6tMKAuRtPlpck__JHYH_3gQf5MfC8-qpc39tMrXkvSyDL0lwNWvtGW-fZP7Hmd5Vxwpx6OUwHHgieA6ZRrEnjHS3ttCIHN7TfgxkaKAS9aHIJf6vPyr8CEjKmd-z_97bUmk1R_10JOljTzIAaR1swNx1Jgm5NyWSBDNVCKRVzVCpqvnwf_AxdwOkj-z0-jpX1cLWq1ETttcB2Szbh5f3zgJhyo8gvdDFlWPlrwYyuC48025qgbDo0V86Hlry-FD8S2Sn3v50ABZZ-tGQG0VD4MfzJH5fYTYR0Tsa8Wb0ObjaBYRItMX8B97qzpVd-Q3yOcrgRyLkGYhxBkB4wA2UcHxmE6TFnWon0NX1ftAlwptGSk8FgAQ0f3EDMlt3mPVuJQp-UPmd-81gyUDaSJiIj9rOG13CGp7SOQkKATo_2PFZ0X84YlIvQUOTo6tsiU7B3x5V9oBEL1qBVyndA53GUN8nHDHFOWyVIrnyy0U8ZyC-YSA-9cMIMeKnJeoMjPQnO-gqi33ps90sZV3_ORuaNgFzd8o6lj79OB2g9ll0l2unK4DLDXbV0VTXk2uf16NAWK9Bva2C2mNqAw_LUrFbPBiBGkcJS5ygNnS3VHuY0p8W_y1-DPJlehYgzr6lFV_PbQF7e7seSwicLcfYoLAWPJKiz2oEzgNn3l1cwf1anUI5XxffLYAn97BM-JqpsxZiG9cQJUv99ISnl6zQ_dYPf-PgsN8hNCH5xKiwEZk9AelDAGSIzg6xopdbTBS_mjf0htoKZSJhUM6-ltvkCBvWasI8mab5n9dN2Mz1jhM0QqzHV3dcpRhhk-XuqKDF1DRJFDa7Al8b0fIODZnixsnh7CwAnijPFCQNCfEUGxPzsYRq6rIivcSA2u5um-0VonD4xfFIUwySqF3MyDDuZKdwWmQ_2Pf2m5vHvbkhtWJ62QRgK2mr-bH9vOWQQLzuFi4TbCCZbxGD1js77Ur5iSEeZs6PMJoNnIPAkUxJAys69jY96iKDbVfFk8re8BVbeUfmP8kd3ZXZrN3Kg-0ioxaLKY5TuIwQKqB-s9f4C6i0zW7udLV9SXed-mZZWC93Ot_4XxLDnIGUgTaxRcDp5LXYvaOofa9N155fXh96jmUqMfKR8hakWPabM3TXz6p1t7coQUIdXDG6Y5C4kL2Mrl3699KJRqfJEaf4VQJkFSMV6Et7dZJe81RMMbpnvb42qWWlY7lMiiOSkKNbaYjivTZpTXH-M_7PfynS06jFNJi-zgqj4kILkBzJYHYEWnWeRgkgzpJ_fb2FFHF5QJdQm3FB2siDLV-7dnHdxJmvkvE-0yO-gFgJEQzaXpvH0TRScvnxK6Bdp1DmKAXCdAPvAC97vaFgtYk_rKF35zqG2qzoOhShW8q3Gvq4dqzxxKRwg3SD71wqoageXSg0JllQSvNd4QGTGw9YVE4IpoLZAlftMdSZkVG1mVoJhS86tbMGyW_8zHAQ3MBorsFRuF_wSWol9Hmm9o0ha1MrAtygZsoNzVjK7n7HGogmAIwzBBi6Tscl40PSG5wCLKgolQgRQvyCjm19f9y2Rkc8q3k3vY41NzSR4oLrIquN-iAjialKM4fo5vOQfv10s0PL6_u_SfSihsPeqgG2CsobEeZxr1n6cxCe9alsz4i_Ve64OhHSuHyKr3r1FM1NKmW0qj3Z-djOg3dPMaqsg0nfwXkKkVvX8YnTBiuwJcSdoi60FMaeY1D21y6RM-e_BQsKNQ_bugifl-8WXjlt4Df0eX6puOmnsytvBkKUyTzUmfsxcC4oP7tCyQaeL340ZxFnMU8RifEAyS6OeyhcC-6HlDs87dunpgaq9cuyOCDj-XcMBGUCb3-kKGHF7_8tCrZ3Gce54PUbeauG4PZzqOxOr3Dce3NSjUqf6Uu23MvJf5d7zegJz5inzaxhdZAWlrKQFAJ9SidGNA39i5wQ2juD5qfLAy-IqdYmEzu5mmRKs4IOJbFb9UaW9zM86Cnj8RRlKmflMq8iRqZ2GVOCfUfJdLRK_Jgygb_a61KZcJiuEdoDnACvYD4bRzAerPw_mR6qEeQvqC-ChYJpUwpPwzByIbfv-_ysFQUJ9K8v_MNVeXn5jlbL6uYHmBZAWGSFYUq6SNUTtM4zc__Z08DLIWWEe-K65HY6y1d3TPQ4Z6Ze0xjKSGFBSQG2TClc6oNd_ZbF0S5FhgeuRr8CBcXj0B1W5EqnqBH4vs1eXURm37PeqHNoU4kUvazQ7JfyuSeR6vxGqb_ZksaJ11Bv4CIePbXrAq3p5sXzoYdr1qGAAb3QgVpZg4XmeKBC4jz-ZE10imRW-T1e-HVE8i_-jEgkZkR6RuzD0aYymD1_OZlWYNFd8kM7gNtItMC-jH5BoMJ8P2wQooxPEWvColoa_F4aTzOt-DNH1nQLiNVHFF-l-u_ryvQc6TxSWUKw2snerNFAhQG-mtY_b7rBhqSfY5j6bIN1jeMcTKlx66xsWy8zPjPkKJNUfUjXP3ZTNu7zFqpqKm1SyoibqseZJzCN6QQ4Pcrf_bJTfS2T0Geuqo3y9JWULBb1rjJE_R8Kp-PhB1z64skH4xrYMiESTktKGq2CnoxSkllg8dn_7mXhxv8mUWZp3F1eEBnzvrYhwEFM26tw5Ol7hdSwdzgqVc6mSIbt0jgfz8FrLydtVd5LXfaWt9GtKTTrc_QcNOGip8NXKkcj8-K-wIgHCVkby1-9Am-tUVG2TcBxZ3OJhRKAk2ziM3n1FXdbUQLYfnxfxRavVMHtWzW5v24AHjGUtri0BlJ53NpZ2LA5iPfEQ6uOxpB-fku9b9JPX6EnqzYvso6gjsFsKsSYh-cGhwHP36wZiZVCeO68AMNOUGP286NvnoLKO98fov2sFHaJU-9vyhgZde8nWzyxDjnaBxRZy1wcX7TdLhl9xv_dwSy3wxONtMlxjIyj-Y7W2CsVghZ0dP8niW4emX2fQ1o-7WDJyks-6nQRSgzZfumGlxPSdD9Knwk7nt-9DCY7kNOetMmcwsQ4DIQSnfBtB1HzZ8wMUq_jzwF3ycDfmXfIOJak5T4vAv1GYe3rVvozPXHPC1r2rJHsZUk1j-kJxm8kUcaJZMnrKxjIcrlDTn8cUzatIFE01CyAxzC615rhuFrFMXzDdKYPIX25udESaAvjbcPDtcnibT07Yw1-3SJll_mQXSF0brgvrhBEKSwZ4FNrZIDsmbBbqv4PyBoLcOP1_bhWdQX9f-6D9BDdFPva14LDVWFXEZ7AZAkffhiUCr_4a5zls5yVdYpy7abNdh01Onvu6vpPzySvXGGrocLUlXRR4aA1lRpvpirT0SSK_rsNGCMrfTQLWT9l9dk8cewPVK9ohE-Yo_AYlfkoPcbnDT0bYasqpomG7S_rvSysaj5qZfyBn5LKtOZ9o_iLBTm-wCnUdRN1njWtcW6LSTEZ6K2z92a2Wfl55p3CsBvpO13DuaYaSvgWfVdWjRW8VdUYasWBwZ2W1hIMWbmBdLwIIcfIT8SL_oFDrNbpWRsG4iAmh0Lb8NHfKAx63jx5lhcJR9DgApInldckEKV1H6CshwIuGUW89sV2_Gg2chOzoKLjh-P7L75fv00Z7r0ybZNUFdHixVrKe5NscBFEMut-lccBhjbjs5w2Ql6hQe-ueg4znRcQVfc79nLArR4d6zWfoAk0kIArNqUFwtc1v_OCAVYp7qKOPkoVemR4v2XdOGkGOEGBgc8XeU-Azhx8OzFtMFa-utDfz7TN_FHS6f4gcCWKMVJ1HyImi46GPbFeA4pw8OJRzIoLi49taQasjOVFA_lX467FB2EAtTrCIfxTfu4YqMcK5Vekw-3YieS10SzoN7h3B-hz7ejVkGRpvZyjsT1Q1E1iVAOiMzNGfUeQSezMqKvdZSVGMdzPHhakc5zCFJWBI8LaOFc72CUx14pq84Py_HRzM8yONHSL7A_X9GvFkpSrY6s9HJc_ZKLs5ZWnZF_xzuhlUn-F1DfGQLnqmHOZ6Lz0C5ywO6M6RrnmWet-ln_qPBo4TmvYuCz7tBNYbw7rkPAgGjpND__tlz-DybGecs-4BpKQICJ62l4vw44MfIVQzBdtJA-Uk6T3C7-grhvq-NshNHVK7AsQEcffc7eXXoJE6cmp4n_fEvS7skLAytsWaS02AGd2muchRfR8IYNV_gmYT6DqHaMFqNfxRM0_mZMji1uAkMeLnNB2dRwcuHEYO6lzEfFpPrU2gVIFIQuL8xVQGmJNfe6FheIICdZV388EvtfwzkHqy-3RMkBy0tin0mJYUjc-LXi892dZWkByg3iqEmI28cQYXO1_2Hb7uNG3JLGKaBsM4AVsfCztkD6h6xb7-cmXJp1TQjwktXx2EnJzW1lsxrHo54DFvHdJfpyBGGJI8sie8_OU9Vfs0JN8UHV355M_dSzufSMHiGXBzl1XfqqDfsYXN6MAhd-dWsGAQHZ_LFzJOua7gG5MxiC4sxj3mz6WnR6OSMkLr0DJNpKgJoid83uTAn_NU775Tciq9ID9KB5kU713aL5QV0ZajcQ3D2MM5EcvWKu5Gsv_Usd0TZ5RRmUIRykQ-Hn2tXEmNTmU31XxickBp6OGPb9Qvc8Vvx2wFwJ5kxvdw6T6SBq0vivfugsjRtZ8alE5xFh-SpipobTKzosRktz-lwn0cd8n7JZEbQoAhJfpqLYNKa2Ga20Aob5iNOE1a6jzyX_sJN9O991huBRat8WqTWicWOE_EmEEl6X5FojYiytKc4GgfbDW1k5E_9G72olB4Fk3O2deFeNafs9TOknPn6XgcNhF8s-RXIr7m9dwihhUskSSONnAEwH3CYJiz-3U3Jtar3VK67_ZsjYd4pFBJvwTdbVON_3M2jcFyK8CfS1neNzZam-ICgzMABwy5B09qWA4tRgjtVM5UFEutVYcnFUM54IwHWoelRWH9vT4J-mvvn1s30LsIA_WQHUJTTPnd9XeHduwG-XhX_4BnHDxv3PVgNlhY3kGI3FXYmtdYR5buPf3TK1ZSAXOue-0yeTxPVgA-I0cYOEvPOy1qiR_-Sododo81LYkm675zmaW34sDMWi3Xw3oiKuMsItxLToJC-nO_R49vIillj9Ar1XSKgVBpOVFCzFP2l8kGp2TEp0IuA2lquZpoQPg0VcXsBOzqjWj0J-Kyw2CaptWD_LxkY_ib0j_vH6u_54ZH-Iyo5gTwVIBEHvKFXVPp2teWpmx0kf7QTlmIaqmPYD8IzfWDtItqOg1b692h5j17YTvHSnr5x467gZogty4n0PrAbtnLNQ8dJ0_yY4IqTJ6Chc99P7zpJheImhuGTPlrEe-rjSxXjOLP_O-C-SopTr5xpZfQeJON1JgDiAnv9vSWFzr2DTPcwrkg7sz4dct0lJwxiTM1PGsjvNPf-TBon8gEsrNsLu15CJmND_GGZe7KRLlW9Y1IoDuTuccxa5tckRRoL51i5W3c8UdaZVocKWIoA1BIxN9k9Aet_nmqqPCZ4Ep5tHRk2lSlnONBzKTJc0oL5HOV75YlXrhZADXOrnudYW7jtl-ZXv1LNcZGeWFwzY2DEQpUHWP4ZCwOGbU8YDQ-yCu8Exf-DTRaM-ulFd-088DSXGLymKFhooRlfT9qqcHB1rNMW509R_5J6etAy73qbs2MFZmqCUik1ijf71jHEiF1HgqU3p9OFSk1zZKeuuQl9eaCx7R_wR8UR394Cw_iQSGZURvy5hOhKqidviY3do9oXbQu9iagW6_p28D-VVClZsrGBP3kXycD152e_6kW-RjLaTXZMOeXbvaLX2HPI8AgniaP8UjHNbL_PjcVXh89z97BigGuTNSngedXtTN4N1F5BVHvfBjTmPaPSdhIgcw7H7ZySoGwscvLmN-GY2iu-BGXEBEL82RBlSkGhcDdk_vdCRWSbAr1-Lcl0doK9OiKP5DarQI0UPyQVpc6WCV2KHqZeToCbnMnmSudem19ElgQBMZWXuankA-Pn1j8V1n72pWPBPCbMFfs8I4yrvYklNEJTOtHHDPUq7zFZ-B1T-agFmAjmWz_WBxLEeu86_Rljm3hFLAHOMzAz1DeY-t20pCK2MDKtauwKDs3PelftQk9isSjj-KXy21tQ270VQrgwv3JrICAm_U_ikbcFNl-TlCuuTEPousgdxNLLdguiM2v2w3gt8Y-6s74qn0R5Pv471Mc_VUONpseS8Q1itG8kv8vmyyG0VNrcFR661Jk4pKwe1pULsn6FTFpX-TlEIz1UxwNpM0zsHFeAWYtOT505B_-0V0FVXg0l3WmIxZyUsHQYz8gyAS85YCARJUMzB_OfWKVosWaXH3_-eAcRYHdopoNq3DipYdKionBI09fxWtLAfSvXo4G8bDMrRHG7tue1wHov_naOFWMe-wkD5KF7-rr-97ef67xtlNGFe4uW8SuWXzw9qopEb3URNkI1R1BEqyYbvu2OwDnZ718HcDQKA7dyEuAWjuRepChfr5I2BkQT1wwVDetZ2Kf4DHh_wP7q2ouOjLUK3az8FF8YehVmcgqrx_aubuq1gw0xiAnsWnViNJOaT4pj_TEFXuVUyiij6y3PHaTmw2dEtMS3LpVs4EAN009N9CSS2OX3SZd6dd3v0WZqDn-1s8HwOK078FBuE0G7-27MJT_oc8eYJerF-cTlUWMOHdlbLVamZpq2JZpPSNk5_nXfxEqb_kIyn7DBIOnt3s14duGdtfFc_7u3jIpUhHaVFBR2UlM1gTyXRzIhXpqU8ZyheJOOYtXsXkUFmIC8cS-7mCgurgT3Lim-VPaj_Jf-ye6YHM5SguG-5E3Cl9THJjxaL0UBucGKHm0itltbd1RGY4xu8j8w8DU331EKKmV-SIl6IF2evKPAf9ZpR2umSkDSGprK1K6jnIzOxElw4Fw4cVnxX2YtdzuVRGGYwgVrEawQpT-O6HvlnTtJ3MlfXv6d9u7KgWzPpml9Ig8U_YLkOH1ehUoW5bAuxMrz2qc3rSttxdym8xwlQCao760LBxBYZDBUbqmGbH8G9DR5rQ4KTUxnmn-EADwOVi7pb2en1FqEYC8N2oEc7lBrCPHmqhSzseOjAmGIlNEwknYExJuBz-NhFlcOfjxjCrX6LwfubAAgW8DbLjvRKT_f3oPhhi4yQ-luqZl2rqdTjydLNMk8isvGN1J6kQDAL4dZiJ0x6IBbiWGQ4KOfc352zaGrkcQUffCgRvF3StBloOcgyE9TjNwTasuCggsBJUwzT8uJxKaOGZxubpda2JUAlEz-XZ0-cy1xH3l46fFHjEVtE0gMIZFa1zGbsSPztV7YIJPB1yanFsY4zoiQ1xGb1wYDWmlaaTdLnZ1eUovvPfIfKM-WL6NogQ6nEau1kKFjIwjehNaEGsyxpx90yhVZ7dfFwqN30Ql_kn0rcCqogR_K48J0-B1F2tVP5sc9PhhHhXHSVexVwJcbFh3OkvKBlTvCUBKrUx75op2G8HQkL1BDQ084mkcfQbJ-LDV55XBcPGOjbWxIdU4GMukOqADTZH32Ezh7Ws_b2jL7QoBRj0WIRM1kse5FifNII__U3yIPZGGC6-XSSp7AQ0H0GHgE0MwHUH1M0rENks6vBAWXMoRNVZBTaPdPiYyf_nroeuvfP97pUnmwwQph_cUUL3AtXXu5-YvJCG8DIEigvKkSG6_rzjRLT9qSa3YHPh7Qxt1NM3pNXwvMVk9vnmPQE02EyPE_cmg76vXjp6ndu3C8CQw7zyv7vtqqOVyVR6eHQcGHQKIm8ht1c8HMK1_inQxwkJY8623oe6g1Cu1jpu1blbDzMDCphPvukMh32KcqJ4SQVUwa11C9xkmOxUibbrF8ITYB6V2nzTLcFerYWhH-WAXYH0CFLUB23_7eXpiAmwqr3qyrs1Z6-zLQUeJAoHF6mtHgqXKJSSkj-yY71iaMBMs4N0sgW4BB7a45G9MfnrukHm9dcOdlUX8GY7pluTnoxjMKe9DORRW5LswMU3P8LXNn2TwXPSN_m4pqfO3hKn4QTqKfYDVBOjnwoqNF1Bt9YagDbuITaiHkqnj4g82WhEIn9bfuNFtj5ZIopsiSTTEojNl8W0HKoLqrYQGAeeoE3cG91cZDDid9D-J14l8oyU1RA2VebH0Rf5D3AZLk0AgIULf8GZwIbqrT3gqr5R2bKkehOiqBA-YYYEeETZQVKr99saIp49QYUvRMZCGyg_zHS2r-miFz24P4ZF5y4IwPVyNvP9Crf9Ow1thzLv8W64WTRwKme-uMskseyI_fpjoxnuAPlRy5OM-vZZi9WFUT-k0m_zlLEDPorshdqqxWJ2XKHUcg43uokHOaOdwuaaG6x9v-e69KQA4C5fUJwZY6QBycsfzZFSNKFfNQSZybLioa3F9OpPKs91-ixeyq-EZAculp3MURXPccBIOdpMTasF4AeGwxprbE4Arvq3mZjyfrGYo_SArk3_wWgKxis4gRBFyT3sNY2BkVIM4KV3NKz5rvkyr0VD1jp4UL4dcYfx4Q_Nu0WoerHRi0VFtUqDpY22_4Z0NOanmiItrmwmhf8OK3n2oCGPtjStD0ny9Hqp6L_GNwrAfVco8VSv4qWjRElO5tbh7tKtj6Ujg9KNVSyPSkbauXxiF5KMUWY8ugLRspec8L9OuimVjor5TpiRJ-hCXhxgt4-FjvsT0IDt75nuNzLeuGwYGRHmcbU4tY2lIXl9bzMK8Zq5i2A92qJMkQOtqATwdBbots7G-DbgKZl7g-QQ8-mKcV8l-S7frLiqGmGW_cIqA9idJo7CTwm0YZsNM6TxsuRnrAyfnr73Etu6-TOQ2hBNqi1iPPlLmsLCFFgTmhv574J7Fv2en1VTldqYe0KO-KKXANpDCFU38QyEctuDY298fBXX9ou9wNqK-nJp5eUw2SZxu_5dHnVz4Pf00LCDN2EiRRznpA-vlUVAGYiHNhXCsWC4d-rFZEwQXz4xow0q7QbGjX4Zran1MwHRwUMY0H4EEVCy_g7KXzBYVv2Y40XK0vRUj7GJzJXMkYraBBkYsqoGt3CQOpTyroIOG_BFfU2MOTK4AHzrUwbTrL-9GfakP3qPpAsCila7EUdN7wkpMRYu7OUjChmimVuaDENNpPB1FrkqCRrdZFJVh72muFdSN41s-51Hl915jzcxZhWdnZCKGD78iTJO--jl3bKaGBKLQ82kbO-1GJEmWrZdowgU3dtN6DHJG2LXq72gU3M3h9TTl7QvzaVF7QAp8Y6gcH-pQOZr8rR4gjfxf3gm0djv-9qSUWcoczBUoi38rmbbl2VgdgNDd5DIUD4T2eImvx_LQnJupS67ZiBEzoymszyYJsG_g4hO-QCUuEhwEOk8_VQgayYFUmIJTNXvLYWEMwa3UVmxC3Gb3vm7X04peTVESwkpEdl3zW9TdJihQBr2h-vcNbzHMVem72ig0SwbTWoOMk2V9NvGLCGfiSDedXXH6HKdX6tM8MRJzpmOwNNKoAoMVwb1JCMZXINPnjylVFUOrdRKrvY5SxSYOez7Oixc63IijUOaHqyDFZMrJZxpeiJ0mPz3kzRKbc6EBSdn3m-4XJZeFXchZRNQ63i3BwrL5iqEmnGKAxzgyNeGxOvIybkqSAot9iOPYecrktTZSHQ0vRoj2ZBWU5h-nDqPzzPTZC02s6hHpfmsK_6LU1eStQSc1ppZLv8_8xiPIZgXvqWqkq9_BEUD5la-gjssdZgFBUlHbHZacFd35YtzfHurV3GAeKtmS6wXpuWTBsT1NlGxNS_nroDWtN4ExLXHmwsoWuPSOFbUPALE6FnncHkbrv36-BOWrbJGaK_PYblsRhubZul-38VDDIq7Gq-lM5bc56GN9OuNH3AEXUuZVHjwo2hNpi0YhG01HXO1zRMNSuzamcdB6GfEahU8PbizHuPy5F-XfKFu3qqTYwwMbaTWjvhOJ7hCKKSwD0yq3dKNNzIQ-k1lq34gzHGMl3K8AhNk6sgANUmXo8JhSmBmKTwsV62JOFFPC7TbYtnu40DXgqIDTWha_PlZ8qjWJnUMjemd6bzVnjgOQ52fIwS3kfU1BC-rS3ZfA2qAAWgjVqVtB1Y-IXCWADqo7jgY1aIWBSD1-g8n_RRCvMIOcuRhrkeqyJSyUfq0QDRG2fI2P_i5iSDzyFxgrmemr5sO0HHEL0WY_Ye6uCGFbDnQsz2kc-c-_hu8zf5NrNdTX36QXnpfjvQcZGm7zDkwDA58MsSsz9VHR9ZrlIubnvH2YtTTiLgKoeMZWjkL-2oytpVnLTIbo2QJS3lWACI8VwJe8RmqT64nrb-ugXYPqv-rZyZnZ1MIBqM_tcI78t6PlOEEAVPxRq7jHRFGqsyZWNJqYFZpAhlihkbb_QAzDeyjQRa2uu9w_8UQygqnfM9gXQSV7BGDQk1827wl0zo1XlTnyu0TdQmM-GcyEIiHZ21dOtl0FdRnGKSgxv7TasafaIrjUatIzQkvCbRJ061xVGnFezV3cZxe2xx3Su4CWZvhd4qJwF_g7c4pV6mi-OLhBDB4p1SLXP0dVt1iL8YsJu8glSBn2Ke-MkuWEDV6DXmSDYFMSeC655eOxUpJeW4WmlGkahQfYH9-kRJ5aa5AASILRxEcQsOV_X9Jm69TaV70qOLM_V48geTHcMzIa0IHT_P9WbPLNsa3oKYXwBBRYhHurDKfa6s1Sx_Fzr0nfg8MX3YKhvWhxygChti-DJAdw30JYnaNUy7tL2LlkB3he68qu2w1mYLMEfa50fFhJAcmKsvlonyrGicuEL676dkYd6MSBakZPbU4WBPippcwkjs2EU73i1ZfoR5qYDZdptj7ThLXUfcEruDt0VNhjEpeoURrUT-DtgmvhE_0uOpyBJus6qFBDvEQpmVakrCD8_0o_f6bMxw-D-El13IPT_aS6q5qIZvk2BNJMw84ctzz-_nezHSOvRG2PM_GILv3z4geNI_Rt2F5yV4krUCqUMqPnnC0FXMTY3wjlpdl0dwakNUtStTTstWsRfN0eioUPYL-ygseg00AXMuIVUFh5nQjUMVdogJiS_xSr6UCn03cHFeZCWgINeC1bAQlmumU6rEPqRxNhoMAjY7fXeAB71qzMRTcTYFQ9yKfnjb-hndsDbfshLbOkg8_0Zii_MwjxPN-cA6oqGMqoPJfOC0uET1k9ddFOwFggK2DoO4oBgq0QEYDua_mHoD5UaxMcnLzaxThADhR00aMmXjp5WSh1VB1U7p26zpdme40q5NRiPV1cHwQUJbw6N81mb5qUjysREbDh5X5T44WHpJE6UxjwupkmhAfO71nPNuZR9ZfCcQP0eEQrf7TysiC1zB7ho3qZNEHr9nuuqL_OfbmPBfPcb5DvttRnSErD1frqzJNyKwuD8ppZFlQRhHPX8xfCvnisUpM2CmNg2wNprdz1AZPmBtY7jq93a63DKVT0CYFtf0D8XAlybHnR5vd8LzKFKbLY8WWxZPtMF1jfY5Wgde0EoCryB8pOrJK3zni29mCr1lkUjU-1dU45wZOpTQnd7R69dPA0PzxkZEv2sg4s13R-jYHoLSh-tJMtVuDqEmtZinzEdZ31gzoDuCgN8I4_nDiCu7MahyeA5FgGyr0iavMl4RSyuN0P74X59YML2RXdjeBhJf6dMQ0Zt0SUhMfQjPSKh0SWMY0G5eYfZLm2--szwXQvEezBASpn7Iuch8SKsIkVtBBno8yPfpW0rXyahrzaaQ0NPhuC4CXtSUmWuJVOdBGGOQqxm1mmMG9rrFzLt6cK04ZPrQx2awioMd31_ZGMnMPyt48wbFcDf8cHo1faR0S7js4CZ24S9IoZaZg71XBtGf2sTyCXghd9qH1XBlLrHmNVI52X-kOR1_TDmQCjjxtp3l6LBPGVF6JbHKhBZ1fxv-uO85fGkURGwdt3xyGbx7jIVMWohB0LdSlaRsSiI_2ecnZliG6zXqec3FLtdw5uHk1QJ_iYQqsD4F73ZTDpWLR3F2-lM1vQXfxdtk41rQspfi3tfWsowoQvTRbKn2kDhbH211KNPw1o2zHuL3ym4LpFTI5ER8bmsXog4_cQjN3Na8ojQBRd4P1TWvBRYYnT9utiCsjA9CATJ3jAhS9dMHtx6tGnGCjfEeDooLeGkfU1qZEJP3vswTQEEsv8VpFA5xMJR8sUYFQp4vg1cRvvAKyZWY9zHhCMyOU4E7btdUtfQgKzpmuPTYqXm1wI4kSSwLhpY3ZBxzwCA3oLf3D7gJmbo2K7rALjz_H1XC8dCapb_nMrj_inqemMiB-AJUEjRRIK4160-qJK4kq0xwhuQwDVG7Q7ZoaLJ56hp-K47Ipl5QKG-bD4kAAl8C_ilS4He1QsnXbtwhlQCwe85gfs5oDwMiMeC7S1ydNLoK7DD_w14fKlaWkHcVLhG55Yb1OtQdm43FvSoC6dWHXo-MeBjEvg6NKCin-KeadwCFxjEkiCmCDi7_zCPFXKYOXwB4wh5PglgfxEOE-CPwjMn2Y_NhgBm9pmWDFxQbViH2wNIDC0MC8Vm3zTwMG9857O8LVnCKcjgIACt7MewOYP-ZHCMlqdwobcAwDqI9FDYPa5R4wmkgWeByjJZp9jJITOG95BX9RYxthd6elyFRSjLoo6o8WdVXuyH7Jk8V2uJuClOiwyi2_uidE_oOOmSug8jh-VZGOuJXlkAKaA24MZ_uQg1fM-hioHUUFlBiStcmJvhrq_LZVQ5wMBCIGUmcvctRnmzHSK0Xgg638yJwHfItBi7rbfh4nXCdE_cm-HfBuQStVC7CwJpPTEtqGA-IeR4J6r5gzth3CmoJvpYfnxjy-WeBHw_xCAbxIc3urrXG1Dc8p2Q-T7KJ25zMPHD-9HAg5P6QidgAALgOZlmw-02u",
+        "status": null
+      },
+      {
+        "id": "msg_0f6c4db51a601c15016a55fa36aadc81a0bee3fd2e18db2ff0",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\n  \"stage\": \"02_spec_extraction\",\n  \"mock\": false,\n  \"llm_call_executed\": true,\n  \"source_scope\": {\n    \"primary_sources_used\": [\n      \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\"\n    ],\n    \"provided_material_complete\": false,\n    \"missing_or_unavailable_material\": [\n      \"Implementation source file(s) containing mlk_poly_add or the target polynomial-add routine\",\n      \"Header declarations or type definitions for the target implementation\",\n      \"Build, proof, or harness configuration files\",\n      \"Deterministic Python advisory extraction output\",\n      \"Raw formal-tool or CBMC output\"\n    ]\n  },\n  \"spec_facts\": [\n    {\n      \"fact_id\": \"F1\",\n      \"category\": \"definition\",\n      \"statement\": \"The specification defines R_q as Z_q[X]/(X^n + 1), with n = 256 and q = 3329; polynomials are written as f = f0 + f1 X + ... + f255 X^255 with coefficients f_j in Z_q.\",\n      \"verification_relevance\": \"candidate algebraic-domain fact for later polynomial-addition trace and coefficient-bound checking\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The standard gives the algebraic definition directly, but it does not name a standalone implementation function for polynomial addition.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3; Section 4.3\",\n          \"excerpt\": \"n = 256 throughout this document; q = 3329 throughout this document; R_q is the ring Z_q[X]/(X^n + 1) consisting of polynomials f = f0 + ... + f255 X^255 with f_j in Z_q.\",\n          \"supports_claim\": \"R_q, n, q, and the polynomial form used by the standard.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not identify the implementation's exact data structure or function signature.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F2\",\n      \"category\": \"representation\",\n      \"statement\": \"Elements of R_q are represented in pseudocode as length-256 arrays in Z_q^256, with entry i corresponding to coefficient f_i.\",\n      \"verification_relevance\": \"candidate array-shape fact for later C-level assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a specification-level representation; the actual C struct or buffer layout is not provided here.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.4, equations (2.4) and (2.5)\",\n          \"excerpt\": \"An element f of R_q will be represented in pseudocode by the array (f0, f1, ..., f255) in Z_q^256, and the i-th entry of the array f will contain the i-th coefficient of f.\",\n          \"supports_claim\": \"Length-256 coefficient-array representation of R_q elements.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No aliasing, packing, or in-place update policy is specified for a target implementation.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F3\",\n      \"category\": \"array_arithmetic\",\n      \"statement\": \"For arrays X and Y in Z_m^ℓ, the operation W ← X + Y is defined coordinate-wise, so W[i] = X[i] + Y[i] for all i.\",\n      \"verification_relevance\": \"candidate algorithm-to-code trace item for coefficient-wise addition loops\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The notation is abstract array arithmetic; the concrete implementation may use any mathematically equivalent procedure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3, equations (2.2) and (2.3)\",\n          \"excerpt\": \"Let a in Z_m and X, Y in Z_m^l. The statement W <- X + Y will result in W[i] = X[i] + Y[i] for all i.\",\n          \"supports_claim\": \"Coordinate-wise array addition semantics.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The text states coordinate-wise addition but does not itself add an explicit loop index bound for every implementation.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F4\",\n      \"category\": \"polynomial_and_ntt_arithmetic\",\n      \"statement\": \"Addition and scalar multiplication in both R_q and T_q are performed coordinate-wise on the coefficient arrays; for NTT representations, ĥ ← f̂ + ĝ denotes coefficient-array addition.\",\n      \"verification_relevance\": \"candidate spec fact for later implementation matching of polynomial addition in either ring representation\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification describes the algebraic behavior, but not the exact C routine names or buffer aliasing rules.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise... the addition of two NTT representations in pseudocode is performed by a statement of the form ĥ <- f̂ + ĝ.\",\n          \"supports_claim\": \"Coordinate-wise addition in R_q and T_q.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The standard does not state whether a particular implementation must use an in-place loop or temporary storage.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F5\",\n      \"category\": \"modular_arithmetic\",\n      \"statement\": \"For z in Z_m, the pseudocode assignment z ← x + y means z is assigned x + y mod m; modular reduction is implicit whenever a value is written to a Z_m variable.\",\n      \"verification_relevance\": \"candidate bound relevant to later C-level assertions about modular wrap-around\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The rule is defined abstractly; the implementation may realize the reduction via any equivalent integer arithmetic.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.1, equation (2.1)\",\n          \"excerpt\": \"For z in Z_m and integers x and y, the statement z <- x + y means that z is assigned the value x + y mod m.\",\n          \"supports_claim\": \"Implicit modular reduction on assignment into Z_m.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"This does not specify any concrete machine-integer width or overflow handling strategy.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F6\",\n      \"category\": \"pseudocode_conventions\",\n      \"statement\": \"All algorithms in the specification have access to the global integer constants n = 256 and q = 3329, and subroutine arguments are passed by value rather than by reference.\",\n      \"verification_relevance\": \"candidate trace item for function signature expectations and loop-bound context\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The pass-by-value convention is pseudocode semantics; actual C code may use pointers or copies while preserving mathematical behavior.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4\",\n          \"excerpt\": \"All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329... When algorithms invoke other algorithms as subroutines, all arguments are passed by value.\",\n          \"supports_claim\": \"Global constants and pass-by-value pseudocode convention.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The spec does not define the target C ABI or whether the implementation mutates input buffers.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F7\",\n      \"category\": \"implementation_constraints\",\n      \"statement\": \"Implementations of ML-KEM shall not use floating-point arithmetic; when division appears in the specification, it is to be interpreted using integer or rational arithmetic as appropriate.\",\n      \"verification_relevance\": \"candidate C-level implementation constraint if poly-add code shares helper arithmetic or validation logic\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a general ML-KEM implementation constraint; it is not specific to polynomial addition alone.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 3.3, \\\"No floating-point arithmetic\\\"\",\n          \"excerpt\": \"Implementations of ML-KEM shall not use floating-point arithmetic... ordinary integer division x/y computes floor(x/y).\",\n          \"supports_claim\": \"No floating-point arithmetic requirement.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The addition operation itself does not require division; this fact is primarily a surrounding implementation constraint.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F8\",\n      \"category\": \"parameter_sets\",\n      \"statement\": \"The approved ML-KEM parameter sets are ML-KEM-512, ML-KEM-768, and ML-KEM-1024; n stays 256 and q stays 3329, while k, eta1, eta2, d_u, and d_v vary by parameter set.\",\n      \"verification_relevance\": \"candidate context fact for parameterized harness generation, though polynomial addition itself is q-based\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The target polynomial-add routine may or may not depend on the selected parameter set beyond q and array sizes.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 8, Table 2\",\n          \"excerpt\": \"Approved parameter sets for ML-KEM... ML-KEM-512, ML-KEM-768, ML-KEM-1024... n = 256, q = 3329.\",\n          \"supports_claim\": \"Approved parameter sets and fixed versus variable parameters.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The function-specific dependency of mlk_poly_add on parameter-set fields is not confirmed by source code.\"\n      ]\n    },\n    {\n      \"fact_id\": \"F9\",\n      \"category\": \"indexing_and_bounds\",\n      \"statement\": \"All arrays in the specification use zero-based indexing.\",\n      \"verification_relevance\": \"candidate loop-index fact for later array iteration\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a notation rule; the implementation may index differently internally while remaining mathematically equivalent.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"B[i] denotes the entry at index i in the array B. All arrays have indices that begin at zero.\",\n          \"supports_claim\": \"Zero-based array indexing.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not by itself specify the concrete C loop limits used by a target implementation.\"\n      ]\n    }\n  ],\n  \"constants_and_parameters\": [\n    {\n      \"fact_id\": \"C1\",\n      \"category\": \"fixed_constants\",\n      \"statement\": \"n is fixed at 256 throughout the document.\",\n      \"verification_relevance\": \"candidate bound relevant to later C-level assertions and loop limits\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"No implementation-specific buffer length is given, but the specification's polynomial representation is length 256.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"n denotes the integer 256 throughout this document.\",\n          \"supports_claim\": \"Fixed constant n = 256.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"n is a specification constant; the implementation may use compile-time constants or macros.\"\n      ]\n    },\n    {\n      \"fact_id\": \"C2\",\n      \"category\": \"fixed_constants\",\n      \"statement\": \"q is fixed at 3329 throughout the document, and it is described as the prime integer 3329 = 28 * 13 + 1.\",\n      \"verification_relevance\": \"candidate bound relevant to later modular-arithmetic assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification states q as a prime constant; this summary does not infer any extra number-theoretic properties beyond what is written.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"q denotes the prime integer 3329 = 28 ⋅ 13 + 1 throughout this document.\",\n          \"supports_claim\": \"Fixed constant q = 3329 and its stated factorization.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The factorization is included for the NTT context; it is not specific to addition.\"\n      ]\n    },\n    {\n      \"fact_id\": \"C3\",\n      \"category\": \"parameter_sets\",\n      \"statement\": \"Table 2 fixes the following parameter values: ML-KEM-512 has k=2, eta1=3, eta2=2, d_u=10, d_v=4, and RBG strength 128; ML-KEM-768 has k=3, eta1=2, eta2=2, d_u=10, d_v=4, and RBG strength 192; ML-KEM-1024 has k=4, eta1=2, eta2=2, d_u=11, d_v=5, and RBG strength 256.\",\n      \"verification_relevance\": \"candidate context for parameterized harness generation and cross-checking\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"Polynomial addition itself is expected to depend primarily on q and array length, but the broader ML-KEM context is parameterized by these values.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 8, Table 2\",\n          \"excerpt\": \"ML-KEM-512: k=2, eta1=3, eta2=2, d_u=10, d_v=4, required RBG strength 128; ML-KEM-768: k=3, eta1=2, eta2=2, d_u=10, d_v=4, required RBG strength 192; ML-KEM-1024: k=4, eta1=2, eta2=2, d_u=11, d_v=5, required RBG strength 256.\",\n          \"supports_claim\": \"Approved parameter-set values.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The table does not directly specify any polynomial-add-specific special cases.\"\n      ]\n    }\n  ],\n  \"algorithms_or_steps\": [\n    {\n      \"fact_id\": \"A1\",\n      \"category\": \"array_arithmetic_step\",\n      \"statement\": \"The array-addition semantics used by the standard are coordinate-wise, so a polynomial-add implementation can be modeled as looping over each coefficient index and applying modular addition at that position.\",\n      \"verification_relevance\": \"candidate algorithm-to-code trace item for later harness generation\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification states the coordinate-wise semantics; it does not prescribe a particular loop order or memory-access pattern.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3; Section 2.4.5\",\n          \"excerpt\": \"Array addition W <- X + Y is coordinate-wise, and addition in R_q and T_q is done coordinate-wise on coefficient arrays.\",\n          \"supports_claim\": \"Coordinate-wise addition semantics suitable for a coefficient loop.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation may use vectorized or unrolled code while preserving the same semantics.\"\n      ]\n    },\n    {\n      \"fact_id\": \"A2\",\n      \"category\": \"polynomial_addition_step\",\n      \"statement\": \"When R_q elements are represented as coefficient arrays, the semantic result of adding two polynomials is the coefficient-wise sum of the two arrays, with each coefficient interpreted in Z_q.\",\n      \"verification_relevance\": \"candidate postcondition template for later C assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The specification does not give a dedicated algorithm named for polynomial addition, so this is a semantic extraction rather than a named procedure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.4 and 2.4.5\",\n          \"excerpt\": \"R_q elements are represented by coefficient arrays in Z_q^256, and addition is performed coordinate-wise.\",\n          \"supports_claim\": \"Polynomial-add semantics on coefficient arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No standalone algorithm identifier or C symbol name is provided by the standard.\"\n      ]\n    }\n  ],\n  \"equations_and_bounds\": [\n    {\n      \"fact_id\": \"E1\",\n      \"category\": \"modular_assignment_equation\",\n      \"statement\": \"For z in Z_m, the assignment z ← x + y means z = x + y mod m.\",\n      \"verification_relevance\": \"candidate bound relevant to later modular wrap-around checks\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The equation is abstract and does not encode machine overflow behavior.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.1, equation (2.1)\",\n          \"excerpt\": \"z <- x + y means that z is assigned the value x + y mod m.\",\n          \"supports_claim\": \"Modular reduction on assignment to Z_m.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"Does not specify any concrete integer type width.\"\n      ]\n    },\n    {\n      \"fact_id\": \"E2\",\n      \"category\": \"coordinate_wise_array_equation\",\n      \"statement\": \"If X and Y are arrays in Z_m^ℓ, then W ← X + Y yields W[i] = X[i] + Y[i] for all i.\",\n      \"verification_relevance\": \"candidate equation for later per-index assertions\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The equation is stated for arrays over Z_m; the same style is used later for coefficient arrays in Z_q.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.3, equation (2.3)\",\n          \"excerpt\": \"W <- X + Y will result in W[i] = X[i] + Y[i] for all i.\",\n          \"supports_claim\": \"Coordinate-wise array addition rule.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The equation itself does not explicitly restate the modulus in the output line because the arrays are already elements of Z_m^ℓ.\"\n      ]\n    },\n    {\n      \"fact_id\": \"E3\",\n      \"category\": \"polynomial_form_and_bounds\",\n      \"statement\": \"A polynomial in R_q is written with exactly 256 coefficients indexed from 0 through 255, each coefficient lying in Z_q.\",\n      \"verification_relevance\": \"candidate array-length and coefficient-range fact for harness bounds\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The implementation may store the coefficients differently, but the semantic object has this shape.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.3\",\n          \"excerpt\": \"R_q consists of polynomials f = f0 + ... + f255 X^255, where f_j in Z_q for all j.\",\n          \"supports_claim\": \"Coefficient-count and coefficient-domain bound.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"This is a mathematical bound, not a machine-memory bound.\"\n      ]\n    }\n  ],\n  \"candidate_preconditions\": [\n    {\n      \"fact_id\": \"P1\",\n      \"category\": \"input_shape\",\n      \"statement\": \"A candidate polynomial-add routine should receive operands that are valid length-256 coefficient arrays representing elements of R_q, with each coefficient in the range 0 to q-1.\",\n      \"verification_relevance\": \"candidate precondition suggested by the specification\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The specification gives the semantic representation, but the exact implementation precondition for mlk_poly_add is not explicitly named.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3, 2.4.1, 2.4.4, 2.4.5\",\n          \"excerpt\": \"R_q elements are coefficient arrays in Z_q^256; array addition is coordinate-wise; assignments to Z_m reduce modulo m.\",\n          \"supports_claim\": \"Candidate precondition that operands are valid ring-element arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The target implementation may accept equivalent internal representations rather than literal Z_q arrays.\"\n      ]\n    },\n    {\n      \"fact_id\": \"P2\",\n      \"category\": \"representation_choice\",\n      \"statement\": \"If the routine operates on NTT-form values, the operands should still be valid length-256 arrays over Z_q representing elements of T_q.\",\n      \"verification_relevance\": \"candidate precondition for later trace matching if the implementation uses NTT-domain buffers\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The provided specification supports NTT-domain addition semantics, but the target function name does not reveal which representation it uses.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.4 and 2.4.5\",\n          \"excerpt\": \"Elements of T_q are represented as coefficient arrays in Z_q^256, and addition in T_q is coordinate-wise.\",\n          \"supports_claim\": \"Candidate precondition for NTT-domain addition buffers.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No direct source code evidence confirms whether mlk_poly_add uses R_q or T_q buffers.\"\n      ]\n    }\n  ],\n  \"candidate_postconditions\": [\n    {\n      \"fact_id\": \"Q1\",\n      \"category\": \"result_shape\",\n      \"statement\": \"A candidate polynomial-add routine should return a length-256 coefficient array in Z_q^256 whose ith entry is the modular sum of the ith input entries.\",\n      \"verification_relevance\": \"candidate postcondition for later C-level assertions\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The spec establishes the semantics, but the exact return type and storage convention for the target implementation are not provided.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.1, 2.4.3, 2.4.4, 2.4.5\",\n          \"excerpt\": \"Assignments to Z_m reduce modulo m; W <- X + Y is coordinate-wise; R_q elements are represented as arrays in Z_q^256; addition in R_q is coordinate-wise.\",\n          \"supports_claim\": \"Output shape and modular coefficient-wise sum semantics.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation could write the result in place, out of place, or through a pointer parameter.\"\n      ]\n    },\n    {\n      \"fact_id\": \"Q2\",\n      \"category\": \"semantic_result\",\n      \"statement\": \"As a mathematical result, adding two R_q elements should yield their ring sum under the specification's coordinate-wise addition semantics.\",\n      \"verification_relevance\": \"candidate postcondition for semantic equivalence checks\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This postcondition is derived from the ring and array semantics stated in the specification, not from a named implementation contract.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition ... in R_q ... are done coordinate-wise.\",\n          \"supports_claim\": \"Ring-sum semantics for polynomial addition.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No formal proof obligation is provided by the specification text itself.\"\n      ]\n    }\n  ],\n  \"candidate_verification_relevance\": [\n    {\n      \"fact_id\": \"V1\",\n      \"category\": \"array_bounds\",\n      \"statement\": \"Candidate bound relevant to later C-level assertions: polynomial elements are length-256 arrays with indices 0..255 and coefficients modulo 3329.\",\n      \"verification_relevance\": \"supports loop-bound discovery and index-range checking for a repaired-engine replication of polynomial addition\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"The concrete implementation may use a different internal layout while preserving the same external semantics.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.4\",\n          \"excerpt\": \"All arrays have indices that begin at zero; R_q elements are represented as arrays in Z_q^256.\",\n          \"supports_claim\": \"Index and length bound for polynomial arrays.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The specification does not tell the analyzer whether the implementation uses signed or unsigned machine integers.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V2\",\n      \"category\": \"trace_item\",\n      \"statement\": \"Candidate algorithm-to-code trace item: the specification's addition semantics are coefficient-wise, so a loop over the 256 coefficients is the natural semantic pattern for mlk_poly_add.\",\n      \"verification_relevance\": \"useful for later harness generation and repair diagnostics\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This is a semantic trace item, not a claim about the exact source code structure.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.3 and 2.4.5\",\n          \"excerpt\": \"W[i] = X[i] + Y[i] for all i; addition in R_q and T_q is done coordinate-wise.\",\n          \"supports_claim\": \"Coordinate-wise addition suggests a coefficient loop.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The implementation may use vectorized instructions, unrolling, or other equivalent transformations.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V3\",\n      \"category\": \"precondition_hint\",\n      \"statement\": \"Candidate precondition suggested by the specification: operands should already be valid ring-element arrays rather than arbitrary byte strings.\",\n      \"verification_relevance\": \"supports later input-shape assertions and repair of mis-typed APIs\",\n      \"confidence\": \"medium\",\n      \"uncertainty\": \"The standard presents mathematical representations; it does not define a target API for arbitrary byte input to the addition routine.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3, 2.4.4, 2.4.5\",\n          \"excerpt\": \"R_q elements are arrays in Z_q^256 and addition is performed coordinate-wise.\",\n          \"supports_claim\": \"Valid ring-element array operands are the relevant precondition shape.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"The exact target function may expose a typed wrapper that performs decoding before addition.\"\n      ]\n    },\n    {\n      \"fact_id\": \"V4\",\n      \"category\": \"modular_postcondition\",\n      \"statement\": \"Candidate postcondition for later harness generation: each output coefficient should equal (a[i] + b[i]) mod q, with q = 3329.\",\n      \"verification_relevance\": \"supports per-index postcondition checks in C or CBMC harnesses\",\n      \"confidence\": \"high\",\n      \"uncertainty\": \"This follows from the spec's modular-assignment and coordinate-wise array rules; the implementation contract is still not provided.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.4.1, 2.4.3, 2.4.5\",\n          \"excerpt\": \"z <- x + y means x + y mod m; W[i] = X[i] + Y[i]; addition in R_q is coordinate-wise.\",\n          \"supports_claim\": \"Per-coefficient modular-sum postcondition.\",\n          \"confidence\": \"high\"\n        }\n      ],\n      \"limitations\": [\n        \"No formal proof of the repaired implementation is provided at this stage.\"\n      ]\n    }\n  ],\n  \"terminology_to_preserve\": [\n    {\n      \"term\": \"R_q\",\n      \"meaning\": \"The ring Z_q[X]/(X^n + 1) used for polynomial elements in ML-KEM, represented as 256-coefficient arrays over Z_q.\",\n      \"preservation_rule\": \"Preserve the exact algebraic notation and the associated 256-coefficient interpretation.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.4\",\n          \"excerpt\": \"R_q is the ring Z_q[X]/(X^n + 1)... represented by the array (f0, ..., f255) in Z_q^256.\",\n          \"supports_claim\": \"Meaning of R_q.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"T_q\",\n      \"meaning\": \"The NTT representation ring used for coefficient-array forms of polynomials in ML-KEM.\",\n      \"preservation_rule\": \"Preserve T_q as the NTT-domain algebraic object, not as a generic array type.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 4.3\",\n          \"excerpt\": \"T_q is the image of R_q under the number-theoretic transform; its elements are called NTT representations.\",\n          \"supports_claim\": \"Meaning of T_q.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"coordinate-wise\",\n      \"meaning\": \"Addition and scalar multiplication are applied entry-by-entry to the coefficient arrays.\",\n      \"preservation_rule\": \"Do not reinterpret coordinate-wise operations as polynomial multiplication or any other cross-term operation.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Section 2.4.5\",\n          \"excerpt\": \"The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\n          \"supports_claim\": \"Coordinate-wise operation rule.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    },\n    {\n      \"term\": \"mod q\",\n      \"meaning\": \"Arithmetic on coefficients is reduced modulo the fixed prime q = 3329.\",\n      \"preservation_rule\": \"Preserve explicit modular reduction in any later assertion or harness.\",\n      \"evidence_references\": [\n        {\n          \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n          \"locator\": \"Sections 2.3 and 2.4.1\",\n          \"excerpt\": \"q denotes the prime integer 3329... z <- x + y means x + y mod m.\",\n          \"supports_claim\": \"Meaning of modulo-q arithmetic.\",\n          \"confidence\": \"high\"\n        }\n      ]\n    }\n  ],\n  \"deterministic_reference_assessment\": {\n    \"used\": false,\n    \"status\": \"not used\",\n    \"warning\": \"No deterministic Python advisory analysis or local extraction output was provided in the evidence bundle for this stage.\",\n    \"disagreements\": []\n  },\n  \"uncertainties\": [\n    {\n      \"issue\": \"The provided evidence does not include the implementation source for mlk_poly_add.\",\n      \"impact\": \"Cannot confirm the exact function name, signature, in-place behavior, aliasing policy, or data layout.\"\n    },\n    {\n      \"issue\": \"The specification gives semantic array and ring addition rules but not a standalone polynomial-add API.\",\n      \"impact\": \"Later agents should treat the current extraction as candidate semantic guidance rather than a code contract.\"\n    },\n    {\n      \"issue\": \"No deterministic analysis, CBMC output, or build/proof configuration was supplied.\",\n      \"impact\": \"There is no cross-check against local extraction hints or formal-tool traces in this stage.\"\n    },\n    {\n      \"issue\": \"The specification allows mathematically equivalent implementations.\",\n      \"impact\": \"Multiple loop structures or optimizations may satisfy the same specification-level addition semantics.\"\n    }\n  ],\n  \"evidence_references\": [\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Sections 2.3 and 2.4.4\",\n      \"excerpt\": \"n = 256; q = 3329; R_q is the ring Z_q[X]/(X^n + 1); elements of R_q are represented as arrays in Z_q^256.\",\n      \"supports_claim\": \"Core polynomial-domain constants and array representation.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.3, equations (2.2) and (2.3)\",\n      \"excerpt\": \"Array addition is coordinate-wise: W[i] = X[i] + Y[i] for all i.\",\n      \"supports_claim\": \"Coordinate-wise array addition semantics.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.5\",\n      \"excerpt\": \"Addition and scalar multiplication in R_q and T_q are done coordinate-wise.\",\n      \"supports_claim\": \"Ring-level addition semantics relevant to polynomial addition.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4.1, equation (2.1)\",\n      \"excerpt\": \"z <- x + y means that z is assigned the value x + y mod m.\",\n      \"supports_claim\": \"Implicit modular reduction semantics.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 2.4\",\n      \"excerpt\": \"All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329; subroutine arguments are passed by value.\",\n      \"supports_claim\": \"Global constants and pass-by-value convention.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 3.3, \\\"No floating-point arithmetic\\\"\",\n      \"excerpt\": \"Implementations of ML-KEM shall not use floating-point arithmetic.\",\n      \"supports_claim\": \"Floating-point prohibition for implementations.\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"source_path\": \"/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt\",\n      \"locator\": \"Section 8, Table 2\",\n      \"excerpt\": \"Approved parameter sets: ML-KEM-512, ML-KEM-768, ML-KEM-1024; n = 256 and q = 3329 for all of them.\",\n      \"supports_claim\": \"Approved parameter sets and fixed constants.\",\n      \"confidence\": \"high\"\n    }\n  ],\n  \"limitations\": [\n    \"This output is candidate specification extraction only; it is not proof of correctness, compliance, or implementation equivalence.\",\n    \"The provided evidence is specification text only; no target implementation source for mlk_poly_add was included.\",\n    \"The standard does not define a standalone mlk_poly_add symbol or API contract, so any function-level mapping remains an inference.\",\n    \"No formal-tool output, harness artifact, or deterministic local analysis was available to cross-check against the specification.\"\n  ]\n}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1784019557.0,
+    "conversation": null,
+    "max_output_tokens": 128000,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_options": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "mode": "standard",
+      "summary": null
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "02_spec_extraction_schema",
+        "schema_": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "02_spec_extraction"
+              ]
+            },
+            "mock": {
+              "type": "boolean"
+            },
+            "llm_call_executed": {
+              "type": "boolean"
+            },
+            "source_scope": {
+              "type": "object",
+              "properties": {
+                "primary_sources_used": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "provided_material_complete": {
+                  "type": "boolean"
+                },
+                "missing_or_unavailable_material": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "primary_sources_used",
+                "provided_material_complete",
+                "missing_or_unavailable_material"
+              ],
+              "additionalProperties": false
+            },
+            "spec_facts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "constants_and_parameters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "algorithms_or_steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "equations_and_bounds": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "candidate_preconditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "candidate_postconditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "candidate_verification_relevance": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fact_id": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string"
+                  },
+                  "verification_relevance": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  },
+                  "uncertainty": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "fact_id",
+                  "category",
+                  "statement",
+                  "verification_relevance",
+                  "confidence",
+                  "uncertainty",
+                  "evidence_references",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "terminology_to_preserve": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "term": {
+                    "type": "string"
+                  },
+                  "meaning": {
+                    "type": "string"
+                  },
+                  "preservation_rule": {
+                    "type": "string"
+                  },
+                  "evidence_references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source_path": {
+                          "type": "string",
+                          "description": "File or handoff path containing the supporting evidence."
+                        },
+                        "locator": {
+                          "type": "string",
+                          "description": "Line, section, algorithm, symbol, property, or record locator."
+                        },
+                        "excerpt": {
+                          "type": "string",
+                          "description": "Short evidence excerpt or faithful summary."
+                        },
+                        "supports_claim": {
+                          "type": "string",
+                          "description": "The exact claim this evidence supports."
+                        },
+                        "confidence": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "unknown"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source_path",
+                        "locator",
+                        "excerpt",
+                        "supports_claim",
+                        "confidence"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Traceable evidence reference for one claim."
+                    }
+                  }
+                },
+                "required": [
+                  "term",
+                  "meaning",
+                  "preservation_rule",
+                  "evidence_references"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "deterministic_reference_assessment": {
+              "type": "object",
+              "properties": {
+                "used": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "disagreements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deterministic_claim": {
+                        "type": "string"
+                      },
+                      "primary_evidence_finding": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "type": "string"
+                      },
+                      "evidence_references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "source_path": {
+                              "type": "string",
+                              "description": "File or handoff path containing the supporting evidence."
+                            },
+                            "locator": {
+                              "type": "string",
+                              "description": "Line, section, algorithm, symbol, property, or record locator."
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "description": "Short evidence excerpt or faithful summary."
+                            },
+                            "supports_claim": {
+                              "type": "string",
+                              "description": "The exact claim this evidence supports."
+                            },
+                            "confidence": {
+                              "type": "string",
+                              "enum": [
+                                "high",
+                                "medium",
+                                "low",
+                                "unknown"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source_path",
+                            "locator",
+                            "excerpt",
+                            "supports_claim",
+                            "confidence"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Traceable evidence reference for one claim."
+                        }
+                      }
+                    },
+                    "required": [
+                      "deterministic_claim",
+                      "primary_evidence_finding",
+                      "resolution",
+                      "evidence_references"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "used",
+                "status",
+                "warning",
+                "disagreements"
+              ],
+              "additionalProperties": false
+            },
+            "uncertainties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issue": {
+                    "type": "string"
+                  },
+                  "impact": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "issue",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "evidence_references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_path": {
+                    "type": "string",
+                    "description": "File or handoff path containing the supporting evidence."
+                  },
+                  "locator": {
+                    "type": "string",
+                    "description": "Line, section, algorithm, symbol, property, or record locator."
+                  },
+                  "excerpt": {
+                    "type": "string",
+                    "description": "Short evidence excerpt or faithful summary."
+                  },
+                  "supports_claim": {
+                    "type": "string",
+                    "description": "The exact claim this evidence supports."
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "source_path",
+                  "locator",
+                  "excerpt",
+                  "supports_claim",
+                  "confidence"
+                ],
+                "additionalProperties": false,
+                "description": "Traceable evidence reference for one claim."
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "stage",
+            "mock",
+            "llm_call_executed",
+            "source_scope",
+            "spec_facts",
+            "constants_and_parameters",
+            "algorithms_or_steps",
+            "equations_and_bounds",
+            "candidate_preconditions",
+            "candidate_postconditions",
+            "candidate_verification_relevance",
+            "terminology_to_preserve",
+            "deterministic_reference_assessment",
+            "uncertainties",
+            "evidence_references",
+            "limitations"
+          ],
+          "additionalProperties": false,
+          "description": "Agent 2 candidate specification summary. It is not proof or a compliance determination."
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 43637,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 18061,
+      "output_tokens_details": {
+        "reasoning_tokens": 9503
+      },
+      "total_tokens": 61698
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": false,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  }
+}

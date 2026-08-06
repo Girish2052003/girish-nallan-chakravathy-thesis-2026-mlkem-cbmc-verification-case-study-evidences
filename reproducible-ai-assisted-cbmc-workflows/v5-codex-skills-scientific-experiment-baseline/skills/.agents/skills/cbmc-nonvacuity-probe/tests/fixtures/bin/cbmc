@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+import json, os, pathlib, sys, time
+mode = os.environ.get("FAKE_CBMC_MODE", "reached")
+if mode == "timeout":
+    time.sleep(30)
+if mode == "malformed":
+    print("not-json")
+    sys.exit(0)
+if mode == "toolerror":
+    print(json.dumps([{"messageType":"ERROR","messageText":"synthetic tool error"}]))
+    print("synthetic stderr", file=sys.stderr)
+    sys.exit(6)
+if mode == "mutate":
+    p = pathlib.Path(os.environ["AUTHORITATIVE_MUTATE_PATH"])
+    p.write_text(p.read_text() + "\n/* mutated by fake cbmc */\n")
+status = {
+    "reached":"SATISFIED",
+    "unreached":"FAILED",
+    "covered":"COVERED",
+    "uncovered":"UNCOVERED",
+}.get(mode, "SATISFIED")
+records = [{
+    "property":"cover.1",
+    "description":"coverage goal inserted by disposable companion probe",
+    "status":status,
+    "sourceLocation":{"file":"harness.c","line":"19","function":"main"}
+}]
+if mode == "ambiguous":
+    records.append({"property":"cover.2","description":"coverage goal","status":"FAILED"})
+print(json.dumps([{"messageType":"result","result":records}], sort_keys=True))
+sys.exit(0)

@@ -1,0 +1,41 @@
+{
+  "campaign": "MLK_POLY_SUB_SKILL ASSISTED",
+  "runs_occurred": 1,
+  "target": "mlk_poly_sub",
+  "global_bindings": {
+    "repository_commit": "d9613cf60de3132d32475c102d8c2781d84feb34",
+    "parameter_set": 768,
+    "MLKEM_N": 256,
+    "MLKEM_Q": 3329,
+    "language": "C90",
+    "backend": "portable C",
+    "cbmc": "6.9.0"
+  },
+  "assumptions": [
+    {
+      "id": "SA-SUB-T1-A1",
+      "statement": "For every coefficient, a-b, a-c, and c-b are representable in int16_t.",
+      "purpose": "Admit all four production subtraction calls.",
+      "conclusion_shaped": false
+    },
+    {
+      "id": "SA-SUB-T2-A1",
+      "statement": "For every coefficient, a-b, b+c, and a-(b+c) are representable in int16_t.",
+      "purpose": "Admit aggregate construction and all three production subtraction calls.",
+      "conclusion_shaped": false
+    },
+    {
+      "id": "GLOBAL-A1",
+      "statement": "Harness polynomial objects are separately allocated automatic objects.",
+      "purpose": "Remain inside the supported non-aliasing scope.",
+      "conclusion_shaped": false
+    }
+  ],
+  "not_assumed": [
+    "(a-b)-(a-c)=c-b",
+    "(a-b)-c=a-(b+c)",
+    "aggregate=b+c",
+    "target reachability",
+    "assertion truth"
+  ]
+}

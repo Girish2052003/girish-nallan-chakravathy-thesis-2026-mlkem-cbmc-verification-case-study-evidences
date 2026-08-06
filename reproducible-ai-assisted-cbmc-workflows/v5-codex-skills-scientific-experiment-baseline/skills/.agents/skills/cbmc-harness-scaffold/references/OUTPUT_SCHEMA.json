@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/cbmc-harness-scaffold/output.schema.json",
+  "title": "CBMC Harness Scaffold Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "skill", "status", "semantic_authority", "generated_content_class", "target", "source_binding_summary", "scaffold", "compile_check", "warnings", "incomplete_reasons", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string", "minLength": 1},
+    "skill": {"type": "object", "additionalProperties": false, "required": ["name", "version"], "properties": {"name": {"const": "cbmc-harness-scaffold"}, "version": {"type": "string"}}},
+    "status": {"enum": ["COMPLETE", "COMPLETE_WITH_WARNINGS", "INCOMPLETE"]},
+    "semantic_authority": {"const": "NONE"},
+    "generated_content_class": {"const": "NEUTRAL_WIRING_ONLY"},
+    "target": {"type": "object"},
+    "source_binding_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declared_file_count", "all_hashes_match", "target_source_bound"],
+      "properties": {"declared_file_count": {"type": "integer", "minimum": 1}, "all_hashes_match": {"type": "boolean"}, "target_source_bound": {"type": "boolean"}}
+    },
+    "scaffold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generated", "filename", "sha256", "line_count", "language_standard", "entry_function", "declarations", "marker_lines", "static_checks", "caller_supplied_wiring"],
+      "properties": {
+        "generated": {"type": "boolean"},
+        "filename": {"type": ["string", "null"]},
+        "sha256": {"type": ["string", "null"]},
+        "line_count": {"type": "integer", "minimum": 0},
+        "language_standard": {"type": "string"},
+        "entry_function": {"type": "string"},
+        "declarations": {"type": "array"},
+        "marker_lines": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 1}},
+        "static_checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["forbidden_fragments_present", "target_call_count", "assumption_statement_count", "assertion_statement_count", "initializer_count", "passes_neutrality_checks"],
+          "properties": {
+            "forbidden_fragments_present": {"type": "array", "items": {"type": "string"}},
+            "target_call_count": {"type": "integer", "minimum": 0},
+            "assumption_statement_count": {"const": 0},
+            "assertion_statement_count": {"const": 0},
+            "initializer_count": {"const": 0},
+            "passes_neutrality_checks": {"type": "boolean"}
+          }
+        },
+        "caller_supplied_wiring": {"const": true}
+      }
+    },
+    "compile_check": {"type": "object"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "incomplete_reasons": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

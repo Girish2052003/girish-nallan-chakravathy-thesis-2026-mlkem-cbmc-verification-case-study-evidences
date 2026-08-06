@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "input_root_recorded": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "trace_source": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "format": {
+          "const": "cbmc-json-ui"
+        },
+        "path_relative_to_input_root": {
+          "type": "string"
+        },
+        "sha256_match": {
+          "const": true
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path_relative_to_input_root",
+        "expected_sha256",
+        "actual_sha256",
+        "sha256_match",
+        "size_bytes",
+        "format"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "trace_source",
+    "input_root_recorded"
+  ],
+  "title": "Counterexample Input Manifest",
+  "type": "object"
+}

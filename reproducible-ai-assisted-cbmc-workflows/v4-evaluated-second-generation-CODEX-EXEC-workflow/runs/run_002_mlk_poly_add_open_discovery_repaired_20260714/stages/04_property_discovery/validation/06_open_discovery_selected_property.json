@@ -1,0 +1,77 @@
+{
+  "schema_version": "validation_record.v1",
+  "created_utc": "2026-07-14T09:05:34.953844+00:00",
+  "content": {
+    "schema_version": "selected_property_handoff.v1",
+    "discovery_mode": "open_discovery",
+    "selected": true,
+    "selection_method": "open_discovery_feasibility_then_risk_then_rank",
+    "property": {
+      "property_id": "OPEN_CAND_002",
+      "property_family_id": "UNMAPPED",
+      "title": "Writes confined to destination coefficient array",
+      "category": "frame",
+      "verification_strategy": "native_function_contract",
+      "proof_obligation_kind": "frame",
+      "support_classification": "uncatalogued_candidate",
+      "required_tool_capabilities": [
+        "native_function_contract"
+      ],
+      "candidate_statement": "A frame check can target the fact that the only visible writes are to r->coeffs[i] for i in [0, MLKEM_N), with no allocation, deallocation, or explicit global-state update in the body.",
+      "supporting_evidence": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+          "locator": "function body",
+          "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+          "supports_claim": "The only visible write target is the destination coefficient array.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+          "locator": "function declaration",
+          "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+          "supports_claim": "The API exposes a mutable destination pointer and a const-qualified source pointer.",
+          "confidence": "high"
+        }
+      ],
+      "required_assumptions": [
+        "The visible function body is complete for this symbol.",
+        "No hidden macro expansion introduces extra side effects."
+      ],
+      "cbmc_feasibility": "high",
+      "risk_level": "low",
+      "expected_artifact_type": "native function contract",
+      "out_of_scope_boundaries": [
+        "Does not assert that b remains semantically unchanged under pointer aliasing.",
+        "Does not rule out shared-memory effects if r and b alias the same object."
+      ],
+      "uncertainty": "The snapshot does not include aliasing or ownership contracts.",
+      "limitations": [
+        "Semantic effects through aliasing are not ruled out.",
+        "This is a local footprint observation, not a whole-function proof."
+      ]
+    },
+    "selection_reason": "Selected after the LLM-authored candidate set was saved and post-classified. Selection is an experiment-control decision, not proof that the property is true.",
+    "catalogue_mapping_status": "unmapped_new",
+    "effective_property_campaign": {
+      "schema_version": "property_campaign.v2.open_selected_unmapped",
+      "property_family_id": "UNMAPPED",
+      "property_family_slug": "unmapped_new_property",
+      "property_family_title": "Unmapped/new open-discovery property",
+      "verification_strategy": "native_function_contract",
+      "support_level": "uncatalogued_candidate",
+      "claim_boundary": "Local selected claim only; uncatalogued status does not imply truth, novelty, or provability.",
+      "allowed_strategies": [
+        "native_function_contract"
+      ],
+      "target_examples": [],
+      "allow_analysis_only": false,
+      "require_native_contract_tools": true,
+      "explicitly_configured": false,
+      "legacy_compatibility_default": false,
+      "discovery_mode": "open_discovery",
+      "selection_pending": false,
+      "selected_property_id": "OPEN_CAND_002"
+    }
+  }
+}

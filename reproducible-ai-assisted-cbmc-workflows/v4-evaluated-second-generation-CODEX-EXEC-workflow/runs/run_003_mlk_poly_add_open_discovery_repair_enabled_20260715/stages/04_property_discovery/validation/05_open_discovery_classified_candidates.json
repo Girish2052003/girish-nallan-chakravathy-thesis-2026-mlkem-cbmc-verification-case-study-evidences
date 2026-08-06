@@ -1,0 +1,1054 @@
+{
+  "schema_version": "validation_record.v1",
+  "created_utc": "2026-07-15T04:41:17.828749+00:00",
+  "content": {
+    "stage": "04_property_discovery",
+    "mock": false,
+    "llm_call_executed": true,
+    "source_scope": {
+      "previous_spec_summary_available": true,
+      "previous_code_summary_available": true,
+      "provided_material_complete": false,
+      "missing_or_unavailable_material": [
+        "target-specific function contracts, loop contracts, proof harnesses, and formal assumptions were intentionally excluded from the visible source snapshot",
+        "CBMC or other formal-tool output for mlk_poly_add was not provided",
+        "deterministic Python advisory analysis for this stage was not provided"
+      ]
+    },
+    "candidate_properties": [
+      {
+        "property_id": "OPEN_CAND_001",
+        "property_family_id": "P16",
+        "title": "Per-index in-place coefficient update",
+        "category": "functional update relation",
+        "verification_strategy": "UNSELECTED",
+        "proposed_strategy": "UNSELECTED",
+        "family_recommendation": "hybrid_contract_and_harness",
+        "selection_authority": "not_selected_before_agent5",
+        "possible_encodings": [
+          {
+            "strategy": "standard_cbmc_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "The target call and selected claim can be represented by explicit harness assumptions, snapshots, and assertions.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_loop_contract",
+            "expressible": true,
+            "reason": "The semantic record explicitly requires loop reasoning; a loop-only contract does not satisfy a separate modular-call requirement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_function_contract",
+            "expressible": true,
+            "required": false,
+            "reason": "A function contract is an optional alternative; the semantic record does not require modular replacement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "hybrid_contract_and_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "Hybrid encoding is optional when both a complete harness claim and contract artefact are available.",
+            "authority": "semantic_property_record"
+          }
+        ],
+        "semantic_property": {
+          "schema_version": "semantic_property.v2",
+          "property_id": "OPEN_CAND_001",
+          "statement": "Each output coefficient equals the casted sum of the corresponding pre-state coefficients.",
+          "target_call": {
+            "function": "mlk_poly_add",
+            "arguments": [
+              "r",
+              "b"
+            ],
+            "call_count": 1
+          },
+          "pre_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "post_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "observed_memory": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "permitted_writes": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "required_assumptions": [
+            "ASSUME_001",
+            "ASSUME_004"
+          ],
+          "success_predicate": "∀i∈{0,…,MLKEM_N-1}: post_r[i] = (int16_t)(pre_r[i] + pre_b[i])",
+          "quantified_domain": {
+            "variable": "i",
+            "lower_bound": "0",
+            "upper_bound_exclusive": "MLKEM_N"
+          },
+          "requires_pre_state_snapshot": true,
+          "requires_modular_call_replacement": false,
+          "requires_loop_reasoning": true,
+          "requires_relational_execution": false,
+          "analysis_only": false,
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add function body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+              "supports_claim": "The assignment form directly matches the stated per-index post-state relation.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "mlk_poly typedef",
+              "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly;",
+              "supports_claim": "The state objects are fixed-size signed 16-bit coefficient arrays.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5",
+              "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+              "supports_claim": "The specification describes coordinate-wise arithmetic on coefficient arrays.",
+              "confidence": "high"
+            }
+          ],
+          "uncertainty": "The exact arithmetic interpretation depends on the execution model for the promoted addition expression.",
+          "semantic_completeness": {
+            "complete": true,
+            "missing_fields": [],
+            "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+          }
+        },
+        "proof_obligation_kind": "old-state/new-state equality",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [],
+        "candidate_statement": "For each coefficient position, the function rewrites r in place with the int16_t-cast of the sum of the pre-state r and b coefficients at the same index.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+            "supports_claim": "The function performs a per-index in-place coefficient update.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "mlk_poly typedef and function declaration",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+            "supports_claim": "The target object is a fixed-size int16_t coefficient array and the second parameter is read-only at source level.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.4 and Section 2.4.5",
+            "excerpt": "An element f of R_q is represented by the array (f0, f1, ..., f255) in Z_q^256. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+            "supports_claim": "The specification uses coefficient arrays and coordinate-wise addition, matching the local index-wise update shape.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "ASSUME_001",
+          "ASSUME_004"
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "medium",
+        "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+        "out_of_scope_boundaries": [
+          "Does not assert modulo-q normalization or canonical output.",
+          "Does not assert b-immutability under aliasing.",
+          "Does not claim full ML-KEM correctness.",
+          "Local coefficient bounds for the exact representation and input assumptions."
+        ],
+        "uncertainty": "The snapshot does not specify the host integer model used to interpret the addition expression.",
+        "limitations": [
+          "This is a local value-relation candidate only.",
+          "It does not establish whether the post-state is reduced modulo q."
+        ]
+      },
+      {
+        "property_id": "OPEN_CAND_002",
+        "property_family_id": "UNMAPPED",
+        "title": "Single zero-based pass over all coefficients",
+        "category": "loop coverage and access pattern",
+        "verification_strategy": "UNSELECTED",
+        "proposed_strategy": "UNSELECTED",
+        "family_recommendation": "standard_cbmc_harness",
+        "selection_authority": "not_selected_before_agent5",
+        "possible_encodings": [
+          {
+            "strategy": "standard_cbmc_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "The target call and selected claim can be represented by explicit harness assumptions, snapshots, and assertions.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_loop_contract",
+            "expressible": true,
+            "reason": "The semantic record explicitly requires loop reasoning; a loop-only contract does not satisfy a separate modular-call requirement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_function_contract",
+            "expressible": true,
+            "required": false,
+            "reason": "A function contract is an optional alternative; the semantic record does not require modular replacement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "hybrid_contract_and_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "Hybrid encoding is optional when both a complete harness claim and contract artefact are available.",
+            "authority": "semantic_property_record"
+          }
+        ],
+        "semantic_property": {
+          "schema_version": "semantic_property.v2",
+          "property_id": "OPEN_CAND_002",
+          "statement": "The call performs exactly MLKEM_N iterations starting at 0 and visiting each coefficient position once.",
+          "target_call": {
+            "function": "mlk_poly_add",
+            "arguments": [
+              "r",
+              "b"
+            ],
+            "call_count": 1
+          },
+          "pre_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "post_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "observed_memory": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "permitted_writes": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "required_assumptions": [
+            "ASSUME_001"
+          ],
+          "success_predicate": "∀i∈{0,…,MLKEM_N-1}: the call reaches i exactly once and the only per-iteration write targets r->coeffs[i]",
+          "quantified_domain": {
+            "variable": "i",
+            "lower_bound": "0",
+            "upper_bound_exclusive": "MLKEM_N"
+          },
+          "requires_pre_state_snapshot": false,
+          "requires_modular_call_replacement": false,
+          "requires_loop_reasoning": true,
+          "requires_relational_execution": false,
+          "analysis_only": false,
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add function body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+              "supports_claim": "The loop structure is a single zero-based pass.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro definitions",
+              "excerpt": "#define MLKEM_N 256",
+              "supports_claim": "The fixed iteration count is 256.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "All arrays have indices that begin at zero.",
+              "supports_claim": "The relevant coefficient indexing convention is zero-based.",
+              "confidence": "high"
+            }
+          ],
+          "uncertainty": "No formal loop contract is visible in the snapshot.",
+          "semantic_completeness": {
+            "complete": true,
+            "missing_fields": [],
+            "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+          }
+        },
+        "proof_obligation_kind": "fixed-bounds traversal",
+        "support_classification": "uncatalogued_candidate",
+        "required_tool_capabilities": [],
+        "candidate_statement": "The function uses one for-loop initialized at i = 0 and bounded by i < MLKEM_N; with MLKEM_N = 256 this traverses the 256 coefficient positions in order.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++)",
+            "supports_claim": "The loop starts at zero and uses MLKEM_N as its upper bound.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_N 256",
+            "supports_claim": "The loop executes exactly 256 iterations.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3 and Section 2.4.4",
+            "excerpt": "All arrays have indices that begin at zero. An element f of R_q is represented by the array (f0, f1, ..., f255) in Z_q^256.",
+            "supports_claim": "The specification uses zero-based 256-entry coefficient arrays.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "ASSUME_001"
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+        "out_of_scope_boundaries": [
+          "Does not assert the computed values themselves.",
+          "Does not assert modulo-q normalization or canonical output.",
+          "Does not claim anything about aliasing or external wrappers."
+        ],
+        "uncertainty": "The snapshot does not include loop contracts, so this is a local structural property only.",
+        "limitations": [
+          "This is a coverage/access-pattern candidate, not a full functional specification.",
+          "It does not establish the abstract ring meaning of the update."
+        ]
+      },
+      {
+        "property_id": "OPEN_CAND_003",
+        "property_family_id": "P09",
+        "title": "Canonical-input sums fit in signed 16-bit range",
+        "category": "arithmetic range safety",
+        "verification_strategy": "UNSELECTED",
+        "proposed_strategy": "UNSELECTED",
+        "family_recommendation": "standard_cbmc_harness",
+        "selection_authority": "not_selected_before_agent5",
+        "possible_encodings": [
+          {
+            "strategy": "standard_cbmc_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "The target call and selected claim can be represented by explicit harness assumptions, snapshots, and assertions.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_loop_contract",
+            "expressible": true,
+            "reason": "The semantic record explicitly requires loop reasoning; a loop-only contract does not satisfy a separate modular-call requirement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_function_contract",
+            "expressible": true,
+            "required": false,
+            "reason": "A function contract is an optional alternative; the semantic record does not require modular replacement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "hybrid_contract_and_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "Hybrid encoding is optional when both a complete harness claim and contract artefact are available.",
+            "authority": "semantic_property_record"
+          }
+        ],
+        "semantic_property": {
+          "schema_version": "semantic_property.v2",
+          "property_id": "OPEN_CAND_003",
+          "statement": "Canonical residues imply a bounded per-index sum that fits within int16_t.",
+          "target_call": {
+            "function": "mlk_poly_add",
+            "arguments": [
+              "r",
+              "b"
+            ],
+            "call_count": 1
+          },
+          "pre_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "post_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "observed_memory": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "permitted_writes": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "required_assumptions": [
+            "ASSUME_001",
+            "ASSUME_002",
+            "ASSUME_004"
+          ],
+          "success_predicate": "∀i∈{0,…,MLKEM_N-1}: (0≤pre_r[i]<MLKEM_Q ∧ 0≤pre_b[i]<MLKEM_Q) ⇒ 0≤pre_r[i]+pre_b[i]≤2*(MLKEM_Q-1)",
+          "quantified_domain": {
+            "variable": "i",
+            "lower_bound": "0",
+            "upper_bound_exclusive": "MLKEM_N"
+          },
+          "requires_pre_state_snapshot": true,
+          "requires_modular_call_replacement": false,
+          "requires_loop_reasoning": true,
+          "requires_relational_execution": false,
+          "analysis_only": false,
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro definitions",
+              "excerpt": "#define MLKEM_Q 3329",
+              "supports_claim": "The ML-KEM coefficient modulus is 3329 in the local code base.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "Z_m denotes the ring of integers modulo m (i.e., the set {0, 1, ..., m - 1} equipped with the operations of addition and multiplication modulo m.)",
+              "supports_claim": "The specification identifies the canonical residue range for modular coefficients.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "mlk_poly typedef",
+              "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly;",
+              "supports_claim": "The destination coefficients are signed 16-bit integers.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add function body",
+              "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The implementation performs addition followed by a 16-bit cast without explicit q-reduction.",
+              "confidence": "high"
+            }
+          ],
+          "uncertainty": "The snapshot does not specify whether the call boundary guarantees canonical inputs.",
+          "semantic_completeness": {
+            "complete": true,
+            "missing_fields": [],
+            "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+          }
+        },
+        "proof_obligation_kind": "overflow-avoidance on canonical domain",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [],
+        "candidate_statement": "If both input coefficient arrays are canonical ML-KEM residues 0..MLKEM_Q-1, then each per-index sum is at most 2*(MLKEM_Q-1) = 6656 and the visible add/cast stays within the signed 16-bit range.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_Q 3329",
+            "supports_claim": "The coefficient modulus constant used by ML-KEM is 3329 in the code base.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3 and Section 2.4.1",
+            "excerpt": "Z_m denotes the ring of integers modulo m ... The statement z <- x + y means that z is assigned the value x + y mod m.",
+            "supports_claim": "The specification defines the canonical residue range and modular arithmetic semantics.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly;",
+            "supports_claim": "The destination storage is signed 16-bit coefficients.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The update is a plain sum followed by an int16_t cast.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "ASSUME_001",
+          "ASSUME_002",
+          "ASSUME_004"
+        ],
+        "cbmc_feasibility": "high",
+        "risk_level": "low",
+        "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+        "out_of_scope_boundaries": [
+          "Does not claim the result is reduced modulo q.",
+          "Does not claim canonicalization on output.",
+          "Does not apply to non-canonical inputs.",
+          "C integer overflow checks under recorded ranges and compiler model."
+        ],
+        "uncertainty": "The source snapshot does not state whether call-boundary inputs are guaranteed canonical.",
+        "limitations": [
+          "This property is a local arithmetic-safety candidate only.",
+          "It does not establish the abstract modular result expected by the specification."
+        ]
+      },
+      {
+        "property_id": "OPEN_CAND_004",
+        "property_family_id": "P15",
+        "title": "Read-only addend under non-aliasing",
+        "category": "frame condition",
+        "verification_strategy": "UNSELECTED",
+        "proposed_strategy": "UNSELECTED",
+        "family_recommendation": "native_function_contract",
+        "selection_authority": "not_selected_before_agent5",
+        "possible_encodings": [
+          {
+            "strategy": "standard_cbmc_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "The target call and selected claim can be represented by explicit harness assumptions, snapshots, and assertions.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_loop_contract",
+            "expressible": true,
+            "reason": "The semantic record explicitly requires loop reasoning; a loop-only contract does not satisfy a separate modular-call requirement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "native_function_contract",
+            "expressible": true,
+            "required": false,
+            "reason": "A function contract is an optional alternative; the semantic record does not require modular replacement.",
+            "authority": "semantic_property_record"
+          },
+          {
+            "strategy": "hybrid_contract_and_harness",
+            "expressible": true,
+            "required": false,
+            "reason": "Hybrid encoding is optional when both a complete harness claim and contract artefact are available.",
+            "authority": "semantic_property_record"
+          }
+        ],
+        "semantic_property": {
+          "schema_version": "semantic_property.v2",
+          "property_id": "OPEN_CAND_004",
+          "statement": "Under a non-aliasing assumption, the addend object b is preserved unchanged and the only writes are to r.",
+          "target_call": {
+            "function": "mlk_poly_add",
+            "arguments": [
+              "r",
+              "b"
+            ],
+            "call_count": 1
+          },
+          "pre_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "post_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "observed_memory": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "permitted_writes": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "required_assumptions": [
+            "ASSUME_001",
+            "ASSUME_003",
+            "ASSUME_004"
+          ],
+          "success_predicate": "Under r and b non-aliasing, ∀i∈{0,…,MLKEM_N-1}: post_b[i] = pre_b[i] and writes are confined to r->coeffs[i]",
+          "quantified_domain": {
+            "variable": "i",
+            "lower_bound": "0",
+            "upper_bound_exclusive": "MLKEM_N"
+          },
+          "requires_pre_state_snapshot": true,
+          "requires_modular_call_replacement": false,
+          "requires_loop_reasoning": true,
+          "requires_relational_execution": false,
+          "analysis_only": false,
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+              "locator": "function declaration",
+              "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+              "supports_claim": "The second parameter is declared const at source level.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add function body",
+              "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+              "supports_claim": "The body writes only through r and does not assign to b.",
+              "confidence": "high"
+            }
+          ],
+          "uncertainty": "The aliasing relation between r and b is not specified in the snapshot.",
+          "semantic_completeness": {
+            "complete": true,
+            "missing_fields": [],
+            "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+          }
+        },
+        "proof_obligation_kind": "non-target-memory preservation under non-aliasing",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [],
+        "candidate_statement": "The visible body writes only through r->coeffs[i] and does not assign to b; if r and b are distinct objects, b's coefficients are preserved.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "function declaration",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+            "supports_claim": "The second parameter is source-level const, indicating intended read-only use.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The body writes through r and only reads b.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [
+          "ASSUME_001",
+          "ASSUME_003",
+          "ASSUME_004"
+        ],
+        "cbmc_feasibility": "medium",
+        "risk_level": "medium",
+        "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+        "out_of_scope_boundaries": [
+          "Does not cover aliasing cases.",
+          "Does not claim q-reduction or canonicalization.",
+          "Does not claim anything about memory outside the two polynomial objects.",
+          "Explicit aliasing preconditions and their effect; over-constraint must be reviewed."
+        ],
+        "uncertainty": "The snapshot does not state aliasing or ownership rules, so the preservation claim needs an explicit non-alias assumption.",
+        "limitations": [
+          "Source-level constness alone does not prove memory separation.",
+          "If r and b alias, this candidate no longer describes a frame property of b."
+        ]
+      },
+      {
+        "property_id": "OPEN_CAND_005",
+        "property_family_id": "P12",
+        "title": "Visible body omits explicit q-normalization",
+        "category": "source-level omission",
+        "verification_strategy": "UNSELECTED",
+        "proposed_strategy": "UNSELECTED",
+        "family_recommendation": "native_loop_contract",
+        "selection_authority": "not_selected_before_agent5",
+        "possible_encodings": [
+          {
+            "strategy": "analysis_only_no_formal_claim",
+            "expressible": true,
+            "required": true,
+            "reason": "The semantic record explicitly marks the property analysis-only.",
+            "authority": "semantic_property_record"
+          }
+        ],
+        "semantic_property": {
+          "schema_version": "semantic_property.v2",
+          "property_id": "OPEN_CAND_005",
+          "statement": "The visible body contains no explicit q-normalization step.",
+          "target_call": {
+            "function": "mlk_poly_add",
+            "arguments": [
+              "r",
+              "b"
+            ],
+            "call_count": 1
+          },
+          "pre_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "post_state_objects": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "observed_memory": [
+            "r->coeffs[0..MLKEM_N-1]",
+            "b->coeffs[0..MLKEM_N-1]"
+          ],
+          "permitted_writes": [
+            "r->coeffs[0..MLKEM_N-1]"
+          ],
+          "required_assumptions": [],
+          "success_predicate": "",
+          "quantified_domain": {
+            "variable": "none",
+            "lower_bound": "0",
+            "upper_bound_exclusive": "0"
+          },
+          "requires_pre_state_snapshot": false,
+          "requires_modular_call_replacement": false,
+          "requires_loop_reasoning": false,
+          "requires_relational_execution": false,
+          "analysis_only": true,
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+              "locator": "mlk_poly_add function body",
+              "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+              "supports_claim": "The shown body contains only the add-and-cast loop.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+              "locator": "macro definitions",
+              "excerpt": "#define MLKEM_Q 3329",
+              "supports_claim": "The q constant is available but not used in the visible body.",
+              "confidence": "high"
+            },
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.1 and Section 2.4.5",
+              "excerpt": "z <- x + y means that z is assigned the value x + y mod m. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+              "supports_claim": "The abstract specification uses modular semantics, highlighting that the visible C body does not make that reduction explicit.",
+              "confidence": "high"
+            }
+          ],
+          "uncertainty": "Any normalization or wraparound handling outside the visible body is not assessed here.",
+          "semantic_completeness": {
+            "complete": true,
+            "missing_fields": [],
+            "claim_boundary": "Completeness means the semantic claim is structurally specified; it is not proof or frontend readiness."
+          }
+        },
+        "proof_obligation_kind": "absence of normalization observation",
+        "support_classification": "production_supported",
+        "required_tool_capabilities": [],
+        "candidate_statement": "The visible function body performs only the coefficient-wise add-and-cast loop; it does not show any explicit MLKEM_Q-based reduction or normalization, so any modulo-q interpretation must come from an external invariant or later stage.",
+        "supporting_evidence": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+            "supports_claim": "The visible body contains only addition and a narrowing cast.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_Q 3329",
+            "supports_claim": "The q constant exists in the local code base but is not referenced in the visible body.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.1 and Section 2.4.5",
+            "excerpt": "z <- x + y means that z is assigned the value x + y mod m. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+            "supports_claim": "The FIPS abstract semantics use modular arithmetic, which is not made explicit in the visible C body.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "file header comment",
+            "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+            "supports_claim": "Formal contracts that might justify a normalization invariant are absent from the visible snapshot.",
+            "confidence": "high"
+          }
+        ],
+        "required_assumptions": [],
+        "cbmc_feasibility": "low",
+        "risk_level": "medium",
+        "expected_artifact_type": "strategy-neutral semantic property; Agent 5 must select an explicit encoding",
+        "out_of_scope_boundaries": [
+          "Does not claim that q-normalization is impossible elsewhere in the repository.",
+          "Does not claim the function is incorrect; it only records what is visible in this body.",
+          "Does not broaden the observation into whole-program behavior.",
+          "Candidate invariant initiation/preservation/use under exact transformed program; no guarantee of automatic discovery success."
+        ],
+        "uncertainty": "Later normalization could exist outside the visible body or in omitted contract material; this candidate is intentionally limited to the shown source text.",
+        "limitations": [
+          "This is a source-text absence observation, not a runtime proof obligation.",
+          "Its value is mainly in delimiting the boundary between the visible implementation and the abstract FIPS semantics."
+        ]
+      }
+    ],
+    "rejected_or_downgraded_properties": [
+      {
+        "property_id": "OPEN_REJ_001",
+        "title": "Unconditional modulo-q equivalence of the result",
+        "reason": "Downgraded because the visible body never references MLKEM_Q or an explicit reduction step; the FIPS text gives abstract coordinate-wise addition modulo q, but this snapshot alone does not show that mlk_poly_add enforces it.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The implementation performs addition and a cast, not an explicit q-reduction.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_Q 3329",
+            "supports_claim": "The modulus constant exists in the local code base, so its absence from the body is notable.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.4.1 and Section 2.4.5",
+            "excerpt": "z <- x + y means that z is assigned the value x + y mod m. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+            "supports_claim": "The abstract spec semantics are modular and coordinate-wise.",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "property_id": "OPEN_REJ_002",
+        "title": "Unconditional immutability of b",
+        "reason": "Rejected as unconditional because the snapshot contains no non-aliasing contract; the first parameter is writable and could share storage with b, so 'b unchanged' is not safe without an extra assumption.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "function declaration",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+            "supports_claim": "The first parameter is writable while the second is source-level const.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The body reads b while writing through r, so aliasing could affect b's storage.",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "property_id": "OPEN_REJ_003",
+        "title": "Self-aliasing coefficient-doubling behavior",
+        "reason": "Preserved as a downgraded exploratory variant, not promoted, because the body suggests doubling when r and b alias but the intended API semantics do not state whether such aliasing is allowed.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "If r and b refer to the same storage, the update uses that same coefficient twice at each index.",
+            "confidence": "medium"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "function declaration",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+            "supports_claim": "The snapshot does not state whether aliasing between the parameters is allowed or forbidden.",
+            "confidence": "medium"
+          }
+        ]
+      }
+    ],
+    "assumptions_catalogue": [
+      {
+        "assumption_id": "ASSUME_001",
+        "statement": "r and b are valid pointers to initialized mlk_poly objects with addressable coeffs arrays of MLKEM_N elements.",
+        "justification": "The function body dereferences both pointers and indexes coeffs at each loop iteration.",
+        "risk_if_wrong": "Any local property involving reads or writes through the pointers can fail due to invalid memory access.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "Both pointers are dereferenced and indexed in the body.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly;",
+            "supports_claim": "The pointee object is expected to contain a fixed-size coeffs array.",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "assumption_id": "ASSUME_002",
+        "statement": "For range or spec-alignment claims, input coefficients are canonical residues in 0..MLKEM_Q-1.",
+        "justification": "FIPS 203 defines Z_q as the canonical residue set {0, 1, ..., q - 1}, and the local code base defines MLKEM_Q as 3329.",
+        "risk_if_wrong": "Range-safety and q-related claims become weaker or false on non-canonical inputs.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+            "locator": "Section 2.3",
+            "excerpt": "Z_m denotes the ring of integers modulo m (i.e., the set {0, 1, ..., m - 1} equipped with the operations of addition and multiplication modulo m.)",
+            "supports_claim": "The specification identifies the canonical residue range for modulus q.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+            "locator": "macro definitions",
+            "excerpt": "#define MLKEM_Q 3329",
+            "supports_claim": "The local code base fixes q to 3329.",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "assumption_id": "ASSUME_003",
+        "statement": "r and b do not alias when asserting that b is preserved unchanged.",
+        "justification": "The visible snapshot does not provide an aliasing or ownership contract, and the frame-condition candidate needs storage separation.",
+        "risk_if_wrong": "If r and b share storage, writes through r may affect the memory observed through b.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "function declaration",
+            "excerpt": "void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+            "supports_claim": "The signature alone does not rule out aliasing.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The body reads b while writing through r, so aliasing matters for frame reasoning.",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "assumption_id": "ASSUME_004",
+        "statement": "The chosen execution model treats the coefficient addition as defined for the observed inputs, and the int16_t cast is interpreted as a narrowing conversion on the computed sum.",
+        "justification": "The implementation uses plain addition followed by an explicit cast, so exact arithmetic properties depend on the machine model used for analysis.",
+        "risk_if_wrong": "Exact-update and safety properties may depend on a different integer model or undefined-overflow interpretation.",
+        "evidence_references": [
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+            "locator": "mlk_poly typedef",
+            "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly;",
+            "supports_claim": "The stored coefficients use signed 16-bit element type.",
+            "confidence": "high"
+          },
+          {
+            "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+            "locator": "mlk_poly_add function body",
+            "excerpt": "r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]);",
+            "supports_claim": "The update uses addition followed by a cast to int16_t.",
+            "confidence": "high"
+          }
+        ]
+      }
+    ],
+    "feasibility_ranking": [
+      {
+        "property_id": "OPEN_CAND_001",
+        "rank": 1,
+        "feasibility": "high",
+        "rationale": "The exact assignment relation is explicit in the code and the loop is simple."
+      },
+      {
+        "property_id": "OPEN_CAND_002",
+        "rank": 2,
+        "feasibility": "high",
+        "rationale": "The zero-based 256-iteration loop bound is explicit and structurally simple."
+      },
+      {
+        "property_id": "OPEN_CAND_003",
+        "rank": 3,
+        "feasibility": "high",
+        "rationale": "The arithmetic bound is straightforward once canonical residues and the execution model are fixed."
+      },
+      {
+        "property_id": "OPEN_CAND_004",
+        "rank": 4,
+        "feasibility": "medium",
+        "rationale": "The property depends on an explicit non-alias assumption that is not stated in the snapshot."
+      },
+      {
+        "property_id": "OPEN_CAND_005",
+        "rank": 5,
+        "feasibility": "low",
+        "rationale": "This is a source-text absence observation rather than a directly executable runtime property."
+      }
+    ],
+    "uncertainty_register": [
+      {
+        "issue": "Aliasing between r and b is not specified in the snapshot.",
+        "impact": "Frame-condition claims need an explicit non-alias assumption, and aliasing-case behavior remains a separate exploratory variant."
+      },
+      {
+        "issue": "The snapshot does not specify the host integer promotion and overflow model.",
+        "impact": "Exact arithmetic relations may depend on the chosen CBMC/machine model."
+      },
+      {
+        "issue": "The visible function body contains no q-reduction or normalization step.",
+        "impact": "Modulo-q correspondence to FIPS 203 remains a candidate property rather than a proven local fact."
+      },
+      {
+        "issue": "Formal contracts and proof harnesses are absent from the visible snapshot.",
+        "impact": "Existing preconditions or loop invariants cannot be imported from the source snapshot."
+      }
+    ],
+    "deterministic_reference_assessment": {
+      "used": false,
+      "status": "not_provided_to_open_discovery_llm",
+      "warning": "The P01--P26 semantic catalogue was hidden from Agents 2--4 and used only after raw Agent 4 output persistence.",
+      "disagreements": []
+    },
+    "evidence_references": [
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+        "locator": "mlk_poly_add function body",
+        "excerpt": "for (i = 0; i < MLKEM_N; i++) { r->coeffs[i] = (int16_t)(r->coeffs[i] + b->coeffs[i]); }",
+        "supports_claim": "The function performs a fixed-length in-place coefficient update.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+        "locator": "mlk_poly typedef and function declaration",
+        "excerpt": "typedef struct { int16_t coeffs[MLKEM_N]; } mlk_poly; void mlk_poly_add(mlk_poly *r, const mlk_poly *b);",
+        "supports_claim": "The polynomial representation is a fixed-size signed 16-bit coefficient array and the second parameter is source-level const.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/params.h",
+        "locator": "macro definitions",
+        "excerpt": "#define MLKEM_N 256\n#define MLKEM_Q 3329",
+        "supports_claim": "The polynomial length and modulus constants are fixed in the local code base.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+        "locator": "Section 2.3 and Section 2.4.4",
+        "excerpt": "All arrays have indices that begin at zero. An element f of R_q is represented by the array (f0, f1, ..., f255) in Z_q^256.",
+        "supports_claim": "The specification uses zero-based 256-entry coefficient arrays.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+        "locator": "Section 2.4.1 and Section 2.4.5",
+        "excerpt": "z <- x + y means that z is assigned the value x + y mod m. The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+        "supports_claim": "The spec's abstract arithmetic is modular and coordinate-wise.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.c",
+        "locator": "file header comment",
+        "excerpt": "Existing target-specific function contracts, loop contracts, proof harnesses, and comments disclosing formal assumptions are intentionally excluded from the LLM-visible experiment snapshot.",
+        "supports_claim": "Formal contracts and proof harnesses are absent from the visible snapshot.",
+        "confidence": "high"
+      },
+      {
+        "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/code/mlk_poly_add_run_001/poly.h",
+        "locator": "file header comment",
+        "excerpt": "Existing formal contracts are intentionally excluded from this LLM-visible experiment snapshot.",
+        "supports_claim": "Formal contracts are absent from the visible header snapshot.",
+        "confidence": "high"
+      }
+    ],
+    "limitations": [
+      "This output is discovery-only; it does not prove, verify, implement, or certify mlk_poly_add.",
+      "No formal contracts, loop contracts, proof harnesses, or formal-tool output were available.",
+      "The code snapshot does not specify aliasing or integer-model policy.",
+      "The FIPS text gives abstract modular semantics, but the visible function body does not show an explicit q-reduction step."
+    ]
+  }
+}

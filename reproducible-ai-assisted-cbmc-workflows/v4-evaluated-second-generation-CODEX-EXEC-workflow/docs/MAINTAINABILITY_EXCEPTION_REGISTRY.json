@@ -1,0 +1,497 @@
+{
+  "schema_version": "maintainability_exception_registry.v1",
+  "policy": "Production functions should be <=150 lines. Every larger legacy/coordinator function is explicitly listed, capped, justified, and behaviorally gated. New unlisted exceptions fail the release.",
+  "critical_extracted_modules": [
+    "agents/common/experiment_protocol.py",
+    "agents/common/semantic_gate.py",
+    "agents/common/cbmc_evidence.py",
+    "agents/common/workflow_policy.py",
+    "agents/common/tool_result_contract.py"
+  ],
+  "exceptions": [
+    {
+      "path": "agents/artifact_generation_agent.py",
+      "function": "run_agent5",
+      "start_line_at_release": 1736,
+      "approved_max_lines": 586,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_26_property_repair_and_claim_boundaries.py",
+        "verify_mandatory_semantic_evidence_gates.py",
+        "verify_open_discovery_agent5_reporting.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/artifact_generation_agent.py",
+      "function": "validate_rendered_harness",
+      "start_line_at_release": 916,
+      "approved_max_lines": 224,
+      "status": "legacy_validated_helper_waiver",
+      "justification": "Existing validated helper remains temporarily intact to avoid a high-risk behavior-changing rewrite; its exact growth cap and behavioural coverage are release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_26_property_repair_and_claim_boundaries.py",
+        "verify_mandatory_semantic_evidence_gates.py"
+      ]
+    },
+    {
+      "path": "agents/code_understanding_agent.py",
+      "function": "run_agent3",
+      "start_line_at_release": 1166,
+      "approved_max_lines": 309,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_blocker2_config_contract.py",
+        "verify_central_fail_closed_hardening.py"
+      ]
+    },
+    {
+      "path": "agents/code_understanding_agent.py",
+      "function": "run_deterministic_code_reference_extraction",
+      "start_line_at_release": 779,
+      "approved_max_lines": 179,
+      "status": "comparison_mode_only_waiver",
+      "justification": "Deterministic semantic reference extraction is disabled in the main LLM-first mode and retained only for explicitly labelled comparison/baseline operation; mode-gate tests prevent transmission in the thesis mode.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_blocker2_config_contract.py",
+        "verify_central_fail_closed_hardening.py"
+      ]
+    },
+    {
+      "path": "agents/common/contract_artifacts.py",
+      "function": "validate_contract_plan",
+      "start_line_at_release": 148,
+      "approved_max_lines": 162,
+      "status": "final_architecture_audited_exception",
+      "justification": "Final trust-chain coordinator/helper is explicitly capped at its measured release length; semantic authority remains delegated to audited common contracts and behavior is release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No silent strategy, gate, tool-result, or evidence-policy fallback may be added here.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_26_property_contract_extension.py",
+        "verify_contract_expression_and_run001_replay.py"
+      ]
+    },
+    {
+      "path": "agents/common/formal_build.py",
+      "function": "create_formal_build_plan",
+      "start_line_at_release": 560,
+      "approved_max_lines": 210,
+      "status": "extracted_critical_module",
+      "justification": "Centralized cross-stage policy, validation, or provider adaptation is kept in one audited module to prevent divergent implementations; further splitting would currently increase interface risk.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_deployment_gate.py",
+        "verify_central_fail_closed_hardening.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/common/formal_build.py",
+      "function": "run_route_readiness_check",
+      "start_line_at_release": 261,
+      "approved_max_lines": 224,
+      "status": "final_architecture_audited_exception",
+      "justification": "Final trust-chain coordinator/helper is explicitly capped at its measured release length; semantic authority remains delegated to audited common contracts and behavior is release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No silent strategy, gate, tool-result, or evidence-policy fallback may be added here.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_strategy_reconciliation_and_frontend_readiness.py",
+        "verify_26_property_repair_and_claim_boundaries.py"
+      ]
+    },
+    {
+      "path": "agents/common/llm_client.py",
+      "function": "_run_stage_real",
+      "start_line_at_release": 1269,
+      "approved_max_lines": 435,
+      "status": "extracted_critical_module",
+      "justification": "Centralized cross-stage policy, validation, or provider adaptation is kept in one audited module to prevent divergent implementations; further splitting would currently increase interface risk.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_llm_incomplete_retry_budget.py",
+        "verify_deployment_gate.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/common/llm_client.py",
+      "function": "run_stage",
+      "start_line_at_release": 1105,
+      "approved_max_lines": 159,
+      "status": "extracted_critical_module",
+      "justification": "Centralized cross-stage policy, validation, or provider adaptation is kept in one audited module to prevent divergent implementations; further splitting would currently increase interface risk.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_llm_incomplete_retry_budget.py",
+        "verify_deployment_gate.py"
+      ]
+    },
+    {
+      "path": "agents/common/semantic_gate.py",
+      "function": "validate_artifact_semantics",
+      "start_line_at_release": 278,
+      "approved_max_lines": 209,
+      "status": "extracted_critical_module",
+      "justification": "Centralized cross-stage policy, validation, or provider adaptation is kept in one audited module to prevent divergent implementations; further splitting would currently increase interface risk.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_mandatory_semantic_evidence_gates.py",
+        "verify_mandatory_a_to_z_repairs.py"
+      ]
+    },
+    {
+      "path": "agents/common/tool_result_contract.py",
+      "function": "interpret_tool_result",
+      "start_line_at_release": 81,
+      "approved_max_lines": 156,
+      "status": "final_architecture_audited_exception",
+      "justification": "Final trust-chain coordinator/helper is explicitly capped at its measured release length; semantic authority remains delegated to audited common contracts and behavior is release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No silent strategy, gate, tool-result, or evidence-policy fallback may be added here.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_canonical_tool_result_contract.py",
+        "verify_definitive_winner_result_integrity.py"
+      ]
+    },
+    {
+      "path": "agents/counterexample_analysis_agent.py",
+      "function": "run_agent8",
+      "start_line_at_release": 936,
+      "approved_max_lines": 410,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_blockers3_to_8.py",
+        "verify_eight_session_conformance.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/evaluation_reporter.py",
+      "function": "build_measured_evaluation_facts",
+      "start_line_at_release": 609,
+      "approved_max_lines": 156,
+      "status": "legacy_validated_helper_waiver",
+      "justification": "Existing validated helper remains temporarily intact to avoid a high-risk behavior-changing rewrite; its exact growth cap and behavioural coverage are release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_eight_session_conformance.py",
+        "verify_failure_diagnostics.py",
+        "verify_open_discovery_agent5_reporting.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ]
+    },
+    {
+      "path": "agents/evaluation_reporter.py",
+      "function": "run_agent11",
+      "start_line_at_release": 1325,
+      "approved_max_lines": 456,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_eight_session_conformance.py",
+        "verify_failure_diagnostics.py",
+        "verify_open_discovery_agent5_reporting.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ]
+    },
+    {
+      "path": "agents/experiment_logger.py",
+      "function": "build_integrity_validation",
+      "start_line_at_release": 1057,
+      "approved_max_lines": 166,
+      "status": "legacy_validated_helper_waiver",
+      "justification": "Existing validated helper remains temporarily intact to avoid a high-risk behavior-changing rewrite; its exact growth cap and behavioural coverage are release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_eight_session_conformance.py",
+        "verify_deployment_gate.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/experiment_logger.py",
+      "function": "run_agent10",
+      "start_line_at_release": 1487,
+      "approved_max_lines": 316,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests. Open-discovery additions are delegated to dedicated helpers; this exact coordinator growth is limited to cross-stage evidence/campaign wiring and is frozen by targeted and open end-to-end regressions.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_eight_session_conformance.py",
+        "verify_deployment_gate.py",
+        "verify_open_discovery_agent5_reporting.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ]
+    },
+    {
+      "path": "agents/master_orchestrator.py",
+      "function": "run_agent",
+      "start_line_at_release": 1048,
+      "approved_max_lines": 182,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_workflow_state_policy.py",
+        "verify_blockers3_to_8.py",
+        "verify_mandatory_a_to_z_repairs.py",
+        "verify_failure_diagnostics.py"
+      ],
+      "review_note": "Reviewed 2026-07-12: three lines added for fail-closed, evidence-linked stage diagnostics; behaviour is covered by verify_failure_diagnostics.py and the existing orchestrator cumulative regressions."
+    },
+    {
+      "path": "agents/master_orchestrator.py",
+      "function": "run_pipeline",
+      "start_line_at_release": 1400,
+      "approved_max_lines": 224,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_workflow_state_policy.py",
+        "verify_blockers3_to_8.py",
+        "verify_mandatory_a_to_z_repairs.py"
+      ]
+    },
+    {
+      "path": "agents/property_discovery_agent.py",
+      "function": "build_agent4_prompt",
+      "start_line_at_release": 683,
+      "approved_max_lines": 176,
+      "status": "final_architecture_audited_exception",
+      "justification": "Final trust-chain coordinator/helper is explicitly capped at its measured release length; semantic authority remains delegated to audited common contracts and behavior is release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No silent strategy, gate, tool-result, or evidence-policy fallback may be added here.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_open_discovery_mode.py",
+        "verify_agent4_campaign_candidate_separation.py"
+      ]
+    },
+    {
+      "path": "agents/property_discovery_agent.py",
+      "function": "infer_deterministic_candidate_properties",
+      "start_line_at_release": 364,
+      "approved_max_lines": 278,
+      "status": "comparison_mode_only_waiver",
+      "justification": "Deterministic semantic reference extraction is disabled in the main LLM-first mode and retained only for explicitly labelled comparison/baseline operation; mode-gate tests prevent transmission in the thesis mode.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_agent4_campaign_candidate_separation.py",
+        "verify_property_campaign_orchestration.py"
+      ]
+    },
+    {
+      "path": "agents/property_discovery_agent.py",
+      "function": "run_agent4",
+      "start_line_at_release": 1040,
+      "approved_max_lines": 442,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_agent4_campaign_candidate_separation.py",
+        "verify_property_campaign_orchestration.py",
+        "verify_open_discovery_mode.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ]
+    },
+    {
+      "path": "agents/repair_agent.py",
+      "function": "render_candidate_repair_outputs",
+      "start_line_at_release": 768,
+      "approved_max_lines": 376,
+      "status": "legacy_validated_helper_waiver",
+      "justification": "Existing validated helper remains temporarily intact to avoid a high-risk behavior-changing rewrite; its exact growth cap and behavioural coverage are release-gated.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_blockers3_to_8.py",
+        "verify_26_property_repair_and_claim_boundaries.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/repair_agent.py",
+      "function": "run_agent9",
+      "start_line_at_release": 1214,
+      "approved_max_lines": 519,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests. Open-discovery additions are delegated to dedicated helpers; this exact coordinator growth is limited to cross-stage evidence/campaign wiring and is frozen by targeted and open end-to-end regressions.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_blockers3_to_8.py",
+        "verify_26_property_repair_and_claim_boundaries.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ]
+    },
+    {
+      "path": "agents/review_critic_agent.py",
+      "function": "deterministic_review",
+      "start_line_at_release": 333,
+      "approved_max_lines": 305,
+      "status": "comparison_mode_only_waiver",
+      "justification": "Deterministic semantic reference extraction is disabled in the main LLM-first mode and retained only for explicitly labelled comparison/baseline operation; mode-gate tests prevent transmission in the thesis mode.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_critic_tool_readiness_policy.py",
+        "verify_mandatory_semantic_evidence_gates.py"
+      ]
+    },
+    {
+      "path": "agents/review_critic_agent.py",
+      "function": "run_agent6",
+      "start_line_at_release": 1183,
+      "approved_max_lines": 585,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests. Open-discovery additions are delegated to dedicated helpers; this exact coordinator growth is limited to cross-stage evidence/campaign wiring and is frozen by targeted and open end-to-end regressions.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_critic_tool_readiness_policy.py",
+        "verify_mandatory_semantic_evidence_gates.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    },
+    {
+      "path": "agents/spec_extraction_agent.py",
+      "function": "run_agent2",
+      "start_line_at_release": 954,
+      "approved_max_lines": 259,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_central_fail_closed_hardening.py",
+        "verify_blocker1_schemas.py"
+      ]
+    },
+    {
+      "path": "agents/tool_execution_agent.py",
+      "function": "run_agent7",
+      "start_line_at_release": 875,
+      "approved_max_lines": 805,
+      "status": "legacy_stage_coordinator_waiver",
+      "justification": "Legacy stage coordinator sequences immutable evidence I/O, subprocess boundaries, and fail-closed handoffs; repaired semantic decisions are delegated to audited common modules and the coordinator is frozen behind cumulative integration tests. Open-discovery additions are delegated to dedicated helpers; this exact coordinator growth is limited to cross-stage evidence/campaign wiring and is frozen by targeted and open end-to-end regressions.",
+      "mandatory_controls": [
+        "No line-count growth beyond approved_max_lines without registry review.",
+        "No semantic policy may be reimplemented here when an audited common module exists.",
+        "Every listed behavioral regression must remain in the automatically discovered release gate."
+      ],
+      "behavioral_regressions": [
+        "verify_mandatory_semantic_evidence_gates.py",
+        "verify_offline_fake_llm_cbmc_e2e.py",
+        "verify_offline_open_discovery_fake_llm_cbmc_e2e.py"
+      ],
+      "review_note": "Final trust-chain patch increased this coordinator/helper; cap reset to exact measured release length and bound to cumulative regressions."
+    }
+  ]
+}

@@ -1,0 +1,389 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "expected_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "extract_json_fields": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "json_pointer": {
+                  "type": "string"
+                },
+                "label": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "json_pointer"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "iteration": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "media_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "path": {
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "role": {
+            "enum": [
+              "SOURCE_REVISION_EVIDENCE",
+              "SPECIFICATION_EVIDENCE",
+              "BUILD_CONTEXT_EVIDENCE",
+              "HARNESS",
+              "CBMC_COMMAND",
+              "CBMC_RAW_STDOUT",
+              "CBMC_RAW_STDERR",
+              "CBMC_EXECUTION_SUMMARY",
+              "COUNTEREXAMPLE_VIEW",
+              "INTEGRITY_AUDIT",
+              "NONVACUITY_REPORT",
+              "CODEX_EVENT_LOG",
+              "SKILL_OUTPUT",
+              "ENVIRONMENT_SNAPSHOT",
+              "REPAIR_LOG",
+              "FINAL_STATUS_RECORD",
+              "PROPERTY_RECORD",
+              "OTHER"
+            ]
+          },
+          "skill_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "role",
+          "required",
+          "expected_sha256",
+          "media_type",
+          "skill_name",
+          "iteration",
+          "description",
+          "extract_json_fields"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "final_status_supplied_by_codex": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "value",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "generated_at_utc": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "harness_parsing": {
+      "additionalProperties": false,
+      "properties": {
+        "assert_functions": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "assume_functions": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "roles": {
+          "items": {
+            "enum": [
+              "SOURCE_REVISION_EVIDENCE",
+              "SPECIFICATION_EVIDENCE",
+              "BUILD_CONTEXT_EVIDENCE",
+              "HARNESS",
+              "CBMC_COMMAND",
+              "CBMC_RAW_STDOUT",
+              "CBMC_RAW_STDERR",
+              "CBMC_EXECUTION_SUMMARY",
+              "COUNTEREXAMPLE_VIEW",
+              "INTEGRITY_AUDIT",
+              "NONVACUITY_REPORT",
+              "CODEX_EVENT_LOG",
+              "SKILL_OUTPUT",
+              "ENVIRONMENT_SNAPSHOT",
+              "REPAIR_LOG",
+              "FINAL_STATUS_RECORD",
+              "PROPERTY_RECORD",
+              "OTHER"
+            ]
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "enabled",
+        "roles",
+        "assume_functions",
+        "assert_functions"
+      ],
+      "type": "object"
+    },
+    "property_records": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "property_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "line_end": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "line_start": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "path": {
+                    "minLength": 1,
+                    "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "path",
+                  "line_start",
+                  "line_end"
+                ],
+                "type": "object"
+              }
+            ]
+          },
+          "statement": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status_supplied_by_codex": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "property_id",
+          "statement",
+          "provenance",
+          "status_supplied_by_codex"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "required_roles": {
+      "items": {
+        "enum": [
+          "SOURCE_REVISION_EVIDENCE",
+          "SPECIFICATION_EVIDENCE",
+          "BUILD_CONTEXT_EVIDENCE",
+          "HARNESS",
+          "CBMC_COMMAND",
+          "CBMC_RAW_STDOUT",
+          "CBMC_RAW_STDERR",
+          "CBMC_EXECUTION_SUMMARY",
+          "COUNTEREXAMPLE_VIEW",
+          "INTEGRITY_AUDIT",
+          "NONVACUITY_REPORT",
+          "CODEX_EVENT_LOG",
+          "SKILL_OUTPUT",
+          "ENVIRONMENT_SNAPSHOT",
+          "REPAIR_LOG",
+          "FINAL_STATUS_RECORD",
+          "PROPERTY_RECORD",
+          "OTHER"
+        ]
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "run_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scan_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_text_parse_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_total_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "report_unlisted_files": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "report_unlisted_files",
+        "max_files",
+        "max_total_bytes",
+        "max_text_parse_bytes"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "source_revision": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_path": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "GIT_COMMIT",
+            "ARCHIVE_HASH",
+            "DECLARED_OTHER",
+            "NOT_SUPPLIED"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "value",
+        "evidence_path"
+      ],
+      "type": "object"
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_file": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "symbol": {
+          "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "source_file",
+        "configuration"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "generated_at_utc",
+    "target",
+    "source_revision",
+    "final_status_supplied_by_codex",
+    "property_records",
+    "artifacts",
+    "required_roles",
+    "scan_policy",
+    "harness_parsing"
+  ],
+  "title": "Verification Evidence Manifest Request",
+  "type": "object"
+}

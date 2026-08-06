@@ -2,7 +2,8 @@
 
 ## Final technical record, proof rationale, evidence index, and bounded novelty assessment
 
-**Author:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Project:** MSc thesis case study — AI-Assisted Formal Methods for Post-Quantum Cryptography Implementation  
 **Target repository:** `pq-code-package/mlkem-native`  
 **Pinned source commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
@@ -1201,11 +1202,11 @@ proved completely correct in every possible sense.
 
 ### 19.5 Recommended verbal answer to a professor
 
-> We proved the functional correctness of the pinned portable `mlk_poly_frombytes` path as a raw 12-bit unpacker. The proof is exhaustive for the eleven frozen properties and the recorded C machine model. It includes direct arithmetic semantics and a two-sided inverse with an independent encoder. We do not claim that the function alone performs FIPS canonicalisation, that the native backend was proved, or that every possible property of the function was formalised.
+> Functional correctness of the pinned portable `mlk_poly_frombytes` path as a raw 12-bit unpacker was proved. The proof is exhaustive for the eleven frozen properties and the recorded C machine model. It includes direct arithmetic semantics and a two-sided inverse with an independent encoder. The record does not claim that the function alone performs FIPS canonicalisation, that the native backend was proved, or that every possible property of the function was formalised.
 
 ---
 
-## 20. Why we did not stop earlier
+## 20. Rationale for continuing beyond earlier stages
 
 ### 20.1 Stopping after T1
 
@@ -1231,7 +1232,7 @@ bytes ↔ raw 12-bit polynomial
 
 It proves both directions over complete domains and gives the campaign a clean algebraic endpoint.
 
-### 20.5 Why we stopped after T4
+### 20.5 Completion criterion after T4
 
 After T4, additional raw-decoder semantic families would mainly be restatements.
 
@@ -1344,7 +1345,7 @@ The campaign distinguishes different kinds of authority.
 
 ### 22.4 Reporting limitation
 
-This report is grounded in the terminal outputs, uploaded execution records, acceptance reports, manifests, and final seal produced during the campaign.
+This report is grounded in the terminal outputs, retained execution records, acceptance reports, manifests, and final seal produced during the campaign.
 
 The reporting environment did not independently re-extract every final tar archive byte-for-byte. The campaign’s own final-seal process recalculated and matched each archive hash and every internal family manifest. This report should therefore be described as a detailed evidence-backed campaign record, not as an independent third-party certification.
 
@@ -1539,8 +1540,8 @@ Do not write:
 - “This is the first proof of `poly_frombytes`.”
 - “No one has ever verified this function.”
 - “This is the first formal verification of ML-KEM serialization.”
-- “We proved all of FIPS 203.”
-- “We proved every `mlk_poly_frombytes` backend.”
+- “All of FIPS 203 was proved.”
+- “Every `mlk_poly_frombytes` backend was proved.”
 - “The function is unconditionally correct.”
 - “T1–T4 are four logically independent mathematical discoveries.”
 
@@ -1661,7 +1662,7 @@ The strongest academically supportable interpretation is:
 6. controls and mutations test whether the proof artifacts are meaningful;
 7. deterministic packaging preserves the evidence and boundaries.
 
-This positioning directly supports a thesis about AI-assisted or tool-assisted formal-artifact generation with human review and deterministic verification authority.
+This positioning directly supports a thesis about AI-assisted or tool-assisted formal-artifact generation with deterministic verification authority and documented acceptance controls.
 
 ---
 
@@ -1822,4 +1823,4 @@ FINAL CAMPAIGN SEAL ARCHIVE
 
 ## Appendix B. One-paragraph professor summary
 
-At the pinned `mlkem-native` commit `af4c5abd`, we developed and executed a clean-room CBMC semantic-verification campaign for the unchanged portable public `mlk_poly_frombytes` path. Four frozen theorem families containing eleven obligations proved exact raw 12-bit coefficient decoding, exact bit influence and block locality, arbitrary differential conservation and blockwise injectivity, and two-sided inversion between all 384-byte inputs and all raw 256-coefficient polynomials in `[0,4096)`. The proofs used the real public call path, independent widened-arithmetic or division-and-remainder oracles, complete loop unwinding with unwinding assertions, full memory and integer checks, concrete non-vacuity and boundary witnesses, eleven targeted detached-worktree source mutants, immutable source and artifact hashes, family-level evidence archives, and a campaign-level final seal. The result is a strong repository-relative semantic-verification contribution, distinct from upstream range and C-safety contracts, but it is not presented as new bit-packing mathematics, a worldwide first, native-backend verification, full FIPS `ByteDecode12` canonicalisation, or proof of production `mlk_poly_tobytes`.
+At the pinned `mlkem-native` commit `af4c5abd`, a clean-room CBMC semantic-verification campaign was developed and executed for the unchanged portable public `mlk_poly_frombytes` path. Four frozen theorem families containing eleven obligations proved exact raw 12-bit coefficient decoding, exact bit influence and block locality, arbitrary differential conservation and blockwise injectivity, and two-sided inversion between all 384-byte inputs and all raw 256-coefficient polynomials in `[0,4096)`. The proofs used the real public call path, independent widened-arithmetic or division-and-remainder oracles, complete loop unwinding with unwinding assertions, full memory and integer checks, concrete non-vacuity and boundary witnesses, eleven targeted detached-worktree source mutants, immutable source and artifact hashes, family-level evidence archives, and a campaign-level final seal. The result is a strong repository-relative semantic-verification contribution, distinct from upstream range and C-safety contracts, but it is not presented as new bit-packing mathematics, a worldwide first, native-backend verification, full FIPS `ByteDecode12` canonicalisation, or proof of production `mlk_poly_tobytes`.

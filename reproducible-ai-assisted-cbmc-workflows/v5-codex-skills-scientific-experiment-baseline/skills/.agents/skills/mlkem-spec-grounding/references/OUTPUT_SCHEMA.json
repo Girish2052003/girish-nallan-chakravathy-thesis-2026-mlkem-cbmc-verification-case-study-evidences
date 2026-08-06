@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/mlkem-spec-grounding/output-schema-1.0.json",
+  "title": "ML-KEM Specification Grounding Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "skill",
+    "status",
+    "semantic_authority",
+    "timestamp_policy",
+    "request",
+    "corpus_summary",
+    "warnings",
+    "query_results",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"const": "mlkem-spec-grounding"},
+        "version": {"type": "string", "minLength": 1}
+      }
+    },
+    "status": {"enum": ["COMPLETE", "COMPLETE_WITH_WARNINGS", "INCOMPLETE"]},
+    "semantic_authority": {"const": "NONE"},
+    "timestamp_policy": {"const": "omitted_for_byte_reproducibility"},
+    "request": {"$ref": "INPUT_SCHEMA.json"},
+    "corpus_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documents_extracted", "documents_failed", "paths_skipped", "source_manifest_sha256"],
+      "properties": {
+        "documents_extracted": {"type": "integer", "minimum": 1},
+        "documents_failed": {"type": "integer", "minimum": 0},
+        "paths_skipped": {"type": "integer", "minimum": 0},
+        "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "query_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "text", "mode", "required", "matched", "raw_matching_line_count",
+          "passage_count", "truncated", "passages"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "text": {"type": "string"},
+          "mode": {"enum": ["literal", "all_terms", "any_term"]},
+          "required": {"type": "boolean"},
+          "matched": {"type": "boolean"},
+          "raw_matching_line_count": {"type": "integer", "minimum": 0},
+          "passage_count": {"type": "integer", "minimum": 0},
+          "truncated": {"type": "boolean"},
+          "passages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "citation", "document_sha256", "path", "start_line", "end_line",
+                "start_page", "end_page", "matched_lines", "heading", "text"
+              ],
+              "properties": {
+                "citation": {"type": "string"},
+                "document_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                "path": {"type": "string"},
+                "start_line": {"type": "integer", "minimum": 1},
+                "end_line": {"type": "integer", "minimum": 1},
+                "start_page": {"type": ["integer", "null"], "minimum": 1},
+                "end_page": {"type": ["integer", "null"], "minimum": 1},
+                "matched_lines": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+                "heading": {
+                  "oneOf": [
+                    {"type": "null"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["line", "page", "text"],
+                      "properties": {
+                        "line": {"type": "integer", "minimum": 1},
+                        "page": {"type": ["integer", "null"], "minimum": 1},
+                        "text": {"type": "string"}
+                      }
+                    }
+                  ]
+                },
+                "text": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

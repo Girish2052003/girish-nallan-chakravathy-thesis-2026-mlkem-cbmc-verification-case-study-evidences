@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/target-build-context/input.schema.json",
+  "title": "Target Build Context Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "target"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol"],
+      "properties": {
+        "symbol": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+        "source_file": {"type": "string", "minLength": 1},
+        "expected_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_files": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "exclude_globs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "build": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {"mode": {"const": "none"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "compiler"],
+          "properties": {
+            "mode": {"const": "explicit"},
+            "working_directory": {"type": "string", "minLength": 1},
+            "compiler": {"type": "string", "minLength": 1},
+            "language_standard": {"type": "string", "pattern": "^[A-Za-z0-9+_.-]+$"},
+            "include_dirs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "defines": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name"],
+                "properties": {
+                  "name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+                  "value": {"type": "string"}
+                }
+              }
+            },
+            "undefines": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"}},
+            "forced_includes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "extra_args": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "compile_commands_file"],
+          "properties": {
+            "mode": {"const": "compile_commands"},
+            "compile_commands_file": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preprocess": {"type": "boolean"},
+        "preprocess_required": {"type": "boolean"},
+        "preprocess_timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 600},
+        "excerpt_context_lines": {"type": "integer", "minimum": 0, "maximum": 200},
+        "max_items_per_category": {"type": "integer", "minimum": 1, "maximum": 10000}
+      }
+    }
+  }
+}

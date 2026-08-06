@@ -1,0 +1,748 @@
+{
+  "schema_version": "agent_status.v1",
+  "experiment_protocol_sha256": "b5d603a74e7fe6e274b198656becabf4b0da30c78e089910675303466b1297ee",
+  "experiment_protocol_version": "llm-first-v1",
+  "semantic_advisory_mode": "off",
+  "property_discovery_mode": "open_discovery",
+  "stage": "02_spec_extraction",
+  "started_utc": "2026-07-14T08:57:16.246282+00:00",
+  "completed_utc": "2026-07-14T08:59:08.228481+00:00",
+  "success": true,
+  "llm_call_executed": true,
+  "handoff_available": true,
+  "errors": [],
+  "warnings": [
+    "semantic_advisory_mode=off: deterministic semantic specification extraction was not generated or transmitted."
+  ],
+  "llm_mode": "real",
+  "llm_success": true,
+  "llm_result": {
+    "stage": "02_spec_extraction",
+    "mode": "real",
+    "success": true,
+    "llm_call_executed": true,
+    "output_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/llm_authoritative/01_spec_summary.json",
+    "raw_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/llm_authoritative/api_responses/attempt_01_response.json",
+    "validation_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/validation/llm_call_validation.json",
+    "prompt_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/02_spec_extraction_prompt.txt",
+    "metadata_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/prompt_metadata.json",
+    "attempts": 1,
+    "error": null,
+    "parsed_json": {
+      "stage": "02_spec_extraction",
+      "mock": false,
+      "llm_call_executed": true,
+      "source_scope": {
+        "primary_sources_used": [
+          "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt"
+        ],
+        "provided_material_complete": false,
+        "missing_or_unavailable_material": [
+          "Implementation source file(s) containing mlk_poly_add or the target polynomial-add routine",
+          "Header declarations or type definitions for the target implementation",
+          "Build, proof, or harness configuration files",
+          "Deterministic Python advisory extraction output",
+          "Raw formal-tool or CBMC output"
+        ]
+      },
+      "spec_facts": [
+        {
+          "fact_id": "F1",
+          "category": "definition",
+          "statement": "The specification defines R_q as Z_q[X]/(X^n + 1), with n = 256 and q = 3329; polynomials are written as f = f0 + f1 X + ... + f255 X^255 with coefficients f_j in Z_q.",
+          "verification_relevance": "candidate algebraic-domain fact for later polynomial-addition trace and coefficient-bound checking",
+          "confidence": "high",
+          "uncertainty": "The standard gives the algebraic definition directly, but it does not name a standalone implementation function for polynomial addition.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3; Section 4.3",
+              "excerpt": "n = 256 throughout this document; q = 3329 throughout this document; R_q is the ring Z_q[X]/(X^n + 1) consisting of polynomials f = f0 + ... + f255 X^255 with f_j in Z_q.",
+              "supports_claim": "R_q, n, q, and the polynomial form used by the standard.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "Does not identify the implementation's exact data structure or function signature."
+          ]
+        },
+        {
+          "fact_id": "F2",
+          "category": "representation",
+          "statement": "Elements of R_q are represented in pseudocode as length-256 arrays in Z_q^256, with entry i corresponding to coefficient f_i.",
+          "verification_relevance": "candidate array-shape fact for later C-level assertions",
+          "confidence": "high",
+          "uncertainty": "This is a specification-level representation; the actual C struct or buffer layout is not provided here.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.4, equations (2.4) and (2.5)",
+              "excerpt": "An element f of R_q will be represented in pseudocode by the array (f0, f1, ..., f255) in Z_q^256, and the i-th entry of the array f will contain the i-th coefficient of f.",
+              "supports_claim": "Length-256 coefficient-array representation of R_q elements.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No aliasing, packing, or in-place update policy is specified for a target implementation."
+          ]
+        },
+        {
+          "fact_id": "F3",
+          "category": "array_arithmetic",
+          "statement": "For arrays X and Y in Z_m^ℓ, the operation W ← X + Y is defined coordinate-wise, so W[i] = X[i] + Y[i] for all i.",
+          "verification_relevance": "candidate algorithm-to-code trace item for coefficient-wise addition loops",
+          "confidence": "high",
+          "uncertainty": "The notation is abstract array arithmetic; the concrete implementation may use any mathematically equivalent procedure.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.3, equations (2.2) and (2.3)",
+              "excerpt": "Let a in Z_m and X, Y in Z_m^l. The statement W <- X + Y will result in W[i] = X[i] + Y[i] for all i.",
+              "supports_claim": "Coordinate-wise array addition semantics.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The text states coordinate-wise addition but does not itself add an explicit loop index bound for every implementation."
+          ]
+        },
+        {
+          "fact_id": "F4",
+          "category": "polynomial_and_ntt_arithmetic",
+          "statement": "Addition and scalar multiplication in both R_q and T_q are performed coordinate-wise on the coefficient arrays; for NTT representations, ĥ ← f̂ + ĝ denotes coefficient-array addition.",
+          "verification_relevance": "candidate spec fact for later implementation matching of polynomial addition in either ring representation",
+          "confidence": "high",
+          "uncertainty": "The specification describes the algebraic behavior, but not the exact C routine names or buffer aliasing rules.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5",
+              "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise... the addition of two NTT representations in pseudocode is performed by a statement of the form ĥ <- f̂ + ĝ.",
+              "supports_claim": "Coordinate-wise addition in R_q and T_q.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The standard does not state whether a particular implementation must use an in-place loop or temporary storage."
+          ]
+        },
+        {
+          "fact_id": "F5",
+          "category": "modular_arithmetic",
+          "statement": "For z in Z_m, the pseudocode assignment z ← x + y means z is assigned x + y mod m; modular reduction is implicit whenever a value is written to a Z_m variable.",
+          "verification_relevance": "candidate bound relevant to later C-level assertions about modular wrap-around",
+          "confidence": "high",
+          "uncertainty": "The rule is defined abstractly; the implementation may realize the reduction via any equivalent integer arithmetic.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.1, equation (2.1)",
+              "excerpt": "For z in Z_m and integers x and y, the statement z <- x + y means that z is assigned the value x + y mod m.",
+              "supports_claim": "Implicit modular reduction on assignment into Z_m.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "This does not specify any concrete machine-integer width or overflow handling strategy."
+          ]
+        },
+        {
+          "fact_id": "F6",
+          "category": "pseudocode_conventions",
+          "statement": "All algorithms in the specification have access to the global integer constants n = 256 and q = 3329, and subroutine arguments are passed by value rather than by reference.",
+          "verification_relevance": "candidate trace item for function signature expectations and loop-bound context",
+          "confidence": "high",
+          "uncertainty": "The pass-by-value convention is pseudocode semantics; actual C code may use pointers or copies while preserving mathematical behavior.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4",
+              "excerpt": "All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329... When algorithms invoke other algorithms as subroutines, all arguments are passed by value.",
+              "supports_claim": "Global constants and pass-by-value pseudocode convention.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The spec does not define the target C ABI or whether the implementation mutates input buffers."
+          ]
+        },
+        {
+          "fact_id": "F7",
+          "category": "implementation_constraints",
+          "statement": "Implementations of ML-KEM shall not use floating-point arithmetic; when division appears in the specification, it is to be interpreted using integer or rational arithmetic as appropriate.",
+          "verification_relevance": "candidate C-level implementation constraint if poly-add code shares helper arithmetic or validation logic",
+          "confidence": "high",
+          "uncertainty": "This is a general ML-KEM implementation constraint; it is not specific to polynomial addition alone.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 3.3, \"No floating-point arithmetic\"",
+              "excerpt": "Implementations of ML-KEM shall not use floating-point arithmetic... ordinary integer division x/y computes floor(x/y).",
+              "supports_claim": "No floating-point arithmetic requirement.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The addition operation itself does not require division; this fact is primarily a surrounding implementation constraint."
+          ]
+        },
+        {
+          "fact_id": "F8",
+          "category": "parameter_sets",
+          "statement": "The approved ML-KEM parameter sets are ML-KEM-512, ML-KEM-768, and ML-KEM-1024; n stays 256 and q stays 3329, while k, eta1, eta2, d_u, and d_v vary by parameter set.",
+          "verification_relevance": "candidate context fact for parameterized harness generation, though polynomial addition itself is q-based",
+          "confidence": "high",
+          "uncertainty": "The target polynomial-add routine may or may not depend on the selected parameter set beyond q and array sizes.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 8, Table 2",
+              "excerpt": "Approved parameter sets for ML-KEM... ML-KEM-512, ML-KEM-768, ML-KEM-1024... n = 256, q = 3329.",
+              "supports_claim": "Approved parameter sets and fixed versus variable parameters.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The function-specific dependency of mlk_poly_add on parameter-set fields is not confirmed by source code."
+          ]
+        },
+        {
+          "fact_id": "F9",
+          "category": "indexing_and_bounds",
+          "statement": "All arrays in the specification use zero-based indexing.",
+          "verification_relevance": "candidate loop-index fact for later array iteration",
+          "confidence": "high",
+          "uncertainty": "This is a notation rule; the implementation may index differently internally while remaining mathematically equivalent.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "B[i] denotes the entry at index i in the array B. All arrays have indices that begin at zero.",
+              "supports_claim": "Zero-based array indexing.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "Does not by itself specify the concrete C loop limits used by a target implementation."
+          ]
+        }
+      ],
+      "constants_and_parameters": [
+        {
+          "fact_id": "C1",
+          "category": "fixed_constants",
+          "statement": "n is fixed at 256 throughout the document.",
+          "verification_relevance": "candidate bound relevant to later C-level assertions and loop limits",
+          "confidence": "high",
+          "uncertainty": "No implementation-specific buffer length is given, but the specification's polynomial representation is length 256.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "n denotes the integer 256 throughout this document.",
+              "supports_claim": "Fixed constant n = 256.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "n is a specification constant; the implementation may use compile-time constants or macros."
+          ]
+        },
+        {
+          "fact_id": "C2",
+          "category": "fixed_constants",
+          "statement": "q is fixed at 3329 throughout the document, and it is described as the prime integer 3329 = 28 * 13 + 1.",
+          "verification_relevance": "candidate bound relevant to later modular-arithmetic assertions",
+          "confidence": "high",
+          "uncertainty": "The specification states q as a prime constant; this summary does not infer any extra number-theoretic properties beyond what is written.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "q denotes the prime integer 3329 = 28 ⋅ 13 + 1 throughout this document.",
+              "supports_claim": "Fixed constant q = 3329 and its stated factorization.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The factorization is included for the NTT context; it is not specific to addition."
+          ]
+        },
+        {
+          "fact_id": "C3",
+          "category": "parameter_sets",
+          "statement": "Table 2 fixes the following parameter values: ML-KEM-512 has k=2, eta1=3, eta2=2, d_u=10, d_v=4, and RBG strength 128; ML-KEM-768 has k=3, eta1=2, eta2=2, d_u=10, d_v=4, and RBG strength 192; ML-KEM-1024 has k=4, eta1=2, eta2=2, d_u=11, d_v=5, and RBG strength 256.",
+          "verification_relevance": "candidate context for parameterized harness generation and cross-checking",
+          "confidence": "high",
+          "uncertainty": "Polynomial addition itself is expected to depend primarily on q and array length, but the broader ML-KEM context is parameterized by these values.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 8, Table 2",
+              "excerpt": "ML-KEM-512: k=2, eta1=3, eta2=2, d_u=10, d_v=4, required RBG strength 128; ML-KEM-768: k=3, eta1=2, eta2=2, d_u=10, d_v=4, required RBG strength 192; ML-KEM-1024: k=4, eta1=2, eta2=2, d_u=11, d_v=5, required RBG strength 256.",
+              "supports_claim": "Approved parameter-set values.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The table does not directly specify any polynomial-add-specific special cases."
+          ]
+        }
+      ],
+      "algorithms_or_steps": [
+        {
+          "fact_id": "A1",
+          "category": "array_arithmetic_step",
+          "statement": "The array-addition semantics used by the standard are coordinate-wise, so a polynomial-add implementation can be modeled as looping over each coefficient index and applying modular addition at that position.",
+          "verification_relevance": "candidate algorithm-to-code trace item for later harness generation",
+          "confidence": "high",
+          "uncertainty": "The specification states the coordinate-wise semantics; it does not prescribe a particular loop order or memory-access pattern.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.3; Section 2.4.5",
+              "excerpt": "Array addition W <- X + Y is coordinate-wise, and addition in R_q and T_q is done coordinate-wise on coefficient arrays.",
+              "supports_claim": "Coordinate-wise addition semantics suitable for a coefficient loop.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The implementation may use vectorized or unrolled code while preserving the same semantics."
+          ]
+        },
+        {
+          "fact_id": "A2",
+          "category": "polynomial_addition_step",
+          "statement": "When R_q elements are represented as coefficient arrays, the semantic result of adding two polynomials is the coefficient-wise sum of the two arrays, with each coefficient interpreted in Z_q.",
+          "verification_relevance": "candidate postcondition template for later C assertions",
+          "confidence": "high",
+          "uncertainty": "The specification does not give a dedicated algorithm named for polynomial addition, so this is a semantic extraction rather than a named procedure.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.4 and 2.4.5",
+              "excerpt": "R_q elements are represented by coefficient arrays in Z_q^256, and addition is performed coordinate-wise.",
+              "supports_claim": "Polynomial-add semantics on coefficient arrays.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No standalone algorithm identifier or C symbol name is provided by the standard."
+          ]
+        }
+      ],
+      "equations_and_bounds": [
+        {
+          "fact_id": "E1",
+          "category": "modular_assignment_equation",
+          "statement": "For z in Z_m, the assignment z ← x + y means z = x + y mod m.",
+          "verification_relevance": "candidate bound relevant to later modular wrap-around checks",
+          "confidence": "high",
+          "uncertainty": "The equation is abstract and does not encode machine overflow behavior.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.1, equation (2.1)",
+              "excerpt": "z <- x + y means that z is assigned the value x + y mod m.",
+              "supports_claim": "Modular reduction on assignment to Z_m.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "Does not specify any concrete integer type width."
+          ]
+        },
+        {
+          "fact_id": "E2",
+          "category": "coordinate_wise_array_equation",
+          "statement": "If X and Y are arrays in Z_m^ℓ, then W ← X + Y yields W[i] = X[i] + Y[i] for all i.",
+          "verification_relevance": "candidate equation for later per-index assertions",
+          "confidence": "high",
+          "uncertainty": "The equation is stated for arrays over Z_m; the same style is used later for coefficient arrays in Z_q.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.3, equation (2.3)",
+              "excerpt": "W <- X + Y will result in W[i] = X[i] + Y[i] for all i.",
+              "supports_claim": "Coordinate-wise array addition rule.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The equation itself does not explicitly restate the modulus in the output line because the arrays are already elements of Z_m^ℓ."
+          ]
+        },
+        {
+          "fact_id": "E3",
+          "category": "polynomial_form_and_bounds",
+          "statement": "A polynomial in R_q is written with exactly 256 coefficients indexed from 0 through 255, each coefficient lying in Z_q.",
+          "verification_relevance": "candidate array-length and coefficient-range fact for harness bounds",
+          "confidence": "high",
+          "uncertainty": "The implementation may store the coefficients differently, but the semantic object has this shape.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.3",
+              "excerpt": "R_q consists of polynomials f = f0 + ... + f255 X^255, where f_j in Z_q for all j.",
+              "supports_claim": "Coefficient-count and coefficient-domain bound.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "This is a mathematical bound, not a machine-memory bound."
+          ]
+        }
+      ],
+      "candidate_preconditions": [
+        {
+          "fact_id": "P1",
+          "category": "input_shape",
+          "statement": "A candidate polynomial-add routine should receive operands that are valid length-256 coefficient arrays representing elements of R_q, with each coefficient in the range 0 to q-1.",
+          "verification_relevance": "candidate precondition suggested by the specification",
+          "confidence": "medium",
+          "uncertainty": "The specification gives the semantic representation, but the exact implementation precondition for mlk_poly_add is not explicitly named.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3, 2.4.1, 2.4.4, 2.4.5",
+              "excerpt": "R_q elements are coefficient arrays in Z_q^256; array addition is coordinate-wise; assignments to Z_m reduce modulo m.",
+              "supports_claim": "Candidate precondition that operands are valid ring-element arrays.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The target implementation may accept equivalent internal representations rather than literal Z_q arrays."
+          ]
+        },
+        {
+          "fact_id": "P2",
+          "category": "representation_choice",
+          "statement": "If the routine operates on NTT-form values, the operands should still be valid length-256 arrays over Z_q representing elements of T_q.",
+          "verification_relevance": "candidate precondition for later trace matching if the implementation uses NTT-domain buffers",
+          "confidence": "medium",
+          "uncertainty": "The provided specification supports NTT-domain addition semantics, but the target function name does not reveal which representation it uses.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.4 and 2.4.5",
+              "excerpt": "Elements of T_q are represented as coefficient arrays in Z_q^256, and addition in T_q is coordinate-wise.",
+              "supports_claim": "Candidate precondition for NTT-domain addition buffers.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No direct source code evidence confirms whether mlk_poly_add uses R_q or T_q buffers."
+          ]
+        }
+      ],
+      "candidate_postconditions": [
+        {
+          "fact_id": "Q1",
+          "category": "result_shape",
+          "statement": "A candidate polynomial-add routine should return a length-256 coefficient array in Z_q^256 whose ith entry is the modular sum of the ith input entries.",
+          "verification_relevance": "candidate postcondition for later C-level assertions",
+          "confidence": "medium",
+          "uncertainty": "The spec establishes the semantics, but the exact return type and storage convention for the target implementation are not provided.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.1, 2.4.3, 2.4.4, 2.4.5",
+              "excerpt": "Assignments to Z_m reduce modulo m; W <- X + Y is coordinate-wise; R_q elements are represented as arrays in Z_q^256; addition in R_q is coordinate-wise.",
+              "supports_claim": "Output shape and modular coefficient-wise sum semantics.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The implementation could write the result in place, out of place, or through a pointer parameter."
+          ]
+        },
+        {
+          "fact_id": "Q2",
+          "category": "semantic_result",
+          "statement": "As a mathematical result, adding two R_q elements should yield their ring sum under the specification's coordinate-wise addition semantics.",
+          "verification_relevance": "candidate postcondition for semantic equivalence checks",
+          "confidence": "high",
+          "uncertainty": "This postcondition is derived from the ring and array semantics stated in the specification, not from a named implementation contract.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5",
+              "excerpt": "The algebraic operations of addition ... in R_q ... are done coordinate-wise.",
+              "supports_claim": "Ring-sum semantics for polynomial addition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No formal proof obligation is provided by the specification text itself."
+          ]
+        }
+      ],
+      "candidate_verification_relevance": [
+        {
+          "fact_id": "V1",
+          "category": "array_bounds",
+          "statement": "Candidate bound relevant to later C-level assertions: polynomial elements are length-256 arrays with indices 0..255 and coefficients modulo 3329.",
+          "verification_relevance": "supports loop-bound discovery and index-range checking for a repaired-engine replication of polynomial addition",
+          "confidence": "high",
+          "uncertainty": "The concrete implementation may use a different internal layout while preserving the same external semantics.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3 and 2.4.4",
+              "excerpt": "All arrays have indices that begin at zero; R_q elements are represented as arrays in Z_q^256.",
+              "supports_claim": "Index and length bound for polynomial arrays.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The specification does not tell the analyzer whether the implementation uses signed or unsigned machine integers."
+          ]
+        },
+        {
+          "fact_id": "V2",
+          "category": "trace_item",
+          "statement": "Candidate algorithm-to-code trace item: the specification's addition semantics are coefficient-wise, so a loop over the 256 coefficients is the natural semantic pattern for mlk_poly_add.",
+          "verification_relevance": "useful for later harness generation and repair diagnostics",
+          "confidence": "high",
+          "uncertainty": "This is a semantic trace item, not a claim about the exact source code structure.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.3 and 2.4.5",
+              "excerpt": "W[i] = X[i] + Y[i] for all i; addition in R_q and T_q is done coordinate-wise.",
+              "supports_claim": "Coordinate-wise addition suggests a coefficient loop.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The implementation may use vectorized instructions, unrolling, or other equivalent transformations."
+          ]
+        },
+        {
+          "fact_id": "V3",
+          "category": "precondition_hint",
+          "statement": "Candidate precondition suggested by the specification: operands should already be valid ring-element arrays rather than arbitrary byte strings.",
+          "verification_relevance": "supports later input-shape assertions and repair of mis-typed APIs",
+          "confidence": "medium",
+          "uncertainty": "The standard presents mathematical representations; it does not define a target API for arbitrary byte input to the addition routine.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3, 2.4.4, 2.4.5",
+              "excerpt": "R_q elements are arrays in Z_q^256 and addition is performed coordinate-wise.",
+              "supports_claim": "Valid ring-element array operands are the relevant precondition shape.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "The exact target function may expose a typed wrapper that performs decoding before addition."
+          ]
+        },
+        {
+          "fact_id": "V4",
+          "category": "modular_postcondition",
+          "statement": "Candidate postcondition for later harness generation: each output coefficient should equal (a[i] + b[i]) mod q, with q = 3329.",
+          "verification_relevance": "supports per-index postcondition checks in C or CBMC harnesses",
+          "confidence": "high",
+          "uncertainty": "This follows from the spec's modular-assignment and coordinate-wise array rules; the implementation contract is still not provided.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.4.1, 2.4.3, 2.4.5",
+              "excerpt": "z <- x + y means x + y mod m; W[i] = X[i] + Y[i]; addition in R_q is coordinate-wise.",
+              "supports_claim": "Per-coefficient modular-sum postcondition.",
+              "confidence": "high"
+            }
+          ],
+          "limitations": [
+            "No formal proof of the repaired implementation is provided at this stage."
+          ]
+        }
+      ],
+      "terminology_to_preserve": [
+        {
+          "term": "R_q",
+          "meaning": "The ring Z_q[X]/(X^n + 1) used for polynomial elements in ML-KEM, represented as 256-coefficient arrays over Z_q.",
+          "preservation_rule": "Preserve the exact algebraic notation and the associated 256-coefficient interpretation.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3 and 2.4.4",
+              "excerpt": "R_q is the ring Z_q[X]/(X^n + 1)... represented by the array (f0, ..., f255) in Z_q^256.",
+              "supports_claim": "Meaning of R_q.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "T_q",
+          "meaning": "The NTT representation ring used for coefficient-array forms of polynomials in ML-KEM.",
+          "preservation_rule": "Preserve T_q as the NTT-domain algebraic object, not as a generic array type.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3 and 4.3",
+              "excerpt": "T_q is the image of R_q under the number-theoretic transform; its elements are called NTT representations.",
+              "supports_claim": "Meaning of T_q.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "coordinate-wise",
+          "meaning": "Addition and scalar multiplication are applied entry-by-entry to the coefficient arrays.",
+          "preservation_rule": "Do not reinterpret coordinate-wise operations as polynomial multiplication or any other cross-term operation.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Section 2.4.5",
+              "excerpt": "The algebraic operations of addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+              "supports_claim": "Coordinate-wise operation rule.",
+              "confidence": "high"
+            }
+          ]
+        },
+        {
+          "term": "mod q",
+          "meaning": "Arithmetic on coefficients is reduced modulo the fixed prime q = 3329.",
+          "preservation_rule": "Preserve explicit modular reduction in any later assertion or harness.",
+          "evidence_references": [
+            {
+              "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+              "locator": "Sections 2.3 and 2.4.1",
+              "excerpt": "q denotes the prime integer 3329... z <- x + y means x + y mod m.",
+              "supports_claim": "Meaning of modulo-q arithmetic.",
+              "confidence": "high"
+            }
+          ]
+        }
+      ],
+      "deterministic_reference_assessment": {
+        "used": false,
+        "status": "not used",
+        "warning": "No deterministic Python advisory analysis or local extraction output was provided in the evidence bundle for this stage.",
+        "disagreements": []
+      },
+      "uncertainties": [
+        {
+          "issue": "The provided evidence does not include the implementation source for mlk_poly_add.",
+          "impact": "Cannot confirm the exact function name, signature, in-place behavior, aliasing policy, or data layout."
+        },
+        {
+          "issue": "The specification gives semantic array and ring addition rules but not a standalone polynomial-add API.",
+          "impact": "Later agents should treat the current extraction as candidate semantic guidance rather than a code contract."
+        },
+        {
+          "issue": "No deterministic analysis, CBMC output, or build/proof configuration was supplied.",
+          "impact": "There is no cross-check against local extraction hints or formal-tool traces in this stage."
+        },
+        {
+          "issue": "The specification allows mathematically equivalent implementations.",
+          "impact": "Multiple loop structures or optimizations may satisfy the same specification-level addition semantics."
+        }
+      ],
+      "evidence_references": [
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Sections 2.3 and 2.4.4",
+          "excerpt": "n = 256; q = 3329; R_q is the ring Z_q[X]/(X^n + 1); elements of R_q are represented as arrays in Z_q^256.",
+          "supports_claim": "Core polynomial-domain constants and array representation.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.3, equations (2.2) and (2.3)",
+          "excerpt": "Array addition is coordinate-wise: W[i] = X[i] + Y[i] for all i.",
+          "supports_claim": "Coordinate-wise array addition semantics.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.5",
+          "excerpt": "Addition and scalar multiplication in R_q and T_q are done coordinate-wise.",
+          "supports_claim": "Ring-level addition semantics relevant to polynomial addition.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4.1, equation (2.1)",
+          "excerpt": "z <- x + y means that z is assigned the value x + y mod m.",
+          "supports_claim": "Implicit modular reduction semantics.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 2.4",
+          "excerpt": "All algorithms are understood to have access to two global integer constants: n = 256 and q = 3329; subroutine arguments are passed by value.",
+          "supports_claim": "Global constants and pass-by-value convention.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 3.3, \"No floating-point arithmetic\"",
+          "excerpt": "Implementations of ML-KEM shall not use floating-point arithmetic.",
+          "supports_claim": "Floating-point prohibition for implementations.",
+          "confidence": "high"
+        },
+        {
+          "source_path": "/home/girish/THESIS-2026/thesis-pipeline/inputs/specs/fips203_clean.txt",
+          "locator": "Section 8, Table 2",
+          "excerpt": "Approved parameter sets: ML-KEM-512, ML-KEM-768, ML-KEM-1024; n = 256 and q = 3329 for all of them.",
+          "supports_claim": "Approved parameter sets and fixed constants.",
+          "confidence": "high"
+        }
+      ],
+      "limitations": [
+        "This output is candidate specification extraction only; it is not proof of correctness, compliance, or implementation equivalence.",
+        "The provided evidence is specification text only; no target implementation source for mlk_poly_add was included.",
+        "The standard does not define a standalone mlk_poly_add symbol or API contract, so any function-level mapping remains an inference.",
+        "No formal-tool output, harness artifact, or deterministic local analysis was available to cross-check against the specification."
+      ]
+    },
+    "validation": {
+      "schema_version": "llm_stage_validation.v1",
+      "created_utc": "2026-07-14T08:59:08.222511+00:00",
+      "stage": "02_spec_extraction",
+      "mode": "real",
+      "llm_call_executed": true,
+      "valid": true,
+      "attempts": 1,
+      "schema_validation": {
+        "schema_validation_enabled": true,
+        "validator": "jsonschema",
+        "valid": true,
+        "errors": []
+      },
+      "model": "gpt-5.4-mini",
+      "elapsed_seconds_last_attempt": 111.86061978340149,
+      "final_request_snapshot_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/api_requests/attempt_01_request.json",
+      "final_response_path": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/llm_authoritative/api_responses/attempt_01_response.json",
+      "request_sha256": "ce2b465bd6bdb52550e328b24992d8db13e517b632ef3b1e150aea0a1ce29a66",
+      "primary_evidence_complete": true,
+      "primary_evidence_transmission_manifest": "/home/girish/THESIS-2026/thesis-pipeline/runs/run_002_mlk_poly_add_open_discovery_repaired_20260714/stages/02_spec_extraction/prompt_package/primary_evidence_transmission_manifest.json",
+      "exact_input_summary": {
+        "schema_version": "responses_api_input_summary.v1",
+        "input_text_block_count": 1,
+        "input_text_chars": 152763,
+        "input_text_utf8_bytes": 161176,
+        "input_text_sha256": "718294067b09ded934946bda58ae58d5b11bb6a9032e5503fe36d7cca04901d3",
+        "input_file_count": 0,
+        "input_files": [],
+        "canonical_input_sha256": "5c433089715808e8c1b1c7aa469876f0bff1898f4013c00d03de85eb5015c207",
+        "contains_primary_truncation_marker": false
+      },
+      "provider_usage": {
+        "input_tokens": 43637,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 18061,
+        "output_tokens_details": {
+          "reasoning_tokens": 9503
+        },
+        "total_tokens": 61698
+      }
+    }
+  }
+}

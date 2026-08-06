@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "analysis_nature": {
+      "const": "LEXICAL_CALL_INVENTORY_ONLY"
+    },
+    "files": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "assertions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "argument_count": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "condition_normalized": {
+                  "type": "string"
+                },
+                "condition_raw": {
+                  "type": "string"
+                },
+                "function": {
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "ASSUMPTION",
+                    "ASSERTION"
+                  ]
+                },
+                "line": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "message_raw": {
+                  "type": "string"
+                },
+                "raw_call": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "function",
+                "line",
+                "raw_call",
+                "argument_count",
+                "condition_raw",
+                "condition_normalized"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "assumptions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "argument_count": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "condition_normalized": {
+                  "type": "string"
+                },
+                "condition_raw": {
+                  "type": "string"
+                },
+                "function": {
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "ASSUMPTION",
+                    "ASSERTION"
+                  ]
+                },
+                "line": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "message_raw": {
+                  "type": "string"
+                },
+                "raw_call": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "function",
+                "line",
+                "raw_call",
+                "argument_count",
+                "condition_raw",
+                "condition_normalized"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "assumptions",
+          "assertions"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "semantic_authority": {
+      "const": "NONE"
+    }
+  },
+  "required": [
+    "schema_version",
+    "semantic_authority",
+    "analysis_nature",
+    "files",
+    "limitations"
+  ],
+  "title": "Harness Claim Inventory",
+  "type": "object"
+}

@@ -1,0 +1,179 @@
+{
+  "items": [
+    {
+      "check_id": "PRODUCTION_SOURCE_HASH_BINDING",
+      "evidence": {
+        "checked_count": 2,
+        "mismatches": []
+      },
+      "limitation": "Hash equality establishes file identity only; it does not establish source correctness.",
+      "status": "CHECKED",
+      "summary": "All declared production-file hashes match"
+    },
+    {
+      "check_id": "HARNESS_HASH_BINDING",
+      "evidence": {
+        "actual_sha256": "6da4a688aafc148ccc4f36e92263042db6ef6c9ba3d73536152345c587f5c210",
+        "category": "harness",
+        "expected_sha256": "6da4a688aafc148ccc4f36e92263042db6ef6c9ba3d73536152345c587f5c210",
+        "hash_match": true,
+        "path": "harness.c",
+        "role": "candidate_harness",
+        "size_bytes": 402
+      },
+      "limitation": "A mismatch is recorded rather than interpreted as malicious or erroneous.",
+      "status": "CHECKED",
+      "summary": "Harness hash matches the declared identity"
+    },
+    {
+      "check_id": "EXPECTED_TARGET_CALL",
+      "evidence": {
+        "lexical_call_count": 1,
+        "line_numbers": [
+          19
+        ],
+        "minimum_required": 1,
+        "target_symbol": "vector_subtract"
+      },
+      "limitation": "Call recognition is lexical and does not prove reachability or dynamic dispatch behavior.",
+      "status": "CHECKED",
+      "summary": "Observed 1 lexical target call(s); minimum required is 1"
+    },
+    {
+      "check_id": "TARGET_REPLACEMENT_OR_STUB_PATTERN",
+      "evidence": {
+        "authoritative_definition_path": "src/vector.c",
+        "patterns": []
+      },
+      "limitation": "Absence of these lexical patterns does not prove that all replacement mechanisms are absent.",
+      "status": "CHECKED",
+      "summary": "No configured replacement/stub pattern observed"
+    },
+    {
+      "check_id": "ASSUMPTION_INVENTORY",
+      "evidence": {
+        "count": 1,
+        "items": [
+          {
+            "condition": "left[0] >= -100",
+            "kind": "__CPROVER_assume",
+            "line": 18,
+            "normalized_condition": "left[0]>=-100",
+            "obvious_truth_classification": "UNKNOWN"
+          }
+        ]
+      },
+      "limitation": "Inventory does not judge whether assumptions are necessary, sufficient, or justified.",
+      "status": "CHECKED",
+      "summary": "Recorded 1 lexical assumption call(s)"
+    },
+    {
+      "check_id": "USER_ASSERTION_PRESENCE",
+      "evidence": {
+        "count": 1,
+        "items": [
+          {
+            "condition": "result[0] == left[0] - right[0]",
+            "kind": "__CPROVER_assert",
+            "line": 20,
+            "normalized_condition": "result[0]==left[0]-right[0]",
+            "obvious_truth_classification": "UNKNOWN"
+          }
+        ]
+      },
+      "limitation": "This inventory does not include properties inserted internally by CBMC safety-check options.",
+      "status": "CHECKED",
+      "summary": "Recorded 1 lexical user assertion call(s)"
+    },
+    {
+      "check_id": "OBVIOUS_FALSE_ASSUMPTION",
+      "evidence": {
+        "classification_method": "TINY_SYNTACTIC_LITERAL_AND_REFLEXIVE_COMPARISON_RULES",
+        "items": []
+      },
+      "limitation": "UNKNOWN expressions are not evaluated, simplified, or sent to a solver.",
+      "status": "CHECKED",
+      "summary": "No configured obvious-false assumption pattern observed"
+    },
+    {
+      "check_id": "OBVIOUS_CONSTANT_FALSE_CONTROL",
+      "evidence": {
+        "items": []
+      },
+      "limitation": "The check does not determine which statements are dynamically unreachable.",
+      "status": "CHECKED",
+      "summary": "No configured constant-false control pattern observed"
+    },
+    {
+      "check_id": "DUPLICATE_ASSERTION_PATTERN",
+      "evidence": {
+        "groups": []
+      },
+      "limitation": "Textual equality does not establish semantic equivalence, and textual difference does not establish semantic distinctness.",
+      "status": "CHECKED",
+      "summary": "No duplicate normalized assertion condition observed"
+    },
+    {
+      "check_id": "OBVIOUS_TRIVIAL_ASSERTION_PATTERN",
+      "evidence": {
+        "classification_method": "TINY_SYNTACTIC_LITERAL_AND_REFLEXIVE_COMPARISON_RULES",
+        "items": []
+      },
+      "limitation": "The check is deliberately incomplete and performs no theorem proving.",
+      "status": "CHECKED",
+      "summary": "No configured trivial assertion pattern observed"
+    },
+    {
+      "check_id": "ASSERTION_IDENTICAL_TO_ASSUMPTION_PATTERN",
+      "evidence": {
+        "items": []
+      },
+      "limitation": "This is a normalized-text comparison, not semantic implication checking.",
+      "status": "CHECKED",
+      "summary": "No assertion condition was textually identical to an assumption"
+    },
+    {
+      "check_id": "BUILD_INPUT_ALLOWLIST_COMPARISON",
+      "evidence": {
+        "actual": [
+          "harness.c",
+          "include/vector.h",
+          "src/vector.c"
+        ],
+        "allowed": [
+          "harness.c",
+          "include/vector.h",
+          "src/vector.c"
+        ],
+        "missing": [],
+        "unexpected": []
+      },
+      "limitation": "The comparison covers only caller-declared build inputs; it does not observe hidden compiler or environment inputs.",
+      "status": "CHECKED",
+      "summary": "Actual build inputs exactly match the caller-declared allowlist"
+    },
+    {
+      "check_id": "UNDEFINED_FUNCTION_DIAGNOSTIC",
+      "evidence": {
+        "diagnostic_manifest": {
+          "actual_sha256": "1405e3bb94f4171beda0e95c0a4b92f381b8349f1e82f5f40b9d52def8cae9ec",
+          "expected_sha256": "1405e3bb94f4171beda0e95c0a4b92f381b8349f1e82f5f40b9d52def8cae9ec",
+          "format": "goto-instrument-list-undefined-functions-text",
+          "hash_match": true,
+          "path": "diagnostics/undefined_functions.txt",
+          "size_bytes": 45
+        },
+        "functions": []
+      },
+      "limitation": "The skill trusts only the supplied diagnostic text and does not reconstruct the GOTO program or call graph.",
+      "status": "CHECKED",
+      "summary": "Diagnostic listed no undefined functions"
+    }
+  ],
+  "schema_version": "1.0",
+  "status_vocabulary": [
+    "CHECKED",
+    "NOT_CHECKABLE",
+    "WARNING"
+  ]
+}

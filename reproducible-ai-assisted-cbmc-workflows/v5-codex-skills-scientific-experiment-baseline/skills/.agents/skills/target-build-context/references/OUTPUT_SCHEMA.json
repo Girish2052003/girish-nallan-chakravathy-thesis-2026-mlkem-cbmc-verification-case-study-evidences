@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/v5/target-build-context/output.schema.json",
+  "title": "Target Build Context Main Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "request_id", "status", "semantic_authority", "analysis_nature",
+    "target", "definitions", "declarations", "occurrences", "parameters", "includes",
+    "direct_callers", "direct_callees", "loops", "array_expressions", "pointer_expressions",
+    "referenced_macros", "relevant_type_declarations", "build_summary", "warnings",
+    "incomplete_reasons", "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "request_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["COMPLETE", "COMPLETE_WITH_WARNINGS", "INCOMPLETE"]},
+    "semantic_authority": {"const": "NONE"},
+    "analysis_nature": {"const": "LEXICAL_AND_BUILD_STRUCTURAL_ONLY"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "source_file", "expected_sha256", "actual_sha256"],
+      "properties": {
+        "symbol": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+        "source_file": {"type": ["string", "null"]},
+        "expected_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "actual_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "definitions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/definition"}
+    },
+    "declarations": {"type": "array", "items": {"$ref": "#/$defs/occurrence"}},
+    "occurrences": {"type": "array", "items": {"$ref": "#/$defs/occurrence"}},
+    "parameters": {"type": "array", "items": {"type": "string"}},
+    "includes": {"type": "array", "items": {"$ref": "#/$defs/include"}},
+    "direct_callers": {"type": "array", "items": {"$ref": "#/$defs/caller"}},
+    "direct_callees": {"type": "array", "items": {"$ref": "#/$defs/callee"}},
+    "loops": {"type": "array", "items": {"$ref": "#/$defs/loop"}},
+    "array_expressions": {"type": "array", "items": {"$ref": "#/$defs/arrayExpression"}},
+    "pointer_expressions": {"type": "array", "items": {"$ref": "#/$defs/pointerExpression"}},
+    "referenced_macros": {"type": "array", "items": {"$ref": "#/$defs/macro"}},
+    "relevant_type_declarations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "name", "path", "start_line", "end_line", "text"],
+        "properties": {
+          "kind": {"type": "string"},
+          "name": {"type": ["string", "null"]},
+          "path": {"type": "string"},
+          "start_line": {"type": "integer", "minimum": 1},
+          "end_line": {"type": "integer", "minimum": 1},
+          "text": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "build_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "source", "working_directory", "compiler", "preprocessing"],
+      "properties": {
+        "mode": {"enum": ["none", "explicit", "compile_commands"]},
+        "source": {"type": "string"},
+        "working_directory": {"type": ["string", "null"]},
+        "compiler": {"type": ["string", "null"]},
+        "preprocessing": {"$ref": "#/$defs/preprocessing"}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "incomplete_reasons": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "start_line", "body_start_line", "end_line", "signature", "parameter_text"],
+      "properties": {
+        "path": {"type": "string"},
+        "start_line": {"type": "integer", "minimum": 1},
+        "body_start_line": {"type": "integer", "minimum": 1},
+        "end_line": {"type": "integer", "minimum": 1},
+        "signature": {"type": "string"},
+        "parameter_text": {"type": "string"}
+      }
+    },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line", "classification", "text"],
+      "properties": {
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "classification": {"type": "string"},
+        "text": {"type": "string"}
+      }
+    },
+    "include": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line", "kind", "include", "resolution", "resolved_path"],
+      "properties": {
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "kind": {"enum": ["quoted", "system"]},
+        "include": {"type": "string"},
+        "resolution": {"enum": ["repository_local", "external_or_system", "unresolved_local"]},
+        "resolved_path": {"type": ["string", "null"]}
+      }
+    },
+    "caller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caller", "path", "line", "classification"],
+      "properties": {
+        "caller": {"type": "string"},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "classification": {"const": "direct_lexical_caller"}
+      }
+    },
+    "callee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol", "path", "line", "classification"],
+      "properties": {
+        "symbol": {"type": "string"},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "classification": {"const": "direct_lexical_call_candidate"}
+      }
+    },
+    "loop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "line", "header", "syntactic_bound_tokens", "bound_classification"],
+      "properties": {
+        "kind": {"enum": ["for", "while", "do"]},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "header": {"type": "string"},
+        "syntactic_bound_tokens": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "bound_classification": {"const": "NOT_INFERRED"}
+      }
+    },
+    "arrayExpression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expression", "base", "index_text", "path", "line", "bounds_classification"],
+      "properties": {
+        "expression": {"type": "string"},
+        "base": {"type": "string"},
+        "index_text": {"type": "string"},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "bounds_classification": {"const": "NOT_INFERRED"}
+      }
+    },
+    "pointerExpression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "expression", "path", "line", "validity_classification"],
+      "properties": {
+        "kind": {"enum": ["pointer_member_access", "dereference_candidate"]},
+        "expression": {"type": "string"},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "validity_classification": {"const": "NOT_INFERRED"}
+      }
+    },
+    "macro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "value", "path", "line"],
+      "properties": {
+        "name": {"type": "string"},
+        "value": {"type": "string"},
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1}
+      }
+    },
+    "preprocessing": {
+      "type": "object",
+      "required": ["requested", "status"],
+      "properties": {
+        "requested": {"type": "boolean"},
+        "status": {"enum": ["NOT_REQUESTED", "UNAVAILABLE", "COMPILER_NOT_FOUND", "TIMEOUT", "FAILED", "SUCCEEDED"]},
+        "command": {"type": "array", "items": {"type": "string"}},
+        "working_directory": {"type": "string"},
+        "exit_code": {"type": "integer"},
+        "stdout_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stdout_bytes": {"type": "integer", "minimum": 0},
+        "stderr": {"type": "string"},
+        "stderr_truncated": {"type": "boolean"},
+        "environment_overrides": {"type": "object"},
+        "target_definition_count": {"type": "integer", "minimum": 0},
+        "excerpt_start_line": {"type": "integer", "minimum": 1},
+        "excerpt_end_line": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

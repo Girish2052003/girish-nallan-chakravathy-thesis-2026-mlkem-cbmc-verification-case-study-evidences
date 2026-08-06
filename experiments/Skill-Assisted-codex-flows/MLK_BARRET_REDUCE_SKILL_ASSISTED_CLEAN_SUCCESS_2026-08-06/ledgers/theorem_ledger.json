@@ -1,0 +1,48 @@
+{
+  "campaign": "MLK_BARRET_REDUCE_SKILL ASSISTED",
+  "technical_target": "mlk_barrett_reduce",
+  "pinned_repository_commit": "af4c5abdd5958bdc65a03cd5ee86708264f93304",
+  "theorems": [
+    {
+      "id": "SA-BR-T1",
+      "name": "Sign-conjugate centered reduction and quotient reversal",
+      "formula": "R(-a) = -R(a), and Q(-a) = -Q(a)",
+      "domain": "all int16_t a except INT16_MIN",
+      "target_calls": 2,
+      "preconditions": [
+        "a is int16_t",
+        "a != INT16_MIN"
+      ],
+      "assumptions": [
+        "__CPROVER_assume(a != INT16_MIN) only"
+      ],
+      "postconditions": [
+        "R(-a) = -R(a)",
+        "|R(-a)| = |R(a)|",
+        "(a-R(a))/q and (-a-R(-a))/q are exact integers",
+        "the two exact quotients are negatives of each other"
+      ],
+      "expected_failure_control": "false even-symmetry claim at a=1"
+    },
+    {
+      "id": "SA-BR-T2",
+      "name": "Centered-addition closure with exact one-correction carry",
+      "formula": "R(R(a)+R(b)) = centered_mod(a+b), with correction coefficient in {-1,0,1}",
+      "domain": "all int16_t x int16_t input pairs",
+      "target_calls": 3,
+      "preconditions": [
+        "a and b are unrestricted int16_t"
+      ],
+      "assumptions": [
+        "none in the principal proof"
+      ],
+      "postconditions": [
+        "R(R(a)+R(b)) equals an independent centered-modulo oracle for a+b",
+        "the second reduction is exactly s-c*q for c in {-1,0,1}",
+        "the result is congruent to a+b modulo q",
+        "the final result remains in [-1664,1664]"
+      ],
+      "expected_failure_control": "false no-wrap claim on the positive-correction branch"
+    }
+  ]
+}

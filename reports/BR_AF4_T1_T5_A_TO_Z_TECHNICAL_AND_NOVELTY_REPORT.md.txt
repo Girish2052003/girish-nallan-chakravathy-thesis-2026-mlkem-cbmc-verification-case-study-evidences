@@ -2,6 +2,8 @@
 
 ## Full-domain CBMC theorem campaign for `mlk_barrett_reduce` in frozen `mlkem-native`
 
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Campaign identifier:** BR-AF4  
 **Target function:** `mlk_barrett_reduce`  
 **Repository:** `pq-code-package/mlkem-native`  
@@ -892,11 +894,11 @@ The accurate wording is **“proved correct within the recorded formal model and
 | T5 final freeze | `aa5e9f225796ef0777a5c6b110513968d842f2d81576e96ab9c83d032f401592` | Locally generated after reviewed T5 candidate |
 | Complete T1–T5 family candidate | `543effac08e18f09ab5c0b32609f9aae3fec5e4988be7480ff443315bfb00664` | Locally generated; external combined-packet review pending |
 
-### 15.2 Uploaded theorem packets independently inspected in this work session
+### 15.2 Retained theorem packets independently inspected
 
-The uploaded local packets had these independently recalculated hashes:
+The retained local packets had these independently recalculated hashes:
 
-| Uploaded packet | SHA-256 | Archive safety |
+| Retained packet | SHA-256 | Archive safety |
 |---|---|---|
 | T1 freeze candidate | `9ed6a383ce4ca68e7d0deccea1a0d79a33951ab7a72815cbb56da2e07e568d1c` | No unsafe paths/links |
 | T2 final freeze | `1c841699e27d55d92b981a8668434637f5c3acb8b0e4abaf08811843079760c1` | No unsafe paths/links |
@@ -904,7 +906,7 @@ The uploaded local packets had these independently recalculated hashes:
 | T4 freeze candidate | `14834c4348735c2ac60ef157366f85729541b0678d23164b8bdc3a5f58763fd5` | No unsafe paths/links |
 | T5 freeze candidate | `6302acc9e3e4e47dceeacad4e243d817411af7c323503ac0a3036990da65d9cb` | No unsafe paths/links |
 
-The final combined family archive was reported in terminal output but was not uploaded with this documentation request. Therefore this report does not claim independent byte-level review of that top-level combined candidate.
+The final combined family archive was recorded in terminal output but was not included in the retained evidence set. Therefore this report does not claim independent byte-level review of that top-level combined candidate.
 
 ### 15.3 Portability note
 
@@ -1040,7 +1042,7 @@ The following statements would be too strong:
 
 ### 17.1 Specification validity
 
-The independent oracle is concise and conventional, but a human still selected the intended centered interval and threshold. A mistaken specification could be proved faithfully. Mitigation: compare it with source documentation, FIPS-level modulus facts, boundary controls, and alternate properties.
+The independent oracle is concise and conventional, but the intended centered interval and threshold were selected outside CBMC. A mistaken specification could be proved faithfully. Mitigation: compare it with source documentation, FIPS-level modulus facts, boundary controls, and alternate properties.
 
 ### 17.2 Tool/model validity
 
@@ -1092,7 +1094,7 @@ A reviewer should be able to verify the campaign by checking:
 
 ## 19. Professor-facing questions and precise answers
 
-### “Did you modify the C function to make CBMC pass?”
+### Production-function modification status
 
 No. The frozen production worktree remained clean. Mutated C copies were isolated outside that worktree and were used only as negative controls.
 

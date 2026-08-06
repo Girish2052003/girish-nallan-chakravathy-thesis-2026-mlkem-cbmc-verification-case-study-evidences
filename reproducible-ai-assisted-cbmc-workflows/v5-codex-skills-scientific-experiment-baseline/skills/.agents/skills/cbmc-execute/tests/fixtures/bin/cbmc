@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+import json, os, pathlib, sys, time
+args = sys.argv[1:]
+mode = os.environ.get("MOCK_CBMC_MODE", "pass")
+if "--version" in args:
+    print("6.9.0 (mock-cbmc-6.9.0)")
+    raise SystemExit(0)
+if "--show-properties" in args:
+    if mode == "inventory_malformed":
+        print("not-json")
+        raise SystemExit(1)
+    print(json.dumps([
+        {"properties": [{"name": "main.assertion.1", "class": "assertion", "description": "demo assertion", "sourceLocation": {"file": "src/harness.c", "line": "6", "function": "main"}}]},
+        {"cProverStatus": "success"}
+    ]))
+    raise SystemExit(0)
+if mode == "sleep":
+    time.sleep(30)
+if mode == "malformed":
+    print("{not-json")
+    raise SystemExit(7)
+if mode == "tool_error":
+    print(json.dumps([{"messageType": "ERROR", "messageText": "synthetic tool error"}]))
+    print("synthetic stderr", file=sys.stderr)
+    raise SystemExit(6)
+if mode == "mutate":
+    p = pathlib.Path(os.environ["MOCK_MUTATE_PATH"])
+    p.write_text(p.read_text() + "\n/* changed */\n")
+if "--symex-coverage-report" in args:
+    idx = args.index("--symex-coverage-report")
+    pathlib.Path(args[idx+1]).write_text("<coverage/>\n")
+if mode == "fail":
+    print(json.dumps([
+        {"messageType": "STATUS-MESSAGE", "messageText": "Synthetic CBMC run"},
+        {"result": [{"property": "main.assertion.1", "status": "FAILURE", "description": "demo assertion", "sourceLocation": {"file": "src/harness.c", "line": "6", "function": "main"}, "trace": [{"stepType": "assignment"}]}]},
+        {"cProverStatus": "failure"}
+    ]))
+    raise SystemExit(10)
+print(json.dumps([
+    {"messageType": "STATUS-MESSAGE", "messageText": "Synthetic CBMC run"},
+    {"result": [{"property": "main.assertion.1", "status": "SUCCESS", "description": "demo assertion", "sourceLocation": {"file": "src/harness.c", "line": "6", "function": "main"}}]},
+    {"cProverStatus": "success"}
+]))
+raise SystemExit(0)

@@ -1,22 +1,23 @@
 # Complete A-to-Z Technical, Assurance, and Novelty Record of the `mlk_poly_tomsg` MSG-T1 CBMC Verification Campaign
 
-**Researcher:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Institutional context:** MSc thesis, Tampere University  
-**Case study:** AI-assisted generation and human-controlled verification of candidate CBMC artefacts for selected ML-KEM C code  
+**Case study:** AI-assisted generation and deterministic verification of candidate CBMC artefacts for selected ML-KEM C code  
 **Target implementation:** `mlkem-native`  
 **Target function:** `mlk_poly_tomsg`  
 **Completed theorem:** MSG-T1 — exact canonical-domain message-decoding functional refinement  
 **Primary formal tool:** CBMC 6.9.0  
 **Integrated record date:** 23 July 2026  
 **Authoritative source commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
-**Nature of this document:** first-person technical research record, not a conversational explanation  
+**Nature of this document:** machine-oriented technical research record  
 **Evidence cut-off:** completion and locking of MSG-01M-R2; MSG-T2, MSG-T3, and MSG-T4 remain future work
 
 ---
 
 # Executive summary
 
-I completed a source-bound, assumption-explicit, non-vacuity-hardened, mutation-tested CBMC campaign for the portable-C implementation of:
+A source-bound, assumption-explicit, non-vacuity-hardened, mutation-tested CBMC campaign was completed for the portable-C implementation of:
 
 ```c
 mlk_poly_tomsg(msg, &a);
@@ -115,7 +116,7 @@ This is a strong, property-specific proof result. It is not a proof of all ML-KE
 
 # 1. Research purpose and trust boundary
 
-The research purpose was not simply to invoke an existing repository command. I investigated whether an LLM-assisted workflow could help a human researcher move from implementation and specification context to useful candidate formal-verification artefacts while maintaining a strict separation between generated suggestions and authoritative formal evidence.
+The research purpose was not simply to invoke an existing repository command. The case study evaluated whether an LLM-assisted workflow could move from implementation and specification context to useful candidate formal-verification artefacts while maintaining a strict separation between generated suggestions and authoritative formal evidence.
 
 The practical workflow became:
 
@@ -230,7 +231,7 @@ examples/
 
 This exclusion had a narrow purpose: the first theorem and harness architecture were to be derived from production code, FIPS-level behavior, data structures, constants, and research goals rather than by copying an existing repository harness.
 
-This clean-room restriction does not mean upstream verification was absent. After the independent candidate was developed, I deliberately inspected the upstream contracts and proof directories to determine overlap and novelty. This two-stage process allowed both independent generation and honest prior-art comparison.
+This clean-room restriction does not mean upstream verification was absent. After the independent candidate was developed, the upstream contracts and proof directories were inspected to determine overlap and novelty. This two-stage process allowed both independent generation and prior-art comparison.
 
 ---
 
@@ -242,7 +243,7 @@ The upstream project states that its C code is proved memory-safe and type-safe 
 
 The public CBMC proof documentation describes its harnesses as boilerplate around specifications embedded in the C source and presents the C proof goal primarily as absence of selected classes of undefined behavior, memory unsafety, and type unsafety.
 
-Consequently, I do **not** claim:
+Consequently, the record does **not** claim:
 
 - the first formal verification of ML-KEM;
 - the first CBMC verification of `mlkem-native`;
@@ -550,7 +551,7 @@ The distinction is not based on changing a filename or namespace. It is based on
 
 ## 11.1 Upstream public proof boundary
 
-At the time of the novelty review, the current public `proofs/cbmc` directory listed many function-specific proof directories, including `indcpa_dec`, `barrett_reduce`, `poly_add`, compression functions, and decompression functions. I did not locate a dedicated public `poly_tomsg` proof directory in that listing.
+At the time of the novelty review, the current public `proofs/cbmc` directory listed many function-specific proof directories, including `indcpa_dec`, `barrett_reduce`, `poly_add`, compression functions, and decompression functions. No dedicated public `poly_tomsg` proof directory was located in that listing.
 
 The current public `mlk_poly_tomsg` source body contains:
 
@@ -560,7 +561,7 @@ The current public `mlk_poly_tomsg` source body contains:
 
 In the inspected source, it does not expose a dedicated function-level postcondition stating the exact 256-bit output relation to `Compress1`.
 
-This does **not** mean upstream provides no assurance for the function. The source is included within the project’s broader C safety-verification framework, and a higher-level `indcpa_dec` proof directory exists. The precise distinction is that I did not locate the same dedicated all-bit functional theorem and evidence campaign in the public proof tree inspected.
+This does **not** mean upstream provides no assurance for the function. The source is included within the project’s broader C safety-verification framework, and a higher-level `indcpa_dec` proof directory exists. The precise distinction is that the same dedicated all-bit functional theorem and evidence campaign was not located in the public proof tree inspected.
 
 ## 11.2 Independent functional oracle
 
@@ -1119,7 +1120,7 @@ The final package was:
 
 ---
 
-# 19. Did I prove MSG-T1 is “really true”?
+# 19. Scope of the MSG-T1 proof
 
 ## 19.1 Yes, within the frozen theorem scope
 
@@ -1251,7 +1252,7 @@ The following are standard or directly derived from FIPS 203 and the implementat
 - least-significant-bit-first packing;
 - the implementation’s compression constants and loops.
 
-I do not claim the threshold theorem itself as a new mathematical discovery.
+The threshold theorem itself is not claimed as a new mathematical discovery.
 
 ## 22.2 Not novel: broad ML-KEM verification
 
@@ -1273,7 +1274,7 @@ is not novel.
 
 ## 22.4 Potentially original: the exact MSG-T1 case-study artefact
 
-I did not locate a public source documenting this exact combination:
+No public source was located that documents this exact combination:
 
 1. a dedicated CBMC theorem for the frozen production `mlk_poly_tomsg` C body;
 2. an independently authored all-256-bit postcondition;
@@ -1336,11 +1337,11 @@ A shorter thesis claim is:
 The following wording would overclaim:
 
 ```text
-I produced the first formal proof of ML-KEM.
+The first formal proof of ML-KEM was produced.
 ```
 
 ```text
-I proved all of mlkem-native correct.
+All of `mlkem-native` was proved correct.
 ```
 
 ```text
@@ -1371,7 +1372,7 @@ A successful CBMC run proves correctness independently of assumptions.
 
 # 26. Recommended professor-facing result statement
 
-> I verified a property-specific exact functional refinement of `mlk_poly_tomsg` in `mlkem-native` at commit `af4c5abdd5958bdc65a03cd5ee86708264f93304`. For every canonical 256-coefficient input polynomial, the frozen portable-C implementation produces the exact 32-byte least-significant-bit-first encoding of the independently validated one-bit ML-KEM compression classes. The positive CBMC model returned 521 successful properties with no failures or unknowns. An assertion-preserving companion returned 522 successful properties. All twelve registered boundary, region, and index cover goals were satisfied. Four multi-iteration loop controls detected insufficient bounds, and all eight frozen non-equivalent implementation and oracle/assertion mutants were killed by the exact functional assertion. The final evidence package was manifest-verified, locked, and archived. The claim remains conditional on the frozen source, canonical input domain, portable-C build, machine model, verification adapters, safety checks, and complete finite-loop model.
+> A property-specific exact functional refinement of `mlk_poly_tomsg` in `mlkem-native` was verified at commit `af4c5abdd5958bdc65a03cd5ee86708264f93304`. For every canonical 256-coefficient input polynomial, the frozen portable-C implementation produces the exact 32-byte least-significant-bit-first encoding of the independently validated one-bit ML-KEM compression classes. The positive CBMC model returned 521 successful properties with no failures or unknowns. An assertion-preserving companion returned 522 successful properties. All twelve registered boundary, region, and index cover goals were satisfied. Four multi-iteration loop controls detected insufficient bounds, and all eight frozen non-equivalent implementation and oracle/assertion mutants were killed by the exact functional assertion. The final evidence package was manifest-verified, locked, and archived. The claim remains conditional on the frozen source, canonical input domain, portable-C build, machine model, verification adapters, safety checks, and complete finite-loop model.
 
 ---
 

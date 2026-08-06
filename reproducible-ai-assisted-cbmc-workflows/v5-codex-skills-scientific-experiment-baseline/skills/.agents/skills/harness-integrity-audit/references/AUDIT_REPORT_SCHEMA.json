@@ -1,0 +1,122 @@
+{
+  "$id": "AUDIT_REPORT_SCHEMA.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "audit_outcome": {
+      "const": "STRUCTURAL_AUDIT_RECORDED"
+    },
+    "finding_counts": {
+      "additionalProperties": false,
+      "properties": {
+        "checked": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "not_checkable": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "warning": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "checked",
+        "warning",
+        "not_checkable"
+      ],
+      "type": "object"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence": {},
+          "limitation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "CHECKED",
+              "WARNING",
+              "NOT_CHECKABLE"
+            ]
+          },
+          "summary": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "check_id",
+          "status",
+          "summary",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "gate_authority": {
+      "const": "NONE"
+    },
+    "limitations": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "report_status": {
+      "enum": [
+        "COMPLETE",
+        "COMPLETE_WITH_WARNINGS"
+      ]
+    },
+    "request_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "semantic_authority": {
+      "const": "NONE"
+    },
+    "skill_version": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "target_symbol": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "skill_version",
+    "request_id",
+    "report_status",
+    "audit_outcome",
+    "semantic_authority",
+    "gate_authority",
+    "target_symbol",
+    "finding_counts",
+    "findings",
+    "limitations"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,154 @@
+{
+  "run_id": "run_codex_exec_controlled",
+  "output_root": "runs",
+  "target_scheme": "ML-KEM",
+  "target_function": "mlk_poly_add",
+  "target_topic": "ML-KEM polynomial addition",
+  "verification_tool": "CBMC",
+  "artifact_type": "CBMC verification harness",
+  "max_iterations": 0,
+  "parallel_initial_agents": false,
+  "strict_outputs": true,
+  "inputs": {
+    "spec_paths": [
+      "inputs/specs/fips203_clean.txt"
+    ],
+    "code_dir": "inputs/code",
+    "code_paths": [
+      "inputs/code/poly.c",
+      "inputs/code/poly.h",
+      "inputs/code/params.h"
+    ],
+    "archival_spec_paths": [
+      "inputs/specs/fips203.pdf"
+    ]
+  },
+  "llm": {
+    "mode": "real",
+    "model": "SET_TO_A_CODEX_MODEL_AVAILABLE_TO_YOUR_ACCOUNT",
+    "api_key_env": "OPENAI_API_KEY",
+    "max_retries": 0,
+    "max_output_tokens": 12000,
+    "attach_files_as_base64": false,
+    "max_inline_file_chars": 250000,
+    "fail_on_primary_evidence_truncation": true,
+    "provider": "openai",
+    "execution_backend": "codex_exec",
+    "codex_binary": "codex",
+    "codex_working_directory": null,
+    "codex_sandbox": "workspace-write",
+    "codex_approval_policy": "never",
+    "codex_stream_terminal": true,
+    "codex_timeout_seconds": 1800,
+    "codex_skip_git_repo_check": true,
+    "codex_ignore_user_config": true,
+    "codex_ignore_rules": false,
+    "codex_enforce_change_boundary": true,
+    "codex_protected_paths": [
+      "inputs",
+      "configs",
+      "agents",
+      "tests",
+      "docs"
+    ],
+    "codex_mutable_paths": [
+      "runs",
+      "reports",
+      "workspace",
+      "artifacts"
+    ],
+    "codex_expected_version": "0.144.4",
+    "codex_require_version_match": true,
+    "codex_ephemeral": true,
+    "codex_strict_config": true,
+    "codex_minimal_environment": true,
+    "codex_max_final_output_bytes": 2000000,
+    "codex_process_termination_grace_seconds": 2.0,
+    "reasoning": {
+      "effort": "high"
+    }
+  },
+  "tool_execution": {
+    "cbmc_binary": "cbmc",
+    "cbmc_function": "harness",
+    "dry_run": true,
+    "force_run": false,
+    "require_gate_approval": true,
+    "source_files": [
+      "inputs/code/poly.c"
+    ],
+    "stub_files": [],
+    "include_paths": [
+      "inputs/code"
+    ],
+    "defines": [],
+    "working_directory": ".",
+    "extra_cbmc_args": [],
+    "unwind": null,
+    "goto_cc_binary": "goto-cc",
+    "goto_instrument_binary": "goto-instrument",
+    "extra_goto_cc_args": [],
+    "extra_goto_instrument_args": [],
+    "step_timeout_seconds": 120,
+    "pipeline_timeout_seconds": 180,
+    "structured_json_required": true
+  },
+  "counterexample_analysis": {
+    "allow_missing_tool_outputs": false
+  },
+  "repair_refinement": {
+    "allow_missing_inputs": false,
+    "render_candidate_repaired_harness": true
+  },
+  "experiment_logger": {
+    "strict_required_stages": false,
+    "allow_missing_previous_stages": true,
+    "include_checksums": true,
+    "include_file_inventory": true
+  },
+  "evaluation_reporter": {
+    "allow_missing_experiment_log": false,
+    "include_thesis_wording": true,
+    "include_rq_mapping": true,
+    "include_failure_taxonomy": true,
+    "include_threats_to_validity": true
+  },
+  "provenance": {
+    "repository_paths": [
+      "."
+    ],
+    "source_revision": "REPLACE_WITH_EXACT_MLKEM_NATIVE_COMMIT_OR_TAG_FOR_REAL_EXPERIMENT"
+  },
+  "property_campaign": {
+    "property_family_id": "P16",
+    "verification_strategy": "standard_cbmc_harness",
+    "allow_analysis_only": false,
+    "human_selected_scope_note": "Compatibility-safe default matching the approved 17cbc build; use CONFIG_TEMPLATE_26_PROPERTY_CAMPAIGN.json for native contracts or another family."
+  },
+  "experiment_protocol": {
+    "protocol_version": "llm-first-v1",
+    "semantic_advisory_mode": "off",
+    "repair_policy": "none_initial_run",
+    "prompt_budget": {
+      "max_request_bytes": 450000,
+      "max_retry_growth_percent": 10,
+      "max_stage_input_tokens_estimate": 120000,
+      "max_total_input_tokens_estimate": 600000
+    },
+    "initial_run_requires_zero_repairs": true,
+    "selected_property_claims_required": true,
+    "structured_cbmc_json_required": true,
+    "mutation_non_vacuity_required": true
+  },
+  "property_discovery": {
+    "mode": "targeted_campaign",
+    "catalogue_visibility": "configured_family_only",
+    "allow_uncatalogued_properties": false,
+    "selection_policy": "configured_campaign_preferred_category"
+  },
+  "formal_strategy_reconciliation": {
+    "mode": "evidence_bound",
+    "allow_optional_contract_to_harness_fallback": true,
+    "require_cbmc_frontend_readiness": true
+  }
+}

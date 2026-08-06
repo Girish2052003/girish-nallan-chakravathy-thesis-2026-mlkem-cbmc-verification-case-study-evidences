@@ -1,0 +1,118 @@
+{
+  "$id": "SOURCE_MANIFEST_SCHEMA.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "audit_root_identity": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "actual_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "harness",
+              "production",
+              "build"
+            ]
+          },
+          "expected_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "hash_match": {
+            "type": "boolean"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category",
+          "path",
+          "role",
+          "expected_sha256",
+          "actual_sha256",
+          "hash_match",
+          "size_bytes"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "request_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "undefined_functions_diagnostic": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "actual_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "expected_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "format": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "hash_match": {
+              "type": "boolean"
+            },
+            "path": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "size_bytes": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "path",
+            "format",
+            "expected_sha256",
+            "actual_sha256",
+            "hash_match",
+            "size_bytes"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "audit_root_identity",
+    "files",
+    "undefined_functions_diagnostic"
+  ],
+  "type": "object"
+}

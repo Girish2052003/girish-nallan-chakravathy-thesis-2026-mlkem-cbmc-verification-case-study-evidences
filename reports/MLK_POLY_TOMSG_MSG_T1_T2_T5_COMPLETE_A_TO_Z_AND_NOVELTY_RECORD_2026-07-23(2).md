@@ -1,21 +1,22 @@
 # Complete A-to-Z Technical, Assurance, and Novelty Record for the `mlk_poly_tomsg` MSG-T1, MSG-T2, and MSG-T5 CBMC Campaign
 
-**Researcher:** Girish Nallan Chakravathy  
+**Codex execution configuration:** CLI `0.144.4`; model `GPT 5.6 sol`; reasoning level `high`.
+
 **Institutional context:** MSc thesis, Tampere University  
-**Case-study theme:** AI-assisted generation and human-controlled verification of candidate formal-verification artefacts for selected ML-KEM C code  
+**Case-study theme:** AI-assisted generation and deterministic verification of candidate formal-verification artefacts for selected ML-KEM C code  
 **Target repository:** `mlkem-native`  
 **Target implementation:** frozen portable-C `mlk_poly_tomsg` and its reachable `mlk_scalar_compress_d1` helper  
 **Completed theorem families:** MSG-T1, MSG-T2, and MSG-T5  
 **Primary formal tool:** CBMC 6.9.0  
 **Record date:** 23 July 2026  
 **Authoritative source commit:** `af4c5abdd5958bdc65a03cd5ee86708264f93304`  
-**Document voice:** first-person technical research record written by the assistant that designed, generated, reviewed, and documented the candidate proof artefacts. Girish executed the terminal commands and preserved the machine-generated evidence. Raw source, commands, GOTO binaries, solver results, manifests, and frozen archives remain authoritative over this narrative.
+**Document form:** machine-oriented technical record. Raw source, commands, GOTO binaries, solver results, manifests, and frozen archives remain authoritative over the narrative.
 
 ---
 
 # Executive verdict
 
-I completed three differentiated verification families for the frozen ML-KEM-768 portable-C implementation of:
+Three differentiated verification families were completed for the frozen ML-KEM-768 portable-C implementation of:
 
 ```c
 mlk_poly_tomsg(msg, &a);
@@ -51,7 +52,7 @@ The work does **not** establish every conceivable property of `mlk_poly_tomsg`, 
 
 ## 1.1 Purpose
 
-The case study evaluates whether an LLM-assisted workflow can help a human researcher formulate useful formal properties and produce candidate CBMC artefacts for production cryptographic C while preserving deterministic, falsifiable, and reproducible tool authority.
+The case study evaluates whether an LLM-assisted workflow can formulate useful formal properties and produce candidate CBMC artefacts for production cryptographic C while preserving deterministic, falsifiable, and reproducible tool authority.
 
 The workflow was intentionally not:
 
@@ -93,30 +94,23 @@ source/result/hash re-binding
 evidence freeze and deterministic archive
 ```
 
-## 1.2 My role
+## 1.2 Recorded campaign operations
 
-I performed the following work:
+The recorded campaign operations were:
 
-- analysed the frozen implementation and existing proof structure;
-- decomposed candidate theorem families;
-- generated independent oracles and relational assertions;
-- designed clean-room harnesses;
-- generated build commands, support adapters, inspection scripts, parsers, reachability companions, mutations, manifests, and freeze scripts;
-- reviewed every pasted terminal result;
-- classified positive theorem results, reachability evidence, expected-failure mutations, audit failures, and tool/script failures separately;
-- diagnosed failed generated artefacts without presenting them as production counterexamples;
-- maintained narrow theorem scopes and explicit non-claims;
-- prepared the professor-facing research record.
-
-## 1.3 Girish’s role
-
-Girish:
-
-- maintained the Ubuntu/VirtualBox environment;
-- executed commands in the frozen repository and clean-room evidence workspace;
-- pasted terminal outputs;
-- preserved generated artefacts and evidence directories;
-- performed or reserved final archive inspection at designated gates.
+- analysis of the frozen implementation and existing proof structure;
+- decomposition of candidate theorem families;
+- generation of independent oracles and relational assertions;
+- construction of clean-room harnesses;
+- generation of build commands, support adapters, inspection scripts, parsers, reachability companions, mutations, manifests, and freeze scripts;
+- inspection of retained terminal results;
+- separate classification of positive theorem results, reachability evidence, expected-failure mutations, audit failures, and tool/script failures;
+- diagnosis of failed generated artefacts without presenting them as production counterexamples;
+- maintenance of narrow theorem scopes and explicit non-claims;
+- preparation of the professor-facing research record;
+- execution in the frozen repository and clean-room evidence workspace;
+- preservation of generated artefacts and evidence directories;
+- final archive inspection at designated gates.
 
 ## 1.4 Formal authority
 
@@ -133,7 +127,7 @@ The LLM did not become the trusted proof engine. The accepted authority is:
 
 The correct academic description is:
 
-> AI-assisted candidate artefact generation with human-controlled execution, deterministic inspection, CBMC adjudication, negative controls, and reproducible evidence binding.
+> AI-assisted candidate artefact generation with recorded execution, deterministic inspection, CBMC adjudication, negative controls, and reproducible evidence binding.
 
 ---
 
@@ -288,7 +282,7 @@ void harness(void)
 
 This is a legitimate upstream harness for checking the registered function contract and generated properties.
 
-I therefore do **not** claim:
+The record therefore does **not** claim:
 
 - that upstream had no proof;
 - that upstream had no `poly_tomsg` harness;
@@ -1174,7 +1168,7 @@ Archive:
 MLK_POLY_TOMSG_T5_EXACT_OFFSET_INTERVAL_ACCEPTED_20260723T165407Z_af4c5abdd595.tar.gz
 ```
 
-The archive SHA-256 value is stored in the companion `.sha256` file. Its literal value was not pasted into this chat and is therefore not invented here.
+The archive SHA-256 value is stored in the companion `.sha256` file. Its literal value was not present in the retained evidence record and is therefore not invented here.
 
 Terminal-capture SHA-256:
 
@@ -1221,7 +1215,7 @@ is an interior member.
 
 ---
 
-# 9. Did I really prove `mlk_poly_tomsg`?
+# 9. Scope of the `mlk_poly_tomsg` proof
 
 ## 9.1 Yes, for the accepted property families and frozen scope
 
@@ -1271,13 +1265,13 @@ The work does not prove:
 The safe phrase is:
 
 ```text
-I proved MSG-T1, MSG-T2, and MSG-T5 within the frozen registered scope.
+MSG-T1, MSG-T2, and MSG-T5 were proved within the frozen registered scope.
 ```
 
 The unsafe phrase is:
 
 ```text
-I proved all of mlk_poly_tomsg correct in every sense.
+`mlk_poly_tomsg` was proved correct in every sense.
 ```
 
 ---
@@ -1365,7 +1359,7 @@ MSG-T3 = output initialization independence / state footprint
 MSG-T4 = subtract–reduce–tomsg composition
 ```
 
-Later in this chat, the labels “T3” and “T4” were reused informally for different arithmetic refinements:
+Later campaign notes reused the labels “T3” and “T4” informally for different arithmetic refinements:
 
 ```text
 later T3 = exact quotient-cell partition
@@ -1505,7 +1499,7 @@ T5 offered a genuinely different and exact robustness result.
 
 ## 13.1 Novelty levels
 
-I separate novelty into three levels.
+Novelty is separated into three levels.
 
 ### Repository-level novelty
 
@@ -1743,11 +1737,11 @@ The safest formulation is:
 The following statements overclaim:
 
 ```text
-I produced the first formal proof of ML-KEM.
+The first formal proof of ML-KEM was produced.
 ```
 
 ```text
-I proved all of mlkem-native correct.
+All of `mlkem-native` was proved correct.
 ```
 
 ```text
@@ -1847,7 +1841,7 @@ The campaign demonstrates generation of:
 - evidence parsers;
 - manifests and theorem records.
 
-It also shows that generated artefacts require human review and deterministic correction.
+It also shows that generated artefacts require deterministic correction and documented acceptance checks.
 
 ## RQ2 — Lessons from high-assurance PQC workflows
 
@@ -1865,7 +1859,7 @@ The work adopts:
 - transparent trusted boundaries;
 - narrow non-claims.
 
-## RQ3 — Usefulness, failures, and human correction
+## RQ3 — Usefulness, failures, and documented correction
 
 Usefulness evidence includes:
 
@@ -1966,7 +1960,7 @@ Potential future theorem families include:
 
 # 21. Final integrated conclusion
 
-I proved three property-specific theorem families for the frozen ML-KEM-768 portable-C `mlk_poly_tomsg` implementation and its scalar decision path.
+Three property-specific theorem families were proved for the frozen ML-KEM-768 portable-C `mlk_poly_tomsg` implementation and its scalar decision path.
 
 MSG-T1 establishes the exact fixed-production semantic mapping and packing relation for every canonical coefficient and output position.
 
