@@ -25,7 +25,7 @@ The ledgers summarize and index the retained evidence; they do not replace raw s
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences
 
-Versioned release: **pending**. Run the finalizer and strict validator before tagging `v1.0.0`.
+Frozen V5 baseline: **`v1.0.0`** at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. Expanded RQ2 evidence release: **`v1.1.0` candidate**, pending commit/tag after combined validation.
 
 ## RC2 audit-strengthening files
 
@@ -35,3 +35,28 @@ Versioned release: **pending**. Run the finalizer and strict validator before ta
 - `19_PUBLIC_EVIDENCE_AVAILABILITY_CLAIM_POLICY.md`: wording permitted before and after strict validation and release.
 
 The corrected package also preserves three retained-summary/native-tree conflicts in file 06.
+
+## RQ2 architectural-development extension (v1.1.0 candidate)
+
+Files `20`–`30` add the V1–V4 architectural-development and transfer evidence required by the refined RQ2 without replacing the V5 scientific ledgers in files `01`–`19`.
+
+The RQ2 extension is organised as:
+
+- `20_RQ2_ARCHITECTURAL_EVIDENCE_LOCATOR.*` — evidence units and principal records;
+- `21_RQ2_ARCHITECTURAL_CONFIGURATION_MATRIX.*` — architecture/configuration states and bounded outcomes;
+- `22_RQ2_CONTROL_ALLOCATION_AND_SEMANTIC_AUTHORITY_LEDGER.*` — procedural versus semantic authority allocation;
+- `23_RQ2_FAILURE_AND_TRANSFER_EVIDENCE_LEDGER.*` — failure loci, repairs and engineering/semantic separation;
+- `24_RQ2_ARCHITECTURAL_CLAIM_SURVIVAL_LEDGER.*` — Chapter 4/5/6 claim survival;
+- `25_RQ2_PUBLIC_EVIDENCE_PATH_AND_HASH_MAP.*` — public path/file-identity resolution;
+- `26_RQ2_EVIDENCE_SCOPE_AND_CLAIM_POLICY.md` — permitted and prohibited conclusions;
+- `27_RQ2_ARCHITECTURAL_EVIDENCE_VALIDATION_REPORT.md` — generated RQ2 validation state;
+- `28_V4_ARCHITECTURAL_IDENTITY_AND_UTILITY_INCREMENT_AUDIT.*` — byte-level V4 identity audit;
+- `29_RQ2_THESIS_CLAIM_TO_EVIDENCE_AUDIT.*` — pre-surgery thesis-claim gate; and
+- `30_RQ2_RELEASE_AND_CHAPTER4_READINESS.md` — release/readiness conditions.
+
+### Critical V4 classification
+
+`v4-evaluated-second-generation-llm-integrated-workflow` and `v4-codex-skills-scientific-experiment-baseline` are preserved evidence states of **one V4 architecture generation**. The byte-level audit found identical relative file-path sets, 1,483 byte-identical files and one differing file (`agents/common/llm_client.py`). The Codex state is therefore recorded as a utility/backend wiring increment, not as a separate architecture generation.
+
+### Flexible repository resolution
+

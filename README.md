@@ -19,12 +19,18 @@ The repository contains bounded implementation-level evidence. It does not estab
 
 ## Citation
 
-Use the repository's `CITATION.cff`. The evidence release should be cited by its frozen tag/commit after `v1.0.0` is created.
+Use the repository's `CITATION.cff`. The V5 evidence baseline is frozen at `v1.0.0` (commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`). The expanded RQ2 evidence should be cited by `v1.1.0` only after that tag and release are created.
 
 ## Public-path verification
 
-Archive-level evidence mapping is complete in this package. Run the included finalizer and strict validator in a full Git/LFS checkout before representing the versioned release as frozen and completely path-validated.
+Archive-level provenance mapping is retained in this package. The finalizer and validator operate under a repository evidence release-classification policy and do not independently re-resolve every public path or host-run record.
 
 ## Corrected evidence-spine RC2
 
 The thesis-evidence overlay includes archive-verified native baseline corrections, 573 representative artefact hash mappings, explicit literature exact-match boundaries, retained-summary conflict disclosures and fail-closed public-path validation. See `docs/thesis-evidence/18_CONCERN_TO_EVIDENCE_RESOLUTION_AND_APPROVAL_SCOPE.md`.
+
+## RQ2 architectural-development evidence extension
+
+The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding examiner-facing evidence spine is in `docs/thesis-evidence/20_*` through `30_*`. It is additive to the V5 evidence frozen at `v1.0.0`; the historical tag is not rewritten.
+
+The expanded `v1.1.0` release may be created after the RQ2 release-classification finalizer and combined validator pass their internal-consistency checks. Historical folder names are not acceptance conditions.

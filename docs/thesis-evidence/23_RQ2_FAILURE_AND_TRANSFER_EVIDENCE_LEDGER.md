@@ -1,0 +1,21 @@
+# RQ2 failure and transfer evidence ledger
+
+This ledger preserves the distinct architectural, semantic, engineering, orchestration and transfer outcomes required for RQ2. Each record retains its observed state, classification, transition history, evidential meaning and source-reference status.
+
+| Record | Evidence | Architecture | Target | Observed state | Classification | Follow-up | Evidence reference status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| RQ2-F01 | RQ2-E01 | V1 | workflow | Published V1 snapshot contains only ten agent source files; no complete run/configuration/output corpus is retained. | INCOMPLETE_PROTOTYPE | V2 replayable workflow | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F02 | RQ2-E03 | V2 | mlk_poly_add | Initial generated harness/run ended unresolved/tool-failed; case summary identifies an invalid in-place postcondition design that did not snapshot old r. | SEMANTIC_ARTEFACT_FAILURE | Run 002 produced corrected harness | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F03 | RQ2-E04 | V2 | mlk_poly_add | Human-corrected harness reached CBMC success after build/header and unwind corrections. | HUMAN_CORRECTED_SUCCESS | bounded selected property successful | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F04 | RQ2-E05 | V2 | mlk_poly_add | Later workflow-generated harness reached selected-property CBMC success after the correction pattern had been encoded in Agent 5. | TRANSFERRED_HUMAN_CORRECTION_PATTERN | Run 003 successful for selected local property | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F05 | RQ2-E07 | V3 | mlk_poly_add | Critic identified mismatch: build plan selected entry function harness while rendered C defined harness_mlk_poly_add_int16_safe_sum. | INTERFACE_MISMATCH | iteration limit reached | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F06 | RQ2-E08 | V3 | mlk_poly_add | Schema-valid real API property-discovery output was produced; run later ended because critic requested repair at the iteration limit. | REPAIR_REQUIRED_WITHOUT_CLEAN_COMPLETION | no clean selected-property result | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F07 | RQ2-E09 | V3 | mlk_poly_add | Run terminated as orchestrator_failed at property_discovery. | ORCHESTRATOR_FAILURE | run closed failed | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F08 | RQ2-E10 | V3 | mlk_poly_add | Run terminated as orchestrator_failed at spec_extraction. | ORCHESTRATOR_FAILURE | run closed failed | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F09 | RQ2-E12 | V4 | mlk_poly_add | Tool stage executed but GOTO contract build/instrumentation failed; no emitted selected-property evidence. | FORMAL_TOOL_PIPELINE_FAILURE | no clean result in run 001 | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F10 | RQ2-E13 | V4 | mlk_poly_add | Critic requested repair; initial V4 policy/iteration boundary prevented clean continuation in the retained run. | REPAIR_REQUIRED_WITHOUT_CLEAN_COMPLETION | run closed unresolved | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F11 | RQ2-E14 | V4 | mlk_poly_add | Run ended as orchestrator_failed at artefact generation. | ORCHESTRATOR_FAILURE | run closed failed | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F12 | RQ2-E16 | V4 | Codex backend integration | Codex backend audit exposed multiple implementation/control defects before final acceptance. | INTEGRATION_DEFECTS_REPAIRED | offline integration package accepted | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F13 | RQ2-E17 | V4 | Codex backend regression suite | Final offline/simulated Codex integration recorded 56/56 discovered regressions passing. | ENGINEERING_READINESS_SUPPORTED | offline integration accepted | ARCHIVE_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F14 | RQ2-E18 | V4 | mlk_poly_add | Current thesis reports a live V4-supervised Codex mlk_poly_add investigation that did not complete the intended clean lifecycle. | REPORTED_LIFECYCLE_RESULT_CLASSIFIED | RELEASE_CLASSIFICATION_PASS | PUBLIC_EVIDENCE_REFERENCE_CLASSIFIED |
+| RQ2-F15 | RQ2-E19 | V4 | mlk_poly_sub | Current thesis reports a live V4-supervised Codex mlk_poly_sub investigation that did not complete the intended clean lifecycle. | REPORTED_LIFECYCLE_RESULT_CLASSIFIED | RELEASE_CLASSIFICATION_PASS | PUBLIC_EVIDENCE_REFERENCE_CLASSIFIED |

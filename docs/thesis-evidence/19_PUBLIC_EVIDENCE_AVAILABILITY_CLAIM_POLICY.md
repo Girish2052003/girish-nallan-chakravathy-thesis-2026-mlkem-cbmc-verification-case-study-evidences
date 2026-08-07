@@ -2,11 +2,11 @@
 
 ## Before strict public-path validation
 
-> The retained case-study evidence is publicly accessible in the accompanying research repository. Final path and byte-identity validation for the thesis evidence index remains pending.
+> The retained case-study evidence is publicly accessible in the accompanying research repository. The repository is treated as the authoritative retained evidence state.
 
 ## After strict validation but before a frozen release
 
-> The evidence artifacts indexed by the thesis evidence spine have been resolved and hash-matched in the public repository. A versioned thesis release remains pending.
+> The evidence artifacts indexed by the thesis evidence spine are publicly available in the accompanying research repository. A versioned thesis release remains pending.
 
 ## After a clean `v1.0.0` release
 
@@ -17,3 +17,19 @@
 “Complete retained corpus” means all evidence retained and published for the reported study. It does not imply that missing Case-1 subordinate outputs were recreated, that repeated archive views each have a separate Git pathname, or that every CBMC-emitted property is an independent scientific claim.
 
 The thesis must never state that the repository proves global novelty, complete correctness of the functions, or correctness/security of ML-KEM as a whole.
+
+## v1.1.0 RQ2-extension claim states
+
+### During RQ2 installation
+
+> The V5 case-study evidence is publicly available in release `v1.0.0`. The public repository also contains the preceding architectural-development corpus; final RQ2 claim-to-path validation for the expanded thesis evidence release is in progress.
+
+### After combined strict validation but before `v1.1.0`
+
+> The evidence indexed for both the V1–V4 architectural-development analysis and the V5 study is retained in the public repository. An expanded versioned thesis release remains pending.
+
+### After a clean `v1.1.0` release
+
+> The complete retained evidence corpus supporting the architectural-development analysis, fourteen-case V5 study and secondary skill probe is publicly available in release `v1.1.0` of the accompanying research repository. The evidence index provides architecture-level, claim-level and case-level locators and integrity records.
+
+THE INFORMATION IS DISCLOSED TO ITS MAXIMUM THRESHOLD AS PER UNIVERSITY GUIDANCE AND POLICY

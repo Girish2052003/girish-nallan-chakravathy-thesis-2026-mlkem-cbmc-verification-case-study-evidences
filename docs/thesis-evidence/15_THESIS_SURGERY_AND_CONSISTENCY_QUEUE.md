@@ -1,11 +1,11 @@
 # Thesis surgery and global consistency queue
 
-This file records the prose changes that remain **pending** until the public-path finalizer and strict validator pass. It prevents the evidence work from being lost when Chapter 4 is compressed.
+This file records the prose changes that remain pending until the RQ2 release-classification finalizer and combined internal-consistency validator have been run. It prevents the evidence work from being lost when Chapter 4 is compressed.
 
 ## Locked evidence-first order
 
 1. install this documentation overlay without moving or renaming raw evidence;
-2. run the public-path finalizer;
+2. run the repository-authoritative release-classification finalizer;
 3. obtain a strict validation PASS;
 4. review the generated path and checksum audits;
 5. freeze the versioned evidence release; and
@@ -45,3 +45,23 @@ The current formatted Chapter 4 was observed to occupy approximately thirty thes
 ## Completion condition
 
 This queue is complete only when the revised thesis has been checked against every row of the survival ledger and every retained negative/limit record, and the public evidence release cited by Chapters 4–6 is frozen and verifiable.
+
+## RQ2 architectural-development surgery extension
+
+Before Chapter 4 surgery:
+
+1. preserve `v1.0.0` unchanged;
+2. install and finalise the RQ2 addendum;
+3. obtain combined strict PASS;
+4. freeze `v1.1.0`; and
+5. reconstruct Chapter 4 from the combined evidence spine.
+
+RQ2-specific controls:
+
+- Section 4.2.1 becomes the principal empirical RQ2 result section and is backed by files 20–29.
+- The two preserved V4 directory states are one V4 architecture generation; the Codex state is a utility/backend increment.
+- The 53/53 and 56/56 counts are engineering/regression evidence, not semantic verification outcomes.
+- Section 4.6 remains a secondary capability-distillation probe.
+- Section 4.7.5 gives a concise factual architecture synthesis; causal interpretation belongs in Chapter 5.
+
+The existing V5 surgery rules remain in force: make principal claims mathematically precise where useful, expose genuine native baselines and repository-relative distinctness, preserve all negative/inconclusive/partial evidence, use public evidence locators, and relocate subordinate detail rather than deleting it under page pressure.

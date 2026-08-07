@@ -28,7 +28,7 @@ When sources conflict, use this order:
 
 A checksum establishes stored-file identity, not scientific validity. A CBMC success result supports only the selected encoded property under the recorded model.
 
-## Additional strict evidence gates
+## Additional RQ2 evidence controls
 
 The evidence index is completed by:
 
@@ -37,4 +37,22 @@ The evidence index is completed by:
 - `docs/thesis-evidence/18_CONCERN_TO_EVIDENCE_RESOLUTION_AND_APPROVAL_SCOPE.md`; and
 - `docs/thesis-evidence/19_PUBLIC_EVIDENCE_AVAILABILITY_CLAIM_POLICY.md`.
 
-A release claim is permitted only after the strict validator resolves and hash-matches all indexed evidence in the full Git/LFS checkout.
+
+## RQ2 architectural-development extension
+
+For the refined RQ2, the principal V1–V4 architecture evidence is indexed separately from the V5 case denominators:
+
+1. `docs/thesis-evidence/20_RQ2_ARCHITECTURAL_EVIDENCE_LOCATOR.md`
+2. `docs/thesis-evidence/21_RQ2_ARCHITECTURAL_CONFIGURATION_MATRIX.md`
+3. `docs/thesis-evidence/22_RQ2_CONTROL_ALLOCATION_AND_SEMANTIC_AUTHORITY_LEDGER.md`
+4. `docs/thesis-evidence/23_RQ2_FAILURE_AND_TRANSFER_EVIDENCE_LEDGER.md`
+5. `docs/thesis-evidence/24_RQ2_ARCHITECTURAL_CLAIM_SURVIVAL_LEDGER.md`
+6. `docs/thesis-evidence/25_RQ2_PUBLIC_EVIDENCE_PATH_AND_HASH_MAP.md`
+7. `docs/thesis-evidence/26_RQ2_EVIDENCE_SCOPE_AND_CLAIM_POLICY.md`
+8. `docs/thesis-evidence/28_V4_ARCHITECTURAL_IDENTITY_AND_UTILITY_INCREMENT_AUDIT.md`
+9. `docs/thesis-evidence/29_RQ2_THESIS_CLAIM_TO_EVIDENCE_AUDIT.md`
+10. `docs/thesis-evidence/30_RQ2_RELEASE_AND_CHAPTER4_READINESS.md`
+
+The four V5 skill-available investigations remain in the existing V5 evidence spine and are interpreted only as a secondary capability-distillation probe. V1–V4 configurations are not added to the fourteen-case or four-skill denominators.
+
+Historical filenames and directory names are locators rather than scientific classifications. Public resolution uses file identity and primary run evidence. The two preserved V4 trees are one V4 architecture generation with a utility/backend wiring increment; see file 28.
