@@ -19,7 +19,7 @@ The repository contains bounded implementation-level evidence. It does not estab
 
 ## Citation
 
-Use the repository's `CITATION.cff`. The V5 evidence baseline is frozen at `v1.0.0` (commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`). The expanded RQ2 evidence should be cited by `v1.1.0` only after that tag and release are created.
+Use the repository's `CITATION.cff`. The V5 evidence baseline is frozen at `v1.0.0` (commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`). The expanded RQ2 evidence is frozen at `v1.1.0` (commit `1fbf1dadf60cb3b8754bcb5703fded558d75976b`). The `v1.1.0` release extends the historical `v1.0.0` baseline rather than rewriting it.
 
 ## Public-path verification
 
@@ -33,4 +33,4 @@ The thesis-evidence overlay includes archive-verified native baseline correction
 
 The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding examiner-facing evidence spine is in `docs/thesis-evidence/20_*` through `30_*`. It is additive to the V5 evidence frozen at `v1.0.0`; the historical tag is not rewritten.
 
-The expanded `v1.1.0` release may be created after the RQ2 release-classification finalizer and combined validator pass their internal-consistency checks. Historical folder names are not acceptance conditions.
+The expanded `v1.1.0` release is now published and preserves the RQ2 architectural-development extension alongside the unchanged historical `v1.0.0` baseline. Historical folder names are not acceptance conditions.
