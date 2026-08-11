@@ -25,7 +25,7 @@ The ledgers summarize and index the retained evidence; they do not replace raw s
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences
 
-Frozen V5 baseline: **`v1.0.0`** at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. Expanded RQ2 evidence release: **`v1.1.0` candidate**, pending commit/tag after combined validation.
+Frozen V5 baseline: **`v1.0.0`** at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. Expanded RQ2 evidence release: **`v1.1.0`** at commit `1fbf1dadf60cb3b8754bcb5703fded558d75976b`. The `v1.1.0` release extends the historical `v1.0.0` baseline rather than rewriting it.
 
 ## RC2 audit-strengthening files
 
@@ -36,7 +36,7 @@ Frozen V5 baseline: **`v1.0.0`** at commit `883c4739c36d7a8d9bf25794e00984ca7b8d
 
 The corrected package also preserves three retained-summary/native-tree conflicts in file 06.
 
-## RQ2 architectural-development extension (v1.1.0 candidate)
+## RQ2 architectural-development extension (v1.1.0)
 
 Files `20`–`30` add the V1–V4 architectural-development and transfer evidence required by the refined RQ2 without replacing the V5 scientific ledgers in files `01`–`19`.
 
