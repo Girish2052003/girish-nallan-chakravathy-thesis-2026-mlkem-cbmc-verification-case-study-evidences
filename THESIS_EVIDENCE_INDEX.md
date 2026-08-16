@@ -7,6 +7,7 @@ Start with:
 1. `docs/thesis-evidence/01_CASE_EVIDENCE_LOCATOR.md`
 2. `docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md`
 3. `docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md`
+- [Complete rendered property/control catalogue (03A)](docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md) — exhaustive human-readable companion to the authoritative 257-record ledger; includes the 220 supported projection and preserves non-supported controls/negative/inconclusive records.
 4. `docs/thesis-evidence/04_NATIVE_REPOSITORY_DISTINCTNESS_MATRIX.md`
 5. `docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`
 6. `docs/thesis-evidence/09_MASTER_PROVENANCE_MATRIX.md`

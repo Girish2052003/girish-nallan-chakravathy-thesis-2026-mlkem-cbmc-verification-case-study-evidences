@@ -9,6 +9,7 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - Reuse and licensing position: [`REUSE_AND_LICENSING.md`](REUSE_AND_LICENSING.md)
 - Complete property ledger: [`docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md`](docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md)
 - Formal claim catalogue: [`docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md`](docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md)
+- [Complete rendered property/control catalogue (03A)](docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md) — exhaustive 257-record evidence layer with GitHub-compatible mathematics; the 220 supported subset and all controls, negatives and inconclusive findings remain separately classified.
 - Native distinctness matrix: [`docs/thesis-evidence/04_NATIVE_REPOSITORY_DISTINCTNESS_MATRIX.md`](docs/thesis-evidence/04_NATIVE_REPOSITORY_DISTINCTNESS_MATRIX.md)
 - Archive path/hash map: [`docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md`](docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md)
 - Negative/inconclusive evidence: [`docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`](docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)

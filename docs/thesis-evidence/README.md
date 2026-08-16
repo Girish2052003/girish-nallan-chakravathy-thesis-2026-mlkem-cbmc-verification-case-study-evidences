@@ -65,3 +65,6 @@ The RQ2 extension is organised as:
 
 ### Flexible repository resolution
 
+## Complete rendered evidence catalogue
+
+- [Complete rendered property/control catalogue (03A)](03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md) — exhaustive 257-record evidence layer with GitHub-compatible mathematics and current path-state reconciliation.
