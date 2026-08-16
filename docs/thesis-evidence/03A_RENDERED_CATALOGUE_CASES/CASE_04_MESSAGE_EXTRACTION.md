@@ -18,7 +18,7 @@ Which canonical coefficients produce message bit 1, how are the 256 decisions pa
 
 
 $$
-O(u)=\left\lbrace\begin{array}{ll}1,&833\le u\le2496,\\0,&\text{otherwise},\end{array}\right.
+O(u)=\left\lbrace\begin{array}{ll}1,&833\le u\le2496,\\ 0,&\text{otherwise},\end{array}\right.
 $$
 
 
@@ -1265,7 +1265,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 8, “Determi
 ### Formal statement
 
 $$
-\begin{array}{rl}F_{c_{\mathrm{prod}}}(u)&=O(u),\qquad 0\le u<q,\\c_{\mathrm{prod}}&=1073741824=2^{30}.\end{array}
+\begin{array}{rl}F_{c_{\mathrm{prod}}}(u)&=O(u),\qquad 0\le u<q,\\ c_{\mathrm{prod}}&=1073741824=2^{30}.\end{array}
 $$
 
 

@@ -29,7 +29,7 @@ These definitions are the expanded repository counterpart of the concise notatio
 
 
 $$
-Z_I(M)[j]=\left\lbrace\begin{array}{ll}0,&j\in I,\\M[j],&j\notin I,\end{array}\right.
+Z_I(M)[j]=\left\lbrace\begin{array}{ll}0,&j\in I,\\ M[j],&j\notin I,\end{array}\right.
 $$
 
 

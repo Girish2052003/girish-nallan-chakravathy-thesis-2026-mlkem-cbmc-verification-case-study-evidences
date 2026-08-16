@@ -161,3 +161,15 @@ The repaired expressions remain mathematically unchanged and reverse-normalise
 exactly to their accepted historical statements.
 
 <!-- STRICT-MATHJAX-AUDIT:END -->
+
+<!-- RC4_ROWBREAK_BOUNDARY_FIX_2026_08_17 -->
+
+## Live GitHub row-boundary rendering correction — 17 August 2026
+
+Post-publication browser inspection exposed five presentation-layer TeX row boundaries in which the first token of the following row was directly adjacent to the preceding `\\` row-break command. The affected source forms included `\\0`, `\\M[j]`, and `\\c_{\mathrm{prod}}`.
+
+The active GitHub-facing catalogue was normalized to the semantically equivalent forms `\\ 0`, `\\ M[j]`, and `\\ c_{\mathrm{prod}}`. The correction inserts only an explicit token boundary after the TeX row break.
+
+A before/after comparison against the immutable pre-repair Git `HEAD` confirmed preservation of all 414 mathematical expressions. The total number of `\mathop{\text{...}}` constructs was also unchanged from the pre-repair `HEAD`; therefore the row-boundary correction did not create or remove named mathematical operators. The existing 210-conversion invariant concerns the formerly GitHub-blocked named-operator transformations and is distinct from the total number of `\mathop{\text{...}}` constructs present in the catalogue.
+
+No property identifier, result classification, verification domain, bounded conclusion, evidential status, public evidence locator, or scientific claim was changed by this correction.
