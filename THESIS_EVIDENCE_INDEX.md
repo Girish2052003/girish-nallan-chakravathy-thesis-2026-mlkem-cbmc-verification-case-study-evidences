@@ -7,11 +7,12 @@ Start with:
 1. `docs/thesis-evidence/01_CASE_EVIDENCE_LOCATOR.md`
 2. `docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md`
 3. `docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md`
-4. `docs/thesis-evidence/04_NATIVE_REPOSITORY_DISTINCTNESS_MATRIX.md`
-5. `docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`
-6. `docs/thesis-evidence/09_MASTER_PROVENANCE_MATRIX.md`
-7. `docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md`
-8. `docs/thesis-evidence/15_THESIS_SURGERY_AND_CONSISTENCY_QUEUE.md`
+4. `docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+5. `docs/thesis-evidence/04_NATIVE_REPOSITORY_DISTINCTNESS_MATRIX.md`
+6. `docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`
+7. `docs/thesis-evidence/09_MASTER_PROVENANCE_MATRIX.md`
+8. `docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md`
+9. `docs/thesis-evidence/15_THESIS_SURGERY_AND_CONSISTENCY_QUEUE.md`
 
 The raw evidence directories are not renamed or reorganised by this package. Exact live paths are generated from the existing repository tree by `tools/finalize_evidence_spine.py`.
 

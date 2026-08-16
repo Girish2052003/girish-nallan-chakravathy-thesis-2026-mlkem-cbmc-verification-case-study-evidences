@@ -1,7 +1,7 @@
 # Public repository path-resolution audit
 
 - Repository root: `/home/girish/THESIS-2026/CLASSIFICATION GIT/MLKEM_CBMC_FULL_CLASSIFIED_BASELINE_2026-07-19`
-- Working-tree base HEAD: `b9919326b714824a3cc042cdf12e0a24ebfe2376`
+- Working-tree base HEAD: `4e55c459a1d1865506cb2939ddf5af6680929158`
 - Exact tag at base HEAD: `UNAVAILABLE`
 - Investigation roots resolved: 18/18
 - Principal summaries hash-matched: 18/18
