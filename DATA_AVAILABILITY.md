@@ -38,3 +38,18 @@ python3 tools/validate_evidence_spine.py --repo-root . --strict
 “Complete retained evidence corpus” means all evidence retained and published for the reported study. It does not imply recreation of missing historical artefacts, complete correctness or security of ML-KEM, exhaustive worldwide prior-art coverage, global novelty, causal superiority of one architecture, preservation of a numerical percentage of model capability, or individual-skill causal effectiveness.
 
 THE INFORMATION IS DISCLOSED TO ITS MAXIMUM THRESHOLD AS PER UNIVERSITY GUIDANCE AND POLICY
+
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Current 03A availability
+
+The final exhaustive 03A property/control catalogue and its eighteen
+case/investigation detail documents are publicly retained in the repository.
+The catalogue was first published on `main` at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e` after complete
+repository, checksum, GitHub-math and evidence-spine validation.
+
+This later catalogue publication does not alter the identity of the existing
+`v1.0.0` or `v1.1.0` releases. Thesis citations may therefore use the
+appropriate frozen release for the underlying evidence corpus and the recorded
+03A publication commit when referring specifically to the exhaustive rendered
+catalogue.
+<!-- CURRENT-03A-PUBLICATION:END -->

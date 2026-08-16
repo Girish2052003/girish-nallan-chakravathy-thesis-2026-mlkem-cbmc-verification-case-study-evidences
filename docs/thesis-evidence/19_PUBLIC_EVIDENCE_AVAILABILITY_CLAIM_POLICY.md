@@ -11,6 +11,19 @@ Repository publication/path-resolution state is independent of scientific result
 
 > The retained case-study evidence is publicly accessible in the accompanying research repository. The repository is treated as the authoritative retained evidence state.
 
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Current post-03A publication state
+
+The versioned underlying evidence remains published as `v1.0.0` and `v1.1.0`.
+The exhaustive rendered 03A catalogue was later published additively on
+`main`, first appearing at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+
+Current-use wording may describe the 03A catalogue as publicly available on
+repository `main` at its recorded publication commit. Historical pre-release
+wording remains preserved only where it is explicitly labelled historical or
+superseded.
+<!-- CURRENT-03A-PUBLICATION:END -->
+
 ## Historical pre-release wording (superseded; retained for provenance)
 
 > Historical status: before publication of `v1.1.0`, the indexed evidence artefacts were already available in the public repository while the expanded versioned thesis-evidence release was still pending. This wording is retained only as provenance and is not current-use thesis wording.

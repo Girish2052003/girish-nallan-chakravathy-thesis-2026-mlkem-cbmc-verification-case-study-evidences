@@ -65,3 +65,17 @@ FINAL 03A OFFLINE PACKAGE SELF-AUDIT: PASS
 ```
 
 The self-audit verifies the 257-record manifest and rendered union, exact result-class inventory, 220 supported projection, 19 negative/inconclusive records, 257 historical/current path-state pairs, 257 formula-preservation hashes, zero blocked `\operatorname` forms, 210 GitHub-safe named operators, balanced mathematics, current-state wording, Case-4 correction, Pandoc/MathML parsing and the active 03A checksum manifest. The transcript is retained as `03A_FINAL_OFFLINE_PACKAGE_VALIDATION_TRANSCRIPT.txt`.
+
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Final publication provenance
+
+The repaired GitHub-renderable 03A layer was first committed to repository
+`main` as `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+
+The pre-GitHub-render-fix closure remains preserved under
+`03A_AUDIT_HISTORY/`; it is retained as historical provenance and is not the
+active rendered catalogue.
+
+Publication of the 03A layer did not rewrite the authoritative scientific
+ledger or move the existing `v1.0.0` / `v1.1.0` tags or releases.
+<!-- CURRENT-03A-PUBLICATION:END -->

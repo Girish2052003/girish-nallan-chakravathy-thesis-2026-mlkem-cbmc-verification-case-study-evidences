@@ -87,3 +87,18 @@ The patch itself is retained only under `03A_AUDIT_HISTORY/` for provenance. The
 **CURRENT-STATE RECONCILIATION DESIGN: PASS.**
 
 The package cleanly separates current repository publication/path status, historical pre-finalization metadata, and scientific verification outcomes.
+
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Post-publication reconciliation
+
+The final 03A catalogue was first published on repository `main` at commit
+`73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+
+The earlier `4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c` identifier remains the
+clean pre-installation/reconciliation base. It must not be interpreted as the
+post-publication HEAD.
+
+The published catalogue retains the validated current public-path state:
+18/18 investigation locators, 257/257 substantive property/control records and
+573/573 representative artefact records resolved/hash-matched.
+<!-- CURRENT-03A-PUBLICATION:END -->

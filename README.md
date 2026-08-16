@@ -14,6 +14,29 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - Archive path/hash map: [`docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md`](docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md)
 - Negative/inconclusive evidence: [`docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`](docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)
 
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Final 03A catalogue publication
+
+The exhaustive GitHub-renderable 03A property/control catalogue is publicly
+available on the repository's `main` history. Its **first publication commit**
+is `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+
+That publication was accepted only after the retained evidence passed the
+60/60 structural/evidence/current-state validation, the strict combined
+evidence-spine validator, the static GitHub-math compatibility gate, and the
+live GitHub Markdown API smoke test for all 19 rendered catalogue documents.
+
+The 03A publication is additive to the existing versioned evidence releases:
+`v1.0.0` remains the historical V5 baseline and `v1.1.0` remains the published
+expanded RQ2 evidence release. The 03A publication did not move or rewrite
+either tag or release.
+
+Repository/public-path resolution must not be confused with scientific result
+classification. `RESOURCE_LIMITED_INCONCLUSIVE`,
+`ABSTRACTION_LIMITED_INCONCLUSIVE`, `MEANINGFUL_NEGATIVE`, and
+`SUPPORTED_WITH_PARTIAL_PRESERVATION` retain their recorded meanings.
+<!-- CURRENT-03A-PUBLICATION:END -->
+
 ## Interpretation boundary
 
 The repository contains bounded implementation-level evidence. It does not establish complete correctness or security of ML-KEM, global novelty of the mathematical relations, general superiority of the skill-available configuration, or universal physical memory erasure.

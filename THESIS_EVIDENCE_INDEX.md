@@ -16,6 +16,23 @@ Start with:
 
 The raw evidence directories are not renamed or reorganised by this package. Exact live paths are generated from the existing repository tree by `tools/finalize_evidence_spine.py`.
 
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Exhaustive rendered catalogue
+
+The complete 257-record rendered property/control catalogue is:
+
+`docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+
+The eighteen case/investigation detail documents are under:
+
+`docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/`
+
+The catalogue's first publication commit on `main` is `73cba2c5bc9a51a156d0931669ee58123ce0037e`. The supported
+projection remains 220 records; contrary, inconclusive, diagnostic, control,
+assumption-derived and preservation-qualified classifications remain distinct
+according to the authoritative ledger.
+<!-- CURRENT-03A-PUBLICATION:END -->
+
 ## Evidence authority
 
 When sources conflict, use this order:

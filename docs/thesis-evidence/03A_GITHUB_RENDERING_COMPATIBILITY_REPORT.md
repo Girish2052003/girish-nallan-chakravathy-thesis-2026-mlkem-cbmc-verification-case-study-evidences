@@ -107,3 +107,16 @@ The package-construction environment cannot run the live network request, so the
 **OFFLINE GITHUB-COMPATIBILITY AUDIT: PASS.**
 
 The earlier `\operatorname` defect is removed without altering the accepted mathematics. Final installation acceptance additionally requires the bundled live GitHub Markdown REST API smoke gate to pass in the user's repository environment before commit/push.
+
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Final live publication validation
+
+Before the catalogue was committed, the static GitHub-math gate passed with
+19 rendered documents, 414 extracted mathematical expressions, 210 approved
+GitHub-safe named-operator forms, and zero blocked `\operatorname` forms.
+
+The authenticated GitHub Markdown REST smoke test then completed successfully
+for all 19/19 rendered catalogue documents.
+
+The first publication commit for the validated catalogue is `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+<!-- CURRENT-03A-PUBLICATION:END -->

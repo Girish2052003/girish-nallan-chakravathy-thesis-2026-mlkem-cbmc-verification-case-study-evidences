@@ -978,3 +978,17 @@ Repository-relative distinctness is not inferred from the absence of a filename.
 ## Final reading rule
 
 For a thesis claim, start with the Chapter-4 principal synthesis, use the appendix for the concise supported-property inventory, and use this catalogue when the exact property, mathematical relation, evidence status, domain, principal-claim role, native comparison or archive trace is required. The deeper evidence is authoritative for detail; the thesis is authoritative for the final scientific interpretation within its stated scope.
+
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Publication-state note
+
+The repository state used as the **installation/reconciliation base** for this
+catalogue was commit
+`4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c`.
+
+The completed catalogue was subsequently first published on repository
+`main` at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+
+The installation-base identifier is therefore provenance, not a statement
+that `4785f933...` remains the repository's current HEAD.
+<!-- CURRENT-03A-PUBLICATION:END -->

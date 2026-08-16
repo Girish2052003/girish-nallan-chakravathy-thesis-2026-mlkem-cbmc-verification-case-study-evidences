@@ -26,6 +26,27 @@ This directory supplies the evidence spine proposed before Chapter 4 surgery:
 
 The ledgers summarize and index the retained evidence; they do not replace raw source/build records, artefacts, commands or formal-tool outputs. Where any summary conflicts with raw evidence, the raw source-bound evidence controls.
 
+<!-- CURRENT-03A-PUBLICATION:START -->
+## Final exhaustive 03A catalogue
+
+Primary rendered entry point:
+
+`03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+
+Case/investigation detail documents:
+
+`03A_RENDERED_CATALOGUE_CASES/`
+
+First 03A publication commit on `main`:
+
+`73cba2c5bc9a51a156d0931669ee58123ce0037e`
+
+The rendered layer covers the complete 257-record property/control ledger,
+including the 220-record supported projection, while retaining all
+negative/inconclusive, diagnostic, control, assumption-derived and
+preservation-qualified classifications.
+<!-- CURRENT-03A-PUBLICATION:END -->
+
 ## Current release status
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences
