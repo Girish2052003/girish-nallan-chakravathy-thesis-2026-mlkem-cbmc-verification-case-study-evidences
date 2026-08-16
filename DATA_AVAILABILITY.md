@@ -8,12 +8,12 @@ https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbm
 
 Release/tag `v1.0.0` preserves the validated V5 evidence spine at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. That evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
 
-## RQ2 architectural-development extension — `v1.1.0` candidate
+## RQ2 architectural-development extension — published `v1.1.0` release
 
 The refined RQ2 makes the retained V1–V4 deterministic-orchestration and architectural-transfer programme a principal evidence stream. Files `20`–`30` index that evidence without changing the scientific V5 ledgers in files `01`–`19`.
 
 
-Before the thesis cites `v1.1.0`, run:
+For reproducibility, the validation checks for the published `v1.1.0` release can be rerun as follows:
 
 ```bash
 python3 tools/finalize_rq2_architectural_evidence.py --repo-root .
@@ -23,13 +23,13 @@ python3 tools/validate_evidence_spine.py --repo-root . --strict
 
 ## Safe wording during installation
 
-> The V5 case-study evidence is publicly available in release `v1.0.0`. The public repository also contains the preceding architectural-development corpus; final claim-to-path validation for the expanded RQ2 evidence release is in progress.
+> The V5 case-study evidence remains publicly available in release `v1.0.0`. The preceding architectural-development corpus and its final claim-to-path validation are included in the published expanded thesis-evidence release `v1.1.0`.
 
 ## Safe wording after combined strict validation but before the new tag
 
 > The complete retained evidence indexed for the V1–V4 architectural-development analysis and the V5 case study is publicly available in the accompanying research repository. The expanded thesis-evidence release is published as `v1.1.0`.
 
-## Final thesis wording after `v1.1.0` is frozen
+## Current thesis data-availability wording for published `v1.1.0`
 
 > **Data availability.** The complete retained evidence corpus supporting the architectural-development analysis, the fourteen-case V5 study and the secondary V5 helper-skill probe is publicly available in release `v1.1.0` of the versioned research repository accompanying this thesis (Nallan Chakravathy, 2026). The repository evidence index maps architecture-level and case-level claims to their retained public artefacts and integrity records.
 
