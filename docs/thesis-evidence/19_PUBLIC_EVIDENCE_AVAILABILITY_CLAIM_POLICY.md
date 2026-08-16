@@ -1,12 +1,19 @@
 # Public evidence availability claim policy
 
+## Current repository state
+
+The expanded thesis-evidence release is **published as `v1.1.0`**. The authoritative public-path state records **18/18 investigation locators**, **257/257 substantive property/control records**, and **573/573 representative artefact records** as resolved/hash-matched.
+
+Repository publication/path-resolution state is independent of scientific result classification. `RESOURCE_LIMITED_INCONCLUSIVE`, `ABSTRACTION_LIMITED_INCONCLUSIVE`, `MEANINGFUL_NEGATIVE`, and other recorded scientific result classes retain their original meanings.
+
+
 ## Before strict public-path validation
 
 > The retained case-study evidence is publicly accessible in the accompanying research repository. The repository is treated as the authoritative retained evidence state.
 
-## After strict validation but before a frozen release
+## Superseded pre-release wording
 
-> The evidence artifacts indexed by the thesis evidence spine are publicly available in the accompanying research repository. A versioned thesis release remains pending.
+> The evidence artifacts indexed by the thesis evidence spine are publicly available in the accompanying research repository. The expanded thesis-evidence release is **published as `v1.1.0`**.
 
 ## After a clean `v1.0.0` release
 
@@ -26,7 +33,7 @@ The thesis must never state that the repository proves global novelty, complete 
 
 ### After combined strict validation but before `v1.1.0`
 
-> The evidence indexed for both the V1–V4 architectural-development analysis and the V5 study is retained in the public repository. An expanded versioned thesis release remains pending.
+> The evidence indexed for both the V1–V4 architectural-development analysis and the V5 study is retained in the public repository. The expanded thesis-evidence release is **published as `v1.1.0`**.
 
 ### After a clean `v1.1.0` release
 

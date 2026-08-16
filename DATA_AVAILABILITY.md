@@ -27,7 +27,7 @@ python3 tools/validate_evidence_spine.py --repo-root . --strict
 
 ## Safe wording after combined strict validation but before the new tag
 
-> The complete retained evidence indexed for the V1–V4 architectural-development analysis and the V5 case study is publicly available in the accompanying research repository. An expanded versioned thesis evidence release remains pending.
+> The complete retained evidence indexed for the V1–V4 architectural-development analysis and the V5 case study is publicly available in the accompanying research repository. The expanded thesis-evidence release is published as `v1.1.0`.
 
 ## Final thesis wording after `v1.1.0` is frozen
 

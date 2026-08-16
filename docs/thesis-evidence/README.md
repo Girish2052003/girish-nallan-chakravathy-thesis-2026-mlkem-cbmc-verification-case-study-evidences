@@ -1,5 +1,10 @@
 # Authoritative thesis evidence documentation layer
 
+## Current public state
+
+The expanded thesis-evidence release is **published as `v1.1.0`**. The authoritative public-path state records **18/18 investigation locators**, **257/257 substantive property/control records**, and **573/573 representative artefact records** as resolved/hash-matched.
+
+
 This directory supplies the evidence spine proposed before Chapter 4 surgery:
 
 - 18 investigation locators;
