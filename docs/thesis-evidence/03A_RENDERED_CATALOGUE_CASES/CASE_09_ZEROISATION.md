@@ -38,7 +38,7 @@ Z_I(Z_I(M))=Z_I(M)
 $$
 
 
-**Recorded principal-claim wording:** For a valid selected interval I, Z_I(M) sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
+**Recorded principal-claim wording:** For a valid selected interval $`I`$, $`Z_I(M)`$ sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -237,7 +237,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite o
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** forall i in selected region A: post[i]=0
+- **Ledger formal relation:** $`\displaystyle \forall i\in I_A:\quad M_i^{\mathrm{post}}=0`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -372,7 +372,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite o
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** forall i in selected region B: post[i]=0
+- **Ledger formal relation:** $`\displaystyle \forall i\in I_B:\quad M_i^{\mathrm{post}}=0`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -507,7 +507,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 3, “Secret-history co
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** different prestate bytes in wiped region converge to identical zero poststate
+- **Ledger formal relation:** $`\displaystyle Z_I(M_1)|_I=Z_I(M_2)|_I`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -642,7 +642,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 4, “Prefix-frame pres
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** bytes before selected interval unchanged
+- **Ledger formal relation:** $`\displaystyle Z_I(M)|_{\mathrm{prefix}(I)}=M|_{\mathrm{prefix}(I)}`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -777,7 +777,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 5, “Suffix-frame pres
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** bytes after selected interval unchanged
+- **Ledger formal relation:** $`\displaystyle Z_I(M)|_{\mathrm{suffix}(I)}=M|_{\mathrm{suffix}(I)}`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -912,7 +912,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 6, “Unrelated-guard p
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** separate guard object unchanged
+- **Ledger formal relation:** $`\displaystyle Z_I(M)|_{\mathrm{guard}}=M|_{\mathrm{guard}}`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1047,7 +1047,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 7, “Zero-length ident
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** zeroize(ptr,0) leaves modelled state unchanged
+- **Ledger formal relation:** $`\displaystyle Z_{\varnothing}(M)=M`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1182,7 +1182,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 8, “Idempotence”. C
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** Z_I(Z_I(M))=Z_I(M)
+- **Ledger formal relation:** $`\displaystyle Z_I(Z_I(M))=Z_I(M)`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1317,7 +1317,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 9, “Adjacent-partitio
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** Z_[a,b)(Z_[b,c)(M))=Z_[a,c)(M)
+- **Ledger formal relation:** $`\displaystyle Z_{[a,b)}(Z_{[b,c)}(M))=Z_{[a,c)}(M)`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1452,7 +1452,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 10, “Disjoint-wipe co
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** Z_I(Z_J(M))=Z_J(Z_I(M)) for disjoint I,J
+- **Ledger formal relation:** $`\displaystyle Z_I(Z_J(M))=Z_J(Z_I(M))`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1587,7 +1587,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 11, “Overlapping-wipe
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** sequential overlapping wipes equal wipe of interval union
+- **Ledger formal relation:** $`\displaystyle Z_I(Z_J(M))=Z_{I\cup J}(M)`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1722,7 +1722,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 12, “Default release-
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** default release path observes all bytes of selected backing allocation zero
+- **Ledger formal relation:** $`\displaystyle \forall x\in I_{\mathrm{alloc}}:\quad M_{\mathrm{observed}}[x]=0`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1857,7 +1857,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 13, “Pointer reset af
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** released pointer is set to NULL
+- **Ledger formal relation:** $`\displaystyle p_{\mathrm{after\ release}}=\mathrm{NULL}`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -1992,7 +1992,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 14, “Custom-free obse
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** custom free observer sees all-zero selected object
+- **Ledger formal relation:** $`\displaystyle \forall x\in I_{\mathrm{object}}:\quad M_{\mathrm{custom\ free}}[x]=0`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -2127,7 +2127,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 15, “Non-null custom 
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** non-null release invokes custom free exactly once
+- **Ledger formal relation:** $`\displaystyle p\ne\mathrm{NULL}\Longrightarrow N_{\mathrm{custom\ free}}=1`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -2262,7 +2262,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 16, “Null input does 
 
 - **Assumptions and grounding:** C abstract-machine memory model; valid pointer/size conditions
 
-- **Ledger formal relation:** null release does not invoke custom free
+- **Ledger formal relation:** $`\displaystyle p=\mathrm{NULL}\Longrightarrow N_{\mathrm{custom\ free}}=0`$
 
 - **Assertion / harness mapping:** ZERO T1–T4 final harness assertion
 
@@ -2324,7 +2324,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 16, “Null input does 
 
 # Case-level bounded conclusion
 
-For a valid selected interval I, Z_I(M) sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
+For a valid selected interval $`I`$, $`Z_I(M)`$ sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
 
 **Explicit exclusion.** No universal physical-remanence, compiler-optimization or hardware-erasure conclusion.
 

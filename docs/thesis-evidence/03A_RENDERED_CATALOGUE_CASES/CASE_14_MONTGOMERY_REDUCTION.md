@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** MONT-T1: reduce(a)=independent_oracle(a) over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image [-32767,32767]. MONT-T2–T4 remain resource-limited and inconclusive.
+**Recorded principal-claim wording:** MONT-T1: $`\mathrm{reduce}(a)=\mathrm{independent\_oracle}(a)`$ over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image $`[-32767,32767]`$. MONT-T2–T4 remain resource-limited and inconclusive.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -267,7 +267,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 1, 
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
-- **Ledger formal relation:** reduce(a)=independent_oracle(a)
+- **Ledger formal relation:** $`\displaystyle M(a)=\mathrm{MontOracle}(a)`$
 
 - **Assertion / harness mapping:** MONT-T1 audited assertion family (12 required assertions)
 
@@ -402,7 +402,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 2, 
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
-- **Ledger formal relation:** a=R*reduce(a)+q*t for a signed witness t, with the registered modular relation
+- **Ledger formal relation:** $`\displaystyle a=R_M\,M(a)+q\,t`$
 
 - **Assertion / harness mapping:** MONT-T1 audited assertion family (12 required assertions)
 
@@ -537,7 +537,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 3, 
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
-- **Ledger formal relation:** the result/witness decomposition is unique in the registered signed-16 ranges
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}a&=R_M\,r+q\,t=R_M\,r\prime+q\,t\prime,\\(r,t),(r\prime,t\prime)&\in D_{\mathrm{signed16}}\Longrightarrow r=r\prime\land t=t\prime.\end{array}`$
 
 - **Assertion / harness mapping:** MONT-T1 audited assertion family (12 required assertions)
 
@@ -672,7 +672,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 4, 
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
-- **Ledger formal relation:** -32767 <= reduce(a) <= 32767 for the complete source-contract domain
+- **Ledger formal relation:** $`\displaystyle \forall a\in D_{\mathrm{legal}}:\quad -32767\le M(a)\le32767`$
 
 - **Assertion / harness mapping:** MONT-T1 audited assertion family (12 required assertions)
 
@@ -807,7 +807,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 5, 
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
-- **Ledger formal relation:** both -32767 and 32767 occur at registered legal inputs
+- **Ledger formal relation:** $`\displaystyle \exists a_{-},a_{+}\in D_{\mathrm{legal}}:\quad M(a_{-})=-32767,\qquad M(a_{+})=32767`$
 
 - **Assertion / harness mapping:** MONT-T1 audited assertion family (12 required assertions)
 
@@ -942,7 +942,7 @@ Appendix 2 → Case 14 → MONT-T2.P1 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate harness designed and executed; no completed solver verdict
 
-- **Ledger formal relation:** normalized low words lie in [0,65535]
+- **Ledger formal relation:** $`\displaystyle 0\le \mathop{\text{low}}_{16}(a)\le65535`$
 
 - **Assertion / harness mapping:** MONT-T2 candidate harness
 
@@ -1077,7 +1077,7 @@ Appendix 2 → Case 14 → MONT-T2.P2 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate harness designed and executed; no completed solver verdict
 
-- **Ledger formal relation:** (reduce(b)-reduce(a))*R ≡ b-a (mod q)
+- **Ledger formal relation:** $`\displaystyle \bigl(M(b)-M(a)\bigr)R\equiv b-a\pmod q`$
 
 - **Assertion / harness mapping:** MONT-T2 candidate harness
 
@@ -1218,7 +1218,7 @@ Appendix 2 → Case 14 → MONT-T2.P3 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate harness designed and executed; no completed solver verdict
 
-- **Ledger formal relation:** same canonical low 16 bits => reduce(b)-reduce(a)=(b-a)/R
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{low}}_{16}(a)=\mathop{\text{low}}_{16}(b) \Longrightarrow \left( b-a\in R\mathbb{Z} \;\land\; M(b)-M(a)=\frac{b-a}{R} \right)`$
 
 - **Assertion / harness mapping:** MONT-T2 candidate harness
 
@@ -1353,7 +1353,7 @@ Appendix 2 → Case 14 → MONT-T2.P4 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate harness designed and executed; no completed solver verdict
 
-- **Ledger formal relation:** under equal-low-word premise, reduce(a)=reduce(b) iff a=b
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{low}}_{16}(a)=\mathop{\text{low}}_{16}(b)\Longrightarrow\bigl(M(a)=M(b)\Longleftrightarrow a=b\bigr)`$
 
 - **Assertion / harness mapping:** MONT-T2 candidate harness
 
@@ -1488,7 +1488,7 @@ Appendix 2 → Case 14 → MONT-T2.P5 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate harness designed and executed; no completed solver verdict
 
-- **Ledger formal relation:** reduce(a+kR)=reduce(a)+k whenever both inputs remain legal
+- **Ledger formal relation:** $`\displaystyle a,a+kR\in D_M\Longrightarrow M(a+kR)=M(a)+k`$
 
 - **Assertion / harness mapping:** MONT-T2 candidate harness
 
@@ -1623,7 +1623,7 @@ Appendix 2 → Case 14 → MONT-T3.P1 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** fqmul agrees modulo q with an independent Montgomery-product model
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{Norm}}_q(F(a,b))=\mathop{\text{Norm}}_q\!\left(a b R^{-1}\right)`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -1758,7 +1758,7 @@ Appendix 2 → Case 14 → MONT-T3.P2 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** normalized fqmul(a,b)=normalized fqmul(b,a)
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{Norm}}_q(F(a,b))=\mathop{\text{Norm}}_q(F(b,a))`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -1895,7 +1895,7 @@ Appendix 2 → Case 14 → MONT-T3.P3 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** fqmul(a,0)=fqmul(0,b)=0 plus registered normalized reflection
+- **Ledger formal relation:** $`\displaystyle F(a,0)=0,\qquad F(0,b)=0,\qquad \mathcal{R}_0(a,b)`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -2030,7 +2030,7 @@ Appendix 2 → Case 14 → MONT-T3.P4 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** normalized multiplication by R mod q=2285 is identity
+- **Ledger formal relation:** $`\displaystyle R_q=R\bmod q=2285,\qquad \mathop{\text{Norm}}_q(F(a,R_q))=\mathop{\text{Norm}}_q(a)`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -2165,7 +2165,7 @@ Appendix 2 → Case 14 → MONT-T3.P5 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** normalized Montgomery multiplication distributes over normalized modular addition
+- **Ledger formal relation:** $`\displaystyle \widehat F\!\left(a,\mathop{\text{Norm}}_q(b+c)\right)=\mathop{\text{Norm}}_q\!\left(\widehat F(a,b)+\widehat F(a,c)\right),\qquad \widehat F(x,y)=\mathop{\text{Norm}}_q(F(x,y))`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -2300,7 +2300,7 @@ Appendix 2 → Case 14 → MONT-T3.P6 resource-limited candidate. Chapter 4 uses
 
 - **Assumptions and grounding:** Candidate model canonicalizes residues before comparison
 
-- **Ledger formal relation:** reassociated normalized products agree
+- **Ledger formal relation:** $`\displaystyle \widehat F\!\left(\widehat F(a,b),c\right)=\widehat F\!\left(a,\widehat F(b,c)\right),\qquad \widehat F(x,y)=\mathop{\text{Norm}}_q(F(x,y))`$
 
 - **Assertion / harness mapping:** MONT-T3 candidate harness
 
@@ -2391,7 +2391,7 @@ The candidate is mapped to `MONT-T4 candidate harness`, but no authentic complet
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2433,9 +2433,9 @@ Appendix 2 → Case 14 → MONT-T4.P1 resource-limited candidate. Chapter 4 uses
 
 - **Input domain:** Registered ML-KEM-768 polynomial coefficient domain
 
-- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q
+- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$
 
-- **Ledger formal relation:** reducing a converted coefficient recovers the original residue modulo q
+- **Ledger formal relation:** $`\displaystyle M\!\left(T(A)_i\right)\equiv A_i\pmod q`$
 
 - **Assertion / harness mapping:** MONT-T4 candidate harness
 
@@ -2526,7 +2526,7 @@ The candidate is mapped to `MONT-T4 candidate harness`, but no authentic complet
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2568,9 +2568,9 @@ Appendix 2 → Case 14 → MONT-T4.P2 resource-limited candidate. Chapter 4 uses
 
 - **Input domain:** Registered ML-KEM-768 polynomial coefficient domain
 
-- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q
+- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$
 
-- **Ledger formal relation:** coefficientwise residue-equivalent inputs produce equivalent converted outputs
+- **Ledger formal relation:** $`\displaystyle \left(\forall i,\ A_i\equiv B_i\pmod q\right)\Longrightarrow\left(\forall i,\ T(A)_i\equiv T(B)_i\pmod q\right)`$
 
 - **Assertion / harness mapping:** MONT-T4 candidate harness
 
@@ -2661,7 +2661,7 @@ The candidate is mapped to `MONT-T4 candidate harness`, but no authentic complet
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2703,9 +2703,9 @@ Appendix 2 → Case 14 → MONT-T4.P3 resource-limited candidate. Chapter 4 uses
 
 - **Input domain:** Registered ML-KEM-768 polynomial coefficient domain
 
-- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q
+- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$
 
-- **Ledger formal relation:** equivalent converted outputs imply equivalent original inputs
+- **Ledger formal relation:** $`\displaystyle \left(\forall i,\ T(A)_i\equiv T(B)_i\pmod q\right)\Longrightarrow\left(\forall i,\ A_i\equiv B_i\pmod q\right)`$
 
 - **Assertion / harness mapping:** MONT-T4 candidate harness
 
@@ -2796,7 +2796,7 @@ The candidate is mapped to `MONT-T4 candidate harness`, but no authentic complet
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2838,9 +2838,9 @@ Appendix 2 → Case 14 → MONT-T4.P4 resource-limited candidate. Chapter 4 uses
 
 - **Input domain:** Registered ML-KEM-768 polynomial coefficient domain
 
-- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q
+- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$
 
-- **Ledger formal relation:** converted coefficient=0 mod q iff input coefficient=0 mod q
+- **Ledger formal relation:** $`\displaystyle T(A)_i\equiv0\pmod q\Longleftrightarrow A_i\equiv0\pmod q`$
 
 - **Assertion / harness mapping:** MONT-T4 candidate harness
 
@@ -2931,7 +2931,7 @@ The candidate is mapped to `MONT-T4 candidate harness`, but no authentic complet
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T4 candidate harness`. The admitted domain is: Registered ML-KEM-768 polynomial coefficient domain. The recorded assumptions/grounding are: Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2973,9 +2973,9 @@ Appendix 2 → Case 14 → MONT-T4.P5 resource-limited candidate. Chapter 4 uses
 
 - **Input domain:** Registered ML-KEM-768 polynomial coefficient domain
 
-- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law T(A)[i]≡A[i]R mod q
+- **Assumptions and grounding:** Target is mlk_poly_tomont_c; supporting forward law $`T(A)_i\equiv A_iR\pmod q`$
 
-- **Ledger formal relation:** agreement at k implies converted outputs agree at k independently of other coefficients
+- **Ledger formal relation:** $`\displaystyle A_k=B_k\Longrightarrow T(A)_k=T(B)_k`$
 
 - **Assertion / harness mapping:** MONT-T4 candidate harness
 
@@ -3037,7 +3037,7 @@ Appendix 2 → Case 14 → MONT-T4.P5 resource-limited candidate. Chapter 4 uses
 
 # Case-level bounded conclusion
 
-MONT-T1: reduce(a)=independent_oracle(a) over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image [-32767,32767]. MONT-T2–T4 remain resource-limited and inconclusive.
+MONT-T1: $`\mathrm{reduce}(a)=\mathrm{independent\_oracle}(a)`$ over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image $`[-32767,32767]`$. MONT-T2–T4 remain resource-limited and inconclusive.
 
 **Explicit exclusion.** Does not establish every Montgomery arithmetic property.
 

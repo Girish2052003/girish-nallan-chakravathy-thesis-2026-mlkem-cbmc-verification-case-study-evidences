@@ -38,7 +38,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** frommsg(m)_k=1665*bit_k(m), and tomsg(frommsg(m))=m for every 32-byte message m.
+**Recorded principal-claim wording:** $`\mathrm{frommsg}(m)_k=1665\,\mathrm{bit}_k(m)`$, and $`\mathrm{tomsg}(\mathrm{frommsg}(m))=m`$ for every 32-byte message m.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -206,7 +206,7 @@ The ledger records **SUPPORTED** and maps the proposition to `FROMMSG T1 harness
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `FROMMSG T1 harness`. The admitted domain is: Arbitrary 32-byte message; k=0..255. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `FROMMSG T1 harness`. The admitted domain is: Arbitrary 32-byte message; k=$`\{0,\ldots,255\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -246,11 +246,11 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 1, “Exact 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 32-byte message; k=0..255
+- **Input domain:** Arbitrary 32-byte message; k=$`\{0,\ldots,255\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** r[k]=1665*bit(m,k), so r[k] in {0,1665}
+- **Ledger formal relation:** $`\displaystyle \mathrm{FromMsg}(m)_k=1665\cdot \mathrm{bit}(m,k)`$
 
 - **Assertion / harness mapping:** FROMMSG T1 harness
 
@@ -385,7 +385,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 2, “Single
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** Messages differing only at bit k produce the two complementary codewords at coefficient k
+- **Ledger formal relation:** $`\displaystyle \left\lbrace R_k^{(1)},R_k^{(2)}\right\rbrace=\{0,1665\}`$
 
 - **Assertion / harness mapping:** FROMMSG T2 harness
 
@@ -520,7 +520,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 3, “Toggle
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** For a selected bit toggle, r1[k]+r2[k]=1665
+- **Ledger formal relation:** $`\displaystyle R_k^{(1)}+R_k^{(2)}=1665`$
 
 - **Assertion / harness mapping:** FROMMSG T2 harness
 
@@ -655,7 +655,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 4, “Exact 
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** r1[j]!=r2[j] iff j=k for the one-bit-toggle construction
+- **Ledger formal relation:** $`\displaystyle R_j^{(1)}\ne R_j^{(2)}\Longleftrightarrow j=k\qquad\text{for the one-bit-toggle construction}`$
 
 - **Assertion / harness mapping:** FROMMSG T2 harness
 
@@ -790,7 +790,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 5, “Comple
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** The selected output codeword represents the complemented input bit
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{FromMsg}}(m\oplus 2^k)_k=1665-\mathop{\text{FromMsg}}(m)_k`$
 
 - **Assertion / harness mapping:** FROMMSG T2 harness
 
@@ -925,7 +925,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 6, “Select
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** tomsg(frommsg(m))[byte]=m[byte]
+- **Ledger formal relation:** $`\displaystyle \mathrm{ToMsg}(\mathrm{FromMsg}(m))_{\mathrm{byte}}=m_{\mathrm{byte}}`$
 
 - **Assertion / harness mapping:** FROMMSG T3 composition harness
 
@@ -1060,7 +1060,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 7, “Select
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** bit_k(tomsg(frommsg(m)))=bit_k(m)
+- **Ledger formal relation:** $`\displaystyle \mathrm{bit}(\mathrm{ToMsg}(\mathrm{FromMsg}(m)),k)=\mathrm{bit}(m,k)`$
 
 - **Assertion / harness mapping:** FROMMSG T3 composition harness
 
@@ -1195,7 +1195,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 8, “Codebo
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** frommsg(tomsg(r))=r for r in the {0,1665} codebook image
+- **Ledger formal relation:** $`\displaystyle \mathrm{FromMsg}(\mathrm{ToMsg}(R))=R`$
 
 - **Assertion / harness mapping:** FROMMSG T3 composition harness
 
@@ -1330,7 +1330,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 9, “Messag
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** tomsg maps 0 to 0 and 1665 to 1 at each registered coordinate
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{ToMsg}}(0)_k=0,\qquad \mathop{\text{ToMsg}}(1665)_k=1`$
 
 - **Assertion / harness mapping:** FROMMSG T3 composition harness
 
@@ -1465,7 +1465,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 10, “Suppo
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** support(frommsg(m)) corresponds exactly to set message bits
+- **Ledger formal relation:** $`\displaystyle \mathrm{supp}(\mathrm{FromMsg}(m))=\left\lbrace k:\mathrm{bit}(m,k)=1\right\rbrace`$
 
 - **Assertion / harness mapping:** FROMMSG T4 harness
 
@@ -1600,7 +1600,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 11, “Weigh
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** number of nonzero coefficients = popcount(m)
+- **Ledger formal relation:** $`\displaystyle \left|\mathrm{supp}(\mathrm{FromMsg}(m))\right|=\mathrm{popcount}(m)`$
 
 - **Assertion / harness mapping:** FROMMSG T4 harness
 
@@ -1735,7 +1735,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 12, “Suppo
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** support distance between codewords = Hamming distance between messages
+- **Ledger formal relation:** $`\displaystyle \left|\mathrm{supp}(\mathrm{FromMsg}(m))\triangle \mathrm{supp}(\mathrm{FromMsg}(n))\right|=d_H(m,n)`$
 
 - **Assertion / harness mapping:** FROMMSG T4 harness
 
@@ -1870,7 +1870,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$`\le
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** sum_i |r_m[i]-r_n[i]| = 1665 * HammingDistance(m,n)
+- **Ledger formal relation:** $`\displaystyle \left\|\mathrm{FromMsg}(m)-\mathrm{FromMsg}(n)\right\|_1=1665\,d_H(m,n)`$
 
 - **Assertion / harness mapping:** FROMMSG T4 harness
 
@@ -1932,7 +1932,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$`\le
 
 # Case-level bounded conclusion
 
-frommsg(m)_k=1665*bit_k(m), and tomsg(frommsg(m))=m for every 32-byte message m.
+$`\mathrm{frommsg}(m)_k=1665\,\mathrm{bit}_k(m)`$, and $`\mathrm{tomsg}(\mathrm{frommsg}(m))=m`$ for every 32-byte message m.
 
 **Explicit exclusion.** Not arbitrary polynomial decoding.
 

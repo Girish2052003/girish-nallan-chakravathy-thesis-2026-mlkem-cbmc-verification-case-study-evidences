@@ -43,7 +43,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** bit_k(tomsg(A))=1 iff 833<=A_k<=2496 for canonical A_k; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is [1073417800,1074063871].
+**Recorded principal-claim wording:** $`\mathrm{bit}_k(\mathrm{tomsg}(A))=1\Longleftrightarrow833\le A_k\le2496`$ for canonical $`A_k`$; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is $`[1073417800,1074063871]`$.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -255,7 +255,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 1, “Exact c
 
 - **Assumptions and grounding:** Production scalar helper and polynomial traversal
 
-- **Ledger formal relation:** bit=1 iff 833<=u<=2496; otherwise bit=0
+- **Ledger formal relation:** $`\displaystyle \mathrm{bit}=1\Longleftrightarrow 833\le u\le2496,\qquad\text{otherwise }\mathrm{bit}=0`$
 
 - **Assertion / harness mapping:** MSG-T1 exact FIPS candidate harness
 
@@ -390,7 +390,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 2, “Complet
 
 - **Assumptions and grounding:** Complete 256-coefficient traversal
 
-- **Ledger formal relation:** message[k>>3] bit (k&7) equals decision(coeff[k])
+- **Ledger formal relation:** $`\displaystyle \mathrm{bit}(\mathrm{ToMsg}(A),k)=O(A_k)`$
 
 - **Assertion / harness mapping:** MSG-T1 packing assertions
 
@@ -525,7 +525,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 3, “XOR dif
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** bit_k(tomsg(A) XOR tomsg(B)) = oracle(A[k]) XOR oracle(B[k])
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{bit}}_k\!\left(\mathop{\text{ToMsg}}(A)\oplus\mathop{\text{ToMsg}}(B)\right)=O(A_k)\oplus O(B_k)`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -660,7 +660,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 4, “Equal-c
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** A[k]=B[k] => bit_k(tomsg(A))=bit_k(tomsg(B))
+- **Ledger formal relation:** $`\displaystyle A_k=B_k\Longrightarrow \mathrm{bit}(\mathrm{ToMsg}(A),k)=\mathrm{bit}(\mathrm{ToMsg}(B),k)`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -795,7 +795,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 5, “Single-
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** if only coefficient k may change, all output bits other than k are preserved; change is confined to byte k>>3
+- **Ledger formal relation:** $`\displaystyle \left(A_j=B_j\;\forall j\ne k\right)\Longrightarrow\left(\mathop{\text{bit}}_j(\mathop{\text{ToMsg}}(A))=\mathop{\text{bit}}_j(\mathop{\text{ToMsg}}(B))\;\forall j\ne k\right),\quad\mathrm{ChangedBytes}\subseteq\{\lfloor k/8\rfloor\}`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -930,7 +930,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 6, “Decisio
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** oracle(A[k])=oracle(B[k]) => selected output bits equal
+- **Ledger formal relation:** $`\displaystyle O(A_k)=O(B_k)\Longrightarrow \mathrm{bit}(\mathrm{ToMsg}(A),k)=\mathrm{bit}(\mathrm{ToMsg}(B),k)`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -1065,7 +1065,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 7, “Polynom
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** A and B are unchanged by their production calls
+- **Ledger formal relation:** $`\displaystyle A_{\mathrm{after}}=A_{\mathrm{before}}\quad\land\quad B_{\mathrm{after}}=B_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -1200,7 +1200,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 8, “Determi
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** A=B => tomsg(A)=tomsg(B)
+- **Ledger formal relation:** $`\displaystyle A=B\Longrightarrow \mathrm{ToMsg}(A)=\mathrm{ToMsg}(B)`$
 
 - **Assertion / harness mapping:** MSG-T2 R1/R2A/R2B/R3A/R3B harness
 
@@ -1335,7 +1335,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 9, “Product
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
-- **Ledger formal relation:** F_c(u)=real helper and tomsg bit at production c
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}F_{c_{\mathrm{prod}}}(u)&=O(u),\qquad 0\le u\lt q,\\ c_{\mathrm{prod}}&=1073741824=2^{30}.\end{array}`$
 
 - **Assertion / harness mapping:** MSG05C-G evidence chain
 
@@ -1470,7 +1470,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 10, “Comple
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
-- **Ledger formal relation:** For all canonical u, F_c(u)=O(u) for every c in [1073417800,1074063871]
+- **Ledger formal relation:** $`\displaystyle \forall c\in[1073417800,1074063871]\;\forall u\in[0,q):\quad F_c(u)=O(u)`$
 
 - **Assertion / harness mapping:** MSG05C-G evidence chain
 
@@ -1605,7 +1605,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 11, “Offset
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
-- **Ledger formal relation:** Every uint32 c outside [1073417800,1074063871] has a canonical u with F_c(u)!=O(u)
+- **Ledger formal relation:** $`\displaystyle \forall c\notin[1073417800,1074063871]\;\exists u\in[0,q):\quad F_c(u)\ne O(u)`$
 
 - **Assertion / harness mapping:** MSG05C-G evidence chain
 
@@ -1740,7 +1740,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 12, “Exactn
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
-- **Ledger formal relation:** {c : forall u in [0,3328], F_c(u)=O(u)}=[1073417800,1074063871]
+- **Ledger formal relation:** $`\displaystyle \left\lbrace c:\forall u\in[0,q),\,F_c(u)=O(u)\right\rbrace=[1073417800,1074063871]`$
 
 - **Assertion / harness mapping:** MSG05C-G evidence chain
 
@@ -1885,7 +1885,7 @@ The historical pre-correction ledger wording said $`2^{25}`$; the retained MSG-T
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
-- **Ledger formal relation:** Both endpoints are one-step tight and production offset 1073741824 (=2^30) lies in the interval
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} c_{\mathrm{prod}}&=1073741824=2^{30},\\ 1073417800&\le c_{\mathrm{prod}}\le1074063871,\\ 1073417799&\notin\mathcal C_{\mathrm{adm}}\quad (u=2497),\\ 1074063872&\notin\mathcal C_{\mathrm{adm}}\quad (u=832). \end{array}`$
 
 - **Assertion / harness mapping:** MSG05C-G evidence chain
 
@@ -1947,7 +1947,7 @@ The historical pre-correction ledger wording said $`2^{25}`$; the retained MSG-T
 
 # Case-level bounded conclusion
 
-bit_k(tomsg(A))=1 iff 833<=A_k<=2496 for canonical A_k; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is [1073417800,1074063871].
+$`\mathrm{bit}_k(\mathrm{tomsg}(A))=1\Longleftrightarrow833\le A_k\le2496`$ for canonical $`A_k`$; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is $`[1073417800,1074063871]`$.
 
 **Explicit exclusion.** Not a reverse identity for arbitrary polynomials.
 

@@ -210,7 +210,7 @@ Appendix 1 → Skill-Available Addition → item 1, “Common-addend difference 
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** (x+b)-(y+b)=x-y
+- **Ledger formal relation:** $`\displaystyle (x+b)-(y+b)=x-y`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -345,7 +345,7 @@ Appendix 1 → Skill-Available Addition → item 2, “Equality preservation and
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** x=y iff add(x,b)=add(y,b)
+- **Ledger formal relation:** $`\displaystyle x=y \Longleftrightarrow \mathop{\text{Add}}(x,b)=\mathop{\text{Add}}(y,b)`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -480,7 +480,7 @@ Appendix 1 → Skill-Available Addition → item 3, “Disjoint-support decompos
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** add(a,b)=add(add(a,p),q) where p+q=b and supports are disjoint
+- **Ledger formal relation:** $`\displaystyle \mathrm{Add}(a,b)=\mathrm{Add}(\mathrm{Add}(a,p),q)`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 

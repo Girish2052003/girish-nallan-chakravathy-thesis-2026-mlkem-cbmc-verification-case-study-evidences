@@ -228,7 +228,7 @@ The mapping `PA-01 V2 parameter-binding assertion` is retained as a supporting c
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 parameter-binding assertion`. The admitted domain is: Frozen ML-KEM-768 portable-C build. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 parameter-binding assertion`. The admitted domain is: Frozen ML-KEM-768 portable-C build. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -270,9 +270,9 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Input domain:** Frozen ML-KEM-768 portable-C build
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** MLKEM_N = 256
+- **Ledger formal relation:** $`\displaystyle \mathrm{MLKEM\_N}=256`$
 
 - **Assertion / harness mapping:** PA-01 V2 parameter-binding assertion
 
@@ -363,7 +363,7 @@ The mapping `PA-01 V2 parameter-binding assertion` is retained as a supporting c
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 parameter-binding assertion`. The admitted domain is: Frozen ML-KEM-768 portable-C build. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 parameter-binding assertion`. The admitted domain is: Frozen ML-KEM-768 portable-C build. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -405,9 +405,9 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Input domain:** Frozen ML-KEM-768 portable-C build
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** MLKEM_Q = 3329
+- **Ledger formal relation:** $`\displaystyle \mathrm{MLKEM\_Q}=3329`$
 
 - **Assertion / harness mapping:** PA-01 V2 parameter-binding assertion
 
@@ -498,7 +498,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -540,9 +540,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 1, “Exact ad
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** r[i] = int32(a[i]) + int32(b[i])
+- **Ledger formal relation:** $`\displaystyle r_{i} = \mathop{\text{int32}}(a_{i}) + \mathop{\text{int32}}(b_{i})`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -633,7 +633,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -675,9 +675,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 2, “Canonica
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** 0 <= r[i]
+- **Ledger formal relation:** $`\displaystyle 0 \le r_{i}`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -768,7 +768,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -810,9 +810,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 3, “Canonica
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** r[i] <= 2*q-2 = 6656
+- **Ledger formal relation:** $`\displaystyle r_{i} \le 2\cdot q-2 = 6656`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -903,12 +903,12 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
 
-**Strongest conclusion supported by this record:** The unreduced stored result represents the expected element of Z_q.
+**Strongest conclusion supported by this record:** The unreduced stored result represents the expected element of $`Z_q`$.
 
 **What this record does not establish:** Not a claim that r[i] itself is canonical.
 
@@ -945,9 +945,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 4, “Modulo-(
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** canon_q(r[i]) = canon_q(a[i] + b[i])
+- **Ledger formal relation:** $`\displaystyle \mathrm{canon}_q(R_i)=\mathrm{canon}_q(A_i+B_i)`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -961,7 +961,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 4, “Modulo-(
 
 - **Mutation status:** Selected PA-07 sensitivity evidence; complete PA-07 matrix only partially retained
 
-- **Strongest bounded conclusion:** The unreduced stored result represents the expected element of Z_q.
+- **Strongest bounded conclusion:** The unreduced stored result represents the expected element of $`Z_q`$.
 
 - **Explicit exclusion:** Not a claim that r[i] itself is canonical.
 
@@ -1038,7 +1038,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1080,9 +1080,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 5, “Left-inp
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** a_after = a_before
+- **Ledger formal relation:** $`\displaystyle a^{\mathrm{after}} = a^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -1173,7 +1173,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1215,9 +1215,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 6, “Right-in
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** b_after = b_before
+- **Ledger formal relation:** $`\displaystyle b^{\mathrm{after}} = b^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -1308,7 +1308,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1350,9 +1350,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 7, “Zero-obj
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** zero_after = zero_before
+- **Ledger formal relation:** $`\displaystyle zero^{\mathrm{after}} = zero^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -1443,7 +1443,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1485,9 +1485,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 8, “Commutat
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** add(a,b) = add(b,a)
+- **Ledger formal relation:** $`\displaystyle \mathrm{Add}(A,B)=\mathrm{Add}(B,A)`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -1578,7 +1578,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1620,9 +1620,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 9, “Additive
 
 - **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
 
-- **Assumptions and grounding:** Canonical ML-KEM coefficients 0 <= a[i],b[i] < q; valid separate objects; unchanged production body; complete registered unwinding.
+- **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
-- **Ledger formal relation:** add(a,0) = a
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{Add}}(a,0) = a`$
 
 - **Assertion / harness mapping:** PA-01 V2 semantic assertion family
 
@@ -1757,7 +1757,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 10, “Exact s
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** r[i] = int32(a[i]) + int32(b[i])
+- **Ledger formal relation:** $`\displaystyle R_i=\mathrm{int32}(A_i)+\mathrm{int32}(B_i)`$
 
 - **Assertion / harness mapping:** PA-02A exact-signed harness assertion family
 
@@ -1892,7 +1892,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 11, “Signed-
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** canon_q(r[i]) = canon_q(a[i] + b[i])
+- **Ledger formal relation:** $`\displaystyle \mathrm{canon}_q(R_i)=\mathrm{canon}_q(A_i+B_i)`$
 
 - **Assertion / harness mapping:** PA-02B modulo-q harness; final raw verdict not retained
 
@@ -1988,7 +1988,7 @@ The relation above was associated with `PA-02B canonical-residue assertion famil
 
 ### Permitted conclusion and explicit boundary
 
-**Strongest conclusion supported by this record:** Signed/non-canonical representatives refine to the expected ring-Z_q addition.
+**Strongest conclusion supported by this record:** Signed/non-canonical representatives refine to the expected ring $`Z_q`$ addition.
 
 **What this record does not establish:** Does not assert r[i] itself is canonical.
 
@@ -2027,7 +2027,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 12, “Canonic
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** canon_q(r[i]) = canon_q(canon_q(a[i]) + canon_q(b[i]))
+- **Ledger formal relation:** $`\displaystyle \mathrm{canon}_q(R_i)=\mathrm{canon}_q\!\left(\mathrm{canon}_q(A_i)+\mathrm{canon}_q(B_i)\right)`$
 
 - **Assertion / harness mapping:** PA-02B canonical-residue assertion family
 
@@ -2041,7 +2041,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 12, “Canonic
 
 - **Mutation status:** Not fully retained
 
-- **Strongest bounded conclusion:** Signed/non-canonical representatives refine to the expected ring-Z_q addition.
+- **Strongest bounded conclusion:** Signed/non-canonical representatives refine to the expected ring $`Z_q`$ addition.
 
 - **Explicit exclusion:** Does not assert r[i] itself is canonical.
 
@@ -2162,7 +2162,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 13, “Registe
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** a_after=a_before; b_after=b_before; registered guards unchanged
+- **Ledger formal relation:** $`\displaystyle M'|_{\mathrm{protected}}=M|_{\mathrm{protected}}`$
 
 - **Assertion / harness mapping:** PA-02C frame harness
 
@@ -2297,7 +2297,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 14, “Commuta
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** add(a,b)[i] = add(b,a)[i]
+- **Ledger formal relation:** $`\displaystyle \mathrm{Add}(A,B)_i=\mathrm{Add}(B,A)_i`$
 
 - **Assertion / harness mapping:** PA-02D commutativity harness
 
@@ -2432,7 +2432,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 15, “Additiv
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** add(a,0)=a
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{Add}}(a,0)=a`$
 
 - **Assertion / harness mapping:** PA-02E identity harness
 
@@ -2567,7 +2567,7 @@ Appendix 2 → Case 1 meaningful-negative finding 1 (PA-03). Chapter 4 uses the 
 
 - **Assumptions and grounding:** Deliberately removes required representability condition
 
-- **Ledger formal relation:** r[i] = mathematical a[i]+b[i] for all pairs
+- **Ledger formal relation:** $`\displaystyle \forall a_i,b_i\in\mathrm{int16}:\quad R_i=\mathrm{int32}(a_i)+\mathrm{int32}(b_i)`$
 
 - **Assertion / harness mapping:** PA-03 negative-control harness
 
@@ -2702,7 +2702,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** r[i]=2*before_r[i]
+- **Ledger formal relation:** $`\displaystyle R_i=2R_i^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -2837,7 +2837,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** canon_q(r[i])=canon_q(2*before_r[i])
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{canon}}_q(R_i)=\mathop{\text{canon}}_q\!\left(2R_i^{\mathrm{before}}\right)`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -2972,7 +2972,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** canon_q(r[i])=canon_q(2*canon_q(before_r[i]))
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{canon}}_q(R_i)=\mathop{\text{canon}}_q\!\left(2\mathop{\text{canon}}_q(R_i^{\mathrm{before}})\right)`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -3107,7 +3107,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** alias_result = disjoint_add(before_r,before_r)
+- **Ledger formal relation:** $`\displaystyle R^{\mathrm{alias}}=\mathop{\text{Add}}\!\left(R^{\mathrm{before}},R^{\mathrm{before}}\right)`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -3242,7 +3242,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** reference input remains unchanged
+- **Ledger formal relation:** $`\displaystyle \mathrm{reference}_{\mathrm{after}}=\mathrm{reference}_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -3377,7 +3377,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Diagnostic only; no change to production contract
 
-- **Ledger formal relation:** r lies in the representable doubled-input interval
+- **Ledger formal relation:** $`\displaystyle R_i\in I_{\mathrm{double}}\subseteq\mathrm{int16\_t}\qquad\text{for the registered representable doubling domain}`$
 
 - **Assertion / harness mapping:** PA-04A alias-safe harness
 
@@ -3512,7 +3512,7 @@ Appendix 2 → Case 1 meaningful-negative finding 2 (PA-04B). Chapter 4 uses the
 
 - **Assumptions and grounding:** Deliberately unrestricted diagnostic
 
-- **Ledger formal relation:** r[i]=2*before_r[i] for all int16_t values
+- **Ledger formal relation:** $`\displaystyle \forall R_i^{\mathrm{before}}\in\mathrm{int16}:\quad R_i=2R_i^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-04B negative-control harness
 
@@ -3647,7 +3647,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 16, “ML-KEM-
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** constants match frozen build
+- **Ledger formal relation:** $`\displaystyle \mathrm{MLKEM\_N}=256,\qquad q=3329,\qquad K=3`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -3782,7 +3782,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 17, “Caller-
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** &r != &b
+- **Ledger formal relation:** $`\displaystyle \&r\ne\&b`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -3917,7 +3917,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 18, “Nested 
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** &r.vec[j] != &b.vec[j]
+- **Ledger formal relation:** $`\displaystyle \forall j:\quad \&r.\mathrm{vec}_j\ne\&b.\mathrm{vec}_j`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4052,7 +4052,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 19, “Caller-
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** r_after[j][i]=r_before[j][i]+b_before[j][i]
+- **Ledger formal relation:** $`\displaystyle R'_{j,i}=R_{j,i}+B_{j,i}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4187,7 +4187,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 20, “Caller-
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** b_after=b_before
+- **Ledger formal relation:** $`\displaystyle b^{\mathrm{after}}=b^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4322,7 +4322,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** |v[i]| < 8q
+- **Ledger formal relation:** $`\displaystyle |v_i|\lt 8q`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4457,7 +4457,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** |epp[i]| < eta2+1
+- **Ledger formal relation:** $`\displaystyle |epp_i|\lt \eta_2+1`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4592,7 +4592,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 21, “Produce
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** INT16_MIN <= v[i]+epp[i] <= INT16_MAX
+- **Ledger formal relation:** $`\displaystyle \mathrm{INT16\_MIN} \le v_{i}+epp_{i} \le \mathrm{INT16\_MAX}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4727,7 +4727,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 22, “Produce
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_after[i]=v_before[i]+epp_before[i]
+- **Ledger formal relation:** $`\displaystyle v_i^{\mathrm{after}}=v_i^{\mathrm{before}}+epp_i^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4862,7 +4862,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 23, “Produce
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** epp_after=epp_before
+- **Ledger formal relation:** $`\displaystyle epp^{\mathrm{after}}=epp^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4999,7 +4999,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 24, “Derived
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_after lies in the derived producer-bound interval
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{v\_after lies in the derived producer-bound interval} \end{array}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5134,7 +5134,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 25, “Produce
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** canon_q(v_after[i])=canon_q(v_before[i]+epp[i])
+- **Ledger formal relation:** $`\displaystyle \mathrm{canon}_q(R_i)=\mathrm{canon}_q(V_i+E_i)`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5269,7 +5269,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** |v_initial[i]| < 8q
+- **Ledger formal relation:** $`\displaystyle |v_i^{\mathrm{initial}}|\lt 8q`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5404,7 +5404,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** |epp[i]| < eta2+1
+- **Ledger formal relation:** $`\displaystyle |epp_i|\lt \eta_2+1`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5539,7 +5539,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** k[i] in {0,1665}
+- **Ledger formal relation:** $`\displaystyle k_i\in\{0,1665\}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5674,7 +5674,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 26, “First-s
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_initial+epp is int16_t-representable
+- **Ledger formal relation:** $`\displaystyle v_i^{\mathrm{initial}}+epp_i\in[\mathrm{INT16\_MIN},\mathrm{INT16\_MAX}]`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5809,7 +5809,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 27, “Cumulat
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_initial+epp+k is int16_t-representable
+- **Ledger formal relation:** $`\displaystyle v_i^{\mathrm{initial}}+epp_i+k_i\in[\mathrm{INT16\_MIN},\mathrm{INT16\_MAX}]`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -5944,7 +5944,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 28, “Sequent
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_mid=v_initial+epp
+- **Ledger formal relation:** $`\displaystyle V_i^{\mathrm{mid}}=V_i^{\mathrm{init}}+E_i`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6079,7 +6079,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 29, “Sequent
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_final=v_initial+epp+k
+- **Ledger formal relation:** $`\displaystyle V_i^{\mathrm{final}}=V_i^{\mathrm{init}}+E_i+K_i`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6214,7 +6214,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 30, “First s
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** epp_after=epp_before
+- **Ledger formal relation:** $`\displaystyle epp^{\mathrm{after}}=epp^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6349,7 +6349,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 31, “Second 
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** k_after=k_before
+- **Ledger formal relation:** $`\displaystyle k^{\mathrm{after}}=k^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6486,7 +6486,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 32, “Cumulat
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** v_final lies in derived cumulative interval
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{v\_final lies in derived cumulative interval} \end{array}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6621,7 +6621,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 33, “Cumulat
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** canon_q(v_final)=canon_q(v_initial+epp+k)
+- **Ledger formal relation:** $`\displaystyle \mathrm{canon}_q(V_i^{\mathrm{final}})=\mathrm{canon}_q(V_i^{\mathrm{init}}+E_i+K_i)`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6756,7 +6756,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 34, “Cross-p
 
 - **Assumptions and grounding:** Parameter-specific constants and the corresponding accepted caller domains
 
-- **Ledger formal relation:** The PA-05 property family is re-instantiated for each registered parameter set
+- **Ledger formal relation:** $`\displaystyle \mathrm{PA05}_{512}\land\mathrm{PA05}_{768}\land\mathrm{PA05}_{1024}\qquad\text{(replication family; partial preservation)}`$
 
 - **Assertion / harness mapping:** PA-06A/B/C cross-parameter harnesses
 
@@ -6891,7 +6891,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 35, “Cross-p
 
 - **Assumptions and grounding:** Parameter-specific constants and the corresponding accepted caller domains
 
-- **Ledger formal relation:** The PA-05 property family is re-instantiated for each registered parameter set
+- **Ledger formal relation:** $`\displaystyle \mathrm{PA05B}_{512}\land\mathrm{PA05B}_{768}\land\mathrm{PA05B}_{1024}\qquad\text{(replication family; partial preservation)}`$
 
 - **Assertion / harness mapping:** PA-06A/B/C cross-parameter harnesses
 
@@ -7026,7 +7026,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 36, “Cross-p
 
 - **Assumptions and grounding:** Parameter-specific constants and the corresponding accepted caller domains
 
-- **Ledger formal relation:** The PA-05 property family is re-instantiated for each registered parameter set
+- **Ledger formal relation:** $`\displaystyle \mathrm{PA05C}_{512}\land\mathrm{PA05C}_{768}\land\mathrm{PA05C}_{1024}\qquad\text{(replication family; partial preservation)}`$
 
 - **Assertion / harness mapping:** PA-06A/B/C cross-parameter harnesses
 
@@ -7088,7 +7088,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 36, “Cross-p
 
 # Case-level bounded conclusion
 
-PA-01 establishes exact addition, [0,2q-2] range, modulo-q refinement, frame, commutativity and identity for canonical inputs. PA-02 extends exact/modulo refinement to signed and non-canonical operand pairs whose sums are int16_t-representable.
+PA-01 establishes exact addition, $`[0,2q-2]`$ range, modulo-q refinement, frame, commutativity and identity for canonical inputs. PA-02 extends exact/modulo refinement to signed and non-canonical operand pairs whose sums are int16_t-representable.
 
 **Explicit exclusion.** Not unrestricted arithmetic beyond int16_t representability; not whole-ML-KEM correctness.
 

@@ -76,7 +76,7 @@ The required installation base is the post-reconciliation `main` commit `4785f93
 - 257/257 substantive records resolved/hash-matched;
 - 573/573 representative artefacts resolved/hash-matched;
 - repository strict validator PASS;
-- Case-4 `PR-C04-013` corrected to `1073741824 (=2^30)`;
+- Case-4 `PR-C04-013` corrected to $`1073741824\;(=2^{30})`$;
 - clean working tree and local `main == origin/main`;
 - 03A absent before this new installation.
 

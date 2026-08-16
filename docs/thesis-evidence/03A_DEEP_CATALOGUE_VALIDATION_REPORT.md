@@ -71,7 +71,7 @@ It additionally requires 18/18 current investigation locators and 573/573 repres
 
 ## Case-4 correction
 
-`PR-C04-013` remains mathematically rendered with production offset `1073741824 = 2^30`. The old `2^25` transcription is retained only as repair provenance. The active validator requires both current ledger twins to contain the corrected `2^30` relation.
+`PR-C04-013` remains mathematically rendered with production offset $`1073741824=2^{30}`$. The old $`2^{25}`$ transcription is retained only as repair provenance. The active validator requires both current ledger twins to contain the corrected $`2^{30}`$ relation.
 
 ## Thesis projection
 

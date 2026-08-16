@@ -224,7 +224,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T1 final compre
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -264,11 +264,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 1, “Per-coord
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** compressed nibble equals independent D4 compressor oracle for each canonical coefficient
+- **Ledger formal relation:** $`\displaystyle \mathrm{Comp}_4(A)_k=C_4(A_k)`$
 
 - **Assertion / harness mapping:** D4 T1 final compressor harness
 
@@ -359,7 +359,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T1 final compre
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -399,11 +399,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 2, “Exact pac
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** byte[i] = low_nibble(c[2i]) | (high_nibble(c[2i+1]) << 4)
+- **Ledger formal relation:** $`\displaystyle B_i=C_4(A_{2i})\,|\,\left(C_4(A_{2i+1})\ll4\right)`$
 
 - **Assertion / harness mapping:** D4 T1 final compressor harness
 
@@ -494,7 +494,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T1 final compre
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -534,11 +534,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 3, “Complete 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** all 128 output bytes are determined by the 256 canonical inputs
+- **Ledger formal relation:** $`\displaystyle \mathrm{Comp}_4(A)=F(A)\qquad\text{for a function }F\text{ independent of the destination pre-state}`$
 
 - **Assertion / harness mapping:** D4 T1 final compressor harness
 
@@ -629,7 +629,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T1 final compre
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T1 final compressor harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -669,11 +669,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 4, “Compresso
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** each output nibble depends only on its corresponding coefficient
+- **Ledger formal relation:** $`\displaystyle A_k=B_k\Longrightarrow \mathrm{Comp}_4(A)_k=\mathrm{Comp}_4(B)_k`$
 
 - **Assertion / harness mapping:** D4 T1 final compressor harness
 
@@ -808,7 +808,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 5, “Per-coord
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** each output coefficient equals independent D4 decompressor oracle of its 4-bit symbol
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decomp}_4(B)_k=D_4(t_k)`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -943,7 +943,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 6, “Low-nibbl
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** even output coefficient is decoded from byte low nibble
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decomp}_4(B)_{2i}=D_4(B_i\bmod 16)`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -1078,7 +1078,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 7, “High-nibb
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** odd output coefficient is decoded from byte high nibble
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decomp}_4(B)_{2i+1}=D_4(B_i\gg4)`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -1215,7 +1215,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 8, “Decompres
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** every decompressed coefficient lies in the D4 codebook
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{every decompressed coefficient lies in the D4 codebook} \end{array}`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -1350,7 +1350,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 9, “Complete 
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** output is fully determined by input bytes, independent of prior destination contents
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decomp}_4(B)=G(B)\qquad\text{independent of the destination pre-state}`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -1485,7 +1485,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 10, “Decompre
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** each output pair depends only on the corresponding input byte
+- **Ledger formal relation:** $`\displaystyle B_i=B_i\!{}^{\prime}\Longrightarrow (\mathrm{Decomp}_4(B)_{2i},\mathrm{Decomp}_4(B)_{2i+1})=(\mathrm{Decomp}_4(B^{\prime})_{2i},\mathrm{Decomp}_4(B^{\prime})_{2i+1})`$
 
 - **Assertion / harness mapping:** D4 T2 final decompressor harness
 
@@ -1620,7 +1620,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 11, “Exact co
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** compress(decompress(B))=B for every 128-byte B
+- **Ledger formal relation:** $`\displaystyle \mathrm{Comp}_4(\mathrm{Decomp}_4(B))=B`$
 
 - **Assertion / harness mapping:** D4 T3 composition harness
 
@@ -1755,7 +1755,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 12, “Nibble p
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** both low and high 4-bit symbols are preserved by decode/re-encode
+- **Ledger formal relation:** $`\displaystyle \mathrm{nibble}_{\ell}(\mathrm{Comp}_4(\mathrm{Decomp}_4(B)))=\mathrm{nibble}_{\ell}(B),\qquad 0\le\ell\lt 256`$
 
 - **Assertion / harness mapping:** D4 T3 composition harness
 
@@ -1890,7 +1890,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 13, “Compress
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** C(D(C(D(B))))=C(D(B))
+- **Ledger formal relation:** $`\displaystyle \mathrm{Comp}_4(\mathrm{Decomp}_4(\mathrm{Comp}_4(\mathrm{Decomp}_4(B))))=\mathrm{Comp}_4(\mathrm{Decomp}_4(B))`$
 
 - **Assertion / harness mapping:** D4 T3 composition harness
 
@@ -1981,7 +1981,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T4 final projec
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2021,11 +2021,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 14, “Projecti
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** Q(A)=decompress(compress(A)) lies in the exact 16-value codebook coordinatewise
+- **Ledger formal relation:** $`\displaystyle Q(A)=\mathrm{Decomp}_4(\mathrm{Comp}_4(A))\in\mathcal C_4^{256}`$
 
 - **Assertion / harness mapping:** D4 T4 final projection harness
 
@@ -2116,7 +2116,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T4 final projec
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2156,11 +2156,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 15, “Sharp ap
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** dist_q(A[i],Q(A)[i]) <= 104 for every canonical coefficient; 104 is attainable
+- **Ledger formal relation:** $`\displaystyle \forall A,i:\quad\mathop{\text{dist}}_q(A_i,Q(A)_i)\le104,\qquad\exists A,i:\quad\mathop{\text{dist}}_q(A_i,Q(A)_i)=104`$
 
 - **Assertion / harness mapping:** D4 T4 final projection harness
 
@@ -2251,7 +2251,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T4 final projec
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2291,11 +2291,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 16, “Projecti
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** Q(A)=A iff every coefficient is in the D4 codebook
+- **Ledger formal relation:** $`\displaystyle Q(A)=A\Longleftrightarrow\forall i:\;A_i\in\mathcal C_4`$
 
 - **Assertion / harness mapping:** D4 T4 final projection harness
 
@@ -2386,7 +2386,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T4 final projec
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2426,11 +2426,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 17, “Projecti
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** Q(Q(A))=Q(A)
+- **Ledger formal relation:** $`\displaystyle \mathrm{Proj}_4(\mathrm{Proj}_4(A))=\mathrm{Proj}_4(A)`$
 
 - **Assertion / harness mapping:** D4 T4 final projection harness
 
@@ -2521,7 +2521,7 @@ The ledger records **SUPPORTED** and maps the proposition to `D4 T4 final projec
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `D4 T4 final projection harness`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2561,11 +2561,11 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 18, “Projecti
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** agreement at coefficient k implies agreement of projected outputs at k
+- **Ledger formal relation:** $`\displaystyle A_k=B_k\Longrightarrow \mathrm{Proj}_4(A)_k=\mathrm{Proj}_4(B)_k`$
 
 - **Assertion / harness mapping:** D4 T4 final projection harness
 

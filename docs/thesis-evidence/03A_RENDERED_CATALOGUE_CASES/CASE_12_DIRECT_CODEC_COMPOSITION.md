@@ -38,7 +38,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** frombytes(tobytes(p))=p for canonical p; tobytes(frombytes(b))=b for b in the canonical encoder image.
+**Recorded principal-claim wording:** $`\mathrm{frombytes}(\mathrm{tobytes}(p))=p`$ for canonical p; $`\mathrm{tobytes}(\mathrm{frombytes}(b))=b`$ for b in the canonical encoder image.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -191,7 +191,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBCODEC direct rea
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBCODEC direct real-wrapper composition assertion`. The admitted domain is: Canonical polynomial coefficients 0..3328. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBCODEC direct real-wrapper composition assertion`. The admitted domain is: Canonical polynomial coefficients $`\{0,\ldots,3328\}`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -231,11 +231,11 @@ Appendix 1 → Case 12: Direct Codec Composition → item 1, “Canonical polyno
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical polynomial coefficients 0..3328
+- **Input domain:** Canonical polynomial coefficients $`\{0,\ldots,3328\}`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** frombytes(tobytes(p))=p
+- **Ledger formal relation:** $`\displaystyle \mathrm{FromBytes}(\mathrm{ToBytes}(P))=P`$
 
 - **Assertion / harness mapping:** PBCODEC direct real-wrapper composition assertion
 
@@ -370,7 +370,7 @@ Appendix 1 → Case 12: Direct Codec Composition → item 2, “Encoded-image by
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** tobytes(frombytes(b))=b
+- **Ledger formal relation:** $`\displaystyle \mathrm{ToBytes}(\mathrm{FromBytes}(B))=B`$
 
 - **Assertion / harness mapping:** PBCODEC direct real-wrapper composition assertion
 
@@ -432,7 +432,7 @@ Appendix 1 → Case 12: Direct Codec Composition → item 2, “Encoded-image by
 
 # Case-level bounded conclusion
 
-frombytes(tobytes(p))=p for canonical p; tobytes(frombytes(b))=b for b in the canonical encoder image.
+$`\mathrm{frombytes}(\mathrm{tobytes}(p))=p`$ for canonical p; $`\mathrm{tobytes}(\mathrm{frombytes}(b))=b`$ for b in the canonical encoder image.
 
 **Explicit exclusion.** Not a universal relation for non-canonical polynomials.
 

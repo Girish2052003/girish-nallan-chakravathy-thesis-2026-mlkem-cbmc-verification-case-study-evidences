@@ -209,3 +209,15 @@ The two low-nibble relations that used `\mathbin{\&}` were rewritten using the m
 The transformation is presentation-only. Property IDs, result classifications, verification domains, evidence mappings, path/hash authority, bounded conclusions and the 257-record / 220-supported scientific inventories are unchanged.
 
 Historical source under `03A_AUDIT_HISTORY/` remains immutable and was not modified.
+
+<!-- RC4_FINAL_ACTIVE_03A_PROFESSIONAL_MATH_CLOSURE_2026_08_17 -->
+
+## Final active-03A professional-mathematics closure — 17 August 2026
+
+The final presentation-closure pass covered all 26 active 03A Markdown files outside the immutable `03A_AUDIT_HISTORY/` source. The resulting active presentation surface contains 919 MathJax expressions.
+
+All 257 Ledger formal relations are rendered from the corresponding record-local Formal statement. Exact semantic-source comparison passed for 257/257 records. Strict parsing passed for 919/919 expressions with MathJax 3.2.2 and independently for 919/919 expressions with MathJax 4.1.3. The final high-confidence residual audit found zero remaining mathematical expressions in plain prose under the defined closure rules.
+
+The scientific inventory remained unchanged at 257 substantive property/control records, including the preserved 220-record supported subset. The repair was presentation-only: scientific statuses, evidence locators, archive identities, hashes, assumptions, bounded conclusions and formal semantics were not intentionally altered. The immutable historical audit source and validator sources remained untouched.
+
+No new evidence package, release or tag was created as part of this presentation closure.

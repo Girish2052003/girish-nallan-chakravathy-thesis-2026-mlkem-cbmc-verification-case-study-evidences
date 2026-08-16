@@ -208,7 +208,7 @@ Appendix 1 → Skill-Available Barrett Reduction → item 1, “Sign conjugacy�
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** R(-a)=-R(a)
+- **Ledger formal relation:** $`\displaystyle R(-a)=-R(a)`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -343,7 +343,7 @@ Appendix 1 → Skill-Available Barrett Reduction → item 2, “Quotient reversa
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** registered quotient witness changes sign under a -> -a
+- **Ledger formal relation:** $`\displaystyle t(-a)=-t(a)`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -478,7 +478,7 @@ Appendix 1 → Skill-Available Barrett Reduction → item 3, “Centred-addition
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** R(R(a)+R(b)) equals centered oracle of a+b and uses one correction in {-q,0,q}
+- **Ledger formal relation:** $`\displaystyle \mathrm{R}(\mathrm{R}(a)+\mathrm{R}(b))=\mathrm{Centered}_q(a+b),\qquad \mathrm{R}(a)+\mathrm{R}(b)-\mathrm{R}(\mathrm{R}(a)+\mathrm{R}(b))\in\{-q,0,q\}`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 

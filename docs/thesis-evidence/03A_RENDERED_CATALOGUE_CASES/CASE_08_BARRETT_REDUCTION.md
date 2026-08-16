@@ -262,7 +262,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 1, “Exac
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** -1664 <= R(a) <= 1664
+- **Ledger formal relation:** $`\displaystyle -1664 \le R(a) \le 1664`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -397,7 +397,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 2, “Cong
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(a) ≡ a (mod q)
+- **Ledger formal relation:** $`\displaystyle R(a) \equiv a\pmod q`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -532,7 +532,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 3, “Exac
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(a)=C(a)
+- **Ledger formal relation:** $`\displaystyle R(a)=C(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -670,7 +670,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 4, “Uniq
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(a) is the unique closest representative in the registered centered interval
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{R(a) is the unique closest representative in the registered centered}\\ &\text{interval} \end{array}`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -805,7 +805,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 5, “Cent
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(r)=r for r in [-1664,1664]
+- **Ledger formal relation:** $`\displaystyle \forall r\in[-1664,1664]:\quad R(r)=r`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -940,7 +940,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 6, “Idem
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(R(a))=R(a)
+- **Ledger formal relation:** $`\displaystyle R(R(a))=R(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1075,7 +1075,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 7, “Resi
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** a≡b mod q => R(a)=R(b) within int16 domain
+- **Ledger formal relation:** $`\displaystyle a\equiv b\pmod q\Longrightarrow R(a)=R(b)\qquad\text{within the registered int16 domain}`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1210,7 +1210,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 8, “Exac
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** t(a)=(a-C(a))/q
+- **Ledger formal relation:** $`\displaystyle t(a)=\frac{a-C(a)}{q}\in\mathbb{Z}`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1345,7 +1345,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 9, “Exac
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** R(a)=a-q*t(a)
+- **Ledger formal relation:** $`\displaystyle R(a)=a-q\,t(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1480,7 +1480,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 10, “Quo
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** -10 <= t(a) <= 10
+- **Ledger formal relation:** $`\displaystyle -10 \le t(a) \le 10`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1615,7 +1615,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 11, “Quo
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** each a belongs to exactly one registered quotient cell
+- **Ledger formal relation:** $`\displaystyle I_k=[kq-1664,\,kq+1664]\cap \mathrm{int16}`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1750,7 +1750,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 12, “Cli
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** endpoint quotient cells are clipped exactly by int16 limits
+- **Ledger formal relation:** $`\displaystyle I_k=[kq-1664,\,kq+1664]\cap\mathrm{int16\_t}\qquad\text{with endpoint cells clipped by the int16 bounds}`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -1885,7 +1885,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 13, “Reg
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** candidate multiplier m lies in registered safe arithmetic domain 0..64513
+- **Ledger formal relation:** $`\displaystyle 0\le m\le64513`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2020,7 +2020,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 14, “Cor
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** m=20159 produces the centered oracle for all int16 inputs
+- **Ledger formal relation:** $`\displaystyle \forall a\in\mathrm{int16\_t}:\quad R_{20159}(a)=C(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2155,7 +2155,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 15, “Fai
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** every safe m<20159 fails at registered witness -31626
+- **Ledger formal relation:** $`\displaystyle \forall m\in\mathcal M_{\mathrm{safe}}:\;m\lt 20159\Longrightarrow R_m(-31626)\ne C(-31626)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2290,7 +2290,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 16, “Fai
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** every safe m>20159 fails at registered witness -31625
+- **Ledger formal relation:** $`\displaystyle \forall m\in\mathcal M_{\mathrm{safe}}:\;m\gt 20159\Longrightarrow R_m(-31625)\ne C(-31625)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2425,7 +2425,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 17, “Mul
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** the two registered witnesses uniquely identify multiplier 20159
+- **Ledger formal relation:** $`\displaystyle R_B(a_1)=C(a_1)\land R_B(a_2)=C(a_2)\Longrightarrow B=20159\qquad\text{for the two registered uniqueness witnesses }a_1,a_2`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2560,7 +2560,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 18, “Reg
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** candidate uint32 offset B in 0..67108863 is arithmetically admissible
+- **Ledger formal relation:** $`\displaystyle 0\le B\le67108863`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2695,7 +2695,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 19, “Com
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** every B in [33548599,33560264] implements the centered oracle for all int16 inputs
+- **Ledger formal relation:** $`\displaystyle \forall B\in[33548599,33560264]\;\forall a\in\mathrm{int16\_t}:\quad R_B(a)=C(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2830,7 +2830,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 20, “Off
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** every B below 33548599 has a registered-domain counterexample
+- **Ledger formal relation:** $`\displaystyle \forall B\lt 33548599\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -2965,7 +2965,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 21, “Off
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** every B above 33560264 has a registered-domain counterexample
+- **Ledger formal relation:** $`\displaystyle \forall B\gt 33560264\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -3100,7 +3100,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 22, “Exa
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** registered witnesses characterize the exact accepted interval
+- **Ledger formal relation:** $`\displaystyle \left\lbrace B:\forall a\in\mathrm{int16},\,R_B(a)=C(a)\right\rbrace=[33548599,33560264]`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 
@@ -3235,7 +3235,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 23, “Pro
 
 - **Assumptions and grounding:** No substantive input restriction beyond machine type; independent centered oracle and arithmetic-right-shift model
 
-- **Ledger formal relation:** production offset 33554432 lies in and is bound to the accepted interval
+- **Ledger formal relation:** $`\displaystyle B_{\mathrm{prod}}=33554432=2^{25}\in[33548599,33560264]`$
 
 - **Assertion / harness mapping:** BR_AF4 T1–T5 final harness assertion
 

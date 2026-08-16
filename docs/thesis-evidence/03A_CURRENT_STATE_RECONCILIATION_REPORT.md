@@ -18,7 +18,7 @@ The accepted current-state facts are:
 - working tree at the package base: clean;
 - 03A catalogue: absent from the base before installation;
 - repository strict evidence-spine validation: PASS;
-- Case-4 `PR-C04-013` ledger correction: already applied as `1073741824 (=2^30)`;
+- Case-4 `PR-C04-013` ledger correction: already applied as $`1073741824\;(=2^{30})`$;
 - tags/releases: not modified by the 03A removal or publication-state reconciliation.
 
 ## Historical RC2 path fields versus current path state
@@ -78,9 +78,9 @@ The installer adds only the missing 03A navigation entry to:
 
 ## Case-4 correction status
 
-The old closure package included `PR-C04-013_LEDGER_CORRECTION.patch` as an install-time prerequisite because the public ledger still contained a `2^25` transcription. That is no longer true at the required base.
+The old closure package included `PR-C04-013_LEDGER_CORRECTION.patch` as an install-time prerequisite because the public ledger still contained a $`2^{25}`$ transcription. That is no longer true at the required base.
 
-The patch itself is retained only under `03A_AUDIT_HISTORY/` for provenance. The active installation instructions do **not** apply it. Instead, the final validator fails closed unless both current ledger twins already contain the corrected `1073741824 (=2^30)` relation.
+The patch itself is retained only under `03A_AUDIT_HISTORY/` for provenance. The active installation instructions do **not** apply it. Instead, the final validator fails closed unless both current ledger twins already contain the corrected $`1073741824\;(=2^{30})`$ relation.
 
 ## Verdict
 

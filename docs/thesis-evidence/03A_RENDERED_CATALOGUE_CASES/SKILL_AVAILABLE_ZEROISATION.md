@@ -204,7 +204,7 @@ Appendix 1 → Skill-Available Zeroisation → item 1, “Whole-object secret-hi
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** two objects differing in the wiped region become identical all-zero poststates with outer frame
+- **Ledger formal relation:** $`\displaystyle Z_I(M_1)|_I=Z_I(M_2)|_I=0`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -339,7 +339,7 @@ Appendix 1 → Skill-Available Zeroisation → item 2, “Recovery after reconta
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** wipe outer region; recontaminate nonempty subrange; rewipe subrange => outer region all zero and frame preserved
+- **Ledger formal relation:** $`\displaystyle Z_J\!\left(\mathop{\text{Recontaminate}}_J(Z_I(M))\right)\big|_I=0\quad\land\quad\text{registered outer frame preserved}`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 

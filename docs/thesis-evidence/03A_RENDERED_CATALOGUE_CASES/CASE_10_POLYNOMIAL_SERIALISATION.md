@@ -213,7 +213,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -253,11 +253,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 1, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[3i]=c0 mod 256
+- **Ledger formal relation:** $`\displaystyle b_0=c_0\bmod 2^8`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -348,7 +348,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -388,11 +388,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 2, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[3i+1]&15=floor(c0/256)
+- **Ledger formal relation:** $`\displaystyle b_1\bmod 16=\left\lfloor\frac{c_0}{2^8}\right\rfloor`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -483,7 +483,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -523,11 +523,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 3, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[3i+1]>>4=c1 mod 16
+- **Ledger formal relation:** $`\displaystyle b_1\gg4=c_1\bmod16`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -618,7 +618,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -658,11 +658,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 4, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[3i+2]=floor(c1/16)
+- **Ledger formal relation:** $`\displaystyle b_2=\left\lfloor\frac{c_1}{16}\right\rfloor`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -753,7 +753,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -793,11 +793,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 5, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out_block_as_u24=c0+4096*c1
+- **Ledger formal relation:** $`\displaystyle W=c_0+2^{12}c_1`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -888,7 +888,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -928,11 +928,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 6, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** all output bytes equal the independent arithmetic encoder
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{ToBytes}}(P)=E_{\mathrm{arith}}(P)`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1023,7 +1023,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1063,11 +1063,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 7, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** registered even-coefficient no-carry relation
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}c_0+1&\lt q,\quad c_0\bmod256\ne255\\&\Longrightarrow\quad b_0\prime=b_0+1,\quad b_1\prime=b_1,\quad b_2\prime=b_2.\end{array}`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1158,7 +1158,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1198,11 +1198,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 8, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** registered even-coefficient carry relation
+- **Ledger formal relation:** $`\displaystyle c_0+1\lt q\land c_0\bmod256=255\Longrightarrow b_0\prime=0\land(b_1\prime\bmod16)=(b_1\bmod16)+1\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=\left\lfloor\frac{b_1}{16}\right\rfloor\land b_2\prime=b_2`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1293,7 +1293,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1333,11 +1333,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 9, �
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** registered odd-coefficient no-carry relation
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}c_1+1&\lt q,\quad c_1\bmod16\ne15\\&\Longrightarrow\quad b_0\prime=b_0,\quad b_1\prime=b_1+16,\quad b_2\prime=b_2.\end{array}`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1428,7 +1428,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1468,11 +1468,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** registered odd-coefficient carry relation
+- **Ledger formal relation:** $`\displaystyle c_1+1\lt q\land c_1\bmod16=15\Longrightarrow b_0\prime=b_0\land(b_1\prime\bmod16)=(b_1\bmod16)\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=0\land b_2\prime=b_2+1`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1563,7 +1563,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1603,11 +1603,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 11, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** decoded even 12-bit field < q
+- **Ledger formal relation:** $`\displaystyle 0\le d_0\lt q`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1698,7 +1698,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1738,11 +1738,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 12, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** decoded odd 12-bit field < q
+- **Ledger formal relation:** $`\displaystyle 0\le d_1\lt q`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1833,7 +1833,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1873,11 +1873,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 13, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** each pair c0,c1 in [0,q) has a produced 24-bit block
+- **Ledger formal relation:** $`\displaystyle \forall(c_0,c_1)\in[0,q)^2\;\exists B_i\in\{0,\ldots,255\}^3:\quad \mathop{\text{Decode}}_{12}(B_i)=(c_0,c_1)`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -1968,7 +1968,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2008,11 +2008,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 14, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** a 24-bit block with either decoded field >=q is outside the encoder image
+- **Ledger formal relation:** $`\displaystyle \left(d_0\ge q\;\lor\;d_1\ge q\right)\Longrightarrow B_i\notin\mathop{\text{Im}}(\mathop{\text{Encode}}_{12})`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -2103,7 +2103,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2143,11 +2143,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 15, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** byte array is in image iff all 256 decoded fields are canonical
+- **Ledger formal relation:** $`\displaystyle B\in\mathop{\text{Im}}(\mathop{\text{ToBytes}})\Longleftrightarrow\forall i:\;\mathop{\text{decoded}}_{12}(B,i)\lt q`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -2238,7 +2238,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2278,11 +2278,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 16, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** decode(encode(p))[2i]=p[2i]
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decode}(\mathrm{Encode}(P))_{2i}=P_{2i}`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -2373,7 +2373,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2413,11 +2413,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 17, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** decode(encode(p))[2i+1]=p[2i+1]
+- **Ledger formal relation:** $`\displaystyle \mathrm{Decode}(\mathrm{Encode}(P))_{2i+1}=P_{2i+1}`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -2508,7 +2508,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2548,11 +2548,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 18, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** encoded 3-byte blocks equal iff their canonical coefficient pairs equal
+- **Ledger formal relation:** $`\displaystyle E(c_0,c_1)=E(d_0,d_1)\Longleftrightarrow(c_0,c_1)=(d_0,d_1)`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 
@@ -2643,7 +2643,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PBYTES T1–T4 fin
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients 0..3328; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PBYTES T1–T4 final harness assertion`. The admitted domain is: Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2683,11 +2683,11 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 19, 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficients 0..3328; 256 coefficients; 384-byte output
+- **Input domain:** Canonical coefficients $`\{0,\ldots,3328\}`$; 256 coefficients; 384-byte output
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** tobytes(p)=tobytes(q) iff p=q for canonical polynomials
+- **Ledger formal relation:** $`\displaystyle \mathrm{ToBytes}(P)=\mathrm{ToBytes}(Q)\Longleftrightarrow P=Q`$
 
 - **Assertion / harness mapping:** PBYTES T1–T4 final harness assertion
 

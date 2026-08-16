@@ -168,7 +168,7 @@ $$
 
 **Verification question.** How does the unchanged subtraction routine behave as an exact finite-width operation, as a modular operation after normalisation, and under relational dependency, frame and caller-oriented observations?
 
-**Principal synthesis.** The subtraction campaign supports independent-oracle normalization, normalization compatibility, exact/modular cancellation, the SUB-T4 canonical exact-difference bridge with tight range [-3328,3328], frame/locality/determinism and the registered production-slice obligations.
+**Principal synthesis.** The subtraction campaign supports independent-oracle normalization, normalization compatibility, exact/modular cancellation, the SUB-T4 canonical exact-difference bridge with tight range $`[-3328,3328]`$, frame/locality/determinism and the registered production-slice obligations.
 
 **Why this synthesis was selected.** The principal claim is intentionally broader than a single raw equality because the case was designed around the connection between exact subtraction, modular normalisation and dependency behaviour. Cancellation, locality, determinism and production-slice records are subordinate strengthening evidence; the tight canonical-domain bridge is what prevents representability from being silently assumed.
 
@@ -223,7 +223,7 @@ $$
 
 **Verification question.** Do the two unchanged production functions compose correctly across their intermediate representation, rather than merely being acceptable when considered one at a time?
 
-**Principal synthesis.** For each i, reduce(sub(A,B))_i=canon_q(int32(A_i)-int32(B_i)) within the signed-representable difference domain.
+**Principal synthesis.** For each i, $`\mathrm{reduce}(\mathrm{sub}(A,B))_i=\mathrm{canon}_q\!\left(\mathrm{int32}(A_i)-\mathrm{int32}(B_i)\right)`$ within the signed-representable difference domain.
 
 **Why this synthesis was selected.** The sequential equality is the only substantive semantic claim in this case and is therefore the principal claim by construction. The admissibility and oracle records exist to justify the domain and reference relation; they are controls and are not counted as additional mathematical properties.
 
@@ -263,7 +263,7 @@ $$
 
 **Verification question.** Which canonical coefficients produce message bit 1, how are the 256 decisions packed into 32 bytes, and how tightly is the frozen machine-level decision expression characterised?
 
-**Principal synthesis.** bit_k(tomsg(A))=1 iff 833<=A_k<=2496 for canonical A_k; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is [1073417800,1074063871].
+**Principal synthesis.** $`\mathrm{bit}_k(\mathrm{tomsg}(A))=1\Longleftrightarrow833\le A_k\le2496`$ for canonical $`A_k`$; the 256 bits are packed LSB-first into 32 bytes. The exact accepted arithmetic-offset interval is $`[1073417800,1074063871]`$.
 
 **Why this synthesis was selected.** The coefficient decision and complete packing relation are the externally meaningful semantics of message extraction. Locality and XOR relations strengthen that semantics across executions; the offset-interval family explains the exact frozen arithmetic implementation. The implementation-parameter characterisation is important evidence, but it is subordinate to the message-bit semantics and must remain tied to the pinned multiplier and shift.
 
@@ -313,7 +313,7 @@ $$
 
 **Verification question.** Does the unchanged production routine embed every message bit into the intended two-value polynomial codebook, and does that codebook support the correct message-originating reverse composition and metric relations?
 
-**Principal synthesis.** frommsg(m)_k=1665*bit_k(m), and tomsg(frommsg(m))=m for every 32-byte message m.
+**Principal synthesis.** $`\mathrm{frommsg}(m)_k=1665\,\mathrm{bit}_k(m)`$, and $`\mathrm{tomsg}(\mathrm{frommsg}(m))=m`$ for every 32-byte message m.
 
 **Why this synthesis was selected.** The exact bit-to-codeword map and message-originating round trip are the central semantic statements. Toggle, support, popcount and distance relations explain the structure induced by that map and provide relational strengthening; they do not expand the domain to arbitrary polynomial-originating inputs.
 
@@ -533,7 +533,7 @@ $$
 
 **Verification question.** Does the production operation erase exactly the authorised byte interval in the encoded C memory state, preserve everything outside that interval, and compose predictably under repeated, partitioned and release-handoff use?
 
-**Principal synthesis.** For a valid selected interval I, Z_I(M) sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
+**Principal synthesis.** For a valid selected interval $`I`$, $`Z_I(M)`$ sets exactly the selected bytes to zero while preserving the registered frame; the recorded idempotence, partition, commutativity and release-handoff relations also hold.
 
 **Why this synthesis was selected.** Exact erasure and frame preservation must be read together: either alone would leave a material gap. Idempotence, partition, overlap, commutativity and release-handoff records strengthen the operational meaning of the post-state. The principal claim remains explicitly source-level and does not assert physical-remanence elimination.
 
@@ -633,7 +633,7 @@ $$
 
 **Verification question.** What does the production decoder actually compute from each three-byte block, including non-canonical 12-bit values, and which routing, locality and inversion relations follow from that raw representation?
 
-**Principal synthesis.** Each 3-byte word W_i is decoded to (W_i mod 4096, floor(W_i/4096)); the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+**Principal synthesis.** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
 
 **Why this synthesis was selected.** The raw 12-bit decoding equation is selected precisely because the production routine does not canonicalise arbitrary segments modulo q. Routing, locality, XOR and inversion properties characterise that raw decoder more completely; they are subordinate to, and constrained by, the same representation boundary.
 
@@ -688,7 +688,7 @@ $$
 
 **Verification question.** Are the two unchanged production wrappers directly compatible when composed on the domains where an exact round trip is semantically justified?
 
-**Principal synthesis.** frombytes(tobytes(p))=p for canonical p; tobytes(frombytes(b))=b for b in the canonical encoder image.
+**Principal synthesis.** $`\mathrm{frombytes}(\mathrm{tobytes}(p))=p`$ for canonical p; $`\mathrm{tobytes}(\mathrm{frombytes}(b))=b`$ for b in the canonical encoder image.
 
 **Why this synthesis was selected.** The direct two-function compositions are themselves the verification object. They were selected because separate serializer and decoder results do not automatically establish domain compatibility. The canonical-image restriction on the byte-originating direction is part of the principal claim, not an incidental caveat.
 
@@ -780,7 +780,7 @@ $$
 
 **Verification question.** What exact bounded relation is supported for the production Montgomery reduction over its legal source domain, and which stronger relational, multiplication and polynomial-conversion propositions remained unresolved?
 
-**Principal synthesis.** MONT-T1: reduce(a)=independent_oracle(a) over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image [-32767,32767]. MONT-T2–T4 remain resource-limited and inconclusive.
+**Principal synthesis.** MONT-T1: $`\mathrm{reduce}(a)=\mathrm{independent\_oracle}(a)`$ over the complete legal source domain, with exact reconstruction, unique signed-16 decomposition and sharp image $`[-32767,32767]`$. MONT-T2–T4 remain resource-limited and inconclusive.
 
 **Why this synthesis was selected.** Only MONT-T1 obtained completed supporting evidence, so only its exact oracle equality, reconstruction and sharp image can anchor the principal accepted claim. MONT-T2–T4 are retained because they define scientifically meaningful extensions, but their resource-limited status is itself part of the case conclusion and prevents them from being folded into the supported claim.
 

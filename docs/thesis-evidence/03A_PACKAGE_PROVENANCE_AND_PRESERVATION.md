@@ -44,7 +44,7 @@ No scientific result class is promoted or weakened by publication/path resolutio
 
 ## Case-4 repair provenance
 
-The earlier closure carried `PR-C04-013_LEDGER_CORRECTION.patch` as an installation prerequisite. The required current base already contains the corrected production offset `1073741824 (=2^30)`, so the patch is no longer active. Its exact earlier bytes remain inside `PRE_GITHUB_RENDER_FIX_EXACT_SOURCE_CLOSURE.zip`; the readable audit-history patch copy is line-ending-normalised for Git hygiene.
+The earlier closure carried `PR-C04-013_LEDGER_CORRECTION.patch` as an installation prerequisite. The required current base already contains the corrected production offset $`1073741824\;(=2^{30})`$, so the patch is no longer active. Its exact earlier bytes remain inside `PRE_GITHUB_RENDER_FIX_EXACT_SOURCE_CLOSURE.zip`; the readable audit-history patch copy is line-ending-normalised for Git hygiene.
 
 
 ## Checksum layering

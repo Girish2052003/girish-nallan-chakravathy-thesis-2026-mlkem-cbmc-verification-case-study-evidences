@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** The subtraction campaign supports independent-oracle normalization, normalization compatibility, exact/modular cancellation, the SUB-T4 canonical exact-difference bridge with tight range [-3328,3328], frame/locality/determinism and the registered production-slice obligations.
+**Recorded principal-claim wording:** The subtraction campaign supports independent-oracle normalization, normalization compatibility, exact/modular cancellation, the SUB-T4 canonical exact-difference bridge with tight range $`[-3328,3328]`$, frame/locality/determinism and the registered production-slice obligations.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -262,7 +262,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 1, “Canon
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** reduce(sub(A,B))[i] = canon_q(int32(A[i])-int32(B[i]))
+- **Ledger formal relation:** $`\displaystyle \mathrm{Norm}(R_i)=\mathrm{canon}_q(A_i-B_i)`$
 
 - **Assertion / harness mapping:** SUB-T1 semantic composition harness
 
@@ -397,7 +397,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 2, “Norma
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** 0 <= output[i] < q
+- **Ledger formal relation:** $`\displaystyle 0 \le output_{i} \lt q`$
 
 - **Assertion / harness mapping:** SUB-T1 range assertions
 
@@ -532,7 +532,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 3, “Input
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** read-only operand and saved source objects unchanged
+- **Ledger formal relation:** $`\displaystyle \mathrm{RO}_{\mathrm{after}}=\mathrm{RO}_{\mathrm{before}}\quad\land\quad\mathrm{saved}_{\mathrm{after}}=\mathrm{saved}_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** SUB-T1 frame assertions
 
@@ -667,7 +667,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 4, “Norma
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** N(A-B)=N(N(A)-N(B))
+- **Ledger formal relation:** $`\displaystyle \mathrm{Norm}(A-B)=\mathrm{Norm}\!\left(\mathrm{Norm}(A)-\mathrm{Norm}(B)\right)`$
 
 - **Assertion / harness mapping:** SUB-T2 relational harness
 
@@ -802,7 +802,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 5, “Right
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** add(sub(A,B),B)=A
+- **Ledger formal relation:** $`\displaystyle \mathrm{Add}(\mathrm{Sub}(A,B),B)=A`$
 
 - **Assertion / harness mapping:** SUB-T3 cancellation harness family
 
@@ -937,7 +937,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 6, “Right
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** sub(add(A,B),B)=A
+- **Ledger formal relation:** $`\displaystyle \mathrm{Sub}(\mathrm{Add}(A,B),B)=A`$
 
 - **Assertion / harness mapping:** SUB-T3 cancellation harness family
 
@@ -1072,7 +1072,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 7, “Norma
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** N(add(sub(A,B),B))=N(A) and registered counterpart
+- **Ledger formal relation:** $`\displaystyle \mathrm{Norm}(\mathrm{Add}(\mathrm{Sub}(A,B),B))=\mathrm{Norm}(A),\qquad \mathrm{Norm}(\mathrm{Sub}(\mathrm{Add}(A,B),B))=\mathrm{Norm}(A)`$
 
 - **Assertion / harness mapping:** SUB-T3 cancellation harness family
 
@@ -1207,7 +1207,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 8, “Exact
 
 - **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
 
-- **Ledger formal relation:** r[i] = int32(A[i]) - int32(B[i])
+- **Ledger formal relation:** $`\displaystyle r_{i} = \mathop{\text{int32}}(A_{i}) - \mathop{\text{int32}}(B_{i})`$
 
 - **Assertion / harness mapping:** SUB-T4 canonical-domain harness
 
@@ -1342,7 +1342,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 9, “Exact
 
 - **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
 
-- **Ledger formal relation:** -3328 <= r[i] <= 3328
+- **Ledger formal relation:** $`\displaystyle -3328 \le r_{i} \le 3328`$
 
 - **Assertion / harness mapping:** SUB-T4 canonical-domain harness
 
@@ -1477,7 +1477,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 10, “Cano
 
 - **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
 
-- **Ledger formal relation:** A[i],B[i] in [0,3328] => A[i]-B[i] in [-3328,3328] subset int16_t
+- **Ledger formal relation:** $`\displaystyle 0\le A_i,B_i\le3328\Longrightarrow -3328\le A_i-B_i\le3328\subset\mathrm{int16\_t}`$
 
 - **Assertion / harness mapping:** SUB-T4 canonical-domain harness
 
@@ -1612,7 +1612,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 11, “Subt
 
 - **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
 
-- **Ledger formal relation:** B_after = B_before
+- **Ledger formal relation:** $`\displaystyle B^{\mathrm{after}} = B^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** SUB-T4 canonical-domain harness
 
@@ -1703,7 +1703,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1743,11 +1743,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 12, “Two-
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** A1,A2,B1,B2 and registered snapshots/guards unchanged
+- **Ledger formal relation:** $`\displaystyle (A_1,A_2,B_1,B_2,\mathrm{snapshots},\mathrm{guards})_{\mathrm{after}}=(A_1,A_2,B_1,B_2,\mathrm{snapshots},\mathrm{guards})_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -1838,7 +1838,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1878,11 +1878,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 13, “Coef
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** A1[k]=A2[k] and B1[k]=B2[k] => R1[k]=R2[k]
+- **Ledger formal relation:** $`\displaystyle A_k^{(1)}=A_k^{(2)}\land B_k^{(1)}=B_k^{(2)}\Longrightarrow R_k^{(1)}=R_k^{(2)}`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -1973,7 +1973,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2013,11 +2013,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 14, “Sing
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** inputs differ only at j => outputs agree for all i != j
+- **Ledger formal relation:** $`\displaystyle \text{inputs differ only at }j\Longrightarrow\text{outputs agree for all }i\ne j`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -2108,7 +2108,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2148,11 +2148,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 15, “Exac
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** R1[j]-R2[j]=(A1[j]-B1[j])-(A2[j]-B2[j]) in widened arithmetic
+- **Ledger formal relation:** $`\displaystyle R_j^{(1)}-R_j^{(2)}=(A_j^{(1)}-B_j^{(1)})-(A_j^{(2)}-B_j^{(2)})`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -2243,7 +2243,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2283,11 +2283,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 16, “Dete
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** A1=A2 and B1=B2 => R1=R2
+- **Ledger formal relation:** $`\displaystyle A^{(1)}=A^{(2)}\land B^{(1)}=B^{(2)}\Longrightarrow R^{(1)}=R^{(2)}`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -2378,7 +2378,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T5 frozen two-
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical 0..3328; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T5 frozen two-run harness family`. The admitted domain is: All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects. The recorded assumptions/grounding are: No conclusion-shaped arithmetic assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2418,11 +2418,11 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 17, “Dest
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** All coefficients canonical 0..3328; symbolic selected indices; valid separate objects
+- **Input domain:** All coefficients canonical $`\{0,\ldots,3328\}`$; symbolic selected indices; valid separate objects
 
 - **Assumptions and grounding:** No conclusion-shaped arithmetic assumptions
 
-- **Ledger formal relation:** Only R1,R2 among explicitly modelled harness objects may change
+- **Ledger formal relation:** $`\displaystyle \mathrm{ModifiedObjects}\subseteq\{R_1,R_2\}\qquad\text{within the explicitly modelled harness objects}`$
 
 - **Assertion / harness mapping:** SUB-T5 frozen two-run harness family
 
@@ -2557,7 +2557,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 18, “Call
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** All registered slice objects are valid and separated as required
+- **Ledger formal relation:** $`\displaystyle \bigwedge_{O\in\mathcal O_{\mathrm{slice}}}\mathrm{Valid}(O)\quad\land\quad\mathrm{SeparatedAsRegistered}(\mathcal O_{\mathrm{slice}})`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -2692,7 +2692,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 19, “Call
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** v in [0,3328], sb in [-26631,26631] => v-sb in [-26631,29959] subset int16
+- **Ledger formal relation:** $`\displaystyle 0\le v_i\le3328\land -26631\le sb_i\le26631\Longrightarrow -26631\le v_i-sb_i\le29959\subset\mathrm{int16\_t}`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -2827,7 +2827,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 20, “Call
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** after sub: v_sub[i]=v_before[i]-sb_before[i]
+- **Ledger formal relation:** $`\displaystyle v_i^{\mathrm{sub}}=v_i^{\mathrm{before}}-sb_i^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -2962,7 +2962,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 21, “Call
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** sb and registered read-only/snapshot objects unchanged
+- **Ledger formal relation:** $`\displaystyle (sb,\mathrm{RO},\mathrm{snapshots})_{\mathrm{after}}=(sb,\mathrm{RO},\mathrm{snapshots})_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -3097,7 +3097,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 22, “Subt
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** after reduce: v[i]=canon_q(v_before[i]-sb_before[i])
+- **Ledger formal relation:** $`\displaystyle V_i^{\mathrm{red}}=\mathrm{canon}_q(V_i^{\mathrm{before}}-S_i^{\mathrm{before}})`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -3232,7 +3232,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 23, “Comp
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** reduced coefficients satisfy tomsg domain; tomsg preserves polynomial input
+- **Ledger formal relation:** $`\displaystyle 0\le v_i^{\mathrm{reduced}}\lt q\quad\land\quad v^{\mathrm{after\ ToMsg}}=v^{\mathrm{before\ ToMsg}}`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -3367,7 +3367,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 24, “Boun
 
 - **Assumptions and grounding:** Frozen producer bounds and scoped verification adapter; production functions unchanged
 
-- **Ledger formal relation:** registered sub -> reduce -> tomsg slice satisfies enabled safety/unwinding checks
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}&\text{The registered Sub}\to\text{Reduce}\to\text{ToMsg slice satisfies}\\&\text{the enabled safety and unwinding checks.}\end{array}`$
 
 - **Assertion / harness mapping:** SUB-T6 positive harness family
 
@@ -3429,7 +3429,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 24, “Boun
 
 # Case-level bounded conclusion
 
-The campaign supports independent-oracle sub→reduce refinement, normalization compatibility, exact/modular cancellation, exact canonical-domain subtraction with tight range [-3328,3328], frame/locality/determinism and the registered production-slice obligations.
+The campaign supports independent-oracle sub→reduce refinement, normalization compatibility, exact/modular cancellation, exact canonical-domain subtraction with tight range $`[-3328,3328]`$, frame/locality/determinism and the registered production-slice obligations.
 
 **Explicit exclusion.** Not unrestricted subtraction outside representable difference domain.
 

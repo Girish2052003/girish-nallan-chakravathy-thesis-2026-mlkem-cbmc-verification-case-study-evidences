@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** Each 3-byte word W_i is decoded to (W_i mod 4096, floor(W_i/4096)); the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+**Recorded principal-claim wording:** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -211,7 +211,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -251,11 +251,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[2i]=W_i mod 4096
+- **Ledger formal relation:** $`\displaystyle D(B)_{2i}=W\bmod 2^{12}`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -346,7 +346,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -386,11 +386,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** out[2i+1]=floor(W_i/4096)
+- **Ledger formal relation:** $`\displaystyle D(B)_{2i+1}=\left\lfloor\frac{W}{2^{12}}\right\rfloor`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -481,7 +481,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -521,11 +521,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** first byte affects only registered low bits of even coefficient
+- **Ledger formal relation:** $`\displaystyle b_{3i}\longrightarrow \text{low eight bits of }D(B)_{2i}\quad\text{only}`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -616,7 +616,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -656,11 +656,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** second-byte low nibble routes to high bits of even coefficient
+- **Ledger formal relation:** $`\displaystyle (b_{3i+1}\bmod 16)\longrightarrow \text{high four bits of }D(B)_{2i}`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -751,7 +751,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -791,11 +791,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** second-byte high nibble routes to low bits of odd coefficient
+- **Ledger formal relation:** $`\displaystyle (b_{3i+1}\gg4)\longrightarrow \text{low four bits of }D(B)_{2i+1}`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -886,7 +886,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -926,11 +926,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** third byte routes to high bits of odd coefficient
+- **Ledger formal relation:** $`\displaystyle D(B)_{2i+1}=(b_1\gg4)+16b_2`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1021,7 +1021,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1061,11 +1061,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** changing one 3-byte block affects only its decoded coefficient pair
+- **Ledger formal relation:** $`\displaystyle B\equiv B^{\prime}\text{ outside block }i\Longrightarrow D(B)\equiv D(B^{\prime})\text{ outside coefficient pair }(2i,2i+1)`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1156,7 +1156,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1196,11 +1196,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** packed XOR of decoded pairs equals XOR of corresponding 24-bit input blocks
+- **Ledger formal relation:** $`\displaystyle \bigoplus_i\mathop{\text{Pack}}_{24}(D(B)_{2i},D(B)_{2i+1})=\bigoplus_i W_i`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1291,7 +1291,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1331,11 +1331,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** input 3-byte blocks differ iff decoded coefficient pairs differ
+- **Ledger formal relation:** $`\displaystyle B_{3i:3i+3}\ne B^{\prime}_{3i:3i+3}\Longleftrightarrow\bigl(D(B)_{2i},D(B)_{2i+1}\bigr)\ne\bigl(D(B^{\prime})_{2i},D(B^{\prime})_{2i+1}\bigr)`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1426,7 +1426,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1466,11 +1466,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** E_raw(D(b))=b for every 384-byte b
+- **Ledger formal relation:** $`\displaystyle \forall B\in\{0,\ldots,255\}^{384}:\quad E_{\mathrm{raw}}(D(B))=B`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1561,7 +1561,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PFB T1–T4 final 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PFB T1–T4 final harness assertion`. The admitted domain is: Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1601,11 +1601,11 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain 0..4095 for reverse direction
+- **Input domain:** Arbitrary 384-byte input, or raw 12-bit coefficient domain $`\{0,\ldots,4095\}`$ for reverse direction
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** D(E_raw(p))=p for every coefficient array with values 0..4095
+- **Ledger formal relation:** $`\displaystyle \forall P\in[0,4095]^{256}:\quad D(E_{\mathrm{raw}}(P))=P`$
 
 - **Assertion / harness mapping:** PFB T1–T4 final harness assertion
 
@@ -1667,7 +1667,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 # Case-level bounded conclusion
 
-Each 3-byte word W_i is decoded to (W_i mod 4096, floor(W_i/4096)); the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
 
 **Explicit exclusion.** Not general modulo-q canonicalization of arbitrary byte strings.
 

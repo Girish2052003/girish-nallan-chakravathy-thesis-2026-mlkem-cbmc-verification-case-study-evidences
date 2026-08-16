@@ -251,7 +251,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 1, “M
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** If a selected encoded field is in [3329,4095], check_pk returns rejection or OOM; every other byte and seed byte arbitrary
+- **Ledger formal relation:** $`\displaystyle \left(\exists j:\ q\le\mathop{\text{decoded}}_{12}(PK,j)\le4095\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{REJECT},\mathrm{OOM}\}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -386,7 +386,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Frozen layout assertions; arbitrary surrounding public-key context; non-OOM result interpretation
 
-- **Ledger formal relation:** Every byte accessed to inject the selected malformed field lies within the polynomial-vector prefix.
+- **Ledger formal relation:** $`\displaystyle \mathrm{AccessedBytes}_{\mathrm{inject}}\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})`$
 
 - **Assertion / harness mapping:** T1-R2 named support assertion
 
@@ -521,7 +521,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Frozen layout assertions; arbitrary surrounding public-key context; non-OOM result interpretation
 
-- **Ledger formal relation:** The selected malformed coefficient maps to a valid packed pair within the polynomial-vector field.
+- **Ledger formal relation:** $`\displaystyle 0\le \mathrm{pairIndex}(k)\lt \frac{\mathrm{MLKEM\_POLYVECBYTES}}{3}`$
 
 - **Assertion / harness mapping:** T1-R2 named support assertion
 
@@ -656,7 +656,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Frozen layout assertions; arbitrary surrounding public-key context; non-OOM result interpretation
 
-- **Ledger formal relation:** The constructed packed field decodes to the selected noncanonical value while preserving the unrelated nibble and arbitrary surrounding context.
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{DecodeField}}(\mathop{\text{PackMalformed}}(u))=u,\qquad 3329\le u\le4095`$
 
 - **Assertion / harness mapping:** T1-R2 named support assertion
 
@@ -791,7 +791,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 2, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** If all 768 encoded fields are in [0,3328], check_pk returns acceptance or OOM; seed arbitrary
+- **Ledger formal relation:** $`\displaystyle \left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -926,7 +926,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 3, “F
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** first public-key input object unchanged
+- **Ledger formal relation:** $`\displaystyle PK_1^{\mathrm{after}}=PK_1^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1061,7 +1061,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 4, “S
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** second compared input object unchanged
+- **Ledger formal relation:** $`\displaystyle PK_2^{\mathrm{after}}=PK_2^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1196,7 +1196,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 5, “R
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** registered red-zone bytes unchanged
+- **Ledger formal relation:** $`\displaystyle \mathrm{redzone}_{\mathrm{after}}=\mathrm{redzone}_{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1333,7 +1333,7 @@ Appendix 2 → Case 13 abstraction-limited inconclusive finding. Chapter 4 uses 
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** changing only seed bytes does not change the two-call result relation
+- **Ledger formal relation:** $`\displaystyle P^{(1)}_{\mathrm{vec}}=P^{(2)}_{\mathrm{vec}} \Longrightarrow \bigl(r_1=\mathrm{OOM}\;\lor\;r_2=\mathrm{OOM}\;\lor\;r_1=r_2\bigr)`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1468,7 +1468,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 6, “P
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** concrete target reads only the registered MLKEM_POLYVECBYTES prefix under the contract-backed lower model
+- **Ledger formal relation:** $`\displaystyle \mathrm{ReadFootprint}(\mathop{\text{check\_pk}})\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1603,7 +1603,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 7, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** mlk_enc_derand caller invokes check_pk at most once in the registered stubbed context
+- **Ledger formal relation:** $`\displaystyle N_{\mathop{\text{check\_pk}}}\le1`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1738,7 +1738,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 8, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** caller follows registered return split for accepted/rejected/OOM check result
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\text{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\text{check\_pk}}}=1\land R_{\mathop{\text{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1873,7 +1873,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 9, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** ciphertext obeys registered frame condition
+- **Ledger formal relation:** $`\displaystyle C^{\mathrm{after}}=C^{\mathrm{before}}\qquad\text{on the registered rejected-guard path}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -2008,7 +2008,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 10, “
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** shared-secret obeys registered frame condition
+- **Ledger formal relation:** $`\displaystyle SS^{\mathrm{after}}=SS^{\mathrm{before}}\qquad\text{on the registered rejected-guard path}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -2143,7 +2143,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 11, “
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** public key unchanged
+- **Ledger formal relation:** $`\displaystyle PK^{\mathrm{after}}=PK^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -2278,7 +2278,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 12, “
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** coins input unchanged
+- **Ledger formal relation:** $`\displaystyle \mathrm{coins}^{\mathrm{after}}=\mathrm{coins}^{\mathrm{before}}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 

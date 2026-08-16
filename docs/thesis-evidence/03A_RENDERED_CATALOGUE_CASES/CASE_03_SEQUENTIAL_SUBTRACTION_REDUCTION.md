@@ -33,7 +33,7 @@ R_i=\mathop{\text{canon}}_q\!\left(\mathop{\text{int32}}(A_i)-\mathop{\text{int3
 $$
 
 
-**Recorded principal-claim wording:** For each i, reduce(sub(A,B))_i=canon_q(int32(A_i)-int32(B_i)) within the signed-representable difference domain.
+**Recorded principal-claim wording:** For each i, $`\mathrm{reduce}(\mathrm{sub}(A,B))_i=\mathrm{canon}_q\!\left(\mathrm{int32}(A_i)-\mathrm{int32}(B_i)\right)`$ within the signed-representable difference domain.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -239,7 +239,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Registered object and call preconditions
 
-- **Ledger formal relation:** The production sub and reduce calls are admissible in the selected composition
+- **Ledger formal relation:** $`\displaystyle \mathrm{Admissible}(\mathop{\text{Sub}})\land\mathrm{Admissible}(\mathop{\text{Reduce}})\qquad\text{in the registered sequential composition}`$
 
 - **Assertion / harness mapping:** AC-SR1 control
 
@@ -374,7 +374,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 
 - **Assumptions and grounding:** Oracle uses separate int32 arithmetic and canonical modulo
 
-- **Ledger formal relation:** oracle(d)=unique value in [0,q) congruent to d mod q
+- **Ledger formal relation:** $`\displaystyle \mathop{\text{Oracle}}(d)\in[0,q)\quad\land\quad\mathop{\text{Oracle}}(d)\equiv d\pmod q`$
 
 - **Assertion / harness mapping:** OR-SR1 control
 
@@ -509,7 +509,7 @@ Appendix 1 → Case 3: Sequential Subtraction and Reduction → item 1, “Seque
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
-- **Ledger formal relation:** reduce(sub(A,B))[i]=canon_q(int32(A[i])-int32(B[i]))
+- **Ledger formal relation:** $`\displaystyle R_i=\mathrm{canon}_q\!\left(\mathrm{int32}(A_i)-\mathrm{int32}(B_i)\right)`$
 
 - **Assertion / harness mapping:** VC-SR1 direct production sequence assertions
 
@@ -571,7 +571,7 @@ Appendix 1 → Case 3: Sequential Subtraction and Reduction → item 1, “Seque
 
 # Case-level bounded conclusion
 
-For each i, reduce(sub(A,B))_i=canon_q(int32(A_i)-int32(B_i)) within the signed-representable difference domain.
+For each i, $`\mathrm{reduce}(\mathrm{sub}(A,B))_i=\mathrm{canon}_q\!\left(\mathrm{int32}(A_i)-\mathrm{int32}(B_i)\right)`$ within the signed-representable difference domain.
 
 **Explicit exclusion.** Does not establish complete correctness of either function independently, every caller, the surrounding decryption operation or ML-KEM as a whole.
 

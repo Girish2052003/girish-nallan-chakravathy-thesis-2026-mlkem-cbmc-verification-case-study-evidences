@@ -208,7 +208,7 @@ Appendix 1 → Skill-Available Subtraction → item 1, “Difference reversal”
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** sub(a,b)-sub(a,c)=c-b
+- **Ledger formal relation:** $`\displaystyle \mathrm{Sub}(a,b)-\mathrm{Sub}(a,c)=c-b`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
@@ -343,7 +343,7 @@ Appendix 1 → Skill-Available Subtraction → item 2, “Sequential subtraction
 
 - **Assumptions and grounding:** All nine skills invoked; outputs produced and configuration-level inspection recorded; semantic authority remained with Codex
 
-- **Ledger formal relation:** sub(sub(a,b),c)=sub(a,b+c)
+- **Ledger formal relation:** $`\displaystyle \mathrm{Sub}(\mathrm{Sub}(a,b),c)=\mathrm{Sub}(a,b+c)`$
 
 - **Assertion / harness mapping:** Skill-available final harness and selected-claim mapping
 
