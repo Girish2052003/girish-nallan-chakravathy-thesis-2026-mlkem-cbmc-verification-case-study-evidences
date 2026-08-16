@@ -997,7 +997,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 6, �
 ### Formal statement
 
 $$
-\begin{aligned}c_0+1&<q,\quad c_0\bmod256\ne255\\&\Longrightarrow\quad b_0\prime=b_0+1,\quad b_1\prime=b_1,\quad b_2\prime=b_2.\end{aligned}
+\begin{array}{rl}c_0+1&<q,\quad c_0\bmod256\ne255\\&\Longrightarrow\quad b_0\prime=b_0+1,\quad b_1\prime=b_1,\quad b_2\prime=b_2.\end{array}
 $$
 
 
@@ -1267,7 +1267,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 8, �
 ### Formal statement
 
 $$
-\begin{aligned}c_1+1&<q,\quad c_1\bmod16\ne15\\&\Longrightarrow\quad b_0\prime=b_0,\quad b_1\prime=b_1+16,\quad b_2\prime=b_2.\end{aligned}
+\begin{array}{rl}c_1+1&<q,\quad c_1\bmod16\ne15\\&\Longrightarrow\quad b_0\prime=b_0,\quad b_1\prime=b_1+16,\quad b_2\prime=b_2.\end{array}
 $$
 
 

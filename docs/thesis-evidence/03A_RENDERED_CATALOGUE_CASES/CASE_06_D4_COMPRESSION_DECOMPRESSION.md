@@ -1143,9 +1143,9 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 7, “High-nibb
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 &\text{every decompressed coefficient lies in the D4 codebook}
-\end{aligned}
+\end{array}
 $$
 
 

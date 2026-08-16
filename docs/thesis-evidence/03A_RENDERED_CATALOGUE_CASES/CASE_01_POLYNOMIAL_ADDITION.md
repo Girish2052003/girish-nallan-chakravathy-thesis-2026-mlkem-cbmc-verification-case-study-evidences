@@ -4927,9 +4927,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 23, “Produce
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 &\text{v\_after lies in the derived producer-bound interval}
-\end{aligned}
+\end{array}
 $$
 
 
@@ -6414,9 +6414,9 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 31, “Second 
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 &\text{v\_final lies in derived cumulative interval}
-\end{aligned}
+\end{array}
 $$
 
 

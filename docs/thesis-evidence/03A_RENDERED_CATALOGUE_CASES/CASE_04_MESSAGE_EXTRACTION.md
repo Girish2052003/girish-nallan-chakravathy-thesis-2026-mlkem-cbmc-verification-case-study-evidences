@@ -18,7 +18,7 @@ Which canonical coefficients produce message bit 1, how are the 256 decisions pa
 
 
 $$
-O(u)=\begin{cases}1,&833\le u\le2496,\\0,&\text{otherwise},\end{cases}
+O(u)=\left\lbrace\begin{array}{ll}1,&833\le u\le2496,\\0,&\text{otherwise},\end{array}\right.
 $$
 
 
@@ -1265,7 +1265,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 8, “Determi
 ### Formal statement
 
 $$
-\begin{aligned}F_{c_{\mathrm{prod}}}(u)&=O(u),\qquad 0\le u<q,\\c_{\mathrm{prod}}&=1073741824=2^{30}.\end{aligned}
+\begin{array}{rl}F_{c_{\mathrm{prod}}}(u)&=O(u),\qquad 0\le u<q,\\c_{\mathrm{prod}}&=1073741824=2^{30}.\end{array}
 $$
 
 
@@ -1670,7 +1670,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 11, “Offset
 ### Formal statement
 
 $$
-\left\{c:\forall u\in[0,q),\,F_c(u)=O(u)\right\}=[1073417800,1074063871]
+\left\lbracec:\forall u\in[0,q),\,F_c(u)=O(u)\right\rbrace=[1073417800,1074063871]
 $$
 
 
@@ -1805,12 +1805,12 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 12, “Exactn
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 c_{\mathrm{prod}}&=1073741824=2^{30},\\
 1073417800&\le c_{\mathrm{prod}}\le1074063871,\\
 1073417799&\notin\mathcal C_{\mathrm{adm}}\quad (u=2497),\\
 1074063872&\notin\mathcal C_{\mathrm{adm}}\quad (u=832).
-\end{aligned}
+\end{array}
 $$
 
 

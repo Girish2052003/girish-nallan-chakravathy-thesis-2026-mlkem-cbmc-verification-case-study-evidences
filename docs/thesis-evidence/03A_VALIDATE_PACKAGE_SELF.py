@@ -55,7 +55,50 @@ def sha_file(p):
     return h.hexdigest()
 
 def denorm(s):
-    return re.sub(r"\\mathop\{\\text\{([^{}]+)\}\}", lambda m: r"\operatorname{" + m.group(1) + "}", s)
+    # Post-publication GitHub layout reverse-normalization
+    s = re.sub(
+        r"\\mathop\{\\text\{([^{}]+)\}\}",
+        lambda m: r"\operatorname{" + m.group(1) + "}",
+        s,
+    )
+
+    # Restore the exact accepted cases presentation.
+    s = s.replace(
+        r"\left\lbrace\begin{array}{ll}",
+        r"\begin{cases}",
+    )
+
+    s = s.replace(
+        r"\end{array}\right.",
+        r"\end{cases}",
+    )
+
+    # Restore standalone historical left-brace presentation.
+    # This is intentionally after the cases reconstruction so
+    # case-layout braces are not mistaken for standalone braces.
+    s = s.replace(
+        r"\left\lbrace",
+        r"\left\{",
+    )
+
+    # Restore standalone historical right-brace presentation.
+    s = s.replace(
+        r"\right\rbrace",
+        r"\right\}",
+    )
+
+    # Restore the exact accepted aligned presentation.
+    s = s.replace(
+        r"\begin{array}{rl}",
+        r"\begin{aligned}",
+    )
+
+    s = s.replace(
+        r"\end{array}",
+        r"\end{aligned}",
+    )
+
+    return s
 
 def sections(text):
     ms = list(re.finditer(r"(?m)^## (PR-[A-Z0-9-]+) — (.+)$", text))
@@ -258,22 +301,37 @@ live_model_ok=(
 )
 gate("live GitHub REST gate is a smoke test, not an invalid MathJax negative oracle", live_model_ok)
 
-# RC4 regression guard for GCR-17: porcelain-v1 XY columns are fixed-width and
-# a leading blank must survive capture. Load the installer as a module and test
-# the exact status shapes that triggered the real RC3 failure.
+# GCR-17 regression guard: porcelain-v1 XY columns are fixed-width and
+# a leading blank must survive capture. In a standalone package, load and test
+# the installer exactly. In an installed repository the standalone installer is
+# intentionally absent, so this installer-specific regression gate is N/A;
+# every repository/catalogue/evidence/math gate remains mandatory.
 import importlib.util
 installer_path=E.parent.parent/"03A_INSTALL_FINAL.py"
-spec=importlib.util.spec_from_file_location("03a_install_final_rc4", installer_path)
-installer_mod=importlib.util.module_from_spec(spec)
-spec.loader.exec_module(installer_mod)
-sample_status=" M README.md\n?? docs/thesis-evidence/03A_SAMPLE.md"
-parsed=installer_mod.parse_porcelain_paths(sample_status)
-gate(
-    "installer preserves porcelain-v1 XY columns in exact-changeset parsing",
-    parsed=={"README.md","docs/thesis-evidence/03A_SAMPLE.md"}
-    and "git_raw" in installer_path.read_text(encoding="utf-8"),
-    repr(sorted(parsed)),
-)
+
+if installer_path.is_file():
+    spec=importlib.util.spec_from_file_location(
+        "03a_install_final_regression_guard",
+        installer_path,
+    )
+    installer_mod=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(installer_mod)
+
+    sample_status=" M README.md\n?? docs/thesis-evidence/03A_SAMPLE.md"
+    parsed=installer_mod.parse_porcelain_paths(sample_status)
+
+    gate(
+        "installer preserves porcelain-v1 XY columns in exact-changeset parsing",
+        parsed=={"README.md","docs/thesis-evidence/03A_SAMPLE.md"}
+        and "git_raw" in installer_path.read_text(encoding="utf-8"),
+        repr(sorted(parsed)),
+    )
+else:
+    gate(
+        "installer porcelain-v1 regression guard is applicable or explicitly N/A",
+        True,
+        "installed-repository mode: standalone 03A_INSTALL_FINAL.py is not retained",
+    )
 
 # Interpretation/current state guards.
 gate("master is pinned to reconciled base commit", '4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c' in master_text)

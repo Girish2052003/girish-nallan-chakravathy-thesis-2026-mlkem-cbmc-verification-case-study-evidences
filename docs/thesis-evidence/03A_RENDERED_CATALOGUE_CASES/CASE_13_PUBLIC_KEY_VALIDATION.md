@@ -1668,7 +1668,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 7, “C
 ### Formal statement
 
 $$
-\begin{aligned}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\text{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\text{check\_pk}}}=1\land R_{\mathop{\text{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{aligned}
+\begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\text{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\text{check\_pk}}}=1\land R_{\mathop{\text{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}
 $$
 
 

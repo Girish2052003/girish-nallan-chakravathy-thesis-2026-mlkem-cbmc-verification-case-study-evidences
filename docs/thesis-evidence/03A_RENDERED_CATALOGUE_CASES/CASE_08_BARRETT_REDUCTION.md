@@ -597,10 +597,10 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 3, “Exac
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 &\text{R(a) is the unique closest representative in the registered centered}\\
 &\text{interval}
-\end{aligned}
+\end{array}
 $$
 
 
@@ -3030,7 +3030,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 21, “Off
 ### Formal statement
 
 $$
-\left\{B:\forall a\in\mathrm{int16},\,R_B(a)=C(a)\right\}=[33548599,33560264]
+\left\lbraceB:\forall a\in\mathrm{int16},\,R_B(a)=C(a)\right\rbrace=[33548599,33560264]
 $$
 
 

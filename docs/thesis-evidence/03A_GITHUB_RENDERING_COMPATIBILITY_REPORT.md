@@ -120,3 +120,20 @@ for all 19/19 rendered catalogue documents.
 
 The first publication commit for the validated catalogue is `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
 <!-- CURRENT-03A-PUBLICATION:END -->
+
+<!-- REPOSITORY-WIDE-GITHUB-MATH-AUDIT:START -->
+
+## Repository-wide post-publication GitHub math audit
+
+The current-facing `docs/thesis-evidence` Markdown corpus was audited after browser-visible red rendering remained in a subset of equations.
+
+Rendering-only replacements:
+
+- `\operatorname{...}` → `\mathop{\text{...}}`: **0**
+- `cases` → equivalent left-braced base `array`: **4**
+- `aligned` → equivalent two-column base `array`: **12**
+- Markdown files changed by the deterministic source repair: **10**
+
+For the exhaustive 03A formal layer, 257/257 repaired current statements reverse-normalize exactly to the accepted pre-GitHub source statements.
+
+<!-- REPOSITORY-WIDE-GITHUB-MATH-AUDIT:END -->

@@ -1947,9 +1947,9 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 13, “Coef
 ### Formal statement
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 &\text{inputs differ only at j => outputs agree for all i != j}
-\end{aligned}
+\end{array}
 $$
 
 
@@ -3299,7 +3299,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 23, “Comp
 ### Formal statement
 
 $$
-\begin{aligned}&\text{The registered Sub}\to\text{Reduce}\to\text{ToMsg slice satisfies}\\&\text{the enabled safety and unwinding checks.}\end{aligned}
+\begin{array}{rl}&\text{The registered Sub}\to\text{Reduce}\to\text{ToMsg slice satisfies}\\&\text{the enabled safety and unwinding checks.}\end{array}
 $$
 
 

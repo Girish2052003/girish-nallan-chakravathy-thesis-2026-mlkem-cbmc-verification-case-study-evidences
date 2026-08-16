@@ -78,3 +78,44 @@ During the final live Markdown REST smoke test, the unauthenticated GitHub API a
 The live validator was hardened to use an existing GitHub authentication token through the `GITHUB_TOKEN` environment variable. Authentication changes only API transport capacity; it does not modify catalogue mathematics, evidence records, classifications, repository path mappings or scientific conclusions.
 
 The static GitHub-math policy gate remains authoritative for blocked macro detection. The authenticated REST pass remains a live Markdown-to-HTML smoke test.
+## GCR-19 — Repository-wide GitHub mathematical rendering hardening
+
+**Status:** CLOSED
+
+A post-publication browser review identified remaining red-rendered mathematical expressions outside the original named-operator repair boundary. A repository-wide audit was therefore performed across all current-facing Markdown under `docs/thesis-evidence`, excluding only frozen `03A_AUDIT_HISTORY` provenance.
+
+The deterministic rendering-only transformation replaced:
+
+- `0` remaining `\operatorname{...}` occurrences with the already accepted GitHub-safe `\mathop{\text{...}}` form;
+- `4` `cases` layout environments with equivalent left-braced base `array` layouts; and
+- `12` `aligned` layout environments with equivalent two-column base `array` layouts.
+
+No row content, equality, inequality, constant, quantifier, condition, domain, record classification or evidence path was intentionally altered. For the formal 03A catalogue, all 257 current statements were independently reverse-normalized and required to match the exact pre-GitHub accepted source closure byte-for-byte at the statement level.
+
+Changed current-facing Markdown files:
+
+- `docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_01_POLYNOMIAL_ADDITION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_02_POLYNOMIAL_SUBTRACTION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_04_MESSAGE_EXTRACTION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_06_D4_COMPRESSION_DECOMPRESSION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_08_BARRETT_REDUCTION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_09_ZEROISATION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_10_POLYNOMIAL_SERIALISATION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_13_PUBLIC_KEY_VALIDATION.md`
+- `docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/CASE_14_MONTGOMERY_REDUCTION.md`
+## GCR-20 — Installed-repository self-validation mode
+
+**Status:** CLOSED
+
+The 03A package self-validator contained one standalone-installer regression
+guard that unconditionally imported `03A_INSTALL_FINAL.py` from the repository
+root. The installed public repository does not retain that standalone package
+installer, and neither the preserved pre-GitHub closure nor repository history
+contains it.
+
+The guard was therefore made context-aware: when the installer is present in a
+standalone package, its porcelain-v1 parsing regression test remains mandatory;
+when validating the already-installed repository, that installer-specific check
+is explicitly recorded as not applicable. No scientific, evidence, catalogue,
+mathematical, checksum, rendering or repository-integrity gate was removed.

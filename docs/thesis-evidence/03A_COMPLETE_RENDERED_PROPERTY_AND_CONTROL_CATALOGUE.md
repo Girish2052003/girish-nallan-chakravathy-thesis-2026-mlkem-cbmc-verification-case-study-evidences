@@ -272,7 +272,7 @@ $$
 
 
 $$
-O(u)=\begin{cases}1,&833\le u\le2496,\\0,&\text{otherwise},\end{cases}
+O(u)=\left\lbrace\begin{array}{ll}1,&833\le u\le2496,\\0,&\text{otherwise},\end{array}\right.
 $$
 
 
@@ -550,7 +550,7 @@ $$
 
 
 $$
-Z_I(M)[j]=\begin{cases}0,&j\in I,\\M[j],&j\notin I,\end{cases}
+Z_I(M)[j]=\left\lbrace\begin{array}{ll}0,&j\in I,\\M[j],&j\notin I,\end{array}\right.
 $$
 
 

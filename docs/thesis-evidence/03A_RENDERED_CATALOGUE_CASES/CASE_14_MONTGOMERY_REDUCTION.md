@@ -467,7 +467,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 2, 
 ### Formal statement
 
 $$
-\begin{aligned}a&=R_M\,r+q\,t=R_M\,r\prime+q\,t\prime,\\(r,t),(r\prime,t\prime)&\in D_{\mathrm{signed16}}\Longrightarrow r=r\prime\land t=t\prime.\end{aligned}
+\begin{array}{rl}a&=R_M\,r+q\,t=R_M\,r\prime+q\,t\prime,\\(r,t),(r\prime,t\prime)&\in D_{\mathrm{signed16}}\Longrightarrow r=r\prime\land t=t\prime.\end{array}
 $$
 
 
