@@ -47,7 +47,7 @@ This rule is consistent with the principal statements in `03_FORMAL_CLAIM_CATALO
 ## Common notation
 
 $$
-q=3329,\qquad n=256,\qquad 0\le i<n.
+q=3329,\qquad n=256,\qquad 0\le i\lt n.
 $$
 
 For an integer $`x`$,
@@ -66,7 +66,7 @@ The GitHub-compatibility transformation is presentation-only. A closure gate pro
 
 ## Source correction register
 
-The earlier pre-correction ledger transcribed the Case-4 production offset in `PR-C04-013` as `2^25`. The retained MSG-T5 evidence records `1073741824 = 2^30`, and the exact Case-4 admissible interval contains $`2^{30}`$, not $`2^{25}`$. That correction has already been applied to the current public ledger twins before this final GitHub-renderable package was constructed. The catalogue therefore treats the correction as **resolved historical provenance**, not as an installation precondition. Case 8 independently and correctly uses $`2^{25}=33554432`$ for its Barrett offset.
+The earlier pre-correction ledger transcribed the Case-4 production offset in `PR-C04-013` as $`2^{25}`$. The retained MSG-T5 evidence records $`1073741824 = 2^{30}`$, and the exact Case-4 admissible interval contains $`2^{30}`$, not $`2^{25}`$. That correction has already been applied to the current public ledger twins before this final GitHub-renderable package was constructed. The catalogue therefore treats the correction as **resolved historical provenance**, not as an installation precondition. Case 8 independently and correctly uses $`2^{25}=33554432`$ for its Barrett offset.
 
 The final validator fails closed unless the installed current CSV and Markdown ledger twins both retain the corrected Case-4 $`2^{30}`$ relation.
 
@@ -135,7 +135,7 @@ $$
 
 
 $$
-0\le A_i,B_i<q\;\Longrightarrow\; R_i=A_i+B_i,\qquad 0\le R_i\le2q-2
+0\le A_i,B_i\lt q\;\Longrightarrow\; R_i=A_i+B_i,\qquad 0\le R_i\le2q-2
 $$
 
 
@@ -200,7 +200,7 @@ $$
 
 
 $$
-0\le A_i,B_i<q\;\Longrightarrow\;R_i=A_i-B_i\in[-3328,3328]
+0\le A_i,B_i\lt q\;\Longrightarrow\;R_i=A_i-B_i\in[-3328,3328]
 $$
 
 
@@ -358,7 +358,7 @@ $$
 
 **Verification question.** Do the production D4 encoder and decoder implement the intended scalar transformations and packing, and what exact relation remains when the intentionally lossy canonical-domain composition is analysed?
 
-**Principal synthesis.** `Comp4(Decomp4(B))=B` for every compressed byte array `B`; `Proj4(A)=Decomp4(Comp4(A))` is a coordinatewise projection onto the 16-value codebook with `dist_q(A_i,Proj4(A)_i)<=104`, and 104 is attainable.
+**Principal synthesis.** $`\mathrm{Comp}_4(\mathrm{Decomp}_4(B))=B`$ for every compressed byte array `B`; $`\mathrm{Proj}_4(A)=\mathrm{Decomp}_4(\mathrm{Comp}_4(A))`$ is a coordinatewise projection onto the 16-value codebook with $`\mathrm{dist}_q\!\left(A_i,\mathrm{Proj}_4(A)_i\right)\le 104`$, and 104 is attainable.
 
 **Why this synthesis was selected.** Compression is deliberately lossy, so an unrestricted identity would be the wrong principal statement. The selected claim therefore pairs exact compressed-domain retraction with the canonical-domain projection and its sharp error bound. Per-direction refinements, packing, image, fixed-point, idempotence and locality records are the evidence that makes those compositions interpretable.
 
@@ -372,7 +372,7 @@ $$
 
 
 $$
-D_4(t)=\mathop{\text{Round}}\!\left(\frac{qt}{16}\right),\qquad0\le t<16
+D_4(t)=\mathop{\text{Round}}\!\left(\frac{qt}{16}\right),\qquad0\le t\lt 16
 $$
 
 
@@ -418,7 +418,7 @@ $$
 
 **Verification question.** Does the actual production conversion map the registered signed representative domain to the canonical residue domain with the expected fibre and algebraic behaviour, and does it compose correctly with the actual Barrett body?
 
-**Principal synthesis.** `SignedToCanon` maps `D_s={-(q-1),...,q-1}` to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; `CanonAfterBarrett(a)=canon_q(a)` for every `int16_t` input `a`.
+**Principal synthesis.** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 **Why this synthesis was selected.** The principal claim combines the function’s representation-conversion purpose with the strongest actual-body composition exercised by the campaign. Fibre, fixed-point and algebra laws expose the structure of the map; the Barrett composition demonstrates compatibility with a production reduction path. None of these records licenses arbitrary-integer reduction.
 
@@ -473,7 +473,7 @@ $$
 
 **Verification question.** Does the unchanged Barrett implementation equal an independent centred-remainder oracle for every machine input, and how tightly can its quotient cells, multiplier and offset parameters be characterised?
 
-**Principal synthesis.** For every `int16_t` input `a`, `Barrett(a)=Centered_q(a)`, `-1664<=Barrett(a)<=1664`, and `Barrett(a)≡a (mod q)`, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
+**Principal synthesis.** For every `int16_t` input `a`, $`\mathrm{Barrett}(a)=\mathrm{Centered}_q(a)`$, $`-1664\le\mathrm{Barrett}(a)\le1664`$, and $`\mathrm{Barrett}(a)\equiv a\pmod q`$, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
 
 **Why this synthesis was selected.** Independent-oracle equality over the complete machine domain is the semantic anchor. Range and congruence state what representative is returned; fixed-point, quotient-cell, multiplier and offset families then explain why the frozen implementation realises that anchor. Parameter uniqueness is implementation characterisation, not a worldwide novelty claim.
 
@@ -587,7 +587,7 @@ $$
 
 
 $$
-c_0=P_{2i},\quad c_1=P_{2i+1},\quad0\le c_0,c_1<q
+c_0=P_{2i},\quad c_1=P_{2i+1},\quad0\le c_0,c_1\lt q
 $$
 
 
@@ -757,7 +757,7 @@ $$
 
 
 $$
-\bigl(\forall i:\mathop{\text{decoded}}_{12}(P,i)<q\bigr)\;\Longrightarrow\;\mathop{\text{CheckPK}}(P)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
+\bigl(\forall i:\mathop{\text{decoded}}_{12}(P,i)\lt q\bigr)\;\Longrightarrow\;\mathop{\text{CheckPK}}(P)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
 $$
 
 

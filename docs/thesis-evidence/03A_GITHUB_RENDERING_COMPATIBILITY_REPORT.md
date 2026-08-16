@@ -195,3 +195,17 @@ The protected-inline GitHub correction exposed a defect in the legacy named-oper
 Accordingly, the formal validation invariant is now defined by exact multiset preservation rather than total current safe-command count. Every historical `\operatorname{BODY}` occurrence, including multiplicity, must have a corresponding current `\mathop{\text{BODY}}` occurrence. The immutable historical multiset contains exactly 210 occurrences, zero may be missing, and the active source must contain zero blocked `\operatorname{...}` commands.
 
 This strengthens the gate by distinguishing the 210 historically transformed operators from any independently existing GitHub-safe `\mathop{\text{...}}` construct. No mathematical expression, property record, domain, result classification, evidence mapping or bounded conclusion was changed by this validator correction.
+
+<!-- RC4_PROFESSIONAL_GITHUB_MATH_NORMALISATION -->
+
+## Professional GitHub-math normalisation — 17 August 2026
+
+A full presentation audit of the active rendered catalogue distinguished mathematical presentation defects from ordinary code, paths, status labels and evidence identifiers.
+
+The repair promoted 27 audit-confirmed mathematical relations that had been enclosed in ordinary Markdown code spans into GitHub protected-inline MathJax. This does not create 27 new scientific properties: the canonical pre-existing mathematical corpus remains 414 expressions, while the active presentation surface now contains 441 MathJax-rendered expressions because previously textual/code-formatted repetitions of established relations are now typeset as mathematics.
+
+The two low-nibble relations that used `\mathbin{\&}` were rewritten using the mathematically equivalent modulo-16 representation appropriate to the recorded byte-valued operands. Raw mathematical less-than/greater-than characters were replaced by TeX-safe comparison macros, and the single C-style `=>` / `!=` textual relation was normalised to mathematical implication/inequality notation.
+
+The transformation is presentation-only. Property IDs, result classifications, verification domains, evidence mappings, path/hash authority, bounded conclusions and the 257-record / 220-supported scientific inventories are unchanged.
+
+Historical source under `03A_AUDIT_HISTORY/` remains immutable and was not modified.

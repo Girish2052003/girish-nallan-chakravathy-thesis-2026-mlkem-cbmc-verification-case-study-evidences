@@ -590,7 +590,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 ### Formal statement
 
 $$
-(b_{3i+1}\mathbin{\&}15)\longrightarrow \text{high four bits of }D(B)_{2i}
+(b_{3i+1}\bmod 16)\longrightarrow \text{high four bits of }D(B)_{2i}
 $$
 
 

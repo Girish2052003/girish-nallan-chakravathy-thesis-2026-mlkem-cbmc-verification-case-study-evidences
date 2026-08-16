@@ -18,7 +18,7 @@ Does the unchanged serializer place each canonical 12-bit coefficient pair into 
 
 
 $$
-c_0=P_{2i},\quad c_1=P_{2i+1},\quad0\le c_0,c_1<q
+c_0=P_{2i},\quad c_1=P_{2i+1},\quad0\le c_0,c_1\lt q
 $$
 
 
@@ -997,7 +997,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 6, �
 ### Formal statement
 
 $$
-\begin{array}{rl}c_0+1&<q,\quad c_0\bmod256\ne255\\&\Longrightarrow\quad b_0\prime=b_0+1,\quad b_1\prime=b_1,\quad b_2\prime=b_2.\end{array}
+\begin{array}{rl}c_0+1&\lt q,\quad c_0\bmod256\ne255\\&\Longrightarrow\quad b_0\prime=b_0+1,\quad b_1\prime=b_1,\quad b_2\prime=b_2.\end{array}
 $$
 
 
@@ -1132,7 +1132,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 7, �
 ### Formal statement
 
 $$
-c_0+1<q\land c_0\bmod256=255\Longrightarrow b_0\prime=0\land(b_1\prime\bmod16)=(b_1\bmod16)+1\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=\left\lfloor\frac{b_1}{16}\right\rfloor\land b_2\prime=b_2
+c_0+1\lt q\land c_0\bmod256=255\Longrightarrow b_0\prime=0\land(b_1\prime\bmod16)=(b_1\bmod16)+1\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=\left\lfloor\frac{b_1}{16}\right\rfloor\land b_2\prime=b_2
 $$
 
 
@@ -1267,7 +1267,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 8, �
 ### Formal statement
 
 $$
-\begin{array}{rl}c_1+1&<q,\quad c_1\bmod16\ne15\\&\Longrightarrow\quad b_0\prime=b_0,\quad b_1\prime=b_1+16,\quad b_2\prime=b_2.\end{array}
+\begin{array}{rl}c_1+1&\lt q,\quad c_1\bmod16\ne15\\&\Longrightarrow\quad b_0\prime=b_0,\quad b_1\prime=b_1+16,\quad b_2\prime=b_2.\end{array}
 $$
 
 
@@ -1402,7 +1402,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 9, �
 ### Formal statement
 
 $$
-c_1+1<q\land c_1\bmod16=15\Longrightarrow b_0\prime=b_0\land(b_1\prime\bmod16)=(b_1\bmod16)\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=0\land b_2\prime=b_2+1
+c_1+1\lt q\land c_1\bmod16=15\Longrightarrow b_0\prime=b_0\land(b_1\prime\bmod16)=(b_1\bmod16)\land\left\lfloor\frac{b_1\prime}{16}\right\rfloor=0\land b_2\prime=b_2+1
 $$
 
 
@@ -1537,7 +1537,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, 
 ### Formal statement
 
 $$
-0\le d_0<q
+0\le d_0\lt q
 $$
 
 
@@ -1672,7 +1672,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 11, 
 ### Formal statement
 
 $$
-0\le d_1<q
+0\le d_1\lt q
 $$
 
 
@@ -2077,7 +2077,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 14, 
 ### Formal statement
 
 $$
-B\in\mathop{\text{Im}}(\mathop{\text{ToBytes}})\Longleftrightarrow\forall i:\;\mathop{\text{decoded}}_{12}(B,i)<q
+B\in\mathop{\text{Im}}(\mathop{\text{ToBytes}})\Longleftrightarrow\forall i:\;\mathop{\text{decoded}}_{12}(B,i)\lt q
 $$
 
 

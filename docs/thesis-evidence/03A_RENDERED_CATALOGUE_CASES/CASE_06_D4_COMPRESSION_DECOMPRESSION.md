@@ -23,7 +23,7 @@ $$
 
 
 $$
-D_4(t)=\mathop{\text{Round}}\!\left(\frac{qt}{16}\right),\qquad0\le t<16
+D_4(t)=\mathop{\text{Round}}\!\left(\frac{qt}{16}\right),\qquad0\le t\lt 16
 $$
 
 
@@ -53,7 +53,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** `Comp4(Decomp4(B))=B` for every compressed byte array `B`; `Proj4(A)=Decomp4(Comp4(A))` is a coordinatewise projection onto the 16-value codebook with `dist_q(A_i,Proj4(A)_i)<=104`, and 104 is attainable.
+**Recorded principal-claim wording:** $`\mathrm{Comp}_4(\mathrm{Decomp}_4(B))=B`$ for every compressed byte array `B`; $`\mathrm{Proj}_4(A)=\mathrm{Decomp}_4(\mathrm{Comp}_4(A))`$ is a coordinatewise projection onto the 16-value codebook with $`\mathrm{dist}_q\!\left(A_i,\mathrm{Proj}_4(A)_i\right)\le 104`$, and 104 is attainable.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -873,7 +873,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 5, “Per-coord
 ### Formal statement
 
 $$
-\mathrm{Decomp}_4(B)_{2i}=D_4(B_i\mathbin{\&}15)
+\mathrm{Decomp}_4(B)_{2i}=D_4(B_i\bmod 16)
 $$
 
 
@@ -1685,7 +1685,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 11, “Exact co
 ### Formal statement
 
 $$
-\mathrm{nibble}_{\ell}(\mathrm{Comp}_4(\mathrm{Decomp}_4(B)))=\mathrm{nibble}_{\ell}(B),\qquad 0\le\ell<256
+\mathrm{nibble}_{\ell}(\mathrm{Comp}_4(\mathrm{Decomp}_4(B)))=\mathrm{nibble}_{\ell}(B),\qquad 0\le\ell\lt 256
 $$
 
 
@@ -2627,7 +2627,7 @@ Appendix 1 → Case 6: D4 Compression and Decompression → item 18, “Projecti
 
 # Case-level bounded conclusion
 
-`Comp4(Decomp4(B))=B` for every compressed byte array `B`; `Proj4(A)=Decomp4(Comp4(A))` is a coordinatewise projection onto the 16-value codebook with `dist_q(A_i,Proj4(A)_i)<=104`, and 104 is attainable.
+$`\mathrm{Comp}_4(\mathrm{Decomp}_4(B))=B`$ for every compressed byte array `B`; $`\mathrm{Proj}_4(A)=\mathrm{Decomp}_4(\mathrm{Comp}_4(A))`$ is a coordinatewise projection onto the 16-value codebook with $`\mathrm{dist}_q\!\left(A_i,\mathrm{Proj}_4(A)_i\right)\le 104`$, and 104 is attainable.
 
 **Explicit exclusion.** No assembly/native-backend equivalence.
 

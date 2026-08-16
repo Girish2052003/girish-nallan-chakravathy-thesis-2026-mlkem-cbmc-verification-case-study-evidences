@@ -53,7 +53,7 @@ B_{\mathrm{prod}}=33554432=2^{25}\in[33548599,33560264]
 $$
 
 
-**Recorded principal-claim wording:** For every `int16_t` input `a`, `Barrett(a)=Centered_q(a)`, `-1664<=Barrett(a)<=1664`, and `Barrett(a)≡a (mod q)`, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
+**Recorded principal-claim wording:** For every `int16_t` input `a`, $`\mathrm{Barrett}(a)=\mathrm{Centered}_q(a)`$, $`-1664\le\mathrm{Barrett}(a)\le1664`$, and $`\mathrm{Barrett}(a)\equiv a\pmod q`$, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -2085,7 +2085,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 14, “Cor
 ### Formal statement
 
 $$
-\forall m\in\mathcal M_{\mathrm{safe}}:\;m<20159\Longrightarrow R_m(-31626)\ne C(-31626)
+\forall m\in\mathcal M_{\mathrm{safe}}:\;m\lt 20159\Longrightarrow R_m(-31626)\ne C(-31626)
 $$
 
 
@@ -2220,7 +2220,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 15, “Fai
 ### Formal statement
 
 $$
-\forall m\in\mathcal M_{\mathrm{safe}}:\;m>20159\Longrightarrow R_m(-31625)\ne C(-31625)
+\forall m\in\mathcal M_{\mathrm{safe}}:\;m\gt 20159\Longrightarrow R_m(-31625)\ne C(-31625)
 $$
 
 
@@ -2760,7 +2760,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 19, “Com
 ### Formal statement
 
 $$
-\forall B<33548599\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)
+\forall B\lt 33548599\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)
 $$
 
 
@@ -2895,7 +2895,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 20, “Off
 ### Formal statement
 
 $$
-\forall B>33560264\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)
+\forall B\gt 33560264\;\exists a\in\mathrm{int16\_t}:\quad R_B(a)\ne C(a)
 $$
 
 
@@ -3297,7 +3297,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 23, “Pro
 
 # Case-level bounded conclusion
 
-For every `int16_t` input `a`, `Barrett(a)=Centered_q(a)`, `-1664<=Barrett(a)<=1664`, and `Barrett(a)≡a (mod q)`, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
+For every `int16_t` input `a`, $`\mathrm{Barrett}(a)=\mathrm{Centered}_q(a)`$, $`-1664\le\mathrm{Barrett}(a)\le1664`$, and $`\mathrm{Barrett}(a)\equiv a\pmod q`$, with the registered fixed-point, quotient-cell, multiplier and offset-characterisation properties.
 
 **Explicit exclusion.** No first-ever/worldwide novelty claim; bound to pinned expression and machine model.
 

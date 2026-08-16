@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** `SignedToCanon` maps `D_s={-(q-1),...,q-1}` to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; `CanonAfterBarrett(a)=canon_q(a)` for every `int16_t` input `a`.
+**Recorded principal-claim wording:** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -591,7 +591,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 3, “Zero fibre�
 ### Formal statement
 
 $$
-F(c)=u\Longleftrightarrow\bigl(c=u\;\lor\;c=u-q\bigr),\qquad 1\le u<q
+F(c)=u\Longleftrightarrow\bigl(c=u\;\lor\;c=u-q\bigr),\qquad 1\le u\lt q
 $$
 
 
@@ -1671,7 +1671,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 11, “Negation c
 ### Formal statement
 
 $$
--q < B(a) < q
+-q \lt  B(a) \lt  q
 $$
 
 
@@ -2478,7 +2478,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 17, “Canonical-
 
 # Case-level bounded conclusion
 
-`SignedToCanon` maps `D_s={-(q-1),...,q-1}` to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; `CanonAfterBarrett(a)=canon_q(a)` for every `int16_t` input `a`.
+`SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 **Explicit exclusion.** Not arbitrary-integer reduction or global mathematical novelty.
 

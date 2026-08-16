@@ -39,7 +39,7 @@ $$
 
 
 $$
-\bigl(\forall i:\mathop{\text{decoded}}_{12}(P,i)<q\bigr)\;\Longrightarrow\;\mathop{\text{CheckPK}}(P)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
+\bigl(\forall i:\mathop{\text{decoded}}_{12}(P,i)\lt q\bigr)\;\Longrightarrow\;\mathop{\text{CheckPK}}(P)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
 $$
 
 
@@ -451,7 +451,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 ### Formal statement
 
 $$
-0\le \mathrm{pairIndex}(k)<\frac{\mathrm{MLKEM\_POLYVECBYTES}}{3}
+0\le \mathrm{pairIndex}(k)\lt \frac{\mathrm{MLKEM\_POLYVECBYTES}}{3}
 $$
 
 
@@ -721,7 +721,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 ### Formal statement
 
 $$
-\left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)<q\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
+\left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
 $$
 
 

@@ -44,7 +44,7 @@ $$
 
 
 $$
-0\le A_i,B_i<q\;\Longrightarrow\;R_i=A_i-B_i\in[-3328,3328]
+0\le A_i,B_i\lt q\;\Longrightarrow\;R_i=A_i-B_i\in[-3328,3328]
 $$
 
 
@@ -327,7 +327,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 1, “Canon
 ### Formal statement
 
 $$
-0 \le output_{i} < q
+0 \le output_{i} \lt  q
 $$
 
 
@@ -1947,9 +1947,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 13, “Coef
 ### Formal statement
 
 $$
-\begin{array}{rl}
-&\text{inputs differ only at j => outputs agree for all i != j}
-\end{array}
+\text{inputs differ only at }j\Longrightarrow\text{outputs agree for all }i\ne j
 $$
 
 
@@ -3164,7 +3162,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 22, “Subt
 ### Formal statement
 
 $$
-0\le v_i^{\mathrm{reduced}}<q\quad\land\quad v^{\mathrm{after\ ToMsg}}=v^{\mathrm{before\ ToMsg}}
+0\le v_i^{\mathrm{reduced}}\lt q\quad\land\quad v^{\mathrm{after\ ToMsg}}=v^{\mathrm{before\ ToMsg}}
 $$
 
 

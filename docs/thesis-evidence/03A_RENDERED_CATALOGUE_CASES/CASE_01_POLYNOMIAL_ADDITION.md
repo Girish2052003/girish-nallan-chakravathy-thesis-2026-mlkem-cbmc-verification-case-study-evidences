@@ -29,7 +29,7 @@ These definitions are the expanded repository counterpart of the concise notatio
 
 
 $$
-0\le A_i,B_i<q\;\Longrightarrow\; R_i=A_i+B_i,\qquad 0\le R_i\le2q-2
+0\le A_i,B_i\lt q\;\Longrightarrow\; R_i=A_i+B_i,\qquad 0\le R_i\le2q-2
 $$
 
 
@@ -4252,7 +4252,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 20, “Caller-
 ### Formal statement
 
 $$
-|v_i|<8q
+|v_i|\lt 8q
 $$
 
 
@@ -4387,7 +4387,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 ### Formal statement
 
 $$
-|epp_i|<\eta_2+1
+|epp_i|\lt \eta_2+1
 $$
 
 
@@ -5199,7 +5199,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 25, “Produce
 ### Formal statement
 
 $$
-|v_i^{\mathrm{initial}}|<8q
+|v_i^{\mathrm{initial}}|\lt 8q
 $$
 
 
@@ -5334,7 +5334,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 ### Formal statement
 
 $$
-|epp_i|<\eta_2+1
+|epp_i|\lt \eta_2+1
 $$
 
 
