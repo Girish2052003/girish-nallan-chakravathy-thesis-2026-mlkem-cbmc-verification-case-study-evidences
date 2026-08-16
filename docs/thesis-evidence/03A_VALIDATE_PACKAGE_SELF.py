@@ -74,8 +74,16 @@ def denorm(s):
     )
 
     # Restore standalone historical left-brace presentation.
-    # This is intentionally after the cases reconstruction so
-    # case-layout braces are not mistaken for standalone braces.
+    # The GitHub-safe form carries one lexical separator space so
+    # TeX does not consume the following letter into the control word.
+    # Remove that presentation-only separator during reconstruction.
+    s = s.replace(
+        r"\left\lbrace ",
+        r"\left\{",
+    )
+
+    # Retain compatibility with any standalone lbrace form whose
+    # following token does not require a separator.
     s = s.replace(
         r"\left\lbrace",
         r"\left\{",

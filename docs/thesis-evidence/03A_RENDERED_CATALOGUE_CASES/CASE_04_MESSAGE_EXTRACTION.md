@@ -1670,7 +1670,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 11, “Offset
 ### Formal statement
 
 $$
-\left\lbracec:\forall u\in[0,q),\,F_c(u)=O(u)\right\rbrace=[1073417800,1074063871]
+\left\lbrace c:\forall u\in[0,q),\,F_c(u)=O(u)\right\rbrace=[1073417800,1074063871]
 $$
 
 

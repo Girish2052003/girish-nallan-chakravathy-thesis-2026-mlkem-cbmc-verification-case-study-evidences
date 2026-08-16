@@ -137,3 +137,27 @@ Rendering-only replacements:
 For the exhaustive 03A formal layer, 257/257 repaired current statements reverse-normalize exactly to the accepted pre-GitHub source statements.
 
 <!-- REPOSITORY-WIDE-GITHUB-MATH-AUDIT:END -->
+
+<!-- STRICT-MATHJAX-AUDIT:START -->
+
+## Strict MathJax audit
+
+A browser-oriented strict MathJax parse was performed over the complete
+414-expression rendered catalogue corpus with undefined-command masking
+disabled.
+
+Initial result:
+
+- expressions tested: **414**
+- strict failures: **4**
+- undefined macros: **0**
+
+The four failures were PR-C04-012, PR-C05-002, PR-C05-010 and PR-C08-022.
+Each arose from alphabetic-token adjacency immediately after `\left\lbrace`,
+causing TeX control-word consumption. One lexical separator space was inserted
+after `\lbrace` in each affected expression.
+
+The repaired expressions remain mathematically unchanged and reverse-normalise
+exactly to their accepted historical statements.
+
+<!-- STRICT-MATHJAX-AUDIT:END -->

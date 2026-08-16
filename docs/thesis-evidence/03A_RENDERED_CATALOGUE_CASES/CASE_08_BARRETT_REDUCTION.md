@@ -3030,7 +3030,7 @@ Appendix 1 → Case 8: Barrett Reduction: mlk_barrett_reduce → item 21, “Off
 ### Formal statement
 
 $$
-\left\lbraceB:\forall a\in\mathrm{int16},\,R_B(a)=C(a)\right\rbrace=[33548599,33560264]
+\left\lbrace B:\forall a\in\mathrm{int16},\,R_B(a)=C(a)\right\rbrace=[33548599,33560264]
 $$
 
 

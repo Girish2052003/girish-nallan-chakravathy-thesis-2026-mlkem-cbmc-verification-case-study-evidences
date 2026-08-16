@@ -119,3 +119,24 @@ standalone package, its porcelain-v1 parsing regression test remains mandatory;
 when validating the already-installed repository, that installer-specific check
 is explicitly recorded as not applicable. No scientific, evidence, catalogue,
 mathematical, checksum, rendering or repository-integrity gate was removed.
+## GCR-21 — Strict MathJax control-word delimiter adjacency
+
+**Status:** CLOSED
+
+A strict MathJax audit of all 414 catalogue mathematical expressions identified
+exactly four browser-rendering failures: PR-C04-012, PR-C05-002, PR-C05-010
+and PR-C08-022.
+
+The affected expressions used `\left\lbrace` immediately followed by an
+alphabetic token. Under TeX control-word tokenisation, the following letters
+were consumed into the control sequence (for example, `\lbracec`), producing
+MathJax's `Missing or unrecognized delimiter for \left` error.
+
+The repair inserts one presentation-only separator space after `\lbrace` in
+those four expressions. Reverse normalisation removes that separator, and all
+257/257 current formal statements continue to reconstruct exactly to their
+accepted pre-GitHub statements.
+
+The same strict MathJax audit reported zero undefined macros. Apparent lexical
+patterns such as `\\0` and `\\M` occur at array row boundaries and are not
+undefined control sequences.

@@ -315,7 +315,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 1, “Exact 
 ### Formal statement
 
 $$
-\left\lbraceR_k^{(1)},R_k^{(2)}\right\rbrace=\{0,1665\}
+\left\lbrace R_k^{(1)},R_k^{(2)}\right\rbrace=\{0,1665\}
 $$
 
 
@@ -1395,7 +1395,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 9, “Messag
 ### Formal statement
 
 $$
-\mathrm{supp}(\mathrm{FromMsg}(m))=\left\lbracek:\mathrm{bit}(m,k)=1\right\rbrace
+\mathrm{supp}(\mathrm{FromMsg}(m))=\left\lbrace k:\mathrm{bit}(m,k)=1\right\rbrace
 $$
 
 
