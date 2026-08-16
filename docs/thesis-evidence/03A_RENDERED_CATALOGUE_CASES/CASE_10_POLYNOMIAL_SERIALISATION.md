@@ -1445,7 +1445,7 @@ The frozen native baseline for this case is: Native tobytes contract establishes
 
 ### Thesis projection
 
-Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, “Odd-coefficient $15 \rightarrow 16$ carry relation”. Chapter 4 uses the case-level principal synthesis in Section 4.5.2; this record remains available here so that the compression does not erase its evidential role.
+Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, “Odd-coefficient $`15 \rightarrow 16`$ carry relation”. Chapter 4 uses the case-level principal synthesis in Section 4.5.2; this record remains available here so that the compression does not erase its evidential role.
 
 
 <details>
@@ -1524,7 +1524,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, 
 
 - **Principal-claim role:** `DOMAIN_RANGE_AND_REPRESENTATION_SUPPORT`
 
-- **Appendix projection:** Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, “Odd-coefficient $15 \rightarrow 16$ carry relation”.
+- **Appendix projection:** Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 10, “Odd-coefficient $`15 \rightarrow 16`$ carry relation”.
 
 
 </details>

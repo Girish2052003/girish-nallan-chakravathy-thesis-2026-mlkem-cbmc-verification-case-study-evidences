@@ -1578,7 +1578,7 @@ The frozen native baseline for this case is: Native frombytes contract/range/saf
 
 ### Thesis projection
 
-Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 11, “Raw $12$-bit right inverse”. Chapter 4 uses the case-level principal synthesis in Section 4.5.3; this record remains available here so that the compression does not erase its evidential role.
+Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 11, “Raw $`12`$-bit right inverse”. Chapter 4 uses the case-level principal synthesis in Section 4.5.3; this record remains available here so that the compression does not erase its evidential role.
 
 
 <details>
@@ -1657,7 +1657,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Principal-claim role:** `DIRECT_SEMANTIC_SUPPORT`
 
-- **Appendix projection:** Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 11, “Raw $12$-bit right inverse”.
+- **Appendix projection:** Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 11, “Raw $`12`$-bit right inverse”.
 
 
 </details>

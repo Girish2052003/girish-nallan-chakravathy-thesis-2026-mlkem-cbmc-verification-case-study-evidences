@@ -210,7 +210,7 @@ The frozen native baseline for this case is: The production `mlk_zeroize` implem
 
 ### Thesis projection
 
-Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite of registered region $A$”. Chapter 4 uses the case-level principal synthesis in Section 4.5.1; this record remains available here so that the compression does not erase its evidential role.
+Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite of registered region $`A`$”. Chapter 4 uses the case-level principal synthesis in Section 4.5.1; this record remains available here so that the compression does not erase its evidential role.
 
 
 <details>
@@ -289,7 +289,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite o
 
 - **Principal-claim role:** `STATE_AND_FRAME_SUPPORT`
 
-- **Appendix projection:** Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite of registered region $A$”.
+- **Appendix projection:** Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 1, “Exact overwrite of registered region $`A`$”.
 
 
 </details>
@@ -345,7 +345,7 @@ The frozen native baseline for this case is: The production `mlk_zeroize` implem
 
 ### Thesis projection
 
-Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite of registered region $B$”. Chapter 4 uses the case-level principal synthesis in Section 4.5.1; this record remains available here so that the compression does not erase its evidential role.
+Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite of registered region $`B`$”. Chapter 4 uses the case-level principal synthesis in Section 4.5.1; this record remains available here so that the compression does not erase its evidential role.
 
 
 <details>
@@ -424,7 +424,7 @@ Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite o
 
 - **Principal-claim role:** `STATE_AND_FRAME_SUPPORT`
 
-- **Appendix projection:** Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite of registered region $B$”.
+- **Appendix projection:** Appendix 1 → Case 9: Zeroisation: mlk_zeroize → item 2, “Exact overwrite of registered region $`B`$”.
 
 
 </details>

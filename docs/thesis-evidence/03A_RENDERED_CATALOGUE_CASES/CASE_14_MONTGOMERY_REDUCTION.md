@@ -1826,12 +1826,12 @@ $$
 F(a,0)=0,\qquad F(0,b)=0,\qquad \mathcal{R}_0(a,b)
 $$
 
-Here $\mathcal{R}_0(a,b)$ denotes the separately registered **normalised zero-product reflection candidate**. The surviving summary and ledger name that relation but do not reproduce its internal algebraic formula. This catalogue therefore preserves the named sub-obligation without reconstructing an equation that is not present in the retained source.
+Here $`\mathcal{R}_0(a,b)`$ denotes the separately registered **normalised zero-product reflection candidate**. The surviving summary and ledger name that relation but do not reproduce its internal algebraic formula. This catalogue therefore preserves the named sub-obligation without reconstructing an equation that is not present in the retained source.
 
 
 ### What the property/control means
 
-This record preserves the two explicitly retained zero-annihilation equations together with the separately named normalised zero-product reflection sub-obligation. Because the retained summary does not expose the reflection sub-obligation as an algebraic formula, the catalogue labels it symbolically as $\mathcal{R}_0$ rather than inventing a stronger relation. The registered execution did not produce a completed solver verdict within the retained resource boundary, so these are candidate obligations, not supported theorems.
+This record preserves the two explicitly retained zero-annihilation equations together with the separately named normalised zero-product reflection sub-obligation. Because the retained summary does not expose the reflection sub-obligation as an algebraic formula, the catalogue labels it symbolically as $`\mathcal{R}_0`$ rather than inventing a stronger relation. The registered execution did not produce a completed solver verdict within the retained resource boundary, so these are candidate obligations, not supported theorems.
 
 
 ### Why it matters

@@ -1858,7 +1858,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 13, “Tight 
 
 ### Evidence-verified transcription correction
 
-The historical pre-correction ledger wording said `2^25`; the retained MSG-T5 record states `PRODUCTION_OFFSET=1073741824`, i.e. $2^{30}$, and records the production offset as admissible. The current public CSV and Markdown ledger twins have already been corrected to the $2^{30}$ relation. This note is retained only to preserve the provenance of that transcription repair.
+The historical pre-correction ledger wording said `2^25`; the retained MSG-T5 record states `PRODUCTION_OFFSET=1073741824`, i.e. $`2^{30}`$, and records the production offset as admissible. The current public CSV and Markdown ledger twins have already been corrected to the $`2^{30}`$ relation. This note is retained only to preserve the provenance of that transcription repair.
 
 
 <details>

@@ -1843,7 +1843,7 @@ The frozen native baseline for this case is: Native `poly_frommsg` source contra
 
 ### Thesis projection
 
-Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$\left( L_{1} \right)$-distance relation”. Chapter 4 uses the case-level principal synthesis in Section 4.4.2; this record remains available here so that the compression does not erase its evidential role.
+Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$`\left( L_{1} \right)`$-distance relation”. Chapter 4 uses the case-level principal synthesis in Section 4.4.2; this record remains available here so that the compression does not erase its evidential role.
 
 
 <details>
@@ -1922,7 +1922,7 @@ Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$\lef
 
 - **Principal-claim role:** `RELATIONAL_OR_STRUCTURAL_STRENGTHENING`
 
-- **Appendix projection:** Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$\left( L_{1} \right)$-distance relation”.
+- **Appendix projection:** Appendix 1 → Case 5: Message Embedding: mlk_poly_frommsg → item 13, “$`\left( L_{1} \right)`$-distance relation”.
 
 
 </details>

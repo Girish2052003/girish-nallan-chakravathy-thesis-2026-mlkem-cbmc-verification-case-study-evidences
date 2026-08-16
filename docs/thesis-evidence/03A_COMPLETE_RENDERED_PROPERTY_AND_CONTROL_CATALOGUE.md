@@ -50,7 +50,7 @@ $$
 q=3329,\qquad n=256,\qquad 0\le i<n.
 $$
 
-For an integer $x$,
+For an integer $`x`$,
 
 $$
 \mathop{\text{canon}}_q(x)\in\{0,\ldots,q-1\},\qquad \mathop{\text{canon}}_q(x)\equiv x\pmod q.
@@ -66,9 +66,9 @@ The GitHub-compatibility transformation is presentation-only. A closure gate pro
 
 ## Source correction register
 
-The earlier pre-correction ledger transcribed the Case-4 production offset in `PR-C04-013` as `2^25`. The retained MSG-T5 evidence records `1073741824 = 2^30`, and the exact Case-4 admissible interval contains $2^{30}$, not $2^{25}$. That correction has already been applied to the current public ledger twins before this final GitHub-renderable package was constructed. The catalogue therefore treats the correction as **resolved historical provenance**, not as an installation precondition. Case 8 independently and correctly uses $2^{25}=33554432$ for its Barrett offset.
+The earlier pre-correction ledger transcribed the Case-4 production offset in `PR-C04-013` as `2^25`. The retained MSG-T5 evidence records `1073741824 = 2^30`, and the exact Case-4 admissible interval contains $`2^{30}`$, not $`2^{25}`$. That correction has already been applied to the current public ledger twins before this final GitHub-renderable package was constructed. The catalogue therefore treats the correction as **resolved historical provenance**, not as an installation precondition. Case 8 independently and correctly uses $`2^{25}=33554432`$ for its Barrett offset.
 
-The final validator fails closed unless the installed current CSV and Markdown ledger twins both retain the corrected Case-4 $2^{30}$ relation.
+The final validator fails closed unless the installed current CSV and Markdown ledger twins both retain the corrected Case-4 $`2^{30}`$ relation.
 
 ## Catalogue structure
 

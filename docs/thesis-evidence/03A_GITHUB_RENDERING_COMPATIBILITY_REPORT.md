@@ -173,3 +173,25 @@ The active GitHub-facing catalogue was normalized to the semantically equivalent
 A before/after comparison against the immutable pre-repair Git `HEAD` confirmed preservation of all 414 mathematical expressions. The total number of `\mathop{\text{...}}` constructs was also unchanged from the pre-repair `HEAD`; therefore the row-boundary correction did not create or remove named mathematical operators. The existing 210-conversion invariant concerns the formerly GitHub-blocked named-operator transformations and is distinct from the total number of `\mathop{\text{...}}` constructs present in the catalogue.
 
 No property identifier, result classification, verification domain, bounded conclusion, evidential status, public evidence locator, or scientific claim was changed by this correction.
+
+<!-- RC4_GITHUB_PROTECTED_INLINE_DELIMITER_FIX -->
+
+## Protected-inline GitHub Markdown correction — 17 August 2026
+
+Live browser inspection after the earlier macro and TeX-row-boundary corrections showed that a further GitHub-specific presentation failure remained. The affected class was ordinary inline `$...$` mathematics containing TeX structures that overlap with Markdown parsing, including commands, braces, and subscripts.
+
+GitHub documents `$`…`` `$` as the protected inline-mathematics delimiter for expressions whose contents can interact with Markdown syntax. Accordingly, every ordinary inline mathematical expression in the active 03A master and 18 case/investigation documents was converted to the protected GitHub delimiter form.
+
+The TeX body of every expression was preserved byte-for-byte. This correction changes only the Markdown delimiter surrounding inline mathematics. The 414-expression inventory, all 257 property/control records, the 220 supported-property/obligation subset, scientific result classifications, formal relations, domains, evidence mappings and bounded conclusions are unchanged.
+
+The pre-fix material under `03A_AUDIT_HISTORY/` remains immutable historical provenance and was not modified.
+
+<!-- RC4_EXACT_OPERATOR_MULTISET_RECONCILIATION -->
+
+## Exact historical named-operator multiset reconciliation — 17 August 2026
+
+The protected-inline GitHub correction exposed a defect in the legacy named-operator validation metric. The immutable pre-GitHub-render source contains exactly 210 `\operatorname{...}` occurrences, whereas the current active catalogue contains 211 `\mathop{\text{...}}` occurrences and zero remaining blocked `\operatorname{...}` occurrences. The additional safe `\mathop{\text{...}}` occurrence was already present in the immutable pre-current-repair Git `HEAD`; it was not introduced by the protected-inline delimiter correction.
+
+Accordingly, the formal validation invariant is now defined by exact multiset preservation rather than total current safe-command count. Every historical `\operatorname{BODY}` occurrence, including multiplicity, must have a corresponding current `\mathop{\text{BODY}}` occurrence. The immutable historical multiset contains exactly 210 occurrences, zero may be missing, and the active source must contain zero blocked `\operatorname{...}` commands.
+
+This strengthens the gate by distinguishing the 210 historically transformed operators from any independently existing GitHub-safe `\mathop{\text{...}}` construct. No mathematical expression, property record, domain, result classification, evidence mapping or bounded conclusion was changed by this validator correction.
