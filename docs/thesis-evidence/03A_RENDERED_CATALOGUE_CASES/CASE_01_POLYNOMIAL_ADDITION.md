@@ -3712,7 +3712,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 16, “ML-KEM-
 ### Formal statement
 
 $$
-\&r\ne\&b
+\mathrm{addr}(r)\ne\mathrm{addr}(b)
 $$
 
 
@@ -3782,7 +3782,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 17, “Caller-
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** $`\displaystyle \&r\ne\&b`$
+- **Ledger formal relation:** $`\displaystyle \mathrm{addr}(r)\ne\mathrm{addr}(b)`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -3847,7 +3847,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 17, “Caller-
 ### Formal statement
 
 $$
-\forall j:\quad \&r.\mathrm{vec}_j\ne\&b.\mathrm{vec}_j
+\forall j:\quad \mathrm{addr}(r.\mathrm{vec}_j)\ne\mathrm{addr}(b.\mathrm{vec}_j)
 $$
 
 
@@ -3917,7 +3917,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 18, “Nested 
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** $`\displaystyle \forall j:\quad \&r.\mathrm{vec}_j\ne\&b.\mathrm{vec}_j`$
+- **Ledger formal relation:** $`\displaystyle \forall j:\quad \mathrm{addr}(r.\mathrm{vec}_j)\ne\mathrm{addr}(b.\mathrm{vec}_j)`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -4928,7 +4928,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 23, “Produce
 
 $$
 \begin{array}{rl}
-&\text{v\_after lies in the derived producer-bound interval}
+&\mathrm{v\_after}\ \text{lies in the derived producer-bound interval}
 \end{array}
 $$
 
@@ -4999,7 +4999,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 24, “Derived
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{v\_after lies in the derived producer-bound interval} \end{array}`$
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\mathrm{v\_after}\ \text{lies in the derived producer-bound interval} \end{array}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 
@@ -6415,7 +6415,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 31, “Second 
 
 $$
 \begin{array}{rl}
-&\text{v\_final lies in derived cumulative interval}
+&\mathrm{v\_final}\ \text{lies in derived cumulative interval}
 \end{array}
 $$
 
@@ -6486,7 +6486,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 32, “Cumulat
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 
-- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\text{v\_final lies in derived cumulative interval} \end{array}`$
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl} &\mathrm{v\_final}\ \text{lies in derived cumulative interval} \end{array}`$
 
 - **Assertion / harness mapping:** PA-05A/B/C harness property marker
 

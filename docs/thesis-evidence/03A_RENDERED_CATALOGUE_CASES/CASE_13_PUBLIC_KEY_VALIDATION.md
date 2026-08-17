@@ -181,7 +181,7 @@ Scientific outcome status is independent. Supported, negative, abstraction-limit
 ### Formal statement
 
 $$
-\left(\exists j:\ q\le\mathop{\text{decoded}}_{12}(PK,j)\le4095\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{REJECT},\mathrm{OOM}\}
+\left(\exists j:\ q\le\mathop{\text{decoded}}_{12}(PK,j)\le4095\right)\Longrightarrow\mathop{\mathrm{check\_pk}}(PK)\in\{\mathrm{REJECT},\mathrm{OOM}\}
 $$
 
 
@@ -251,7 +251,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 1, “M
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** $`\displaystyle \left(\exists j:\ q\le\mathop{\text{decoded}}_{12}(PK,j)\le4095\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{REJECT},\mathrm{OOM}\}`$
+- **Ledger formal relation:** $`\displaystyle \left(\exists j:\ q\le\mathop{\text{decoded}}_{12}(PK,j)\le4095\right)\Longrightarrow\mathop{\mathrm{check\_pk}}(PK)\in\{\mathrm{REJECT},\mathrm{OOM}\}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -721,7 +721,7 @@ Not enumerated as a supported Appendix-1 property by design; retained only in th
 ### Formal statement
 
 $$
-\left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
+\left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\mathrm{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}
 $$
 
 
@@ -791,7 +791,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 2, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** $`\displaystyle \left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\text{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}`$
+- **Ledger formal relation:** $`\displaystyle \left(\forall j:\;0\le\mathop{\text{decoded}}_{12}(PK,j)\lt q\right)\Longrightarrow\mathop{\mathrm{check\_pk}}(PK)\in\{\mathrm{ACCEPT},\mathrm{OOM}\}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1398,7 +1398,7 @@ Appendix 2 → Case 13 abstraction-limited inconclusive finding. Chapter 4 uses 
 ### Formal statement
 
 $$
-\mathrm{ReadFootprint}(\mathop{\text{check\_pk}})\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})
+\mathrm{ReadFootprint}(\mathop{\mathrm{check\_pk}})\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})
 $$
 
 
@@ -1468,7 +1468,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 6, “P
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** $`\displaystyle \mathrm{ReadFootprint}(\mathop{\text{check\_pk}})\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})`$
+- **Ledger formal relation:** $`\displaystyle \mathrm{ReadFootprint}(\mathop{\mathrm{check\_pk}})\subseteq[0,\mathrm{MLKEM\_POLYVECBYTES})`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1533,7 +1533,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 6, “P
 ### Formal statement
 
 $$
-N_{\mathop{\text{check\_pk}}}\le1
+N_{\mathop{\mathrm{check\_pk}}}\le1
 $$
 
 
@@ -1603,7 +1603,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 7, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** $`\displaystyle N_{\mathop{\text{check\_pk}}}\le1`$
+- **Ledger formal relation:** $`\displaystyle N_{\mathop{\mathrm{check\_pk}}}\le1`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 
@@ -1668,7 +1668,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 7, “C
 ### Formal statement
 
 $$
-\begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\text{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\text{check\_pk}}}=1\land R_{\mathop{\text{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}
+\begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\mathrm{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\mathrm{check\_pk}}}=1\land R_{\mathop{\mathrm{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}
 $$
 
 
@@ -1738,7 +1738,7 @@ Appendix 1 → Case 13: Public-Key Validation: mlk_kem_check_pk → item 8, “C
 
 - **Assumptions and grounding:** Model boundary is stated per property; production checker unchanged
 
-- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\text{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\text{check\_pk}}}=1\land R_{\mathop{\text{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}`$
+- **Ledger formal relation:** $`\displaystyle \begin{array}{rl}&\bigl(\mathrm{allocation\ failure}\land N_{\mathop{\mathrm{check\_pk}}}=0\land R_{\mathrm{caller}}=\mathrm{OOM}\bigr)\\&\quad\lor\bigl(N_{\mathop{\mathrm{check\_pk}}}=1\land R_{\mathop{\mathrm{check\_pk}}}=\mathrm{MLK\_ERR\_FAIL}\land R_{\mathrm{caller}}=\mathrm{MLK\_ERR\_FAIL}\bigr).\end{array}`$
 
 - **Assertion / harness mapping:** PKCHECK T1–T4 selected assertion marker
 

@@ -257,3 +257,17 @@ Manual classification separated mathematical presentation from metadata language
 The resulting active presentation surface contains 1076 MathJax expressions. Strict MathJax parsing, Ledger/Formal semantic identity, scientific-inventory validation, checksum validation and the strict evidence-spine validator were rerun before publication.
 
 No scientific status, formal relation, evidence locator, archive identity, assumption, bounded conclusion, immutable audit-history source or validator source was changed by the saturation repair. No evidence package, release or tag was created.
+
+<!-- RC4_FINAL_EXHAUSTIVE_BROWSER_CLOSURE_2026_08_17 -->
+
+## Final exhaustive browser-rendering closure — 17 August 2026
+
+Direct GitHub browser inspection identified a presentation-syntax class not discriminated by the preceding parser-oriented audits. PR-C01-027 and PR-C01-028 used C-style address notation that conflicted with TeX alignment syntax; they are now expressed by explicit roman address notation. PR-C01-036 and PR-C01-047 placed underscore-bearing identifiers inside text-mode mathematical macros; the identifiers are now separated from the surrounding prose. An exhaustive Case-13 review additionally found fourteen occurrences of the identifier `check_pk` represented through an underscore-bearing text-mode operator; all fourteen were converted to roman mathematical identifier notation.
+
+Formal statements and corresponding Ledger formal relations were changed together. Legitimate ampersands used as structural alignment separators inside TeX array environments were deliberately preserved.
+
+The final authoritative mathematical surface contains 1075 genuine GitHub-rendered expressions: 395 display expressions and 680 protected-inline expressions. The earlier 1076 count included one literal Markdown delimiter example enclosed in ordinary code. That historical audit result remains preserved above and is superseded by the corrected counting method.
+
+Final closure requires zero literal escaped ampersands in mathematical expressions, zero escaped underscore identifiers inside text-mode macros, zero blocked named-operator syntax, strict parsing of all 1075 expressions with both retained MathJax versions, 257/257 Ledger/Formal identity, the unchanged 257-record scientific inventory with 220 supported records, passing checksum manifests and the strict evidence-spine validator.
+
+No evidence package, release or tag was created or modified.
