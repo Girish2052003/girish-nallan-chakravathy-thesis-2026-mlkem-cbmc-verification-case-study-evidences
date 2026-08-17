@@ -89,16 +89,27 @@ The patch itself is retained only under `03A_AUDIT_HISTORY/` for provenance. The
 The package cleanly separates current repository publication/path status, historical pre-finalization metadata, and scientific verification outcomes.
 
 <!-- CURRENT-03A-PUBLICATION:START -->
-## Post-publication reconciliation
+## Post-publication current-state reconciliation
 
-The final 03A catalogue was first published on repository `main` at commit
-`73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+The final browser-rendering closure baseline for the active 03A catalogue
+was established on repository `main` at commit
+`f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-The earlier `4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c` identifier remains the
-clean pre-installation/reconciliation base. It must not be interpreted as the
-post-publication HEAD.
+That closure preserved the authoritative current public-path state:
+**18/18 investigation locators**, **257/257 substantive property/control
+records**, and **573/573 representative artefact records** remain
+resolved/hash-matched.
 
-The published catalogue retains the validated current public-path state:
-18/18 investigation locators, 257/257 substantive property/control records and
-573/573 representative artefact records resolved/hash-matched.
+The scientific inventory remains **257 records**, including the qualified
+**220-record supported subset**. The final genuine GitHub mathematical
+surface contains **1075 expressions** (**395 display**, **680
+protected-inline**, **0 plain-inline**) and passed strict MathJax 3.2.2 and
+4.1.3 validation at **1075/1075**.
+
+The earlier pre-installation and pre-publication descriptions above remain
+historical provenance. Current documentation must not interpret their
+required future gates as still pending.
+
+No tag or release was created or modified by the final 03A presentation
+closure.
 <!-- CURRENT-03A-PUBLICATION:END -->

@@ -111,16 +111,30 @@ The earlier `\operatorname` defect is removed without altering the accepted math
 <!-- CURRENT-03A-PUBLICATION:START -->
 ## Final live publication validation
 
-Before the catalogue was committed, the static GitHub-math gate passed with
-19 rendered documents, 414 extracted mathematical expressions, 210 approved
-GitHub-safe named-operator forms, and zero blocked `\operatorname` forms.
+The active 03A catalogue was ultimately closed after live GitHub browser
+inspection and subsequent exhaustive browser-risk repair. The final
+browser-rendering closure baseline is commit
+`f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-The authenticated GitHub Markdown REST smoke test then completed successfully
-for all 19/19 rendered catalogue documents.
+The authoritative genuine mathematical surface is **1075 MathJax
+expressions**: **395 display**, **680 protected-inline**, and **0
+plain-inline**. Strict MathJax 3.2.2 and MathJax 4.1.3 parsing each passed
+**1075/1075**.
 
-The first publication commit for the validated catalogue is `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+The final browser-risk gate reports zero literal escaped ampersands used as
+mathematical content, zero raw ampersands outside alignment environments,
+zero underscore-bearing identifiers inside text-mode mathematical macros,
+zero blocked named-operator forms, zero legacy mathbin-amp forms and zero
+bad row boundaries.
+
+Ledger/Formal identity remains **257/257**, the scientific inventory remains
+**257 records** with **220 supported**, checksum validation passes and the
+strict evidence-spine validator passes.
+
+The staged historical audit chronology below is preserved as provenance;
+earlier counts such as 414, 441, 919, 951, 978 and 1076 describe earlier
+audit stages and are not the current authoritative surface count.
 <!-- CURRENT-03A-PUBLICATION:END -->
-
 <!-- REPOSITORY-WIDE-GITHUB-MATH-AUDIT:START -->
 
 ## Repository-wide post-publication GitHub math audit

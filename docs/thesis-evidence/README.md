@@ -29,24 +29,23 @@ The ledgers summarize and index the retained evidence; they do not replace raw s
 <!-- CURRENT-03A-PUBLICATION:START -->
 ## Final exhaustive 03A catalogue
 
-Primary rendered entry point:
+The active 03A evidence layer on repository `main` contains the complete
+**257-record** property/control catalogue and its qualified **220-record
+supported subset**. The final browser-rendering closure baseline was
+established at commit `f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-`03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+The public evidence state retains **18/18 investigation locators** and
+**573/573 representative artefact records** as resolved/hash-matched. The
+authoritative path/hash values remain single-sourced in the evidence
+ledgers.
 
-Case/investigation detail documents:
+The final genuine GitHub mathematical surface is **1075 expressions**:
+**395 display**, **680 protected-inline**, and **0 plain-inline**.
+Strict MathJax 3.2.2 and 4.1.3 parsing both passed **1075/1075**; the final
+known browser-risk syntax inventory is zero.
 
-`03A_RENDERED_CATALOGUE_CASES/`
-
-First 03A publication commit on `main`:
-
-`73cba2c5bc9a51a156d0931669ee58123ce0037e`
-
-The rendered layer covers the complete 257-record property/control ledger,
-including the 220-record supported projection, while retaining all
-negative/inconclusive, diagnostic, control, assumption-derived and
-preservation-qualified classifications.
+No new release or tag was created for this final presentation closure.
 <!-- CURRENT-03A-PUBLICATION:END -->
-
 ## Current release status
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences

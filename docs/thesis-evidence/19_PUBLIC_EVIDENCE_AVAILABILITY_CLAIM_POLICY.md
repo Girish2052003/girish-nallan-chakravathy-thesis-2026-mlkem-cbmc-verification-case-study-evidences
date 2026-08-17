@@ -14,16 +14,23 @@ Repository publication/path-resolution state is independent of scientific result
 <!-- CURRENT-03A-PUBLICATION:START -->
 ## Current post-03A publication state
 
-The versioned underlying evidence remains published as `v1.0.0` and `v1.1.0`.
-The exhaustive rendered 03A catalogue was later published additively on
-`main`, first appearing at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+The exhaustive 03A property/control catalogue is publicly available on
+repository `main`. Its final browser-rendering closure baseline was
+established at commit `f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-Current-use wording may describe the 03A catalogue as publicly available on
-repository `main` at its recorded publication commit. Historical pre-release
-wording remains preserved only where it is explicitly labelled historical or
-superseded.
+Current-use wording may state that the repository exposes the complete
+**257-record** catalogue, its qualified **220-record supported subset**,
+**18/18 resolved investigation locators**, and **573/573 resolved/hash-matched
+representative artefact records**.
+
+The final rendered mathematical surface contains **1075 genuine MathJax
+expressions** (**395 display**, **680 protected-inline**, **0 plain-inline**)
+and passed strict MathJax 3.2.2 and 4.1.3 validation at **1075/1075**.
+
+Release `v1.1.0` remains the published expanded thesis-evidence release.
+The later 03A presentation closure is available on `main`; it did not create
+or modify a release or tag.
 <!-- CURRENT-03A-PUBLICATION:END -->
-
 ## Historical pre-release wording (superseded; retained for provenance)
 
 > Historical status: before publication of `v1.1.0`, the indexed evidence artefacts were already available in the public repository while the expanded versioned thesis-evidence release was still pending. This wording is retained only as provenance and is not current-use thesis wording.

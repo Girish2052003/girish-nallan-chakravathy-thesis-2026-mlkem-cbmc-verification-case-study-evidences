@@ -17,22 +17,31 @@ Start with:
 The raw evidence directories are not renamed or reorganised by this package. Exact live paths are generated from the existing repository tree by `tools/finalize_evidence_spine.py`.
 
 <!-- CURRENT-03A-PUBLICATION:START -->
-## Exhaustive rendered catalogue
+## Current 03A catalogue state
 
-The complete 257-record rendered property/control catalogue is:
+The exhaustive 03A catalogue on repository `main` descends from the final
+browser-rendering closure baseline
+`f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-`docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md`
+Current authoritative invariants:
 
-The eighteen case/investigation detail documents are under:
+- substantive property/control records: **257**;
+- supported subset: **220**;
+- investigation locators: **18/18** resolved;
+- representative artefacts: **573/573** resolved/hash-matched;
+- genuine MathJax expressions: **1075**;
+- display mathematics: **395**;
+- protected-inline mathematics: **680**;
+- plain-inline mathematics: **0**;
+- Ledger/Formal equality: **257/257**;
+- strict MathJax 3.2.2: **1075/1075 PASS**;
+- strict MathJax 4.1.3: **1075/1075 PASS**;
+- strict evidence-spine validation: **PASS**.
 
-`docs/thesis-evidence/03A_RENDERED_CATALOGUE_CASES/`
-
-The catalogue's first publication commit on `main` is `73cba2c5bc9a51a156d0931669ee58123ce0037e`. The supported
-projection remains 220 records; contrary, inconclusive, diagnostic, control,
-assumption-derived and preservation-qualified classifications remain distinct
-according to the authoritative ledger.
+The scientific result classes remain governed by the authoritative ledger;
+publication/path resolution does not convert qualified, negative,
+diagnostic, assumed or inconclusive records into unrestricted support.
 <!-- CURRENT-03A-PUBLICATION:END -->
-
 ## Evidence authority
 
 When sources conflict, use this order:

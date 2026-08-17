@@ -69,13 +69,25 @@ The self-audit verifies the 257-record manifest and rendered union, exact result
 <!-- CURRENT-03A-PUBLICATION:START -->
 ## Final publication provenance
 
-The repaired GitHub-renderable 03A layer was first committed to repository
-`main` as `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+The final browser-rendering closure baseline for the active 03A layer is
+commit `f19654fbd05386769a852cc45fbd9ebb06690902` on repository `main`.
 
-The pre-GitHub-render-fix closure remains preserved under
-`03A_AUDIT_HISTORY/`; it is retained as historical provenance and is not the
-active rendered catalogue.
+The active evidence layer preserves the original scientific inventory:
+**257 substantive property/control records**, including the qualified
+**220-record supported subset**, with **18/18 investigation locators** and
+**573/573 representative artefact records** resolved/hash-matched.
 
-Publication of the 03A layer did not rewrite the authoritative scientific
-ledger or move the existing `v1.0.0` / `v1.1.0` tags or releases.
+The final genuine GitHub mathematical surface is **1075 expressions**:
+**395 display**, **680 protected-inline**, and **0 plain-inline**. Both
+retained strict MathJax versions passed **1075/1075**, Ledger/Formal identity
+remained **257/257**, and the strict evidence-spine and checksum gates passed.
+
+Historical package-construction and pre-publication material remains
+preserved as provenance. Its statements about gates that still had to run
+describe that earlier stage and are superseded for current-use status by
+this post-publication record.
+
+Publication of the final 03A presentation closure did not rewrite the
+authoritative scientific result classes and did not create or modify a tag
+or release.
 <!-- CURRENT-03A-PUBLICATION:END -->

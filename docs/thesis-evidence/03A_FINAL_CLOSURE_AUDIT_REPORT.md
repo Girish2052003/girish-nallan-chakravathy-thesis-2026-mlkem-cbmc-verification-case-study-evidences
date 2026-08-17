@@ -161,3 +161,25 @@ FINAL 03A OFFLINE PACKAGE SELF-AUDIT: PASS
 ```
 
 The self-audit verifies the 257-record manifest and rendered union, exact result-class inventory, 220 supported projection, 19 negative/inconclusive records, 257 historical/current path-state pairs, 257 formula-preservation hashes, zero blocked `\operatorname` forms, 210 GitHub-safe named operators, balanced mathematics, current-state wording, Case-4 correction, Pandoc/MathML parsing and the active 03A checksum manifest. The transcript is retained as `03A_FINAL_OFFLINE_PACKAGE_VALIDATION_TRANSCRIPT.txt`.
+
+<!-- POST_PUBLICATION_FINAL_CLOSURE_SUPERSESSION_2026_08_17 -->
+
+## Post-publication closure supersession — 17 August 2026
+
+The environment-bound gates described above as remaining before publication
+were subsequently executed. Additional live-browser review then identified
+and closed presentation defects outside the original parser-oriented audit
+boundary.
+
+The final browser-rendering closure baseline is
+`f19654fbd05386769a852cc45fbd9ebb06690902`. The authoritative current mathematical surface is 1075 genuine
+MathJax expressions: 395 display and 680 protected-inline, with zero
+plain-inline expressions. Strict MathJax 3.2.2 and 4.1.3 each passed
+1075/1075; Ledger/Formal identity remained 257/257; the scientific inventory
+remained 257 records with 220 supported; checksum and strict evidence-spine
+validation passed.
+
+The original pre-push audit statements above remain intentionally preserved
+because they accurately record the package state at that earlier decision
+point. This note supersedes only their current-use status, not their
+historical meaning.

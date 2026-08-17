@@ -42,14 +42,21 @@ THE INFORMATION IS DISCLOSED TO ITS MAXIMUM THRESHOLD AS PER UNIVERSITY GUIDANCE
 <!-- CURRENT-03A-PUBLICATION:START -->
 ## Current 03A availability
 
-The final exhaustive 03A property/control catalogue and its eighteen
-case/investigation detail documents are publicly retained in the repository.
-The catalogue was first published on `main` at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e` after complete
-repository, checksum, GitHub-math and evidence-spine validation.
+The final exhaustive 03A property/control catalogue is publicly accessible
+on repository `main`. The final browser-rendering closure baseline was
+established at commit `f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-This later catalogue publication does not alter the identity of the existing
-`v1.0.0` or `v1.1.0` releases. Thesis citations may therefore use the
-appropriate frozen release for the underlying evidence corpus and the recorded
-03A publication commit when referring specifically to the exhaustive rendered
-catalogue.
+The catalogue preserves **257 substantive property/control records** and the
+qualified **220-record supported subset**. Its authoritative public-path
+state records **18/18 investigation locators** and **573/573 representative
+artefact records** as resolved/hash-matched.
+
+The genuine GitHub mathematical surface contains **1075 MathJax
+expressions** (**395 display**, **680 protected-inline**, **0 plain-inline**)
+and passed strict MathJax 3.2.2 and 4.1.3 validation at **1075/1075**.
+
+Release `v1.1.0` remains the published expanded thesis-evidence release.
+The later 03A browser-rendering closure is published on `main`; this
+documentation does not claim that those later presentation-only commits
+created or modified a release or tag.
 <!-- CURRENT-03A-PUBLICATION:END -->

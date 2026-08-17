@@ -31,3 +31,21 @@ For the final package decision, use:
 ## Verdict
 
 **PASS — package-internal catalogue reconciliation complete.** Repository-bound current-path/hash and live GitHub rendering gates are intentionally rerun after installation and before push.
+
+<!-- POST_PUBLICATION_03A_SUPERSESSION_2026_08_17 -->
+
+## Post-publication status supersession — 17 August 2026
+
+The pre-push environment-bound gates described above were subsequently
+executed during repository installation and publication. Later GitHub
+browser inspection also drove the retained rendering-repair sequence.
+
+The final browser-rendering closure baseline is
+`f19654fbd05386769a852cc45fbd9ebb06690902`. The active 03A state contains 257 substantive records with the
+qualified 220-record supported subset, a genuine 1075-expression MathJax
+surface, 257/257 Ledger/Formal identity, passing checksum manifests and a
+passing strict evidence-spine validator.
+
+The earlier pre-push wording above is retained unchanged as historical
+package-decision provenance; it must not be read as a statement that those
+gates remain pending today.

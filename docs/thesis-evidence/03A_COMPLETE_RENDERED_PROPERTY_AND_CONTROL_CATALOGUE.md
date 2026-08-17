@@ -20,7 +20,7 @@ When two retained sources disagree, this catalogue follows the repository eviden
 
 ## Publication-state and row-level path-status reconciliation
 
-The current public repository state is the authoritative publication/path state for this catalogue. At the accepted base commit `4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c`, release `v1.1.0` is already published, all **18/18 investigation locators**, **257/257 substantive property/control records**, and **573/573 representative artefact records** are recorded as resolved/hash-matched, and the repository strict evidence-spine validator passes.
+The current public repository state is the authoritative publication/path state for this catalogue. Release `v1.1.0` remains the published expanded thesis-evidence release, and the later final 03A browser-rendering closure baseline was established on repository `main` at commit `f19654fbd05386769a852cc45fbd9ebb06690902`. The authoritative public-path state records all **18/18 investigation locators**, **257/257 substantive property/control records**, and **573/573 representative artefact records** as resolved/hash-matched, and the repository strict evidence-spine validator passes. A later documentation-only commit may descend from the closure baseline without changing these scientific or evidential invariants.
 
 The traceability blocks still preserve four fields from the frozen pre-finalization RC2 snapshot: its unresolved-path placeholder, blank public SHA field, `PENDING` path status, and candidate count. Those values are now labelled explicitly as **historical RC2 metadata**. They are retained for provenance only and must not be read as the current state. Every record additionally states the current path-resolution classification `RESOLVED_HASH_MATCH`; the exact current public path and SHA-256 remain authoritative in the matching row of `02_COMPLETE_PROPERTY_LEDGER.csv` rather than being duplicated into a second mutable copy here.
 
@@ -980,15 +980,27 @@ Repository-relative distinctness is not inferred from the absence of a filename.
 For a thesis claim, start with the Chapter-4 principal synthesis, use the appendix for the concise supported-property inventory, and use this catalogue when the exact property, mathematical relation, evidence status, domain, principal-claim role, native comparison or archive trace is required. The deeper evidence is authoritative for detail; the thesis is authoritative for the final scientific interpretation within its stated scope.
 
 <!-- CURRENT-03A-PUBLICATION:START -->
-## Publication-state note
+## Current 03A publication state
 
-The repository state used as the **installation/reconciliation base** for this
-catalogue was commit
-`4785f933dcf5c1fc5a1d6dae5af2211f98e66f1c`.
+The active catalogue on repository `main` descends from the final
+browser-rendering closure baseline
+`f19654fbd05386769a852cc45fbd9ebb06690902`.
 
-The completed catalogue was subsequently first published on repository
-`main` at commit `73cba2c5bc9a51a156d0931669ee58123ce0037e`.
+The catalogue contains **257 substantive property/control records**, with
+the preserved **220-record supported subset**. The public-path state remains
+**18/18 investigation locators** and **573/573 representative artefact
+records** resolved/hash-matched according to the authoritative ledgers.
 
-The installation-base identifier is therefore provenance, not a statement
-that `4785f933...` remains the repository's current HEAD.
+The genuine GitHub mathematical presentation surface is **1075
+expressions**: **395 display**, **680 protected-inline**, and **0
+plain-inline**. Strict MathJax parsing passed **1075/1075** independently
+under versions 3.2.2 and 4.1.3. Ledger/Formal semantic identity remains
+**257/257**, and the final known browser-risk syntax inventory is zero.
+
+Commit `f19654fbd05386769a852cc45fbd9ebb06690902` is the final scientific/rendering closure baseline, not a
+claim that the same Git object must remain repository HEAD after later
+documentation-only reconciliation.
+
+No new evidence package, release or tag was created by the final
+presentation closure.
 <!-- CURRENT-03A-PUBLICATION:END -->
