@@ -44,7 +44,7 @@ The repository contains bounded implementation-level evidence. It does not estab
 
 ## Citation
 
-Use the repository's `CITATION.cff`. The V5 evidence baseline is frozen at `v1.0.0` (commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`). The expanded RQ2 evidence is frozen at `v1.1.0` (commit `1fbf1dadf60cb3b8754bcb5703fded558d75976b`). The `v1.1.0` release extends the historical `v1.0.0` baseline rather than rewriting it.
+Use the repository's `CITATION.cff`. The V5 evidence baseline remains identified by release label `v1.0.0`, while the expanded RQ2 evidence remains identified by release label `v1.1.0`. Under the maintained publication policy for this research repository, both release tags resolve to the same current published repository commit so that subsequent catalogue, rendering and documentation corrections do not leave the published release identities contradictory. Historical validation records retain the commit identities recorded at the time they were produced.
 
 ## Public-path verification
 

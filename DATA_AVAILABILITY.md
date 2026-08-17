@@ -6,7 +6,7 @@ https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbm
 
 ## Frozen V5 baseline — `v1.0.0`
 
-Release/tag `v1.0.0` preserves the validated V5 evidence spine at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. That evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
+Release/tag `v1.0.0` identifies the validated V5 evidence spine. In the maintained published repository state, `v1.0.0` and `v1.1.0` resolve to the same current release commit. That evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
 
 ## RQ2 architectural-development extension — published `v1.1.0` release
 
@@ -60,3 +60,8 @@ The later 03A browser-rendering closure is published on `main`; this
 documentation does not claim that those later presentation-only commits
 created or modified a release or tag.
 <!-- CURRENT-03A-PUBLICATION:END -->
+
+
+## Release-maintenance note
+
+Historical validation and execution records retain the commit identities captured when those records were produced; those historical provenance fields are not current release-tag targets.

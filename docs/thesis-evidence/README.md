@@ -50,7 +50,7 @@ No new release or tag was created for this final presentation closure.
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences
 
-Frozen V5 baseline: **`v1.0.0`** at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`. Expanded RQ2 evidence release: **`v1.1.0`** at commit `1fbf1dadf60cb3b8754bcb5703fded558d75976b`. The `v1.1.0` release extends the historical `v1.0.0` baseline rather than rewriting it.
+V5 evidence baseline label: **`v1.0.0`**. Expanded RQ2 evidence label: **`v1.1.0`**. Both maintained release tags resolve to the same current published repository commit. The labels continue to distinguish the V5 and expanded RQ2 evidence roles; historical validation records retain their original recorded commit identities.
 
 ## RC2 audit-strengthening files
 

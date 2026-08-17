@@ -4,7 +4,7 @@
 - Repository visibility: PUBLIC (verified before package construction)
 - Evidence documentation package date: 2026-08-06
 - Frozen V5 release tag: `v1.0.0`
-- Frozen V5 tagged commit: `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`
+- Maintained release targets: `v1.0.0` and `v1.1.0` resolve to the same current published repository commit.
 - Intended expanded thesis-evidence tag: `v1.1.0`
 - CBMC version: `6.9.0`
 - Principal source revisions: `d9613cf60de3132d32475c102d8c2781d84feb34` and `af4c5abdd5958bdc65a03cd5ee86708264f93304`
@@ -38,7 +38,7 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 
 ## v1.1.0 architectural-development extension
 
-- Frozen V5 baseline: `v1.0.0` at commit `883c4739c36d7a8d9bf25794e00984ca7b8d7f7c`.
+- V5 evidence baseline label: `v1.0.0`; expanded RQ2 evidence label: `v1.1.0`. Both labels resolve to the maintained current release commit.
 - Intended expanded thesis-evidence tag: `v1.1.0`.
 - V5 scientific evidence: files `01`–`19`; the v1.0 tag remains immutable.
 - New RQ2 evidence: files `20`–`30`.
@@ -72,3 +72,8 @@ The historical tag is not rewritten to remove this discrepancy.
 The tagged Git object and the report blob stored at that tag remain
 the authoritative historical record. RQ2 evidence identities are
 controlled separately by the RQ2 provenance/path-and-hash records.
+
+
+## Historical commit identities
+
+Historical evidence and validation records are preserved as provenance records and may therefore contain commit identities that were current when those records were generated. Such values are historical record fields, not current release-tag targets.
