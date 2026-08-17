@@ -39,7 +39,7 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 ## v1.1.0 architectural-development extension
 
 - V5 evidence baseline label: `v1.0.0`; expanded RQ2 evidence label: `v1.1.0`. Both labels resolve to the maintained current release commit.
-- Intended expanded thesis-evidence tag: `v1.1.0`.
+- Expanded thesis-evidence tag: `v1.1.0`.
 - V5 scientific evidence: files `01`–`19`; `v1.0.0` remains the V5 baseline release label and shares the maintained current release target with `v1.1.0`.
 - New RQ2 evidence: files `20`–`30`.
 - RQ2 source archive: `reproducible-ai-assisted-cbmc-workflows1.zip`.
