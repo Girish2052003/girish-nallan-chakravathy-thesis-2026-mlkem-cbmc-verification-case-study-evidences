@@ -3603,7 +3603,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-05A/B/C harness
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-05A/B/C harness property marker`. The admitted domain is: MLKEM_N=256, q=3329, K=3. The recorded assumptions/grounding are: PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-05A/B/C harness property marker`. The admitted domain is: $`\mathrm{MLKEM}_{N}=256,\ q=3329,\ K=3`$. The recorded assumptions/grounding are: PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -3643,7 +3643,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 16, “ML-KEM-
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** MLKEM_N=256, q=3329, K=3
+- **Input domain:** $`\mathrm{MLKEM}_{N}=256,\ q=3329,\ K=3`$
 
 - **Assumptions and grounding:** PA-05 caller-specific source contracts; safe-sum obligations are assertions, not assumptions
 

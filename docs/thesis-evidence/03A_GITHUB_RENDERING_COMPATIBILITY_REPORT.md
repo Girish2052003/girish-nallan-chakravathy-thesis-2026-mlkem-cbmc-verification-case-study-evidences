@@ -221,3 +221,15 @@ All 257 Ledger formal relations are rendered from the corresponding record-local
 The scientific inventory remained unchanged at 257 substantive property/control records, including the preserved 220-record supported subset. The repair was presentation-only: scientific statuses, evidence locators, archive identities, hashes, assumptions, bounded conclusions and formal semantics were not intentionally altered. The immutable historical audit source and validator sources remained untouched.
 
 No new evidence package, release or tag was created as part of this presentation closure.
+
+<!-- RC4_POST_CLOSURE_MECHANICAL_REAUDIT_2026_08_17 -->
+
+## Post-closure mechanical re-audit — 17 August 2026
+
+After the initial 919-expression professional-mathematics closure had passed strict MathJax validation and browser inspection, a deliberately wider mechanical residual scan was run over the complete active 03A Markdown surface. That independent scan identified 32 additional genuine mathematical domain/configuration fragments still presented as ordinary prose. They comprised repeated ML-KEM parameter assignments and numerical domain intervals in Cases 1, 2, 4 and 14.
+
+Those 32 occurrences were repaired presentation-only in exactly four rendered case files. The resulting active 03A mathematical surface contains 951 MathJax expressions. Strict parsing passed independently for 951/951 expressions with MathJax 3.2.2 and for 951/951 expressions with MathJax 4.1.3. The widened high-confidence residual scan then returned zero plain-math residuals.
+
+The Ledger/Formal semantic comparison remained 257/257, the substantive scientific inventory remained 257 records, and the supported subset remained 220 records. The strict evidence-spine validator continued to pass. No scientific status, formal relation, evidence locator, archive identity, assumption, bounded conclusion or retained historical audit source was changed by this follow-up presentation repair.
+
+This follow-up did not create a new evidence package, release or tag.

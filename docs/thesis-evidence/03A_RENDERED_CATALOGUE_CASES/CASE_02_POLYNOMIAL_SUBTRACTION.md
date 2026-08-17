@@ -1163,7 +1163,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T4 canonical-d
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1205,7 +1205,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 8, “Exact
 
 - **Input domain:** Canonical ML-KEM coefficient arrays
 
-- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
+- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.
 
 - **Ledger formal relation:** $`\displaystyle r_{i} = \mathop{\text{int32}}(A_{i}) - \mathop{\text{int32}}(B_{i})`$
 
@@ -1298,7 +1298,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T4 canonical-d
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1340,7 +1340,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 9, “Exact
 
 - **Input domain:** Canonical ML-KEM coefficient arrays
 
-- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
+- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.
 
 - **Ledger formal relation:** $`\displaystyle -3328 \le r_{i} \le 3328`$
 
@@ -1433,7 +1433,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T4 canonical-d
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1475,7 +1475,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 10, “Cano
 
 - **Input domain:** Canonical ML-KEM coefficient arrays
 
-- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
+- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.
 
 - **Ledger formal relation:** $`\displaystyle 0\le A_i,B_i\le3328\Longrightarrow -3328\le A_i-B_i\le3328\subset\mathrm{int16\_t}`$
 
@@ -1568,7 +1568,7 @@ The ledger records **SUPPORTED** and maps the proposition to `SUB-T4 canonical-d
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `SUB-T4 canonical-domain harness`. The admitted domain is: Canonical ML-KEM coefficient arrays. The recorded assumptions/grounding are: Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1610,7 +1610,7 @@ Appendix 1 → Case 2: Polynomial Subtraction: mlk_poly_sub → item 11, “Subt
 
 - **Input domain:** Canonical ML-KEM coefficient arrays
 
-- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in [0,3328]; unchanged retained portable-C target; signed representability derived from the domain.
+- **Assumptions and grounding:** Separate valid polynomial objects; all input coefficients canonical in $`[0,3328]`$; unchanged retained portable-C target; signed representability derived from the domain.
 
 - **Ledger formal relation:** $`\displaystyle B^{\mathrm{after}} = B^{\mathrm{before}}`$
 

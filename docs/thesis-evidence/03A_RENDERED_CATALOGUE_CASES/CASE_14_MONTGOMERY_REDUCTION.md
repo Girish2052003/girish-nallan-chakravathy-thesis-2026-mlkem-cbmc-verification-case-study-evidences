@@ -223,7 +223,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MONT-T1 audited as
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain [-2038398974,2038398974]. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain $`[-2038398974,2038398974]`$. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -263,7 +263,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 1, 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** a in complete source-contract domain [-2038398974,2038398974]
+- **Input domain:** a in complete source-contract domain $`[-2038398974,2038398974]`$
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
@@ -358,7 +358,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MONT-T1 audited as
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain [-2038398974,2038398974]. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain $`[-2038398974,2038398974]`$. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -398,7 +398,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 2, 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** a in complete source-contract domain [-2038398974,2038398974]
+- **Input domain:** a in complete source-contract domain $`[-2038398974,2038398974]`$
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
@@ -493,7 +493,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MONT-T1 audited as
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain [-2038398974,2038398974]. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain $`[-2038398974,2038398974]`$. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -533,7 +533,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 3, 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** a in complete source-contract domain [-2038398974,2038398974]
+- **Input domain:** a in complete source-contract domain $`[-2038398974,2038398974]`$
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
@@ -628,7 +628,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MONT-T1 audited as
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain [-2038398974,2038398974]. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain $`[-2038398974,2038398974]`$. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -668,7 +668,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 4, 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** a in complete source-contract domain [-2038398974,2038398974]
+- **Input domain:** a in complete source-contract domain $`[-2038398974,2038398974]`$
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 
@@ -763,7 +763,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MONT-T1 audited as
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain [-2038398974,2038398974]. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MONT-T1 audited assertion family (12 required assertions)`. The admitted domain is: a in complete source-contract domain $`[-2038398974,2038398974]`$. The recorded assumptions/grounding are: Arithmetic-right-shift model; complete target source contract; independent oracle. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -803,7 +803,7 @@ Appendix 1 → Case 14: Montgomery Reduction: mlk_montgomery_reduce → item 5, 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** a in complete source-contract domain [-2038398974,2038398974]
+- **Input domain:** a in complete source-contract domain $`[-2038398974,2038398974]`$
 
 - **Assumptions and grounding:** Arithmetic-right-shift model; complete target source contract; independent oracle
 

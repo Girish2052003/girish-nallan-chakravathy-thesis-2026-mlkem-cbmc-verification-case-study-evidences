@@ -211,7 +211,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T1 exact FIPS 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T1 exact FIPS candidate harness`. The admitted domain is: Canonical coefficient u in [0,3328]. The recorded assumptions/grounding are: Production scalar helper and polynomial traversal. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T1 exact FIPS candidate harness`. The admitted domain is: Canonical coefficient $`u\in[0,3328]`$. The recorded assumptions/grounding are: Production scalar helper and polynomial traversal. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -251,7 +251,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 1, “Exact c
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical coefficient u in [0,3328]
+- **Input domain:** Canonical coefficient $`u\in[0,3328]`$
 
 - **Assumptions and grounding:** Production scalar helper and polynomial traversal
 
@@ -1291,7 +1291,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG05C-G evidence 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1331,7 +1331,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 9, “Product
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31
+- **Input domain:** $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
@@ -1426,7 +1426,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG05C-G evidence 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1466,7 +1466,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 10, “Comple
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31
+- **Input domain:** $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
@@ -1561,7 +1561,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG05C-G evidence 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1601,7 +1601,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 11, “Offset
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31
+- **Input domain:** $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
@@ -1696,7 +1696,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG05C-G evidence 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1736,7 +1736,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 12, “Exactn
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31
+- **Input domain:** $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
@@ -1836,7 +1836,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG05C-G evidence 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG05C-G evidence chain`. The admitted domain is: $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31. The recorded assumptions/grounding are: uint32 modular arithmetic and pinned helper expression. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1881,7 +1881,7 @@ The historical pre-correction ledger wording said $`2^{25}`$; the retained MSG-T
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** u in [0,3328], c in uint32; fixed multiplier 1290168 and shift 31
+- **Input domain:** $`u\in[0,3328]`$, c in uint32; fixed multiplier 1290168 and shift 31
 
 - **Assumptions and grounding:** uint32 modular arithmetic and pinned helper expression
 
