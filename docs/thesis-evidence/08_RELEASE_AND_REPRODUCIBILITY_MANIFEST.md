@@ -5,7 +5,7 @@
 - Evidence documentation package date: 2026-08-06
 - Frozen V5 release tag: `v1.0.0`
 - Maintained release targets: `v1.0.0` and `v1.1.0` resolve to the same current published repository commit.
-- Intended expanded thesis-evidence tag: `v1.1.0`
+- Expanded thesis-evidence tag: `v1.1.0`
 - CBMC version: `6.9.0`
 - Principal source revisions: `d9613cf60de3132d32475c102d8c2781d84feb34` and `af4c5abdd5958bdc65a03cd5ee86708264f93304`
 - Principal parameter set: ML-KEM-768
@@ -40,7 +40,7 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 
 - V5 evidence baseline label: `v1.0.0`; expanded RQ2 evidence label: `v1.1.0`. Both labels resolve to the maintained current release commit.
 - Intended expanded thesis-evidence tag: `v1.1.0`.
-- V5 scientific evidence: files `01`–`19`; the v1.0 tag remains immutable.
+- V5 scientific evidence: files `01`–`19`; `v1.0.0` remains the V5 baseline release label and shares the maintained current release target with `v1.1.0`.
 - New RQ2 evidence: files `20`–`30`.
 - RQ2 source archive: `reproducible-ai-assisted-cbmc-workflows1.zip`.
 - RQ2 source archive SHA-256: `7e7d5f2f3f3d505983e39bcbaa5c88a493f7e9b9bf467ceca217f495a6ebe87b`.
@@ -48,28 +48,28 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 - Repository-only host evidence units retained by reference: 2 (`mlk_poly_add`, `mlk_poly_sub`), represented by six evidence-role mappings under the repository evidence release-classification policy.
 - V4 identity audit: 1,484 files in each preserved V4 state, identical relative path sets, 1,483 byte-identical files and one client-wiring difference.
 
-### v1.1.0 freeze procedure
+### v1.1.0 publication and maintained-tag procedure
 
-1. Install the addendum into `main` without altering the historical `v1.0.0` tag.
+1. Install the addendum into `main` and validate the combined evidence state before maintained release-tag reconciliation.
 2. Run `python3 tools/finalize_rq2_architectural_evidence.py --repo-root .`.
 3. Review files 25, 27 and 29 for provenance, release-classification policy and claim-boundary consistency.
 4. Run `python3 tools/validate_evidence_spine.py --repo-root . --strict`.
 5. Commit and push only after `## PASS`.
 6. Verify `origin/main` points to the new commit.
-7. Create and push annotated tag `v1.1.0`.
+7. Reconcile the maintained annotated tags `v1.0.0` and `v1.1.0` to the final validated published repository commit and push the updated tag references.
 8. Run release-mode validation and create a release-freeze record if desired.
 
 ## Historical `v1.0.0` checksum-manifest disclosure
 
-The historical `v1.0.0` tag remains immutable. In that tagged tree,
+The originally published `v1.0.0` state remains retained in Git history. In that original release state,
 `docs/thesis-evidence/SHA256SUMS` records SHA-256
 `80e75fb90898904444c0d7c9875030ca73ff6340bd9bebd49521bfa6a348bf87`
 for `docs/thesis-evidence/14_VALIDATION_REPORT.md`, whereas the
 `14_VALIDATION_REPORT.md` blob actually stored in the tagged
 `v1.0.0` tree has SHA-256
 `af3ac2c0e23ed7e67e92297bd41074e156aeffb95858a2d7e4b99465c4f20e9f`.
-The historical tag is not rewritten to remove this discrepancy.
-The tagged Git object and the report blob stored at that tag remain
+Maintaining the current `v1.0.0` release target does not alter the original commit retained in Git history or erase this disclosed historical discrepancy.
+The original Git commit and the report blob stored in that historical release state remain
 the authoritative historical record. RQ2 evidence identities are
 controlled separately by the RQ2 provenance/path-and-hash records.
 

@@ -85,11 +85,23 @@ def main():
         for phrase in ['100% codex capability preserved','all theorems proved','deterministic orchestration caused the failure','codex is intrinsically superior']:
             if phrase in low:errors.append(f'Terminology-boundary check failed in {pth.relative_to(root)}')
     if a.release:
-        head=git(root,'rev-parse','HEAD');tag=git(root,'describe','--tags','--exact-match');v11=git(root,'rev-list','-n','1','v1.1.0');v10=git(root,'rev-list','-n','1','v1.0.0');dirty=git(root,'status','--porcelain')
-        if tag!='v1.1.0':errors.append(f'Release tag check failed: expected v1.1.0, found {tag}')
-        if head=='UNAVAILABLE' or v11!=head:errors.append('v1.1.0 commit binding check failed')
-        if v10!='883c4739c36d7a8d9bf25794e00984ca7b8d7f7c':errors.append('Historical v1.0.0 commit binding check failed')
-        if dirty not in {'','UNAVAILABLE'}:errors.append('Release working-tree integrity check failed')
+        head=git(root,'rev-parse','HEAD')
+        v11=git(root,'rev-list','-n','1','v1.1.0')
+        v10=git(root,'rev-list','-n','1','v1.0.0')
+        tags_at_head=git(root,'tag','--points-at','HEAD')
+        dirty=git(root,'status','--porcelain')
+        head_tags=set() if tags_at_head=='UNAVAILABLE' else set(tags_at_head.splitlines())
+        required_tags={'v1.0.0','v1.1.0'}
+        if not required_tags.issubset(head_tags):
+            errors.append(
+                'Release tag check failed: v1.0.0 and v1.1.0 must both point at HEAD'
+            )
+        if head=='UNAVAILABLE' or v11!=head:
+            errors.append('v1.1.0 commit binding check failed')
+        if head=='UNAVAILABLE' or v10!=head:
+            errors.append('v1.0.0 commit binding check failed')
+        if dirty not in {'','UNAVAILABLE'}:
+            errors.append('Release working-tree integrity check failed')
     mode='RELEASE' if a.release else 'STRICT' if a.strict else 'STRUCTURAL'
     report=['# Combined thesis evidence-spine validation report','',f'- Mode: {mode}','- Existing V5 evidence integrity: PRESERVED_V1_0_VALIDATION_PASS',f'- RQ2 architectural locators: {len(data["locators"])}',f'- RQ2 configuration rows: {len(data["configs"])}',f'- RQ2 control-allocation rows: {len(data["controls"])}',f'- RQ2 failure/transfer rows: {len(data["failures"])}',f'- RQ2 claim-survival rows: {len(data["claims"])}',f'- RQ2 evidence-reference rows: {len(data["mappings"])}','- RQ2 release classification: PASS','- V4 architecture identity classification: PASS','- Referential integrity: PASS','- Preservation controls: PASS','- Claim-survival field completeness: PASS','', 'THE INFORMATION IS DISCLOSED TO ITS MAXIMUM THRESHOLD AS PER UNIVERSITY GUIDANCE AND POLICY','']
     if errors:report+=['## FAIL']+[f'- {x}' for x in errors]
