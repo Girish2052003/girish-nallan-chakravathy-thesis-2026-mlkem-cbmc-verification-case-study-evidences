@@ -240,8 +240,20 @@ This follow-up did not create a new evidence package, release or tag.
 
 A further deliberately broadened mechanical audit was applied after the 951-expression closure. It reviewed symbolic intervals, compact parameter/domain notation, plain-prose mathematical tokens and formula-like ordinary code spans across all 26 active 03A Markdown files.
 
-That audit identified 27 additional genuine mathematical presentation occurrences in the master catalogue, Case 1 and Case 7. They consisted of symbolic domains and intervals such as `[0,q)`, `[0,q-1]`, and related admitted-domain notation. The repair was presentation-only and changed exactly those three Markdown sources.
+That audit identified 27 additional genuine mathematical presentation occurrences in the master catalogue, Case 1 and Case 7. They consisted of symbolic domains and intervals such as $`[0,q)`$, $`[0,q-1]`$, and related admitted-domain notation. The repair was presentation-only and changed exactly those three Markdown sources.
 
 The resulting active 03A mathematical surface contains 978 MathJax expressions. Strict parsing passed for 978/978 expressions with MathJax 3.2.2 and independently for 978/978 expressions with MathJax 4.1.3. The broadened fourth-pass audit then returned zero plain-prose mathematical candidates and zero formula-like ordinary code spans.
 
 The scientific evidence spine remained valid. No historical audit source, validator source, scientific status, formal relation, evidence locator, assumption or bounded conclusion was altered. No evidence package, release or tag was created.
+
+<!-- RC4_FIFTH_PASS_SATURATION_CLOSURE_2026_08_17 -->
+
+## Fifth-pass saturation closure — 17 August 2026
+
+A final saturation audit deliberately widened the presentation search beyond the preceding fourth-pass closure. It identified three high-confidence prose expressions, additional genuine mathematical domain and parameter notation among the review-only candidates, and two mathematical examples still represented as ordinary code in the compatibility report.
+
+Manual classification separated mathematical presentation from metadata language, registered or historical labels, and implementation code. Eighty-one actionable mathematical presentation candidates were repaired. Ordinary English statements describing evidence mappings were preserved; registered and historical property wording was preserved; one implementation assignment remained intentionally represented as code.
+
+The resulting active presentation surface contains 1076 MathJax expressions. Strict MathJax parsing, Ledger/Formal semantic identity, scientific-inventory validation, checksum validation and the strict evidence-spine validator were rerun before publication.
+
+No scientific status, formal relation, evidence locator, archive identity, assumption, bounded conclusion, immutable audit-history source or validator source was changed by the saturation repair. No evidence package, release or tag was created.

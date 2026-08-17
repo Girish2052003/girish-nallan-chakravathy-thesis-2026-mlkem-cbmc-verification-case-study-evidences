@@ -48,12 +48,12 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+**Recorded principal-claim wording:** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-$`q`$ canonicalization.
 
 
 ### Why this claim is the principal case-level synthesis
 
-The raw 12-bit decoding equation is selected precisely because the production routine does not canonicalise arbitrary segments modulo q. Routing, locality, XOR and inversion properties characterise that raw decoder more completely; they are subordinate to, and constrained by, the same representation boundary.
+The raw 12-bit decoding equation is selected precisely because the production routine does not canonicalise arbitrary segments modulo $`q`$. Routing, locality, XOR and inversion properties characterise that raw decoder more completely; they are subordinate to, and constrained by, the same representation boundary.
 
 
 The survival ledger assigns this synthesis to **4.5.3** and records the compression action: “RETAIN one principal claim/domain/outcome row in Chapter 4; subordinate inventory stays in repository/appendix”. That rule is why subordinate records remain fully visible here even though Chapter 4 uses a single compact case statement.
@@ -62,16 +62,16 @@ The survival ledger assigns this synthesis to **4.5.3** and records the compress
 ## How the experiment was conducted and why the result is admissible
 
 
-The campaign worked against the pinned source `af4c5abdd5958bdc65a03cd5ee86708264f93304` under `ML-KEM-768`. Its primary verification focus was: Exact raw 12-bit decode; bit-routing, byte/coefficient locality and differential relations; inversion on the encoded domain. The additional or mixed evidence was: Four families and 11 accepted obligations are reported; the campaign explicitly does not prove FIPS ByteDecode12 modulo-q normalization for arbitrary noncanonical segments.
+The campaign worked against the pinned source `af4c5abdd5958bdc65a03cd5ee86708264f93304` under `ML-KEM-768`. Its primary verification focus was: Exact raw 12-bit decode; bit-routing, byte/coefficient locality and differential relations; inversion on the encoded domain. The additional or mixed evidence was: Four families and 11 accepted obligations are reported; the campaign explicitly does not prove FIPS ByteDecode12 modulo-$`q`$ normalization for arbitrary noncanonical segments.
 
 
 The retained case matrix records CBMC execution as **YES — campaign sealed**. Claim-to-artefact mapping is `YES`; target reachability `YES`; assertion reachability `YES`; assumption feasibility `YES`; non-vacuity `YES`; mutation/control status `YES`. These fields are used together: a successful semantic assertion is not treated as self-authenticating when the admitted states, target, assertion or loop extent are not demonstrably meaningful.
 
 
-**Case-level bounded conclusion:** The pinned production deserializer performs the recorded raw 12-bit unpacking and selected routing/locality/inversion relations; canonical modulo-q normalization of arbitrary byte strings is outside this result.
+**Case-level bounded conclusion:** The pinned production deserializer performs the recorded raw 12-bit unpacking and selected routing/locality/inversion relations; canonical modulo-$`q`$ normalization of arbitrary byte strings is outside this result.
 
 
-**Integrity boundary:** The exact theorem is raw 12-bit unpacking; it must not be rewritten as general canonical modulo-q decoding.
+**Integrity boundary:** The exact theorem is raw 12-bit unpacking; it must not be rewritten as general canonical modulo-$`q`$ decoding.
 
 
 The principal retained summary is `ALL VERIFICATION COMPELETED SUMMARY/PFB_MLK_POLY_FROMBYTES_COMPLETE_A_TO_Z_REPORT.md` with entry SHA-256 `b9da14869c7b7ad44a4e252d505adc5303b55e047c6d6e16989cddd083292619`. The case archive is `thesis_batch_2.zip` with SHA-256 `f8b48618fd64e068129684af69d28036b2d7af25fb99eb2c53a88b9a0f464ff9`. Evidence completeness is `COMPLETE`.
@@ -218,7 +218,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -271,7 +271,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -353,7 +353,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -406,7 +406,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -488,7 +488,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -541,7 +541,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -623,7 +623,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -676,7 +676,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -758,7 +758,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -811,7 +811,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -893,7 +893,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -946,7 +946,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1028,7 +1028,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -1081,7 +1081,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1163,7 +1163,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -1216,7 +1216,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1298,7 +1298,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -1351,7 +1351,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1433,7 +1433,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -1486,7 +1486,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1568,7 +1568,7 @@ The relation above was associated with `PFB T1–T4 final harness assertion`. Th
 
 **Strongest conclusion supported by this record:** The named raw 12-bit unpacking or inversion relation is supported.
 
-**What this record does not establish:** Not general modulo-q canonicalization of arbitrary byte strings.
+**What this record does not establish:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 ### Native-baseline relationship
@@ -1621,7 +1621,7 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 - **Strongest bounded conclusion:** The named raw 12-bit unpacking or inversion relation is supported.
 
-- **Explicit exclusion:** Not general modulo-q canonicalization of arbitrary byte strings.
+- **Explicit exclusion:** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 - **Evidence locator:** `LOC-C11-UA`
 
@@ -1667,9 +1667,9 @@ Appendix 1 → Case 11: Polynomial Deserialisation: mlk_poly_frombytes → item 
 
 # Case-level bounded conclusion
 
-Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-$`q`$ canonicalization.
 
-**Explicit exclusion.** Not general modulo-q canonicalization of arbitrary byte strings.
+**Explicit exclusion.** Not general modulo-$`q`$ canonicalization of arbitrary byte strings.
 
 
 # Cross-file authority

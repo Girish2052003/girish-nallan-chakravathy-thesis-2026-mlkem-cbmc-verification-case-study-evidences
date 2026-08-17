@@ -92,7 +92,7 @@ The representative artefact map contains **32** indexed records for `LOC-C08-UA`
 **What the frozen native repository already contained.** Native Barrett harness is essentially a symbolic call relying on the repository contract/range boundary.
 
 
-**Necessary overlap.** Same production function, q and fixed arithmetic constants.
+**Necessary overlap.** Same production function, $`q`$ and fixed arithmetic constants.
 
 
 **What this campaign added.** Independent centered oracle plus 23 range, congruence, fibre, quotient-cell, multiplier and offset properties.

@@ -47,7 +47,7 @@ The survival ledger assigns this synthesis to **4.3.3** and records the compress
 ## How the experiment was conducted and why the result is admissible
 
 
-The campaign worked against the pinned source `d9613cf60de3132d32475c102d8c2781d84feb34; selected replay/cross-check at af4c5abd…` under `ML-KEM-768`. Its primary verification focus was: Sequential canonical modular difference: production subtraction followed by production reduction agrees with an independent canonical modulo-q oracle. The additional or mixed evidence was: Call-site admissibility and oracle controls passed; implementation and assertion mutants were killed; later replay confirmed the positive property at the later revision but did not repeat every original control.
+The campaign worked against the pinned source `d9613cf60de3132d32475c102d8c2781d84feb34; selected replay/cross-check at af4c5abd…` under `ML-KEM-768`. Its primary verification focus was: Sequential canonical modular difference: production subtraction followed by production reduction agrees with an independent canonical modulo-$`q`$ oracle. The additional or mixed evidence was: Call-site admissibility and oracle controls passed; implementation and assertion mutants were killed; later replay confirmed the positive property at the later revision but did not repeat every original control.
 
 
 The retained case matrix records CBMC execution as **YES — AC-SR1, OR-SR1 and VC-SR1 passed; M4/M5 failed as expected**. Claim-to-artefact mapping is `YES`; target reachability `YES`; assertion reachability `YES`; assumption feasibility `YES`; non-vacuity `YES`; mutation/control status `YES`. These fields are used together: a successful semantic assertion is not treated as self-authenticating when the admitted states, target, assertion or loop extent are not demonstrably meaningful.
@@ -73,7 +73,7 @@ The representative artefact map contains **29** indexed records for `LOC-C03-UA`
 **What the frozen native repository already contained.** Native separate `poly_sub` and `poly_reduce` artefacts/contracts.
 
 
-**Necessary overlap.** Use of the same two production functions and q.
+**Necessary overlap.** Use of the same two production functions and $`q`$.
 
 
 **What this campaign added.** Direct sequential composition against independent canonical oracle with admissibility/oracle controls and implementation/assertion mutants.

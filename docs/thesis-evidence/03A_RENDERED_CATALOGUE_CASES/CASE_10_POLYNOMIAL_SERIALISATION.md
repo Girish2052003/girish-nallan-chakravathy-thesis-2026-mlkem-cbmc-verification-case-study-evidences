@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** Each canonical coefficient pair (c0,c1) is encoded as the 24-bit word c0+4096*c1 in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
+**Recorded principal-claim wording:** Each canonical coefficient pair $`(c_0,c_1)`$ is encoded as the 24-bit word $`c_0+4096c_1`$ in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -2749,7 +2749,7 @@ Appendix 1 → Case 10: Polynomial Serialisation: mlk_poly_tobytes → item 19, 
 
 # Case-level bounded conclusion
 
-Each canonical coefficient pair (c0,c1) is encoded as the 24-bit word c0+4096*c1 in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
+Each canonical coefficient pair $`(c_0,c_1)`$ is encoded as the 24-bit word $`c_0+4096c_1`$ in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
 
 **Explicit exclusion.** 1046 emitted CBMC records are not 1046 independent scientific claims; no non-canonical-input claim.
 

@@ -481,7 +481,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -521,7 +521,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 3, “XOR dif
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
@@ -616,7 +616,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -656,7 +656,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 4, “Equal-c
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
@@ -751,7 +751,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -791,7 +791,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 5, “Single-
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
@@ -886,7 +886,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -926,7 +926,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 6, “Decisio
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
@@ -1021,7 +1021,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1061,7 +1061,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 7, “Polynom
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 
@@ -1156,7 +1156,7 @@ The ledger records **SUPPORTED** and maps the proposition to `MSG-T2 R1/R2A/R2B/
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical A,B; symbolic coefficient k. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `MSG-T2 R1/R2A/R2B/R3A/R3B harness`. The admitted domain is: Canonical $`A,B`$; symbolic coefficient $`k`$. The recorded assumptions/grounding are: Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1196,7 +1196,7 @@ Appendix 1 → Case 4: Message Extraction: mlk_poly_tomsg → item 8, “Determi
 
 - **Parameter set:** ML-KEM-768
 
-- **Input domain:** Canonical A,B; symbolic coefficient k
+- **Input domain:** Canonical $`A,B`$; symbolic coefficient $`k`$
 
 - **Assumptions and grounding:** Valid, separately modelled objects unless an alias diagnostic explicitly states otherwise; unchanged production target; complete registered loop unwinding.
 

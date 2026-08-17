@@ -87,7 +87,7 @@ The representative artefact map contains **26** indexed records for `LOC-C07-UA`
 **What the frozen native repository already contained.** A dedicated eponymous `proofs/cbmc/scalar_signed_to_unsigned_q/` one-call harness exists in the frozen repository, together with the production helper and its exact source contract/semantics.
 
 
-**Necessary overlap.** q and production conversion/reduction bodies.
+**Necessary overlap.** $`q`$ and production conversion/reduction bodies.
 
 
 **What this campaign added.** Exact fibre/normalizer/algebra laws and actual-body Barrett-to-canonical composition.
@@ -212,7 +212,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: x,y in D=(-q,q). The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`x,y\in D=(-q,q)`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -252,7 +252,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 1, “Fibre neces
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** x,y in D=(-q,q)
+- **Input domain:** $`x,y\in D=(-q,q)`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -347,7 +347,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: x,y in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`x,y\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -387,7 +387,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 2, “Fibre suffi
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** x,y in D
+- **Input domain:** $`x,y\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -482,7 +482,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: c in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`c\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -522,7 +522,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 3, “Zero fibre�
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** c in D
+- **Input domain:** $`c\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -887,7 +887,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: c in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`c\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -927,7 +927,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 6, “Idempotence
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** c in D
+- **Input domain:** $`c\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -1022,7 +1022,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: c in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`c\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1062,7 +1062,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 7, “Exact fixed
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** c in D
+- **Input domain:** $`c\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -1157,7 +1157,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: u,v in U. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`u,v\in U`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1197,7 +1197,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 8, “Injectivity
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** u,v in U
+- **Input domain:** $`u,v\in U`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -1292,7 +1292,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: x,y,x+y in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`x,y,x+y\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1332,7 +1332,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 9, “Addition co
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** x,y,x+y in D
+- **Input domain:** $`x,y,x+y\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -1427,7 +1427,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: x,y,x-y in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`x,y,x-y\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1467,7 +1467,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 10, “Subtractio
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** x,y,x-y in D
+- **Input domain:** $`x,y,x-y\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -1562,7 +1562,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: x,-x in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`x,-x\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1602,7 +1602,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 11, “Negation c
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** x,-x in D
+- **Input domain:** $`x,-x\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -2237,7 +2237,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: c in D. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`c\in D`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -2277,7 +2277,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 16, “Agreement 
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** c in D
+- **Input domain:** $`c\in D`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 

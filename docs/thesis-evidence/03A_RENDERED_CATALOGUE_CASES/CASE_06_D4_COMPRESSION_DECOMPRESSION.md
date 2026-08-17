@@ -92,7 +92,7 @@ The representative artefact map contains **32** indexed records for `LOC-C06-UA`
 **What the frozen native repository already contained.** Native D4 proof directories/contracts and wider repository/backend assurance.
 
 
-**Necessary overlap.** Production calls, q/d=4 constants and byte layout.
+**Necessary overlap.** Production calls, $`q`$/$`d=4`$ constants and byte layout.
 
 
 **What this campaign added.** Four-family exact compressor/decompressor refinement, exact byte-domain retraction and canonical-domain projection with sharp error 104.

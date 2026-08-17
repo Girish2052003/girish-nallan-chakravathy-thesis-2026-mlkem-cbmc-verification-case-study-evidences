@@ -57,7 +57,7 @@ The survival ledger assigns this synthesis to **4.3.1** and records the compress
 ## How the experiment was conducted and why the result is admissible
 
 
-The campaign worked against the pinned source `d9613cf60de3132d32475c102d8c2781d84feb34` under `ML-KEM-768 primary; PA-06 also 512/768/1024`. Its primary verification focus was: Canonical-domain exact addition, range and modulo-q relation; full signed contract-domain exact addition; frame, commutativity and identity; call-site and parameter replication. The additional or mixed evidence was: PA-03 confirmed a counterexample to unrestricted exact addition; PA-04 separated safe disjoint use from invalid/diagnostic aliasing behaviour; mutation and non-vacuity campaigns succeeded.
+The campaign worked against the pinned source `d9613cf60de3132d32475c102d8c2781d84feb34` under `ML-KEM-768 primary; PA-06 also 512/768/1024`. Its primary verification focus was: Canonical-domain exact addition, range and modulo-$`q`$ relation; full signed contract-domain exact addition; frame, commutativity and identity; call-site and parameter replication. The additional or mixed evidence was: PA-03 confirmed a counterexample to unrestricted exact addition; PA-04 separated safe disjoint use from invalid/diagnostic aliasing behaviour; mutation and non-vacuity campaigns succeeded.
 
 
 The retained case matrix records CBMC execution as **YES — corrected canonical run reported 0/341 failed; later PA campaigns recorded successful or expected-negative outcomes**. Claim-to-artefact mapping is `YES`; target reachability `YES`; assertion reachability `YES`; assumption feasibility `YES`; non-vacuity `YES`; mutation/control status `YES`. These fields are used together: a successful semantic assertion is not treated as self-authenticating when the admitted states, target, assertion or loop extent are not demonstrably meaningful.
@@ -83,7 +83,7 @@ The representative artefact map contains **40** indexed records for `LOC-C01-UA`
 **What the frozen native repository already contained.** Native `poly_add` production source, contract/annotations and repository CBMC harness; contract overlaps exact addition/range/non-aliasing obligations.
 
 
-**Necessary overlap.** Function names, q/N constants, production call and source contract facts.
+**Necessary overlap.** Function names, $`q`$/$`N`$ constants, production call and source contract facts.
 
 
 **What this campaign added.** External PA suite covering exact/modular/frame/algebraic, negative-domain, alias diagnostic, caller, parameter, mutation, vacuity and provenance work.
@@ -640,7 +640,7 @@ The relation above was associated with `PA-01 V2 semantic assertion family`. The
 
 **Strongest conclusion supported by this record:** The stored canonical-input sum is non-negative.
 
-**What this record does not establish:** Not a canonical-output claim because values may exceed q-1.
+**What this record does not establish:** Not a canonical-output claim because values may exceed $`q-1`$.
 
 
 ### Native-baseline relationship
@@ -693,7 +693,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 2, “Canonica
 
 - **Strongest bounded conclusion:** The stored canonical-input sum is non-negative.
 
-- **Explicit exclusion:** Not a canonical-output claim because values may exceed q-1.
+- **Explicit exclusion:** Not a canonical-output claim because values may exceed $`q-1`$.
 
 - **Evidence locator:** `LOC-C01-UA`
 
@@ -1853,7 +1853,7 @@ The relation above was associated with `PA-02B modulo-q harness; final raw verdi
 
 ### Permitted conclusion and explicit boundary
 
-**Strongest conclusion supported by this record:** Production result has the expected residue modulo q under the accepted domain.
+**Strongest conclusion supported by this record:** Production result has the expected residue modulo $`q`$ under the accepted domain.
 
 **What this record does not establish:** Not a canonical-output claim; final raw PA-02B verdict is a preservation gap.
 
@@ -1906,7 +1906,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 11, “Signed-
 
 - **Mutation status:** Not fully retained
 
-- **Strongest bounded conclusion:** Production result has the expected residue modulo q under the accepted domain.
+- **Strongest bounded conclusion:** Production result has the expected residue modulo $`q`$ under the accepted domain.
 
 - **Explicit exclusion:** Not a canonical-output claim; final raw PA-02B verdict is a preservation gap.
 
@@ -7088,7 +7088,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 36, “Cross-p
 
 # Case-level bounded conclusion
 
-PA-01 establishes exact addition, $`[0,2q-2]`$ range, modulo-q refinement, frame, commutativity and identity for canonical inputs. PA-02 extends exact/modulo refinement to signed and non-canonical operand pairs whose sums are int16_t-representable.
+PA-01 establishes exact addition, $`[0,2q-2]`$ range, modulo-$`q`$ refinement, frame, commutativity and identity for canonical inputs. PA-02 extends exact/modulo refinement to signed and non-canonical operand pairs whose sums are int16_t-representable.
 
 **Explicit exclusion.** Not unrestricted arithmetic beyond int16_t representability; not whole-ML-KEM correctness.
 

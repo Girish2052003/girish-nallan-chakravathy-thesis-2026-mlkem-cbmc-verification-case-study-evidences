@@ -578,7 +578,7 @@ $$
 
 **Verification question.** Does the unchanged serializer place each canonical 12-bit coefficient pair into the exact three-byte layout, cover the whole 384-byte result, and preserve injectivity over canonical polynomials?
 
-**Principal synthesis.** Each canonical coefficient pair (c0,c1) is encoded as the 24-bit word c0+4096*c1 in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
+**Principal synthesis.** Each canonical coefficient pair $`(c_0,c_1)`$ is encoded as the 24-bit word $`c_0+4096c_1`$ in the specified 3-byte layout; the complete 384-byte encoding is injective on canonical polynomials.
 
 **Why this synthesis was selected.** The pair-level packed-word equation is the compact semantic description of the byte layout, while whole-polynomial injectivity establishes that the complete canonical encoding loses no information. Carry-boundary, locality, overwrite and inversion records ensure that this summary is not inferred from only a few byte positions.
 
@@ -633,9 +633,9 @@ $$
 
 **Verification question.** What does the production decoder actually compute from each three-byte block, including non-canonical 12-bit values, and which routing, locality and inversion relations follow from that raw representation?
 
-**Principal synthesis.** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-q canonicalization.
+**Principal synthesis.** Each 3-byte word $`W_i`$ is decoded to $`\left(W_i\bmod4096,\left\lfloor\frac{W_i}{4096}\right\rfloor\right)`$; the relation is raw 12-bit unpacking, not modulo-$`q`$ canonicalization.
 
-**Why this synthesis was selected.** The raw 12-bit decoding equation is selected precisely because the production routine does not canonicalise arbitrary segments modulo q. Routing, locality, XOR and inversion properties characterise that raw decoder more completely; they are subordinate to, and constrained by, the same representation boundary.
+**Why this synthesis was selected.** The raw 12-bit decoding equation is selected precisely because the production routine does not canonicalise arbitrary segments modulo $`q`$. Routing, locality, XOR and inversion properties characterise that raw decoder more completely; they are subordinate to, and constrained by, the same representation boundary.
 
 
 **Case notation carried over from the appendix/evidence definition layer:**

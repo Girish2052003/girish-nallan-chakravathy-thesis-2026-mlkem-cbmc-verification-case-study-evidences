@@ -63,7 +63,7 @@ The representative artefact map contains **31** indexed records for `LOC-SA-BR`:
 **What the frozen native repository already contained.** Same native Barrett baseline as Case 8.
 
 
-**Necessary overlap.** Same function/q/centered semantics.
+**Necessary overlap.** Same function/$`q`$/centered semantics.
 
 
 **What this campaign added.** Sign conjugacy/quotient reversal and centered-addition closure.
