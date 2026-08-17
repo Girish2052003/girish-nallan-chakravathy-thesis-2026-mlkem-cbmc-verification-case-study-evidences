@@ -48,7 +48,7 @@ $$
 $$
 
 
-**Recorded principal-claim wording:** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
+**Recorded principal-claim wording:** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to $`[0,q)`$, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 
 ### Why this claim is the principal case-level synthesis
@@ -617,7 +617,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: c in D; u in [1,q). The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`c\in D;\ u\in[1,q)`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -657,7 +657,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 4, “Complete no
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** c in D; u in [1,q)
+- **Input domain:** $`c\in D;\ u\in[1,q)`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -752,7 +752,7 @@ The ledger records **SUPPORTED** and maps the proposition to `CANON T1–T4 fina
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: u in U=[0,q). The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `CANON T1–T4 final harness assertion`. The admitted domain is: $`u\in U=[0,q)`$. The recorded assumptions/grounding are: $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -792,7 +792,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 5, “Canonical f
 
 - **Parameter set:** ML-KEM-768 build
 
-- **Input domain:** u in U=[0,q)
+- **Input domain:** $`u\in U=[0,q)`$
 
 - **Assumptions and grounding:** $`D=(-q,q),\;U=[0,q),\;q=3329`$; actual production bodies retained
 
@@ -2478,7 +2478,7 @@ Appendix 1 → Case 7: Signed-to-Canonical Conversion → item 17, “Canonical-
 
 # Case-level bounded conclusion
 
-`SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
+`SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to $`[0,q)`$, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 **Explicit exclusion.** Not arbitrary-integer reduction or global mathematical novelty.
 

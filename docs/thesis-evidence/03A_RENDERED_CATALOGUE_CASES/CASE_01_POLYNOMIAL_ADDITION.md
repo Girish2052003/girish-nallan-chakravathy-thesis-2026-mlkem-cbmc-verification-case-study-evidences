@@ -498,7 +498,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -538,7 +538,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 1, “Exact ad
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -633,7 +633,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -673,7 +673,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 2, “Canonica
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -768,14 +768,14 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
 
 **Strongest conclusion supported by this record:** The stored canonical-input sum lies in the tight derived interval.
 
-**What this record does not establish:** Does not assert reduction to [0,q).
+**What this record does not establish:** Does not assert reduction to $`[0,q)`$.
 
 
 ### Native-baseline relationship
@@ -808,7 +808,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 3, “Canonica
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -828,7 +828,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 3, “Canonica
 
 - **Strongest bounded conclusion:** The stored canonical-input sum lies in the tight derived interval.
 
-- **Explicit exclusion:** Does not assert reduction to [0,q).
+- **Explicit exclusion:** Does not assert reduction to $`[0,q)`$.
 
 - **Evidence locator:** `LOC-C01-UA`
 
@@ -903,7 +903,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -943,7 +943,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 4, “Modulo-(
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -1038,7 +1038,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1078,7 +1078,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 5, “Left-inp
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -1173,7 +1173,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1213,7 +1213,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 6, “Right-in
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -1308,7 +1308,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1348,7 +1348,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 7, “Zero-obj
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -1443,7 +1443,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1483,7 +1483,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 8, “Commutat
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 
@@ -1578,7 +1578,7 @@ The ledger records **SUPPORTED** and maps the proposition to `PA-01 V2 semantic 
 
 ### Exact experimental obligation and admitted domain
 
-The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays a,b in [0,q-1]. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
+The relation above was associated with `PA-01 V2 semantic assertion family`. The admitted domain is: Canonical coefficient arrays $`a,b\in[0,q-1]`$. The recorded assumptions/grounding are: Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.. This states the actual verification obligation rather than inferring a broader mathematical domain from the C storage type.
 
 
 ### Permitted conclusion and explicit boundary
@@ -1618,7 +1618,7 @@ Appendix 1 → Case 1: Polynomial Addition: mlk_poly_add → item 9, “Additive
 
 - **Parameter set:** ML-KEM-768 primary; PA-06 additionally 512/768/1024
 
-- **Input domain:** Canonical coefficient arrays a,b in [0,q-1]
+- **Input domain:** Canonical coefficient arrays $`a,b\in[0,q-1]`$
 
 - **Assumptions and grounding:** Canonical ML-KEM coefficients $`0\le a_i,b_i<q`$; valid separate objects; unchanged production body; complete registered unwinding.
 

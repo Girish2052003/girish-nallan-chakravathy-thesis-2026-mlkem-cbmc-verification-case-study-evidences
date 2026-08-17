@@ -418,7 +418,7 @@ $$
 
 **Verification question.** Does the actual production conversion map the registered signed representative domain to the canonical residue domain with the expected fibre and algebraic behaviour, and does it compose correctly with the actual Barrett body?
 
-**Principal synthesis.** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to `[0,q)`, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
+**Principal synthesis.** `SignedToCanon` maps $`D_s=\{-(q-1),\ldots,q-1\}`$ to $`[0,q)`$, with the recorded fibre, idempotence, fixed-point and algebraic laws; $`\mathrm{CanonAfterBarrett}(a)=\mathrm{canon}_q(a)`$ for every `int16_t` input `a`.
 
 **Why this synthesis was selected.** The principal claim combines the function’s representation-conversion purpose with the strongest actual-body composition exercised by the campaign. Fibre, fixed-point and algebra laws expose the structure of the map; the Barrett composition demonstrates compatibility with a production reduction path. None of these records licenses arbitrary-integer reduction.
 
