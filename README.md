@@ -44,7 +44,7 @@ The repository contains bounded implementation-level evidence. It does not estab
 
 ## Citation
 
-Use the repository's `CITATION.cff`. The V5 evidence baseline remains identified by release label `v1.0.0`, while the expanded RQ2 evidence remains identified by release label `v1.1.0`. Under the maintained publication policy for this research repository, both release tags resolve to the same current published repository commit so that subsequent catalogue, rendering and documentation corrections do not leave the published release identities contradictory. Historical validation records retain the commit identities recorded at the time they were produced.
+Use the repository's `CITATION.cff`. The V5 evidence baseline remains identified by release label `v1.0.0`, while the expanded RQ2 evidence remains identified by release label `v1.1.0`. Under the maintained publication policy for this research repository, both release tags resolve to the same shared maintained release snapshot. The `main` branch may subsequently advance through ordinary maintenance or further work without automatically retargeting either release tag. Historical validation records retain the commit identities recorded at the time they were produced.
 
 ## Public-path verification
 
@@ -56,6 +56,6 @@ The thesis-evidence overlay includes archive-verified native baseline correction
 
 ## RQ2 architectural-development evidence extension
 
-The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding examiner-facing evidence spine is in `docs/thesis-evidence/20_*` through `30_*`. It is additive to the V5 evidence frozen at `v1.0.0`; the historical tag is not rewritten.
+The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding examiner-facing evidence spine is in `docs/thesis-evidence/20_*` through `30_*`. The `v1.0.0` and `v1.1.0` labels retain their distinct V5-baseline and expanded-RQ2 evidence roles while sharing the maintained release snapshot. Later `main` commits do not automatically retarget either release.
 
 The expanded `v1.1.0` release is now published and preserves the RQ2 architectural-development extension alongside the unchanged historical `v1.0.0` baseline. Historical folder names are not acceptance conditions.

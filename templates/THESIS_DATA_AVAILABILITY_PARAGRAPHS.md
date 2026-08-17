@@ -6,7 +6,7 @@ https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbm
 
 ## Frozen V5 baseline — `v1.0.0`
 
-Release/tag `v1.0.0` identifies the validated V5 evidence spine. Release/tag `v1.1.0` identifies the expanded evidence corpus containing the RQ2 architectural-development evidence. Under the maintained publication policy, both release tags resolve to the same current published repository commit. The V5 evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
+Release/tag `v1.0.0` identifies the validated V5 evidence spine. Release/tag `v1.1.0` identifies the expanded evidence corpus containing the RQ2 architectural-development evidence. Under the maintained publication policy, both release tags resolve to the same shared release snapshot; later `main` commits may advance independently without automatically retargeting the releases. The V5 evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
 
 ## RQ2 architectural-development extension — `v1.1.0`
 
@@ -23,7 +23,7 @@ python3 tools/validate_evidence_spine.py --repo-root . --strict
 
 ## Safe wording during installation
 
-> The V5 case-study evidence is publicly identified by release `v1.0.0`, while the expanded corpus containing the architectural-development evidence is identified by release `v1.1.0`. Both maintained release tags resolve to the same current published repository commit.
+> The V5 case-study evidence is publicly identified by release `v1.0.0`, while the expanded corpus containing the architectural-development evidence is identified by release `v1.1.0`. Both maintained release tags resolve to the same shared maintained release snapshot. Later repository maintenance on `main` does not automatically retarget either release.
 
 ## Safe wording after combined strict validation but before the new tag
 
@@ -40,4 +40,4 @@ python3 tools/validate_evidence_spine.py --repo-root . --strict
 
 ## Release-maintenance note
 
-Historical validation and execution records may retain commit identities captured when those records were generated; such values are historical provenance fields rather than current release-tag targets.
+Historical validation and execution records may retain commit identities captured when those records were generated; such values are historical provenance fields rather than current release-tag targets. The maintained release snapshot is independent of later ordinary advancement of `main`.

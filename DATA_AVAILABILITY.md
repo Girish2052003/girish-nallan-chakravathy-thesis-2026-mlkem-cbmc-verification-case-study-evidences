@@ -6,7 +6,7 @@ https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbm
 
 ## Frozen V5 baseline — `v1.0.0`
 
-Release/tag `v1.0.0` identifies the validated V5 evidence spine. In the maintained published repository state, `v1.0.0` and `v1.1.0` resolve to the same current release commit. That evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
+Release/tag `v1.0.0` identifies the validated V5 evidence spine. In the maintained published repository state, `v1.0.0` and `v1.1.0` resolve to the same shared release snapshot. Later commits on `main` may advance independently without changing those release tags. That evidence layer covers the fourteen unassisted V5 cases and four skill-available investigations. Its validated scope includes 18/18 investigation roots and summaries, 257/257 substantive property/control mappings and 573/573 representative artefact mappings. Case 1 remains explicitly `PARTIAL` where subordinate historical outputs were not retained; the release does not recreate missing evidence.
 
 ## RQ2 architectural-development extension — published `v1.1.0` release
 
@@ -56,12 +56,12 @@ expressions** (**395 display**, **680 protected-inline**, **0 plain-inline**)
 and passed strict MathJax 3.2.2 and 4.1.3 validation at **1075/1075**.
 
 Release `v1.1.0` remains the published expanded thesis-evidence release.
-The later 03A browser-rendering closure is published on `main`; this
-documentation does not claim that those later presentation-only commits
-created or modified a release or tag.
+The 03A browser-rendering closure was subsequently incorporated into the
+shared maintained release snapshot. No new release label was created for that
+maintenance step; later `main` commits may again advance independently.
 <!-- CURRENT-03A-PUBLICATION:END -->
 
 
 ## Release-maintenance note
 
-Historical validation and execution records retain the commit identities captured when those records were produced; those historical provenance fields are not current release-tag targets.
+Historical validation and execution records retain the commit identities captured when those records were produced; those historical provenance fields are not current release-tag targets. The `main` branch may advance beyond the maintained release snapshot without creating a release-identity contradiction.

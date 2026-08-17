@@ -44,13 +44,13 @@ The final genuine GitHub mathematical surface is **1075 expressions**:
 Strict MathJax 3.2.2 and 4.1.3 parsing both passed **1075/1075**; the final
 known browser-risk syntax inventory is zero.
 
-No new release or tag was created for this final presentation closure.
+No new release label was created for this final presentation closure; the existing maintained release tags were subsequently reconciled to a shared release snapshot containing the corrected published state.
 <!-- CURRENT-03A-PUBLICATION:END -->
 ## Current release status
 
 Public repository: https://github.com/Girish2052003/girish-nallan-chakravathy-thesis-2026-mlkem-cbmc-verification-case-study-evidences
 
-V5 evidence baseline label: **`v1.0.0`**. Expanded RQ2 evidence label: **`v1.1.0`**. Both maintained release tags resolve to the same current published repository commit. The labels continue to distinguish the V5 and expanded RQ2 evidence roles; historical validation records retain their original recorded commit identities.
+V5 evidence baseline label: **`v1.0.0`**. Expanded RQ2 evidence label: **`v1.1.0`**. Both maintained release tags resolve to the same shared maintained release snapshot. Later commits on `main` do not automatically retarget either release tag. The labels continue to distinguish the V5 and expanded RQ2 evidence roles; historical validation records retain their original recorded commit identities.
 
 ## RC2 audit-strengthening files
 

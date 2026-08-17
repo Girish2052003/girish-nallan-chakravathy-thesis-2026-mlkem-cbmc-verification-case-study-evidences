@@ -88,18 +88,17 @@ def main():
         head=git(root,'rev-parse','HEAD')
         v11=git(root,'rev-list','-n','1','v1.1.0')
         v10=git(root,'rev-list','-n','1','v1.0.0')
-        tags_at_head=git(root,'tag','--points-at','HEAD')
+        t11=git(root,'cat-file','-t','v1.1.0')
+        t10=git(root,'cat-file','-t','v1.0.0')
         dirty=git(root,'status','--porcelain')
-        head_tags=set() if tags_at_head=='UNAVAILABLE' else set(tags_at_head.splitlines())
-        required_tags={'v1.0.0','v1.1.0'}
-        if not required_tags.issubset(head_tags):
-            errors.append(
-                'Release tag check failed: v1.0.0 and v1.1.0 must both point at HEAD'
-            )
-        if head=='UNAVAILABLE' or v11!=head:
-            errors.append('v1.1.0 commit binding check failed')
-        if head=='UNAVAILABLE' or v10!=head:
-            errors.append('v1.0.0 commit binding check failed')
+        if t10!='tag' or t11!='tag':
+            errors.append('Release tag-type check failed: v1.0.0 and v1.1.0 must both be annotated tags')
+        if v10=='UNAVAILABLE' or v11=='UNAVAILABLE' or v10!=v11:
+            errors.append('Shared release-snapshot check failed: v1.0.0 and v1.1.0 must resolve to the same commit')
+        if head!='UNAVAILABLE' and v10!='UNAVAILABLE':
+            base=git(root,'merge-base',v10,head)
+            if base!=v10:
+                errors.append('Release ancestry check failed: maintained release snapshot must be an ancestor of HEAD')
         if dirty not in {'','UNAVAILABLE'}:
             errors.append('Release working-tree integrity check failed')
     mode='RELEASE' if a.release else 'STRICT' if a.strict else 'STRUCTURAL'

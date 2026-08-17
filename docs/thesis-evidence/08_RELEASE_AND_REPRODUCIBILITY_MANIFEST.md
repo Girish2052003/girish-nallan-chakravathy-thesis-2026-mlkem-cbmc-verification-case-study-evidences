@@ -4,7 +4,7 @@
 - Repository visibility: PUBLIC (verified before package construction)
 - Evidence documentation package date: 2026-08-06
 - Frozen V5 release tag: `v1.0.0`
-- Maintained release targets: `v1.0.0` and `v1.1.0` resolve to the same current published repository commit.
+- Maintained release targets: `v1.0.0` and `v1.1.0` resolve to the same shared maintained release snapshot; later `main` commits may advance independently.
 - Expanded thesis-evidence tag: `v1.1.0`
 - CBMC version: `6.9.0`
 - Principal source revisions: `d9613cf60de3132d32475c102d8c2781d84feb34` and `af4c5abdd5958bdc65a03cd5ee86708264f93304`
@@ -38,9 +38,9 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 
 ## v1.1.0 architectural-development extension
 
-- V5 evidence baseline label: `v1.0.0`; expanded RQ2 evidence label: `v1.1.0`. Both labels resolve to the maintained current release commit.
+- V5 evidence baseline label: `v1.0.0`; expanded RQ2 evidence label: `v1.1.0`. Both labels resolve to the shared maintained release snapshot.
 - Expanded thesis-evidence tag: `v1.1.0`.
-- V5 scientific evidence: files `01`–`19`; `v1.0.0` remains the V5 baseline release label and shares the maintained current release target with `v1.1.0`.
+- V5 scientific evidence: files `01`–`19`; `v1.0.0` remains the V5 baseline release label and shares the maintained release snapshot with `v1.1.0`.
 - New RQ2 evidence: files `20`–`30`.
 - RQ2 source archive: `reproducible-ai-assisted-cbmc-workflows1.zip`.
 - RQ2 source archive SHA-256: `7e7d5f2f3f3d505983e39bcbaa5c88a493f7e9b9bf467ceca217f495a6ebe87b`.
@@ -56,7 +56,7 @@ Chapters 4–6 should refer to `v1.0.0` only after the tag and release exist.
 4. Run `python3 tools/validate_evidence_spine.py --repo-root . --strict`.
 5. Commit and push only after `## PASS`.
 6. Verify `origin/main` points to the new commit.
-7. Reconcile the maintained annotated tags `v1.0.0` and `v1.1.0` to the final validated published repository commit and push the updated tag references.
+7. Reconcile the maintained annotated tags `v1.0.0` and `v1.1.0` to the selected validated shared release snapshot and push the updated tag references. Subsequent `main` commits do not automatically retarget those releases.
 8. Run release-mode validation and create a release-freeze record if desired.
 
 ## Historical `v1.0.0` checksum-manifest disclosure
@@ -68,7 +68,7 @@ for `docs/thesis-evidence/14_VALIDATION_REPORT.md`, whereas the
 `14_VALIDATION_REPORT.md` blob actually stored in the tagged
 `v1.0.0` tree has SHA-256
 `af3ac2c0e23ed7e67e92297bd41074e156aeffb95858a2d7e4b99465c4f20e9f`.
-Maintaining the current `v1.0.0` release target does not alter the original commit retained in Git history or erase this disclosed historical discrepancy.
+Maintaining the shared `v1.0.0`/`v1.1.0` release snapshot does not alter the original commit retained in Git history or erase this disclosed historical discrepancy.
 The original Git commit and the report blob stored in that historical release state remain
 the authoritative historical record. RQ2 evidence identities are
 controlled separately by the RQ2 provenance/path-and-hash records.
