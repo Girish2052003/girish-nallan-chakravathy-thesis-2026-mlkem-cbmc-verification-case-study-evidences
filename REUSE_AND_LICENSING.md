@@ -1519,3 +1519,39 @@ Original applicable licence or licence expression
 **Primary principle:**
 Reuse is welcomed. Proper provenance, applicable attribution and licence compliance must be preserved.
 
+
+
+---
+
+# 88. Current REUSE compliance status
+
+This repository uses REUSE-compatible machine-readable metadata where the
+copyright and licensing position of a file or clearly defined group of files
+can be stated accurately.
+
+The repository does **not** claim full compliance with the REUSE Specification
+unless and until the applicable REUSE validation reports complete compliance.
+
+The retained research corpus contains frozen third-party source snapshots,
+historical build trees, generated verification evidence, archived packages,
+tool output, copied provenance material and other mixed-rights artefacts.
+Those files must not be assigned a repository-author licence merely to make a
+machine-readable compliance check pass.
+
+A non-zero REUSE validation result is therefore treated as an unresolved
+licensing-metadata classification task, not as permission to guess ownership,
+erase upstream provenance or apply a blanket repository licence.
+
+Where an artefact contains material with different rights or uncertain
+licensing provenance, the repository preserves the original evidence and
+records only licensing information that can be supported by the retained
+source, licence files, provenance records or another reliable legal basis.
+
+No statement in this section creates an exception from the REUSE
+Specification. It records the repository's present compliance status and the
+decision to prefer accurate provenance over a false claim of machine-readable
+compliance.
+
+Full REUSE compliance may be claimed only after the remaining covered files
+have been accurately classified and the REUSE validation completes
+successfully without misleading ownership or licensing assignments.
