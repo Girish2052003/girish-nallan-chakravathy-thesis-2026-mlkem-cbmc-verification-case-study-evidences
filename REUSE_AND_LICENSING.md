@@ -1568,23 +1568,24 @@ The retained upstream `LICENSE` identifies the affected `notrandombytes`
 material as derived from the source referenced at
 `https://cr.yp.to/papers.html#surf`.
 
-The exact custom licence text corresponding to the historical identifier
-`LicenseRef-PD-hp` is not contained in the frozen source snapshots retained
-by this research repository, and no authentic copy of that custom licence
-text was recovered from the retained repository history during the licensing
-audit.
+The custom SPDX identifier `LicenseRef-PD-hp` is authoritatively defined by
+D. J. Bernstein at `https://cr.yp.to/spdx.html` as the simple public-domain
+dedication:
 
-The repository therefore does not fabricate, reconstruct or infer a licence
-text for `LicenseRef-PD-hp`. In particular, an empty or placeholder
-`LICENSES/LicenseRef-PD-hp.txt` is not retained as though it were an authentic
-licence text.
+`This work is hereby placed into the public domain.`
 
-The original upstream SPDX expression is preserved unchanged in the frozen
-files. The standard alternative licence texts referenced by that expression,
-including `CC0-1.0`, `0BSD`, `MIT-0` and `MIT`, are retained in `LICENSES/`
-where applicable.
+The repository therefore retains that exact definition in
+`LICENSES/LicenseRef-PD-hp.txt`. The text was not reconstructed from memory,
+invented by the repository author or substituted with a different licence; it
+was recovered from the upstream author's published definition of the custom
+SPDX identifier.
 
-This unresolved historical custom-licence-text dependency is one reason the
-repository does not presently claim full REUSE compliance. It does not alter
-the original upstream licensing expression, create a new licence, remove an
-upstream licence option or assert ownership by the repository author.
+The original upstream SPDX expression remains unchanged in the frozen files.
+The standard alternative licence texts referenced by that expression,
+including `CC0-1.0`, `0BSD`, `MIT-0` and `MIT`, are also retained in
+`LICENSES/`.
+
+This recovery resolves the previously documented missing custom licence-text
+dependency for `LicenseRef-PD-hp`. It does not change ownership of the
+upstream material, remove any upstream licence option, alter frozen evidence
+bytes or imply full REUSE compliance for the remainder of the repository.
