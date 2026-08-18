@@ -15,6 +15,15 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - Negative/inconclusive evidence: [`docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`](docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)
 
 <!-- CURRENT-03A-PUBLICATION:START -->
+- Repository licensing and rights: [`LICENSE.md`](LICENSE.md)
+- Security policy: [`SECURITY.md`](SECURITY.md)
+- Contribution guidelines: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Code of conduct: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- AI-assistance notice: [`AI-ASSITANCE-NOTICE.md`](AI-ASSITANCE-NOTICE.md)
+- Citation metadata: [`CITATION.cff`](CITATION.cff)
+- REUSE metadata: [`REUSE.toml`](REUSE.toml)
+- Research evidence correction template: [`.github/ISSUE_TEMPLATE/research-correction.md`](.github/ISSUE_TEMPLATE/research-correction.md)
+- Pull request template: [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
 ## Final 03A catalogue state
 
 The exhaustive 03A property/control catalogue is publicly available on
@@ -56,6 +65,6 @@ The thesis-evidence overlay includes archive-verified native baseline correction
 
 ## RQ2 architectural-development evidence extension
 
-The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding examiner-facing evidence spine is in `docs/thesis-evidence/20_*` through `30_*`. The `v1.0.0` and `v1.1.0` labels retain their distinct V5-baseline and expanded-RQ2 evidence roles while sharing the maintained release snapshot. Later `main` commits do not automatically retarget either release.
+The repository also preserves the V1–V4 deterministic-orchestration development programme that now provides the principal evidence for RQ2. The corresponding RQ2 architectural-development evidence is retained in `docs/thesis-evidence/20_*` through `30_*`. The `v1.0.0` and `v1.1.0` labels retain their distinct V5-baseline and expanded-RQ2 evidence roles while sharing the maintained release snapshot. Later `main` commits do not automatically retarget either release.
 
 The expanded `v1.1.0` release is now published and preserves the RQ2 architectural-development extension alongside the unchanged historical `v1.0.0` baseline. Historical folder names are not acceptance conditions.
