@@ -14,7 +14,6 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - Archive path/hash map: [`docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md`](docs/thesis-evidence/12_ARCHIVE_EVIDENCE_PATH_AND_HASH_MAP.md)
 - Negative/inconclusive evidence: [`docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`](docs/thesis-evidence/06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)
 
-<!-- CURRENT-03A-PUBLICATION:START -->
 - Repository licensing and rights: [`LICENSE.md`](LICENSE.md)
 - Security policy: [`SECURITY.md`](SECURITY.md)
 - Contribution guidelines: [`CONTRIBUTING.md`](CONTRIBUTING.md)
@@ -24,6 +23,8 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - REUSE metadata: [`REUSE.toml`](REUSE.toml)
 - Research evidence correction template: [`.github/ISSUE_TEMPLATE/research-correction.md`](.github/ISSUE_TEMPLATE/research-correction.md)
 - Pull request template: [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
+
+<!-- CURRENT-03A-PUBLICATION:START -->
 ## Final 03A catalogue state
 
 The exhaustive 03A property/control catalogue is publicly available on
