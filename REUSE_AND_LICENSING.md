@@ -1555,3 +1555,36 @@ compliance.
 Full REUSE compliance may be claimed only after the remaining covered files
 have been accurately classified and the REUSE validation completes
 successfully without misleading ownership or licensing assignments.
+
+
+## 88.1 Historical LicenseRef-PD-hp text
+
+The preserved historical `mlkem-native` material includes files whose
+upstream SPDX licence expression is:
+
+`LicenseRef-PD-hp OR CC0-1.0 OR 0BSD OR MIT-0 OR MIT`
+
+The retained upstream `LICENSE` identifies the affected `notrandombytes`
+material as derived from the source referenced at
+`https://cr.yp.to/papers.html#surf`.
+
+The exact custom licence text corresponding to the historical identifier
+`LicenseRef-PD-hp` is not contained in the frozen source snapshots retained
+by this research repository, and no authentic copy of that custom licence
+text was recovered from the retained repository history during the licensing
+audit.
+
+The repository therefore does not fabricate, reconstruct or infer a licence
+text for `LicenseRef-PD-hp`. In particular, an empty or placeholder
+`LICENSES/LicenseRef-PD-hp.txt` is not retained as though it were an authentic
+licence text.
+
+The original upstream SPDX expression is preserved unchanged in the frozen
+files. The standard alternative licence texts referenced by that expression,
+including `CC0-1.0`, `0BSD`, `MIT-0` and `MIT`, are retained in `LICENSES/`
+where applicable.
+
+This unresolved historical custom-licence-text dependency is one reason the
+repository does not presently claim full REUSE compliance. It does not alter
+the original upstream licensing expression, create a new licence, remove an
+upstream licence option or assert ownership by the repository author.
