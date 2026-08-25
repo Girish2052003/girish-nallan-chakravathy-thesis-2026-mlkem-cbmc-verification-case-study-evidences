@@ -7,6 +7,8 @@ This repository accompanies Girish Nallan Chakravathy's 2026 MSc thesis on AI-as
 - Thesis evidence index: [`THESIS_EVIDENCE_INDEX.md`](THESIS_EVIDENCE_INDEX.md)
 - Data availability: [`DATA_AVAILABILITY.md`](DATA_AVAILABILITY.md)
 - Reuse and licensing position: [`REUSE_AND_LICENSING.md`](REUSE_AND_LICENSING.md)
+* References: [`REFERENCES.md`](REFERENCES.md)
+* Machine-readable bibliography: [`references.bib`](references.bib)
 - Complete property ledger: [`docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md`](docs/thesis-evidence/02_COMPLETE_PROPERTY_LEDGER.md)
 - Formal claim catalogue: [`docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md`](docs/thesis-evidence/03_FORMAL_CLAIM_CATALOGUE.md)
 - [Complete rendered property/control catalogue (03A)](docs/thesis-evidence/03A_COMPLETE_RENDERED_PROPERTY_AND_CONTROL_CATALOGUE.md) — exhaustive 257-record evidence layer with GitHub-compatible mathematics; the 220 supported subset and all controls, negatives and inconclusive findings remain separately classified.
