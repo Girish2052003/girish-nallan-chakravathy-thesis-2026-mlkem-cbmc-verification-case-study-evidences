@@ -35,7 +35,7 @@ Access dates for living web resources are **25 August 2026**.
 | `OPENAI-CODEX` | `openaiCodex` | Repository-aware software agent used in the later workflow | https://github.com/openai/codex |
 | `BOLIN-2026-CODEX` | `bolin2026codexAgentLoop` | Primary-source description of the Codex agent loop | https://openai.com/index/unrolling-the-codex-agent-loop/ |
 | `ARRANZ-OLMOS-2024-ZEROIZATION` | `arranzOlmos2024zeroization` | Formal-verification literature directly relevant to zeroisation | https://doi.org/10.46586/tches.v2024.i1.375-397 |
-| `OPENAI-GPT54-MINI` | `openaiGpt54Mini` | V3 GPT-5.4 mini model-family identity and reasoning configuration context | https://developers.openai.com/api/docs/models/gpt-5.4-mini |
+| `OPENAI-GPT54` | `openaiGpt54` | V3 GPT-5.4 model identity and reasoning configuration context | https://developers.openai.com/api/docs/models/gpt-5.4 |
 | `OPENAI-API` | `openaiApiReference` | V3 API-backed LLM workflow interface | https://developers.openai.com/api/reference/overview |
 
 ## Harvard reference list
@@ -66,7 +66,7 @@ National Institute of Standards and Technology (2024) *Module-Lattice-Based Key-
 
 OpenAI (n.d.-a) *Codex* [Computer software]. GitHub. Available at: https://github.com/openai/codex (Accessed: 25 August 2026).
 
-OpenAI (n.d.-b) *GPT-5.4 mini model* [Model documentation]. OpenAI API documentation. Available at: https://developers.openai.com/api/docs/models/gpt-5.4-mini (Accessed: 25 August 2026).
+OpenAI (n.d.-b) *GPT-5.4 model* [Model documentation]. OpenAI API documentation. Available at: https://developers.openai.com/api/docs/models/gpt-5.4 (Accessed: 25 August 2026).
 
 OpenAI (n.d.-c) *OpenAI API reference* [Technical documentation]. Available at: https://developers.openai.com/api/reference/overview (Accessed: 25 August 2026).
 
@@ -102,11 +102,11 @@ https://github.com/diffblue/cbmc/releases/tag/cbmc-6.9.0
 
 The Kroening and Tautschnig (2014) paper provides the scholarly CBMC reference. The software record and release URL separately establish tool identity and reproducibility.
 
-### GPT-5.4 mini and API identity
+### GPT-5.4 and API identity
 
-The V3 repository evidence identifies an API-backed GPT-5.4 mini workflow and its recorded reasoning configurations. The official GPT-5.4 mini documentation and OpenAI API reference resolve the model family and API interface.
+The V3 repository evidence identifies an API-backed GPT-5.4 workflow and its recorded reasoning configurations. The official GPT-5.4 documentation and OpenAI API reference resolve the model family and API interface.
 
-No versioned GPT-5.4 mini snapshot is inferred here unless it is explicitly established by the preserved experiment evidence.
+No versioned GPT-5.4 snapshot is inferred here unless it is explicitly established by the preserved experiment evidence.
 
 ### Codex identity
 
