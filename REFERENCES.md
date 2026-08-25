@@ -4,13 +4,13 @@
 
 This root reference register identifies the external sources directly relied upon by this research repository for normative grounding, implementation and source identity, formal-verification tooling, prior-assurance comparison, AI/model/API identity, and reproducibility context.
 
-The register contains **19 references**. It is deliberately scoped to sources directly used by this repository's scientific and reproducibility narrative. It does **not** recursively import every dependency, citation, test framework, standard, or third-party source appearing inside the vendored `upstream/mlkem-native` source tree.
+The register contains **20 references**. It is deliberately scoped to sources directly used by this repository's scientific and reproducibility narrative. It does **not** recursively import every dependency, citation, test framework, standard, or third-party source appearing inside the vendored `upstream/mlkem-native` source tree.
 
 The existing evidence spine remains authoritative for claim-to-evidence mapping. This reference register does not rewrite the evidence spine, historical release artefacts, or frozen evidence records.
 
 `CITATION.cff` remains the authoritative machine-readable instruction for citing **this repository itself**. The present file instead records the external literature, standards, software, repositories, and documentation upon which the repository directly relies.
 
-The accompanying [`references.bib`](references.bib) contains the same 19-source bibliography in machine-readable BibTeX-compatible form.
+The accompanying [`references.bib`](references.bib) contains the same 20-source bibliography in machine-readable BibTeX-compatible form.
 
 Access dates for living web resources are **25 August 2026**.
 
@@ -36,6 +36,7 @@ Access dates for living web resources are **25 August 2026**.
 | `BOLIN-2026-CODEX` | `bolin2026codexAgentLoop` | Primary-source description of the Codex agent loop | https://openai.com/index/unrolling-the-codex-agent-loop/ |
 | `ARRANZ-OLMOS-2024-ZEROIZATION` | `arranzOlmos2024zeroization` | Formal-verification literature directly relevant to zeroisation | https://doi.org/10.46586/tches.v2024.i1.375-397 |
 | `OPENAI-GPT54` | `openaiGpt54` | V3 GPT-5.4 model identity and reasoning configuration context | https://developers.openai.com/api/docs/models/gpt-5.4 |
+| `OPENAI-GPT56-SOL` | `openaiGpt56Sol` | Later-workflow GPT-5.6 Sol model identity and reasoning configuration context | https://developers.openai.com/api/docs/models/gpt-5.6-sol |
 | `OPENAI-API` | `openaiApiReference` | V3 API-backed LLM workflow interface | https://developers.openai.com/api/reference/overview |
 
 ## Harvard reference list
@@ -68,7 +69,9 @@ OpenAI (n.d.-a) *Codex* [Computer software]. GitHub. Available at: https://githu
 
 OpenAI (n.d.-b) *GPT-5.4 model* [Model documentation]. OpenAI API documentation. Available at: https://developers.openai.com/api/docs/models/gpt-5.4 (Accessed: 25 August 2026).
 
-OpenAI (n.d.-c) *OpenAI API reference* [Technical documentation]. Available at: https://developers.openai.com/api/reference/overview (Accessed: 25 August 2026).
+OpenAI (n.d.-c) *GPT-5.6 Sol model* [Model documentation]. OpenAI API documentation. Available at: https://developers.openai.com/api/docs/models/gpt-5.6-sol (Accessed: 25 August 2026).
+
+OpenAI (n.d.-d) *OpenAI API reference* [Technical documentation]. Available at: https://developers.openai.com/api/reference/overview (Accessed: 25 August 2026).
 
 Post-Quantum Code Package (n.d.-a) *Formal Verification in mlkem-native: Scope, Assumptions, Risks* [Software assurance documentation]. GitHub. Available at: https://github.com/pq-code-package/mlkem-native/blob/main/SOUNDNESS.md (Accessed: 25 August 2026).
 
@@ -108,6 +111,10 @@ The V3 repository evidence identifies an API-backed GPT-5.4 workflow and its rec
 
 No versioned GPT-5.4 snapshot is inferred here unless it is explicitly established by the preserved experiment evidence.
 
+### GPT-5.6 Sol identity
+
+Where the retained research records identify GPT-5.6 Sol, the official model documentation resolves that external model identity. OpenAI identifies the model as `gpt-5.6-sol` and documents `gpt-5.6` as an alias that routes to GPT-5.6 Sol. Exact experiment-specific model and run identities remain governed by the retained repository evidence.
+
 ### Codex identity
 
 The Codex software repository and Bolin (2026) provide external platform and agent-loop context. Exact experiment-specific model, invocation, and run identities remain governed by the retained repository evidence rather than by the moving state of current product documentation.
@@ -133,4 +140,4 @@ It does not mean recursively reproducing the bibliography of vendored upstream s
 
 ## Machine-readable bibliography
 
-The same 19-source set is provided in [`references.bib`](references.bib).
+The same 20-source set is provided in [`references.bib`](references.bib).
