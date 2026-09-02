@@ -1,7 +1,8 @@
 # Final Eight-Q&A Document-to-Code Deployment Approval
 
 **Date:** 10 July 2026  
-**Source architecture:** Eight numbered Q&A sessions in `ALL MY QUESTION ANSWERS AND CHATGPT RESPONSES AND COMPLETE A TO Z PLANNING FOR DEVISING THE LLM BACKED API WORKFLOW.docx`  
+**Source architecture:** Eight numbered Q&A sessions from the retained LLM-workflow planning record.
+
 **Decision basis:** Final explicit decisions and later-session overrides take precedence over temporary earlier proposals.
 
 ## Final verdict
