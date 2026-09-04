@@ -157,11 +157,11 @@ The compact Appendix 1 projection contains **5** supported records from this inv
 | Record | Category | Observed evidence | Final treatment |
 |---|---|---|---|
 
-| `INC-C14-T2` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after researcher-reported >~6.5h continuous execution. | Candidate retained unresolved. |
+| `INC-C14-T2` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after >~6.5h of recorded continuous execution. | Candidate retained unresolved. |
 
-| `INC-C14-T3` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after researcher-reported >~6.5h continuous execution. | Candidate retained unresolved. |
+| `INC-C14-T3` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after >~6.5h of recorded continuous execution. | Candidate retained unresolved. |
 
-| `INC-C14-T4` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after researcher-reported >~6.5h continuous execution. | Candidate retained unresolved. |
+| `INC-C14-T4` | `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict or counterexample after >~6.5h of recorded continuous execution. | Candidate retained unresolved. |
 
 | `EXC-C14-SYN` | `EXCLUDED_INVALID` | Not backed by authentic completed CBMC records. | Excluded from accepted evidence. |
 
