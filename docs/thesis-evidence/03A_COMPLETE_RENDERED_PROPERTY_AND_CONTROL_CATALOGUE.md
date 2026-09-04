@@ -6,6 +6,95 @@ This catalogue is the exhaustive human-readable companion to `02_COMPLETE_PROPER
 
 The thesis appendices are deliberately a **compact projection** of this evidence layer. Appendix 1 enumerates the formally supported subset; Appendix 2 preserves the exceptional negative, inconclusive and preservation-limited findings. Controls, documented guarantees, construction invariants and diagnostics remain in the repository even where the appendices omit them for compactness. A difference in depth is therefore intentional; a difference in scientific meaning is not.
 
+## Result-class inventory
+
+| Classification | Records | Interpretation |
+|---|---:|---|
+| `SUPPORTED` | 215 | Formal-tool support for the bounded property/obligation. |
+| `RESOURCE_LIMITED_INCONCLUSIVE` | 16 | No completed verdict within the retained resource boundary. |
+| `SUPPORTING_CONTROL` | 7 | Configuration, admissibility, oracle or construction control. |
+| `SUPPORTED_DIAGNOSTIC` | 6 | Supported diagnostic relation whose domain must not be promoted to the ordinary production contract. |
+| `SUPPORTED_WITH_PARTIAL_PRESERVATION` | 5 | Supported result with an explicit surviving-evidence preservation limitation. |
+| `ASSUMED_FROM_DOCUMENTED_GUARANTEE` | 4 | Documented producer/caller guarantee used as a premise. |
+| `MEANINGFUL_NEGATIVE` | 2 | Candidate contradicted within its registered domain/model. |
+| `SUPPORTED_BY_CONSTRUCTION` | 1 | Invariant fixed by the registered harness construction. |
+| `ABSTRACTION_LIMITED_INCONCLUSIVE` | 1 | No production-level acceptance/refutation because the encoded abstraction is insufficient. |
+
+## Controlled vocabulary and classification namespaces
+
+The catalogue uses several **orthogonal classification namespaces**. A label must be interpreted only in the field or ledger that owns that namespace. In particular, the nine-value `result` vocabulary of `02_COMPLETE_PROPERTY_LEDGER.csv` is not the same vocabulary as the sixteen-value `category` vocabulary of `06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.csv`. A boundary row does not create an additional substantive property/control record, and a boundary category must not be silently promoted into a property result.
+
+### Property-result namespace
+
+The **Result-class inventory** above is the complete authoritative vocabulary for the `result` field of the 257 substantive property/control rows. The counts in that inventory sum to 257. The 220-record formally supported subset consists of the rows classified `SUPPORTED` or `SUPPORTED_WITH_PARTIAL_PRESERVATION`; the latter remains a scientific result classification with an explicit preservation qualification.
+
+### Material-boundary-record namespace
+
+A **Material boundary record** is a row in [`06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md`](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md) / `06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.csv`. That ledger contains 27 boundary records and uses the separate `category` field below. A material-boundary record preserves evidence that limits, qualifies, excludes, contradicts, contextualises, supersedes, controls, or prevents a stronger interpretation of a case or RQ2 comparison. It is separate from the 257-row substantive property/control ledger unless an explicit cross-reference identifies a substantive property or property family.
+
+The machine-readable relationship between every one of the 27 boundary records and its substantive scope is recorded in [`06_BOUNDARY_TO_SUBSTANTIVE_SCOPE_CROSSWALK.csv`](06_BOUNDARY_TO_SUBSTANTIVE_SCOPE_CROSSWALK.csv). A `NO_SINGLE_PROPERTY_ROW`-type relationship is deliberate: some records concern preservation, an auxiliary control, an excluded artefact, a repository-comparison statement, or a shared reporting limitation rather than one substantive `PR-*` row.
+
+| Boundary category | Reusable definition |
+|---|---|
+| `MEANINGFUL_NEGATIVE` | A registered candidate proposition was contradicted within its recorded domain/model. This token is also an authoritative property-result class; a boundary-ledger row carrying it preserves the same negative status and does not create a second property result. |
+| `ABSTRACTION_LIMITED_INCONCLUSIVE` | The retained abstraction is insufficient for a production-level acceptance or refutation. This token is also an authoritative property-result class; the boundary row records the limiting reason without adding another result. |
+| `RESOURCE_LIMITED_INCONCLUSIVE` | No completed verdict was obtained within the retained resource boundary. This token is also an authoritative property-result class; it must not be recoded as success or failure. |
+| `EVIDENCE_SOURCE_CONFLICT` | Retained sources materially disagree about an evidential fact. The disagreement is preserved and resolved under the repository authority order; the losing narrative is not used to strengthen the claim. |
+| `PARTIAL_PRESERVATION` | Some registered supporting/raw evidence is not fully retained. This is a **boundary/preservation category**, not the property-result label `SUPPORTED_WITH_PARTIAL_PRESERVATION`. It qualifies what can be reconstructed or claimed about preservation and does not by itself decide the proposition's logical status. |
+| `SUPERSEDED_REPAIRED_FAILURE` | An earlier artefact or attempt failed to yield a valid accepted verification result and was later repaired. The superseded attempt is retained as repair/provenance history; only the separately accepted repaired evidence supports the final claim. |
+| `NOT_TESTED` | A planned check was deferred or not executed to a scientific verdict. It must not be recoded as success, failure, support, refutation, or a completed inconclusive formal-tool result. |
+| `EXCLUDED_TEMPLATE` | An incomplete template or placeholder artefact was excluded from accepted evidential use. It is not a completed experimental result and cannot replace authentic campaign evidence. |
+| `EXPECTED_FAILURE_CONTROL` | A deliberately false or over-strengthened control proposition was expected to fail and failed as intended. Its failure supplies sensitivity/boundary/non-vacuity evidence and is not a production defect. |
+| `SUPPORTING_ONLY` | A replay or auxiliary observation supplies supporting context but is not a complete replication, another matched run, or an additional independent accepted substantive result. |
+| `OUT_OF_SCOPE` | The named assurance dimension was deliberately outside the registered model/campaign. No positive or negative conclusion about that excluded dimension follows from the case. |
+| `NOT_ESTABLISHED` | The available evidence supports a narrower statement but does not establish the named stronger statement. The stronger statement must not be inferred. |
+| `COUNTING_BOUNDARY` | A mechanical/tool count includes units that are not equivalent to the same number of independent scientific theorems, claims, or contributions. |
+| `NOT_CLAIMED` | A stronger proposition is explicitly outside the accepted wording. Its omission is deliberate and is neither support nor refutation of that stronger proposition. |
+| `EXCLUDED_INVALID` | Material that lacks the authentic evidence required by the acceptance policy is excluded from the accepted scientific corpus and cannot support, refute, or upgrade a substantive result. |
+| `NOT_DEMONSTRABLE` | The retained evidence is insufficient to demonstrate the named stronger attribution, causal, efficiency, or superiority claim. This is a reporting/interpretation boundary, not a success/failure result for the underlying substantive properties. |
+
+### Crosswalk for the preservation near-collision
+
+`PARTIAL_PRESERVATION` and `SUPPORTED_WITH_PARTIAL_PRESERVATION` are intentionally different labels in different namespaces. `PARTIAL_PRESERVATION` is a boundary-ledger category describing a preservation deficiency or limit. `SUPPORTED_WITH_PARTIAL_PRESERVATION` is a property-ledger `result` classification: the bounded property is supported, while an explicit preservation limitation remains attached. Neither label is an abbreviation for the other, and neither may be substituted for the other.
+
+### Boundary-record identifier grammar
+
+The identifier prefix is a mnemonic for navigation; **the `category` column, not the prefix, is authoritative for classification**. In particular, `LIM-` intentionally spans several different boundary categories.
+
+| Prefix | Identifier role |
+|---|---|
+| `NEG-` | retained negative/boundary proposition |
+| `LIM-` | limitation or qualification record; category must be read from the ledger |
+| `EXC-` | excluded artefact/evidence record |
+| `CTRL-` | evidential control record |
+| `INC-` | inconclusive candidate-family record |
+| `REP-` | repair/supersession provenance record |
+| `CONFLICT-` | conflicting-source reconciliation record |
+
+### Evidence-completeness namespace
+
+`COMPLETE` and `PARTIAL` are evidence-package completeness codes, not scientific result classes. `COMPLETE` means the case satisfies the registered preservation criterion for the evidence required by its accepted reporting; it does not mean every planned check was executed or that the case has no negative, excluded, or inconclusive material. `PARTIAL` means one or more registered subordinate preservation expectations are incomplete while the specifically retained results keep their independently recorded scientific classifications.
+
+### Locator and experimental-condition namespace
+
+In investigation locators, `UA` denotes the **unassisted V5 condition** and `SA` denotes the **skill-available V5 condition**. These suffixes identify the experimental condition, not a scientific outcome. `UNASSISTED` and `SKILL_AVAILABLE`, where used as metadata values in the detail files, have the same condition-level meaning. `SKILL_AVAILABLE` records availability/configuration and does not itself establish individual-skill causation.
+
+### Distinctness, path-state, integrity-field, and role namespaces
+
+`SUPPORTED_WITHIN_INSPECTED_CORPUS` is a repository-relative distinctness conclusion only; it does not establish worldwide novelty or a first-ever proof. Case 14's `SUPPORTED_FOR_T1; CANDIDATE_LEVEL_ONLY_FOR_T2_T4` is a case-specific distinctness summary, not a universal result class.
+
+`RESOLVED` means the referenced item was located under the applicable resolution procedure. `RESOLVED_AND_HASHED` additionally records retained hash identity. `PENDING` and `UNRESOLVED_UNTIL_FINALIZER` are historical pre-finalization path states; `RESOLVED_HASH_MATCH` is the current public path/hash-match state. Path resolution establishes evidence identity/accessibility and does not alter scientific result status.
+
+Reachability, feasibility, non-vacuity, mutation/control, and principal-claim-role values are field-local integrity/argument metadata. They are not additional scientific result classes. Where a token such as `SUPPORTED` appears in a field other than `Result`, the field name controls its meaning. The record-role codes in the 18 detail files are defined in their local role tables before individual record use and describe how a record contributes to an argument rather than its scientific outcome.
+
+### Native-census and literature-relationship namespaces
+
+Status/code values in `17_NATIVE_BASELINE_EVIDENCE_CENSUS.*` and relationship/exact-match values in `05_LITERATURE_ASSURANCE_RELATIONSHIP_MATRIX.*` are field-local comparison metadata. Their companion tables and row text are authoritative for those fields. They are not members of either the nine-value property-result vocabulary or the sixteen-value material-boundary vocabulary. Native-census absence is bounded to the inspected frozen corpus, and literature exact-match/relationship coding must not be converted into worldwide absence or global novelty.
+
+### Master coverage rule
+
+Every one of the 18 investigation summaries below contains exactly one `Material boundary records` line. Case 12 explicitly records that none are registered. Each of the four skill-available investigations explicitly cites the two shared RQ2 limits `LIM-RQ2-ATTR` and `LIM-RQ2-EFF`. Across the master, the set of unique boundary identifiers must equal all 27 rows of file 06; the two shared RQ2 records may appear once in each of the four skill sections. The parenthesised category beside every identifier must exactly match file 06.
+
 The complete ledger contains **257 substantive records**. Of these, **220** are formally supported property/obligation records (`SUPPORTED` or `SUPPORTED_WITH_PARTIAL_PRESERVATION`). The remaining 37 records have different evidential roles and remain explicitly classified rather than being converted into supported claims.
 
 ## Evidence interpretation rule
@@ -75,20 +164,6 @@ The final validator fails closed unless the installed current CSV and Markdown l
 The master file gives the cross-case synthesis and principal-claim mapping. Every record is then documented in a dedicated renderable case file under `03A_RENDERED_CATALOGUE_CASES/`. The split is purely presentational: the manifest and validation report check that the union of the 18 case files contains the exact 257-record ledger set once and only once.
 
 
-## Result-class inventory
-
-| Classification | Records | Interpretation |
-|---|---:|---|
-| `SUPPORTED` | 215 | Formal-tool support for the bounded property/obligation. |
-| `RESOURCE_LIMITED_INCONCLUSIVE` | 16 | No completed verdict within the retained resource boundary. |
-| `SUPPORTING_CONTROL` | 7 | Configuration, admissibility, oracle or construction control. |
-| `SUPPORTED_DIAGNOSTIC` | 6 | Supported diagnostic relation whose domain must not be promoted to the ordinary production contract. |
-| `SUPPORTED_WITH_PARTIAL_PRESERVATION` | 5 | Supported result with an explicit surviving-evidence preservation limitation. |
-| `ASSUMED_FROM_DOCUMENTED_GUARANTEE` | 4 | Documented producer/caller guarantee used as a premise. |
-| `MEANINGFUL_NEGATIVE` | 2 | Candidate contradicted within its registered domain/model. |
-| `SUPPORTED_BY_CONSTRUCTION` | 1 | Invariant fixed by the registered harness construction. |
-| `ABSTRACTION_LIMITED_INCONCLUSIVE` | 1 | No production-level acceptance/refutation because the encoded abstraction is insufficient. |
-
 ## Case index
 
 | Case | Target | Locator | Ledger records | Supported subset | Chapter 4 | Detail file |
@@ -156,7 +231,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `NEG-C01-PA03` (MEANINGFUL_NEGATIVE); `NEG-C01-PA04B` (MEANINGFUL_NEGATIVE); `LIM-C01-PA02B` (PARTIAL_PRESERVATION); `LIM-C01-PA06` (PARTIAL_PRESERVATION); `LIM-C01-PA07` (PARTIAL_PRESERVATION); `LIM-C01-PA08` (PARTIAL_PRESERVATION); `REP-C01-PA01V1` (SUPERSEDED_REPAIRED_FAILURE).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `NEG-C01-PA03` (MEANINGFUL_NEGATIVE); `NEG-C01-PA04B` (MEANINGFUL_NEGATIVE); `LIM-C01-PA02B` (PARTIAL_PRESERVATION); `LIM-C01-PA06` (PARTIAL_PRESERVATION); `LIM-C01-PA07` (PARTIAL_PRESERVATION); `LIM-C01-PA08` (PARTIAL_PRESERVATION); `REP-C01-PA01V1` (SUPERSEDED_REPAIRED_FAILURE).
 
 
 **Complete case evidence:** [`CASE_01_POLYNOMIAL_ADDITION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_01_POLYNOMIAL_ADDITION.md)
@@ -211,7 +286,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C02-T3M` (NOT_TESTED); `EXC-C02-T4TPL` (EXCLUDED_TEMPLATE); `CTRL-C02-T4LOW` (EXPECTED_FAILURE_CONTROL); `CTRL-C02-T4UP` (EXPECTED_FAILURE_CONTROL).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C02-T3M` (NOT_TESTED); `EXC-C02-T4TPL` (EXCLUDED_TEMPLATE); `CTRL-C02-T4LOW` (EXPECTED_FAILURE_CONTROL); `CTRL-C02-T4UP` (EXPECTED_FAILURE_CONTROL).
 
 
 **Complete case evidence:** [`CASE_02_POLYNOMIAL_SUBTRACTION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_02_POLYNOMIAL_SUBTRACTION.md)
@@ -251,7 +326,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C03-REPLAY` (SUPPORTING_ONLY).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C03-REPLAY` (SUPPORTING_ONLY).
 
 
 **Complete case evidence:** [`CASE_03_SEQUENTIAL_SUBTRACTION_REDUCTION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_03_SEQUENTIAL_SUBTRACTION_REDUCTION.md)
@@ -301,7 +376,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `CONFLICT-C04-NATIVE-DIR` (EVIDENCE_SOURCE_CONFLICT).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `CONFLICT-C04-NATIVE-DIR` (EVIDENCE_SOURCE_CONFLICT).
 
 
 **Complete case evidence:** [`CASE_04_MESSAGE_EXTRACTION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_04_MESSAGE_EXTRACTION.md)
@@ -346,7 +421,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `CONFLICT-C05-NATIVE-HARNESS` (EVIDENCE_SOURCE_CONFLICT).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `CONFLICT-C05-NATIVE-HARNESS` (EVIDENCE_SOURCE_CONFLICT).
 
 
 **Complete case evidence:** [`CASE_05_MESSAGE_EMBEDDING.md`](03A_RENDERED_CATALOGUE_CASES/CASE_05_MESSAGE_EMBEDDING.md)
@@ -406,7 +481,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C06-BACKEND` (OUT_OF_SCOPE).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C06-BACKEND` (OUT_OF_SCOPE).
 
 
 **Complete case evidence:** [`CASE_06_D4_COMPRESSION_DECOMPRESSION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_06_D4_COMPRESSION_DECOMPRESSION.md)
@@ -461,7 +536,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `CONFLICT-C07-NATIVE-DIR` (EVIDENCE_SOURCE_CONFLICT).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `CONFLICT-C07-NATIVE-DIR` (EVIDENCE_SOURCE_CONFLICT).
 
 
 **Complete case evidence:** [`CASE_07_SIGNED_TO_CANONICAL.md`](03A_RENDERED_CATALOGUE_CASES/CASE_07_SIGNED_TO_CANONICAL.md)
@@ -521,7 +596,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C08-NOVELTY` (NOT_ESTABLISHED).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C08-NOVELTY` (NOT_ESTABLISHED).
 
 
 **Complete case evidence:** [`CASE_08_BARRETT_REDUCTION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_08_BARRETT_REDUCTION.md)
@@ -566,7 +641,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C09-PHYSICAL` (OUT_OF_SCOPE).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C09-PHYSICAL` (OUT_OF_SCOPE).
 
 
 **Complete case evidence:** [`CASE_09_ZEROISATION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_09_ZEROISATION.md)
@@ -621,7 +696,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C10-COUNT` (COUNTING_BOUNDARY).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C10-COUNT` (COUNTING_BOUNDARY).
 
 
 **Complete case evidence:** [`CASE_10_POLYNOMIAL_SERIALISATION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_10_POLYNOMIAL_SERIALISATION.md)
@@ -676,7 +751,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `LIM-C11-CANON` (NOT_CLAIMED).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-C11-CANON` (NOT_CLAIMED).
 
 
 **Complete case evidence:** [`CASE_11_POLYNOMIAL_DESERIALISATION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_11_POLYNOMIAL_DESERIALISATION.md)
@@ -719,6 +794,9 @@ $$
 **Additional campaign assurance.** Direct canonical-polynomial and canonical-image byte composition obligations with bridge controls.
 
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
+
+
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** None recorded for this investigation.
 
 
 **Complete case evidence:** [`CASE_12_DIRECT_CODEC_COMPOSITION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_12_DIRECT_CODEC_COMPOSITION.md)
@@ -768,7 +846,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `INC-C13-SEED` (ABSTRACTION_LIMITED_INCONCLUSIVE).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `INC-C13-SEED` (ABSTRACTION_LIMITED_INCONCLUSIVE).
 
 
 **Complete case evidence:** [`CASE_13_PUBLIC_KEY_VALIDATION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_13_PUBLIC_KEY_VALIDATION.md)
@@ -823,7 +901,7 @@ $$
 **Distinctness boundary.** `SUPPORTED_FOR_T1; CANDIDATE_LEVEL_ONLY_FOR_T2_T4` — Does not establish global novelty or first-ever proof.
 
 
-**Material boundary records.** `INC-C14-T2` (RESOURCE_LIMITED_INCONCLUSIVE); `INC-C14-T3` (RESOURCE_LIMITED_INCONCLUSIVE); `INC-C14-T4` (RESOURCE_LIMITED_INCONCLUSIVE); `EXC-C14-SYN` (EXCLUDED_INVALID).
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `INC-C14-T2` (RESOURCE_LIMITED_INCONCLUSIVE); `INC-C14-T3` (RESOURCE_LIMITED_INCONCLUSIVE); `INC-C14-T4` (RESOURCE_LIMITED_INCONCLUSIVE); `EXC-C14-SYN` (EXCLUDED_INVALID).
 
 
 **Complete case evidence:** [`CASE_14_MONTGOMERY_REDUCTION.md`](03A_RENDERED_CATALOGUE_CASES/CASE_14_MONTGOMERY_REDUCTION.md)
@@ -860,6 +938,9 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — No causal attribution to any individual skill.
 
 
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-RQ2-ATTR` (NOT_DEMONSTRABLE); `LIM-RQ2-EFF` (NOT_DEMONSTRABLE). These are shared RQ2 reporting boundaries and do not reclassify the three skill-available addition property records.
+
+
 **Complete case evidence:** [`SKILL_AVAILABLE_ADDITION.md`](03A_RENDERED_CATALOGUE_CASES/SKILL_AVAILABLE_ADDITION.md)
 
 
@@ -892,6 +973,9 @@ $$
 **Additional campaign assurance.** Common-minuend reversal and sequential subtrahend aggregation.
 
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — No causal attribution to any individual skill.
+
+
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-RQ2-ATTR` (NOT_DEMONSTRABLE); `LIM-RQ2-EFF` (NOT_DEMONSTRABLE). These are shared RQ2 reporting boundaries and do not reclassify the two skill-available subtraction property records.
 
 
 **Complete case evidence:** [`SKILL_AVAILABLE_SUBTRACTION.md`](03A_RENDERED_CATALOGUE_CASES/SKILL_AVAILABLE_SUBTRACTION.md)
@@ -928,6 +1012,9 @@ $$
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — Incremental benefit and skill causation remain inconclusive.
 
 
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-RQ2-ATTR` (NOT_DEMONSTRABLE); `LIM-RQ2-EFF` (NOT_DEMONSTRABLE). These are shared RQ2 reporting boundaries and do not reclassify the three skill-available Barrett property records.
+
+
 **Complete case evidence:** [`SKILL_AVAILABLE_BARRETT.md`](03A_RENDERED_CATALOGUE_CASES/SKILL_AVAILABLE_BARRETT.md)
 
 
@@ -960,6 +1047,9 @@ $$
 **Additional campaign assurance.** Secret-history convergence and recontamination recovery.
 
 **Distinctness boundary.** `SUPPORTED_WITHIN_INSPECTED_CORPUS` — No causal attribution to any individual skill.
+
+
+**Material boundary records (see [boundary ledger](06_NEGATIVE_INCONCLUSIVE_AND_EXCLUDED_EVIDENCE.md)).** `LIM-RQ2-ATTR` (NOT_DEMONSTRABLE); `LIM-RQ2-EFF` (NOT_DEMONSTRABLE). These are shared RQ2 reporting boundaries and do not reclassify the two skill-available zeroisation property records.
 
 
 **Complete case evidence:** [`SKILL_AVAILABLE_ZEROISATION.md`](03A_RENDERED_CATALOGUE_CASES/SKILL_AVAILABLE_ZEROISATION.md)
