@@ -310,6 +310,53 @@ def main():
     ])
 
     print(
+        "## Current direct GitHub-render validator and checksum closure"
+    )
+
+    run(
+        [
+            sys.executable,
+            str(
+                root
+                / "docs"
+                / "thesis-evidence"
+                / "03A_VALIDATE_GITHUB_RENDER.py"
+            ),
+        ],
+        cwd=root,
+    )
+
+    print(
+        "## Current 03A catalogue checksum manifest"
+    )
+
+    run(
+        [
+            "sha256sum",
+            "-c",
+            "03A_CATALOGUE_SHA256SUMS.txt",
+        ],
+        cwd=(
+            root
+            / "docs"
+            / "thesis-evidence"
+        ),
+    )
+
+    print(
+        "## Current repository-wide SHA256SUMS"
+    )
+
+    run(
+        [
+            "sha256sum",
+            "-c",
+            "SHA256SUMS",
+        ],
+        cwd=root,
+    )
+
+    print(
         "## PASS — exact historical signature reconciled; current package closure passed"
     )
 

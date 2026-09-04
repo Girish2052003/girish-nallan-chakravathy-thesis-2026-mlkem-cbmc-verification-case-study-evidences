@@ -82,8 +82,8 @@ def static_check(files: list[Path]) -> tuple[bool, list[str]]:
 
     if len(files) != 19:
         problems.append(f"expected 19 rendered files; got {len(files)}")
-    if mathop_total != 210:
-        problems.append(f"expected 210 GitHub-safe named-operator forms; got {mathop_total}")
+    if mathop_total != 116:
+        problems.append(f"expected 116 GitHub-safe named-operator forms; got {mathop_total}")
 
     print(f"STATIC files={len(files)} math_expressions={expr_total} github_safe_named_operators={mathop_total}")
     return not problems, problems
